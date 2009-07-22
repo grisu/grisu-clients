@@ -25,18 +25,18 @@
 			<artifactId>swingx</artifactId>
 			<version>0.9.5-2</version>
 		</dependency>
-		<dependency>
-			<groupId>org.vpac.grisu</groupId>
-			<artifactId>grisu-client</artifactId>
-			<version>0.3-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
 <!--		<dependency>-->
 <!--			<groupId>org.vpac.grisu</groupId>-->
 <!--			<artifactId>grisu-local</artifactId>-->
 <!--			<version>0.3-SNAPSHOT</version>-->
 <!--			<scope>compile</scope>-->
 <!--		</dependency>-->
+		<dependency>
+			<groupId>org.vpac.grisu</groupId>
+			<artifactId>grisu-client-lib-old</artifactId>
+			<version>0.3-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
