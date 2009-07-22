@@ -7,6 +7,18 @@
   <version>0.3-SNAPSHOT</version>
   <name>grisu-clients Multi Project</name>
   <url>http://maven.apache.org</url>
+  
+  	<repositories>
+		<repository>
+			<id>ARCS</id>
+			<url>http://code.arcs.org.au/nexus/content/groups/public</url>
+		</repository>
+		<repository>
+			<id>ARCS Snapshots</id>
+			<url>http://code.arcs.org.au/nexus/content/groups/public-snapshots</url>
+		</repository>
+  </repositories>
+  
   <modules>
     <module>grisu-client-lib-old</module>
     <module>grisu-client-gwt</module>
