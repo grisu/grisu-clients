@@ -1,0 +1,51 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<description>grisu-client-commandline provides an implementation to enable commandline access to 
+		Grisu backends.</description>
+	<url>http://projects.arcs.org.au/trac/grisu/wiki/GrisuClientCommandline</url>
+	<parent>
+		<artifactId>frontend</artifactId>
+		<groupId>org.vpac.grisu</groupId>
+		<version>0.3-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.vpac.grisu</groupId>
+	<artifactId>grisu-client-commandline</artifactId>
+	<name>grisu-client-commandline</name>
+	<version>0.3-SNAPSHOT</version>
+
+	<dependencies>
+		<dependency>
+			<groupId>jline</groupId>
+			<artifactId>jline</artifactId>
+			<version>0.9.94</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-cli</groupId>
+			<artifactId>commons-cli</artifactId>
+			<version>1.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.vpac.grisu</groupId>
+			<artifactId>grisu-client</artifactId>
+			<version>0.3-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

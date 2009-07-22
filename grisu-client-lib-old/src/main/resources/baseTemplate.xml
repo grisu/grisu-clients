@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<JobDefinition xmlns="http://schemas.ggf.org/jsdl/2005/11/jsdl">
+
+	<JobDescription grisu_modules="Common">
+	
+		<JobIdentification>
+
+			<JobName 	template="JobName" 
+						name="Jobname"
+						description="The name of the job." 
+						defaultValue="cat_job" 
+						other="autosuggest,nosuggestbutton" />
+
+		</JobIdentification>
+		
+		<Application>
+
+			<ApplicationName >namd</ApplicationName>
+			<POSIXApplication
+				xmlns="http://schemas.ggf.org/jsdl/2005/11/jsdl-posix">
+				
+
+				<Executable template="CommandLine"
+						    name="Commandline"
+						    description="The command you want to run"
+							other="useHistory"
+				/>
+
+				<WorkingDirectory
+					postprocess="FillWithJobDirectoryRelativeToExecutionFileSystem"
+					filesystemName="userExecutionHostFs" />
+				<!-- 	The name of the standard output file. -->
+				<Output		template="InputString"
+							name="StdOut"
+							multiplicity="1"
+							default="stdout.txt"
+				>
+				</Output>
+				<!--  	The name of the standard error file. -->
+				<Error		template="InputString"
+							name="StdErr"
+							multiplicity="1"
+							default="stderr.ext"
+				>
+				
+				</Error>
+				<Module    template="InputString"
+						   name="Module"
+						   description="The module to load"
+						   multiplicity="?"
+				></Module>
+				<Email 	template="Email" 
+					   	name="EmailAddress"
+						description="The email address to send an email to if the job status changes."
+						multiplicity="?" 
+						other="useLastValue" />
+
+			</POSIXApplication>
+			
+			<TotalCPUTime template="InputInteger" name="Walltime"
+				description="The total cpu time in seconds."
+				multiplicity="1" defaultValue="600" 
+				postprocess="TimesNoCPUs"
+			/>
+
+			<TotalCPUCount template="InputInteger" name="CPUs"
+				description="How many CPUs do you want to use to run this job."
+				multiplicity="1" defaultValue="1" prefills="1,2,4,8" />
+
+		</Application>
+		<Resources>
+			<CandidateHosts>
+
+				<HostName template="InputString" name="HostName"
+					description="Where do you want to submit the job to?"
+					multiplicity="1" 
+					other="allQueues"				
+				/>
+
+			</CandidateHosts>
+
+			<FileSystem name="userExecutionHostFs">
+				<MountSource template="InputString"
+					name="ExecutionFileSystem" multiplicity="1" />
+
+				<FileSystemType>normal</FileSystemType>
+			</FileSystem>
+		</Resources>
+		<!--  The following DataStaging element -->
+		<DataStaging>
+			<FileName />
+			<FileSystemName>userExecutionHostFs</FileSystemName>
+			<Source>
+
+				<URI template="MultipleInputFiles" name="InputFiles"
+					title="Input files"
+					description="Provide at least one input file here."
+					multiplicity="?" postprocess="FillDataStagingFileNameElement"
+					validator="InputFile" />
+
+			</Source>
+		</DataStaging>
+	</JobDescription>
+</JobDefinition>

@@ -1,0 +1,139 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<artifactId>frontend</artifactId>
+		<groupId>org.vpac.grisu</groupId>
+		<version>0.3-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.vpac.grisu</groupId>
+	<artifactId>grisu-client-lib-old</artifactId>
+	<name>grisu-client-lib</name>
+	<version>0.3-SNAPSHOT</version>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>au.org.arcs.auth</groupId>
+			<artifactId>simpleProxyLib</artifactId>
+			<version>0.4-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>au.org.arcs.shibboleth</groupId>
+			<artifactId>slcs-client</artifactId>
+			<version>0.4-SNAPSHOT</version>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>external.bouncycastle</groupId>
+					<artifactId>bcprov-jdk15</artifactId>
+				</exclusion>
+			</exclusions>
+
+		</dependency>
+
+		<dependency>
+			<groupId>org.vpac.grisu</groupId>
+			<artifactId>grisu-commons</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.vpac.helpDesk</groupId>
+			<artifactId>helpDesk</artifactId>
+			<version>0.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.java.dev.glazedlists</groupId>
+			<artifactId>glazedlists_java15</artifactId>
+			<version>1.8.0</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>activation</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>external.grisu-client</groupId>
+			<artifactId>orson</artifactId>
+			<version>0.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>jfree</groupId>
+			<artifactId>jfreechart</artifactId>
+			<version>1.0.11</version>
+			<exclusions>
+				<exclusion>
+					<groupId>gnujaxp</groupId>
+					<artifactId>gnujaxp</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+
+
+		<!--
+			<dependency> <groupId>org.codehaus.xfire</groupId>
+			<artifactId>xfire-ws-security</artifactId> <version>1.2.6</version>
+			</dependency>
+		-->
+
+
+		<dependency>
+			<groupId>org.vpac.grisu</groupId>
+			<artifactId>grisu-client-slim</artifactId>
+			<version>0.3-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+	<properties>
+		<maven.test.skip>true</maven.test.skip>
+	</properties>
+
+
+	<description>A library that is used by the grisu-client-swing module. It bundles all the client functionality needed for client implementations (in Java).</description>
+	<build>
+
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
+
+
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>
+								org.vpac.grisu.client.view.swing.mainPanel.Grisu
+							</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+		</plugins>
+
+	</build>
+
+
+</project>
