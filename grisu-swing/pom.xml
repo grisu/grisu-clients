@@ -40,7 +40,7 @@
 		
 		<dependency>
 			<groupId>org.vpac.grisu</groupId>
-			<artifactId>grisu-client-xfire</artifactId>
+			<artifactId>grisu-client-jaxws</artifactId>
 			<version>0.3-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>

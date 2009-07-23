@@ -23,6 +23,7 @@ import org.vpac.grisu.client.control.utils.progress.ProgressDisplay;
 import org.vpac.grisu.client.model.files.FileConstants;
 import org.vpac.grisu.client.model.files.FileSystemException;
 import org.vpac.grisu.client.model.files.GrisuFileObject;
+import org.vpac.grisu.model.dto.DtoTransferFile;
 import org.vpac.grisu.utils.FileHelpers;
 
 public class FileTransfer {
@@ -440,9 +441,15 @@ public class FileTransfer {
 					new File(sourceFile.getURI()));
 			String filename = sourceFile.getName();
 			try {
-				em.getServiceInterface().upload(new DataHandler(source), targetDirectory.getURI()
+				DtoTransferFile tf = new DtoTransferFile();
+				tf.setDataHandler(new DataHandler(source));
+				tf.setTargetUrl(targetDirectory.getURI()
 						.toString()
-						+ "/" + filename, true);
+						+ "/" + filename);
+				em.getServiceInterface().upload(tf);
+//				em.getServiceInterface().upload(new DataHandler(source), targetDirectory.getURI()
+//						.toString()
+//						+ "/" + filename, true);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 				throw new FileSystemException("Could not upload file \""
@@ -676,7 +683,7 @@ public class FileTransfer {
 		DataSource source = null;
 		try {
 
-			source = em.getServiceInterface().download(remoteFile).getDataSource();
+			source = em.getServiceInterface().download(remoteFile).getDataHandler().getDataSource();
 		} catch (Exception e) {
 			myLogger.error("Could not download file: " + remoteFile);
 			throw e;
@@ -725,7 +732,7 @@ public class FileTransfer {
 		long lastModified = -1;
 		try {
 			lastModified = em.getServiceInterface().lastModified(remoteFile);
-			source = em.getServiceInterface().download(remoteFile).getDataSource();
+			source = em.getServiceInterface().download(remoteFile).getDataHandler().getDataSource();
 		} catch (Exception e) {
 			myLogger.error("Could not download file: " + remoteFile);
 			throw e;
@@ -763,7 +770,7 @@ public class FileTransfer {
 		if (!newFile.exists()) {
 			try {
 				long lastModified = em.getServiceInterface().lastModified(remoteFile);
-				source = em.getServiceInterface().download(remoteFile).getDataSource();
+				source = em.getServiceInterface().download(remoteFile).getDataHandler().getDataSource();
 				FileHelpers.saveToDisk(source, newFile);
 				newFile.setLastModified(lastModified);
 			} catch (IOException e) {

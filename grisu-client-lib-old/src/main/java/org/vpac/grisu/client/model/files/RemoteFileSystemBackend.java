@@ -637,6 +637,7 @@ public class RemoteFileSystemBackend implements FileSystemBackend {
 			try {
 				downloadAndPutIntoCache(file);
 			} catch (Exception e) {
+				e.printStackTrace();
 				throw new FileSystemException("Could not download file and put into cache: "+file.getURI().toString(), e);
 			}
 		}
@@ -697,6 +698,7 @@ public class RemoteFileSystemBackend implements FileSystemBackend {
 	 */
 	public File downloadAndPutIntoCache(GrisuFileObject file) throws Exception {
 
+		try {
 		FileManagerTransferHelpers.download(serviceInterface, getLocalCacheRoot(), getRootUri().toString(), new GrisuFileObject[]{file}, FileManagerTransferHelpers.OVERWRITE_ONLY_OLDER_FILES, false);
 		
 		// test whether everything worked
@@ -708,6 +710,10 @@ public class RemoteFileSystemBackend implements FileSystemBackend {
 			throw new Exception("Something went wrong that should not have... Can't locate file in cache.");
 		}
 		return cacheFile;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 		
 	}
  
