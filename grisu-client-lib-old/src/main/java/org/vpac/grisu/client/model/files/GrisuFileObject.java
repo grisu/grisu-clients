@@ -122,6 +122,7 @@ public class GrisuFileObject implements Comparable {
 			result = fileSystemBackend.getChildren(this);
 		} catch (RuntimeException e) {
 			myLogger.error(e.getLocalizedMessage());
+			e.printStackTrace();
 			return new GrisuFileObject[]{};
 		}
 		return result;

@@ -83,7 +83,7 @@
 
 		<dependency>
 			<groupId>org.vpac.grisu</groupId>
-			<artifactId>grisu-client-slim</artifactId>
+			<artifactId>grisu-client</artifactId>
 			<version>0.3-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>

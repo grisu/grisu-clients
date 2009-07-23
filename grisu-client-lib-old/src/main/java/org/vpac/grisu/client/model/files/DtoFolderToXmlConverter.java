@@ -108,10 +108,10 @@ public class DtoFolderToXmlConverter {
 
 		if (fo.isFolder()) {
 			element = output.createElement("Directory");
-			element.setAttribute("path", fo.getUrl());
+			element.setAttribute("path", fo.getRootUrl());
 		} else {
 			element = output.createElement("File");
-			element.setAttribute("path", fo.getUrl());
+			element.setAttribute("path", fo.getRootUrl());
 		}
 
 		element.setAttribute("name", fo.getName());
