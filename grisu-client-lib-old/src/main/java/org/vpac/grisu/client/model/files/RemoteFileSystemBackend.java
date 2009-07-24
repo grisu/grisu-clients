@@ -683,7 +683,7 @@ public class RemoteFileSystemBackend implements FileSystemBackend {
 
 	public File getLocalCacheRoot() {
 		if ( localCacheRoot == null ) {
-			localCacheRoot = new File(Environment.LOCAL_CACHE_ROOT, alias); 
+			localCacheRoot = new File(Environment.getLocalJobCacheDirectory(), alias); 
 		}
 		return localCacheRoot;
 	}

@@ -33,7 +33,7 @@ import org.w3c.dom.Document;
  */
 public class LocalTemplateManagement {
 	
-	final public static String TEMPLATE_DIRECTORY = Environment.GRISU_DIRECTORY+File.separator+"templates";
+	final public static String TEMPLATE_DIRECTORY = Environment.getGrisuDirectory().getPath()+File.separator+"templates";
 
 //	final public static String AVAILABLE_TEMPLATES_DIRECTORY = Environment.GRISU_DIRECTORY+File.separator+"templates_available";
 	
