@@ -450,7 +450,7 @@ public class GrisuBatch {
 						try {
 							// download the file
 							FileHelpers.saveToDisk(em.getServiceInterface()
-									.download(newPath).getDataHandler().getDataSource(), new File(new File(
+									.download(newPath).getDataSource(), new File(new File(
 									stageOutDirectory), targetFileName));
 						} catch (Exception e) {
 							System.out.println("Could not download/save file "

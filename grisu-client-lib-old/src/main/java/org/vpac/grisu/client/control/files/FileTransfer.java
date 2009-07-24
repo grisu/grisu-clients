@@ -23,7 +23,6 @@ import org.vpac.grisu.client.control.utils.progress.ProgressDisplay;
 import org.vpac.grisu.client.model.files.FileConstants;
 import org.vpac.grisu.client.model.files.FileSystemException;
 import org.vpac.grisu.client.model.files.GrisuFileObject;
-import org.vpac.grisu.model.dto.DtoTransferFile;
 import org.vpac.grisu.utils.FileHelpers;
 
 public class FileTransfer {
@@ -441,15 +440,10 @@ public class FileTransfer {
 					new File(sourceFile.getURI()));
 			String filename = sourceFile.getName();
 			try {
-				DtoTransferFile tf = new DtoTransferFile();
-				tf.setDataHandler(new DataHandler(source));
-				tf.setTargetUrl(targetDirectory.getURI()
+
+				em.getServiceInterface().upload(new DataHandler(source), targetDirectory.getURI()
 						.toString()
-						+ "/" + filename);
-				em.getServiceInterface().upload(tf);
-//				em.getServiceInterface().upload(new DataHandler(source), targetDirectory.getURI()
-//						.toString()
-//						+ "/" + filename, true);
+						+ "/" + filename, true);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 				throw new FileSystemException("Could not upload file \""
@@ -495,6 +489,7 @@ public class FileTransfer {
 				childs = em.getServiceInterface().getChildrenFileNames(remoteFile.getURI()
 						.toString(), false);
 			} catch (Exception e) {
+				e.printStackTrace();
 				failed_downloads.put(remoteFile.getURI().toString(), e);
 				break;
 			}
@@ -568,6 +563,7 @@ public class FileTransfer {
 		try {
 			isFolder = em.getServiceInterface().isFolder(remoteFile);
 		} catch (Exception e1) {
+			e1.printStackTrace();
 			failed_downloads.put(remoteFile, e1);
 			throw new FailedDownloadsException(failed_downloads);
 		}
@@ -624,6 +620,7 @@ public class FileTransfer {
 					downloadAndOverwrite(remoteFile,
 							source_folder, target_folder);
 				} catch (Exception e) {
+					e.printStackTrace();
 					failed_downloads.put(remoteFile, e);
 				}
 				;
@@ -633,6 +630,7 @@ public class FileTransfer {
 					downloadOnlyNewerFiles(remoteFile,
 							source_folder, target_folder);
 				} catch (Exception e) {
+					e.printStackTrace();
 					failed_downloads.put(remoteFile, e);
 				}
 				;
@@ -642,6 +640,7 @@ public class FileTransfer {
 					downloadOnlyNonexistantFiles(remoteFile,
 							source_folder, target_folder);
 				} catch (Exception e) {
+					e.printStackTrace();
 					failed_downloads.put(remoteFile, e);
 				}
 				;
@@ -683,7 +682,7 @@ public class FileTransfer {
 		DataSource source = null;
 		try {
 
-			source = em.getServiceInterface().download(remoteFile).getDataHandler().getDataSource();
+			source = em.getServiceInterface().download(remoteFile).getDataSource();
 		} catch (Exception e) {
 			myLogger.error("Could not download file: " + remoteFile);
 			throw e;
@@ -732,7 +731,7 @@ public class FileTransfer {
 		long lastModified = -1;
 		try {
 			lastModified = em.getServiceInterface().lastModified(remoteFile);
-			source = em.getServiceInterface().download(remoteFile).getDataHandler().getDataSource();
+			source = em.getServiceInterface().download(remoteFile).getDataSource();
 		} catch (Exception e) {
 			myLogger.error("Could not download file: " + remoteFile);
 			throw e;
@@ -770,7 +769,7 @@ public class FileTransfer {
 		if (!newFile.exists()) {
 			try {
 				long lastModified = em.getServiceInterface().lastModified(remoteFile);
-				source = em.getServiceInterface().download(remoteFile).getDataHandler().getDataSource();
+				source = em.getServiceInterface().download(remoteFile).getDataSource();
 				FileHelpers.saveToDisk(source, newFile);
 				newFile.setLastModified(lastModified);
 			} catch (IOException e) {
