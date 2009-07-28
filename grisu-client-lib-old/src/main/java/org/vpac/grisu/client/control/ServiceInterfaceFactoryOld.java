@@ -29,6 +29,7 @@ public class ServiceInterfaceFactoryOld {
 
 	public static final String[] KNOWN_SERVICE_INTERFACE_CREATORS = new String[] {
 			"LocalServiceInterfaceCreator", 
+			"DummyServiceInterfaceCreator",
 			"JaxWsServiceInterfaceCreator",
 			"XfireServiceInterfaceCreator"
 	};
