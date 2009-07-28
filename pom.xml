@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.vpac.grisu</groupId>
-  <artifactId>grisu-clients</artifactId>
-  <packaging>pom</packaging>
-  <version>0.3-SNAPSHOT</version>
-  <name>grisu-clients Multi Project</name>
-  <url>http://maven.apache.org</url>
-  
-  	<repositories>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.vpac.grisu</groupId>
+	<artifactId>grisu-clients</artifactId>
+	<packaging>pom</packaging>
+	<version>0.3-SNAPSHOT</version>
+	<name>grisu-clients Multi Project</name>
+	<url>http://maven.apache.org</url>
+
+	<repositories>
 		<repository>
 			<id>ARCS</id>
 			<url>http://code.arcs.org.au/nexus/content/groups/public</url>
@@ -17,14 +18,40 @@
 			<id>ARCS Snapshots</id>
 			<url>http://code.arcs.org.au/nexus/content/groups/public-snapshots</url>
 		</repository>
-  </repositories>
-  
-  <modules>
-    <module>grisu-client-lib-old</module>
-    <module>grisu-client-gwt</module>
-    <module>grisu-swing</module>
-    <module>grisu-swing-plugins</module>
-    <module>grisu-batch</module>
-    <module>grisu-commandline</module>
-  </modules>
+	</repositories>
+
+	<modules>
+		<module>grisu-client-lib-old</module>
+		<module>grisu-client-gwt</module>
+		<module>grisu-swing</module>
+		<module>grisu-swing-plugins</module>
+		<module>grisu-batch</module>
+		<module>grisu-commandline</module>
+	</modules>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+
+					<descriptors>
+												<descriptor>grisu-client-swing.assembly.xml</descriptor>
+						<!--						<descriptor>gricli.assembly.xml</descriptor>-->
+						<!--						<descriptor>grisu-local-backend.assembly.xml</descriptor>-->
+						<!--						<descriptor>grisu-client-batch.assembly.xml</descriptor>-->
+						<!--						<descriptor>grisu-client-slim.assembly.xml</descriptor>-->
+					</descriptors>
+
+					<archive>
+						<index>true</index>
+						<manifest>
+							<addClasspath>true</addClasspath>
+						</manifest>
+					</archive>
+
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

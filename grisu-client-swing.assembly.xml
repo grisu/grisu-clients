@@ -1,0 +1,29 @@
+<assembly>
+	<id>grisu-client-swing</id>
+	<formats>
+<!--				<format>dir</format>-->
+		<!--		<format>zip</format>-->
+		<!--		<format>tar.gz</format>-->
+		<format>jar</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<moduleSets>
+		<moduleSet>
+			<includes>
+				<include>org.vpac.grisu:grisu-client-swing</include>
+				<include>org.vpac.grisu:grisu-core</include>
+<!--				<include>org.vpac.grisu:grisu-client-xfire</include>-->
+			</includes>
+			<binaries>
+<!--				<outputDirectory>modules/${artifactId}</outputDirectory>-->
+				<unpack>true</unpack>
+							<excludes>
+				<exclude>junit:junit</exclude>
+				<exclude>bouncycastle:bcprov-jdk15</exclude>
+				<exclude>external.bouncycastle:bcprov-jdk15</exclude>
+			</excludes>
+			</binaries>
+		</moduleSet>
+</moduleSets>
+
+</assembly>
