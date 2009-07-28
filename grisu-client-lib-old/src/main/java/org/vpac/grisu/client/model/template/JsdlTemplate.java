@@ -299,10 +299,10 @@ public class JsdlTemplate implements TemplateNodeListener {
 		this.currentFqan = fqan;
 	    
 //		if ( newThread ) {
-//		if (submissionThread == null) {
-//	        submissionThread = new Thread() {
-//	          public void run() {
-//	        	  try {
+		if (submissionThread == null) {
+	        submissionThread = new Thread() {
+	          public void run() {
+	        	  try {
 
 					submit();
 
@@ -310,19 +310,19 @@ public class JsdlTemplate implements TemplateNodeListener {
 
 //					em.getJobManagement().refreshJobList();
 //					resetStatus();
-//				} catch (JobSubmissionException e) {
+				} catch (JobSubmissionException e) {
+					setSubmissionErrorStatus(e);
 //					setSubmissionErrorStatus(e);
-////					setSubmissionErrorStatus(e);
-//					
-//					return;
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//	          }
-//	        };
-//			submissionThread.start();
+					
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+	          }
+	        };
+			submissionThread.start();
 
-//	    } 
+	    } 
 //		} else {
 //			submit();
 //		}
