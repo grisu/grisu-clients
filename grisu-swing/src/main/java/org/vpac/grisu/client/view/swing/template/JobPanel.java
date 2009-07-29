@@ -152,6 +152,7 @@ public class JobPanel extends JPanel implements JsdlTemplateListener {
 		}
 		}
 	}
+	
 	/**
 	 * @return
 	 */

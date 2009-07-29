@@ -165,7 +165,7 @@ public class JobManager {
 		refreshJobs(jobnames);
 	}
 	
-	public void cleanJob(GrisuJobMonitoringObjectImpl job) throws RemoteFileSystemException, NoSuchJobException {
+	public void cleanJob(GrisuJobMonitoringObject job) throws RemoteFileSystemException, NoSuchJobException {
 		List<GrisuJobMonitoringObject> tempList = new LinkedList<GrisuJobMonitoringObject>();
 		tempList.add(job);
 		cleanJobs(tempList);

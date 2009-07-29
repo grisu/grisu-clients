@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import org.vpac.grisu.client.control.EnvironmentManager;
 import org.vpac.grisu.client.control.ServiceInterfaceFactoryOld;
 import org.vpac.grisu.client.control.exceptions.JobSubmissionException;
+import org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObject;
 import org.vpac.grisu.client.model.template.modules.TemplateModule;
 import org.vpac.grisu.client.model.template.modules.TemplateModuleFactory;
 import org.vpac.grisu.client.model.template.modules.TemplateModuleProcessingException;
@@ -543,10 +544,17 @@ public class JsdlTemplate implements TemplateNodeListener {
 
 				try {
 					myLogger.debug("Deleting directory: "+currentRemoteJobDirectory);
-					em.getServiceInterface().deleteFile(currentRemoteJobDirectory);
+					try {
+						em.getServiceInterface().deleteFile(currentRemoteJobDirectory);
+					} catch (Exception e) {
+						myLogger.warn("Couldn't delete jobdirectory of half-submitted job: "+this.currentJobname);
+					}
 					myLogger.debug("Clearing newly created job: "+this.currentJobname);
 					em.getServiceInterface().kill(this.currentJobname, true);
-
+					
+//					GrisuJobMonitoringObject job = em.getJobManager().getJob(currentJobname);
+					
+//					em.getJobManager().cleanJob(job);
 				} catch (Exception e) {
 					myLogger.warn("Couldn't clear half-submitted job: "+this.currentJobname);
 				}
