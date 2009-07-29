@@ -1,21 +1,199 @@
-<?xml version="1.0" encoding="UTF-8"?><project>
-  <parent>
-    <artifactId>grisu-clients</artifactId>
-    <groupId>org.vpac.grisu</groupId>
-    <version>0.3-SNAPSHOT</version>
-  </parent>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <!--
+    GWT-Maven archetype generated POM
+  -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.vpac.grisu</groupId>
   <artifactId>grisu-client-gwt</artifactId>
-  <name>grisu-client-gwt</name>
+  <packaging>war</packaging>
   <version>0.3-SNAPSHOT</version>
-  <url>http://maven.apache.org</url>
+  <name>grisu-client-gwt</name>
+  	<properties>
+		<!-- convenience to define GWT version in one place -->
+		<gwt.version>1.6.4</gwt.version>
+		<!--  tell the compiler we can use 1.5 -->
+		<maven.compiler.source>1.5</maven.compiler.source>
+		<maven.compiler.target>1.5</maven.compiler.target>
+		<!-- define a transient output directory for gwt -->
+		<gwt.output.directory>${basedir}/target/gwt</gwt.output.directory>
+		<!-- the value of the rename-to attribute in your GWT module configuration -->
+		<gwt.module.alias>Application</gwt.module.alias>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>ARCS</id>
+			<url>http://code.arcs.org.au/nexus/content/groups/public</url>
+		</repository>
+		<repository>
+			<id>ARCS Snapshots</id>
+			<url>http://code.arcs.org.au/nexus/content/groups/public-snapshots</url>
+		</repository>
+	</repositories>
+
   <dependencies>
+
+      <!--  GWT dependencies (from central repo) -->
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-servlet</artifactId>
+      <version>${gwt.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>${gwt.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- test -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.4</version>
       <scope>test</scope>
     </dependency>
+<!--    <dependency>-->
+<!--    	<groupId>org.vpac.grisu</groupId>-->
+<!--    	<artifactId>grisu-client</artifactId>-->
+<!--    	<version>0.3-SNAPSHOT</version>-->
+<!--    	<scope>compile</scope>-->
+<!--    </dependency>-->
+    <dependency>
+    	<groupId>org.vpac.grisu</groupId>
+    	<artifactId>grisu-client</artifactId>
+    	<version>0.3-SNAPSHOT</version>
+    	<scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.vpac.grisu</groupId>
+    	<artifactId>grisu-core</artifactId>
+    	<version>0.3-SNAPSHOT</version>
+    	<scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>external.grisu-client-web</groupId>
+    	<artifactId>gwtext</artifactId>
+    	<version>2.0.5</version>
+    </dependency>
+    <dependency>
+    	<groupId>external.grisu-client-web</groupId>
+    	<artifactId>dozer</artifactId>
+    	<version>5.0</version>
+    </dependency>
+        <dependency>
+			<groupId>au.org.arcs.infosystems</groupId>
+			<artifactId>matchmaker</artifactId>
+			<version>0.4-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
   </dependencies>
+
+  <description>A web client for grisu. It uses a local backend to access the grid and gwt to render it's web interface.</description>
+  <build>
+    <outputDirectory>${gwt.output.directory}/WEB-INF/classes</outputDirectory>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.1-SNAPSHOT</version>
+        <executions>
+        					<execution>
+						<phase>process-classes</phase>
+						<configuration>
+								<generateDirectory>${gwt.output.directory}/${gwt.module.alias}</generateDirectory>
+								<webappDirectory>${gwt.output.directory}</webappDirectory>
+<!--							<output>${gwt.output.directory}</output>-->
+							<logLevel>INFO</logLevel>
+						</configuration>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+					</executions>
+      </plugin>
+      
+      			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.0.2</version>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+					<encoding>UTF-8</encoding>
+		            <!-- Fix for GWT issue #3439 -->
+					<excludes>
+						<exclude>javax/servlet/**</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			
+			
+						<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.3</version>
+				<!-- set encoding to something not platform dependent -->
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			
+						<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.2</version>
+				<executions>
+					<!-- This execution copies the war folder to the gwt transient output directory -->
+					<execution>
+						<id>war-folder-creation</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<copy todir="${gwt.output.directory}">
+									<fileset dir="${basedir}/src/main/webapp" />
+								</copy>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+						<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<!-- Include GWT compiler output in the war -->
+				<configuration>
+					<webResources>
+						<resource>
+		              		<!-- this is relative to the pom.xml directory, it's the GWT compiler output -->
+							<directory>${gwt.output.directory}/${gwt.module.alias}</directory>
+							<!-- override the destination directory (WEB-INF/classes) for this resource -->
+							<targetPath>${gwt.module.alias}</targetPath>
+						</resource>
+					</webResources>
+				</configuration>
+			</plugin>
+
+    </plugins>
+  </build>
+<!--  <repositories>-->
+<!--  	<repository>-->
+<!--  		<id>vpac</id>-->
+<!--  		<url>http://hudson.vpac.org/maven_repository</url>-->
+<!--  	</repository>-->
+<!--  </repositories>-->
+<!--  -->
+  	<pluginRepositories>
+		<pluginRepository>
+			<id>Codehaus Mojo Snapshot</id>
+			<url>http://snapshots.repository.codehaus.org/</url>
+		</pluginRepository>
+	</pluginRepositories>
+
 </project>
