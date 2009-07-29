@@ -203,7 +203,7 @@ public class FileListPanel extends Panel implements GridCellListener,
 						mountPointCache.put(mp.getSite(), tempSet);
 					}
 					tempSet.add(mp);
-					mountPointMap.put(mp.getMountpointName(), mp);
+					mountPointMap.put(mp.getAlias(), mp);
 					
 				}
 

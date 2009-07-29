@@ -22,10 +22,10 @@ public class GwtMountPointWrapper implements IsSerializable {
 	public void setFqan(String fqan) {
 		this.fqan = fqan;
 	}
-	public String getMountpointName() {
+	public String getAlias() {
 		return mountpoint;
 	}
-	public void setMountpointName(String mountpoint) {
+	public void setAlias(String mountpoint) {
 		this.mountpoint = mountpoint;
 	}
 	public String getRootUrl() {
@@ -42,7 +42,7 @@ public class GwtMountPointWrapper implements IsSerializable {
 	}
 	
 	public String toString() {
-		return getMountpointName();
+		return getAlias();
 	}
 	
 }

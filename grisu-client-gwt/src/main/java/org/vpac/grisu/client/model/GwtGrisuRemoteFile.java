@@ -55,7 +55,7 @@ public class GwtGrisuRemoteFile implements IsSerializable {
 	
 	public GwtGrisuRemoteFile(GwtMountPointWrapper gwtMountPointWrapper) {
 	
-		this.name = gwtMountPointWrapper.getMountpointName();
+		this.name = gwtMountPointWrapper.getAlias();
 		this.path = gwtMountPointWrapper.getRootUrl();
 		this.isFolder = true;
 		this.size = -1;
