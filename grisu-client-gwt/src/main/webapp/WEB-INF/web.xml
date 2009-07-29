@@ -1,0 +1,48 @@
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+	<display-name>GWT-Maven-Archetype</display-name>	
+	
+   <servlet>
+
+      <servlet-name>GwtServiceInterfaceWrapper</servlet-name>
+
+      <servlet-class>org.vpac.grisu.server.GwtServiceInterfaceWrapperImpl</servlet-class>
+      </servlet>
+   <servlet>
+   	<servlet-name>Login</servlet-name>
+   	<display-name>Login</display-name>
+   	<description></description>
+   	<servlet-class>
+   	org.vpac.grisu.web.login.Login</servlet-class>
+   </servlet>
+   <servlet>
+   	<servlet-name>CertLogin</servlet-name>
+   	<display-name>CertLogin</display-name>
+   	<description></description>
+   	<servlet-class>
+   	org.vpac.grisu.web.login.CertLogin</servlet-class>
+   </servlet>
+
+      <servlet-mapping>
+
+         <servlet-name>GwtServiceInterfaceWrapper</servlet-name>
+
+         <url-pattern>/Application/serviceInterface</url-pattern>
+
+      </servlet-mapping>
+      <servlet-mapping>
+      	<servlet-name>Login</servlet-name>
+      	<url-pattern>/Login</url-pattern>
+      </servlet-mapping>
+      <servlet-mapping>
+      	<servlet-name>CertLogin</servlet-name>
+      	<url-pattern>/CertLogin</url-pattern>
+      </servlet-mapping>
+	
+	<welcome-file-list>
+		<welcome-file>Application.html</welcome-file>
+	</welcome-file-list>
+</web-app>
