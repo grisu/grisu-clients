@@ -16,7 +16,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import au.org.arcs.mds.JSDLNamespaceContext;
+import au.org.arcs.jcommons.constants.JSDLNamespaceContext;
 
 /**
  * Substitutes a specified string with the template with the value of this element.

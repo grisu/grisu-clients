@@ -26,7 +26,7 @@ import org.vpac.grisu.frontend.control.login.LoginParams;
 import org.vpac.grisu.utils.SeveralXMLHelpers;
 import org.w3c.dom.Document;
 
-import au.org.arcs.mds.JsdlHelpers;
+import au.org.arcs.jcommons.utils.JsdlHelpers;
 
 
 /**

@@ -51,9 +51,9 @@ import org.vpac.grisu.utils.SeveralXMLHelpers;
 
 import au.org.arcs.grid.grisu.matchmaker.MatchMakerImpl;
 import au.org.arcs.grid.sched.MatchMaker;
-import au.org.arcs.mds.GridResource;
-import au.org.arcs.mds.InformationManager;
-import au.org.arcs.mds.JobSubmissionProperty;
+import au.org.arcs.jcommons.constants.JobSubmissionProperty;
+import au.org.arcs.jcommons.interfaces.GridResource;
+import au.org.arcs.jcommons.interfaces.InformationManager;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 

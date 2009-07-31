@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 import org.vpac.grisu.client.control.EnvironmentManager;
 import org.vpac.grisu.client.control.ServiceInterfaceFactoryOld;
 import org.vpac.grisu.client.control.exceptions.JobSubmissionException;
-import org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObject;
 import org.vpac.grisu.client.model.template.modules.TemplateModule;
 import org.vpac.grisu.client.model.template.modules.TemplateModuleFactory;
 import org.vpac.grisu.client.model.template.modules.TemplateModuleProcessingException;
@@ -45,9 +44,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import au.org.arcs.mds.Constants;
-import au.org.arcs.mds.JSDLNamespaceContext;
-import au.org.arcs.mds.JsdlHelpers;
+import au.org.arcs.jcommons.constants.Constants;
+import au.org.arcs.jcommons.constants.JSDLNamespaceContext;
+import au.org.arcs.jcommons.utils.JsdlHelpers;
 
 /**
  * A JsdlTemplate represents the logic that is behind a template file that can

@@ -19,7 +19,7 @@ import org.vpac.grisu.client.model.template.TemplateHelperUtils;
 import org.vpac.grisu.client.model.template.nodes.TemplateNode;
 import org.w3c.dom.NodeList;
 
-import au.org.arcs.mds.JSDLNamespaceContext;
+import au.org.arcs.jcommons.constants.JSDLNamespaceContext;
 
 
 public class TemplateModuleFactory {

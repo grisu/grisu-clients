@@ -9,8 +9,8 @@ import org.apache.log4j.Logger;
 import org.vpac.grisu.client.control.EnvironmentManager;
 import org.vpac.grisu.model.MountPoint;
 
-import au.org.arcs.mds.Constants;
-import au.org.arcs.mds.SubmissionLocationHelpers;
+import au.org.arcs.jcommons.constants.Constants;
+import au.org.arcs.jcommons.utils.SubmissionLocationHelpers;
 
 /**
  * Just a wrapper object around a String.

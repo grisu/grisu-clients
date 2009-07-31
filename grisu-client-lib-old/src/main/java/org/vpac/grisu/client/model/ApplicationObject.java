@@ -18,7 +18,7 @@ import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
 import org.vpac.grisu.model.FqanEvent;
 import org.vpac.grisu.model.FqanListener;
 
-import au.org.arcs.mds.Constants;
+import au.org.arcs.jcommons.constants.Constants;
 
 public class ApplicationObject implements SubmissionObject, FqanListener,
 		MountPointsListener {

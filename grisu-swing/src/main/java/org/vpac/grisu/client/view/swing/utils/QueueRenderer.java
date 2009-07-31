@@ -5,7 +5,7 @@ import java.awt.Component;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-import au.org.arcs.mds.SubmissionLocationHelpers;
+import au.org.arcs.jcommons.utils.SubmissionLocationHelpers;
 
 public class QueueRenderer implements ListCellRenderer {
 	

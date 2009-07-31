@@ -17,7 +17,7 @@ import org.vpac.grisu.client.control.EnvironmentManager;
 import org.vpac.grisu.control.JobConstants;
 import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
 
-import au.org.arcs.mds.Constants;
+import au.org.arcs.jcommons.constants.Constants;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.CellConstraints;

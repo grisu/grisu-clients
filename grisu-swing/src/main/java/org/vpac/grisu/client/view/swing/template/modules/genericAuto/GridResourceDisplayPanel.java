@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 
 import org.vpac.grisu.client.view.swing.template.panels.GridResourceSuggestionPanel;
 
-import au.org.arcs.mds.GridResource;
+import au.org.arcs.jcommons.interfaces.GridResource;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.CellConstraints;

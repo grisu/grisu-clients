@@ -10,7 +10,7 @@ import org.vpac.grisu.client.control.EnvironmentManager;
 import org.vpac.grisu.control.JobConstants;
 import org.vpac.grisu.model.MountPoint;
 
-import au.org.arcs.mds.Constants;
+import au.org.arcs.jcommons.constants.Constants;
 
 public class MountPointsTableModel extends AbstractTableModel {
 	

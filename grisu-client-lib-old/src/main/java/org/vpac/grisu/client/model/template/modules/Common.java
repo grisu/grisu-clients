@@ -28,7 +28,7 @@ import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
 import org.vpac.grisu.model.FqanEvent;
 import org.vpac.grisu.model.FqanListener;
 
-import au.org.arcs.mds.JsdlHelpers;
+import au.org.arcs.jcommons.utils.JsdlHelpers;
 
 /**
  * @author Markus Binsteiner

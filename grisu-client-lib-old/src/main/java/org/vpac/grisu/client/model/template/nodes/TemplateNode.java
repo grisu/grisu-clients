@@ -20,7 +20,7 @@ import org.vpac.grisu.client.model.template.validators.ValidatorNotCreatedExcept
 import org.vpac.grisu.control.JobConstants;
 import org.w3c.dom.Element;
 
-import au.org.arcs.mds.JsdlHelpers;
+import au.org.arcs.jcommons.utils.JsdlHelpers;
 
 public class TemplateNode {
 

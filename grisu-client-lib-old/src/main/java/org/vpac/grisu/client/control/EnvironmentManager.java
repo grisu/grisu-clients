@@ -39,7 +39,7 @@ import org.vpac.helpDesk.model.PersonException;
 import org.vpac.historyRepeater.DummyHistoryManager;
 import org.vpac.historyRepeater.HistoryManager;
 
-import au.org.arcs.mds.Constants;
+import au.org.arcs.jcommons.constants.Constants;
 
 /**
  * This class manages the important properties of the user like MountPoints &

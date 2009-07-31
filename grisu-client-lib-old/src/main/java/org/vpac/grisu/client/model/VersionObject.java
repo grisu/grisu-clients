@@ -9,7 +9,7 @@ import java.util.TreeSet;
 import org.vpac.grisu.client.control.exceptions.SubmissionLocationException;
 import org.vpac.grisu.control.JobConstants;
 
-import au.org.arcs.mds.Constants;
+import au.org.arcs.jcommons.constants.Constants;
 
 public class VersionObject implements Comparable<VersionObject>, SubmissionObject {
 

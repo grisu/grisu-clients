@@ -22,7 +22,7 @@ import org.vpac.grisu.settings.MyProxyServerParams;
 import org.vpac.grisu.utils.SeveralXMLHelpers;
 import org.w3c.dom.Document;
 
-import au.org.arcs.mds.JsdlHelpers;
+import au.org.arcs.jcommons.utils.JsdlHelpers;
 
 /**
  * This class manages all templates a user choose to use. There are 2 different kinds of 

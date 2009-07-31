@@ -9,7 +9,7 @@ import org.vpac.grisu.model.dto.DtoJobs;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import au.org.arcs.mds.Constants;
+import au.org.arcs.jcommons.constants.Constants;
 
 /**
  * This one gathers all information of a job and converts it into a xml

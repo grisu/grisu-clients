@@ -22,9 +22,9 @@ import org.vpac.grisu.model.MountPoint;
 import org.vpac.grisu.model.UserEnvironmentManager;
 import org.vpac.grisu.model.info.UserApplicationInformation;
 
-import au.org.arcs.mds.GridResource;
-import au.org.arcs.mds.JobSubmissionProperty;
-import au.org.arcs.mds.SubmissionLocationHelpers;
+import au.org.arcs.jcommons.constants.JobSubmissionProperty;
+import au.org.arcs.jcommons.interfaces.GridResource;
+import au.org.arcs.jcommons.utils.SubmissionLocationHelpers;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.CellConstraints;
