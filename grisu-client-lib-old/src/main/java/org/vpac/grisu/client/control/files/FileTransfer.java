@@ -391,6 +391,8 @@ public class FileTransfer {
 					.getURI().toString()
 					+ "/" + sourceFile.getName(), false, true);
 		} catch (Exception e) {
+			e.printStackTrace();
+			e.getCause().printStackTrace();
 			throw new FileSystemException("Could not copy file: "
 					+ sourceFile.getURI().toString() + " to: "
 					+ targetDirectory.getURI().toString());
