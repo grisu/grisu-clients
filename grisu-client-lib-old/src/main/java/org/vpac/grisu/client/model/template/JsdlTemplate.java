@@ -419,7 +419,7 @@ public class JsdlTemplate implements TemplateNodeListener {
 		currentJobname = JsdlHelpers.getJobname(template);
 		try {
 			currentJobname = em.getServiceInterface().createJobUsingJsdl(SeveralXMLHelpers.toString(getTemplateDocument()),
-					this.currentFqan, ServiceInterface.FORCE_NAME_METHOD);
+					this.currentFqan, Constants.FORCE_NAME_METHOD);
 		} catch (RuntimeException e1) {
 
 			throw new JobSubmissionException("Could not create job: "
