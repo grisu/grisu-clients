@@ -138,7 +138,7 @@ public class ServiceInterfaceFactoryOld {
 						username, password, myProxyServer, myProxyPort,
 						otherOptions);
 			} catch (ServiceInterfaceException e) {
-				e.printStackTrace();
+//				e.printStackTrace();
 				myLogger.debug("Couldn't connect to url " + interfaceUrl
 						+ " using serviceInterfaceCreator " + className + ": "
 						+ e.getLocalizedMessage());
