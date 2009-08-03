@@ -733,7 +733,12 @@ public class FileTransfer {
 		long lastModified = -1;
 		try {
 			lastModified = em.getServiceInterface().lastModified(remoteFile);
-			source = em.getServiceInterface().download(remoteFile).getDataSource();
+			DataHandler handler = em.getServiceInterface().download(remoteFile);
+			if ( handler == null ) {
+				myLogger.error("DataHandler is null.");
+				throw new RuntimeException("Datahandler is null. Can't download file:"+remoteFile);
+			}
+			source = handler.getDataSource();
 		} catch (Exception e) {
 			myLogger.error("Could not download file: " + remoteFile);
 			throw e;

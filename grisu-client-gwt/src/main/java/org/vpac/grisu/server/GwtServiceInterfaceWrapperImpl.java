@@ -172,7 +172,7 @@ public class GwtServiceInterfaceWrapperImpl extends RemoteServiceServlet
 					.debug("Tried to update local xml cache but the path is a file, so I'm doing nothing.");
 			return null;
 		} else {
-			int resultSize = remote_root.getChildren().size();
+			int resultSize = remote_root.listAllChildren().size();
 			List<GwtGrisuRemoteFile> children = new LinkedList<GwtGrisuRemoteFile>();
 			
 			for ( DtoFolder childFolder : remote_root.getChildrenFolders() ) {
@@ -508,7 +508,7 @@ public class GwtServiceInterfaceWrapperImpl extends RemoteServiceServlet
 			DtoJob result = getServiceInterface()
 					.getAllJobProperties(jobname);
 			HashMap<String, String> tempMap = new HashMap<String, String>(
-					result.getPropertiesAsMap());
+					result.propertiesAsMap());
 			return tempMap;
 		} catch (NoSuchJobException e) {
 			// TODO Auto-generated catch block

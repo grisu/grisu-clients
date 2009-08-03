@@ -31,7 +31,9 @@ public class ServiceInterfaceFactoryOld {
 			"LocalServiceInterfaceCreator", 
 			"DummyServiceInterfaceCreator",
 			"JaxWsServiceInterfaceCreator",
-			"XfireServiceInterfaceCreator"
+			"XfireServiceInterfaceCreator",
+			"XFireServiceInterfaceCreator", // old xfire client
+			
 	};
 
 	/**

@@ -87,7 +87,7 @@ public class VersionObject implements Comparable<VersionObject>, SubmissionObjec
 		if (submissionLocationStrings == null) {
 			submissionLocationStrings = application.getServiceInterface()
 					.getSubmissionLocationsForApplicationAndVersion(
-							application.getCurrentApplicationName(), version).getSubmissionLocationStrings();
+							application.getCurrentApplicationName(), version).asSubmissionLocationStrings();
 		}
 		return submissionLocationStrings;
 	}

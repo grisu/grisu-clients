@@ -65,28 +65,28 @@ public final class JobsToXMLConverter {
 		Element jobElement = doc.createElement("job");
 
 		Element jobname = doc.createElement("jobname");
-		jobname.setTextContent(job.getPropertiesAsMap().get(Constants.JOBNAME_KEY));
+		jobname.setTextContent(job.propertiesAsMap().get(Constants.JOBNAME_KEY));
 		jobElement.appendChild(jobname);
 
 		Element status = doc.createElement("status");
 		status.setTextContent(new Integer(job.getStatus()).toString());
 		jobElement.appendChild(status);
 
-		String host = job.getPropertiesAsMap().get(Constants.SUBMISSION_HOST_KEY);
+		String host = job.propertiesAsMap().get(Constants.SUBMISSION_HOST_KEY);
 		if (host != null && !"".equals(host)) {
 			Element hostElement = doc.createElement("host");
 			hostElement.setTextContent(host);
 			jobElement.appendChild(hostElement);
 		}
 
-		String fqan = job.getPropertiesAsMap().get(Constants.FQAN_KEY);
+		String fqan = job.propertiesAsMap().get(Constants.FQAN_KEY);
 		if (fqan != null && !"".equals(fqan)) {
 			Element fqanElement = doc.createElement("fqan");
 			fqanElement.setTextContent(fqan);
 			jobElement.appendChild(fqanElement);
 		}
 
-		String submissionTime = job.getPropertiesAsMap().get(Constants.SUBMISSION_TIME_KEY);
+		String submissionTime = job.propertiesAsMap().get(Constants.SUBMISSION_TIME_KEY);
 		if (submissionTime != null && !"".equals(submissionTime)) {
 			Element submissionTimeElement = doc.createElement("submissionTime");
 			submissionTimeElement.setTextContent(submissionTime);

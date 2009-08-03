@@ -74,7 +74,7 @@ public class DtoFolderToXmlConverter {
 
 		try {
 			myLogger.debug("Accessing folder: " + parentFolder);
-			filesAndDirs = parent.getChildren();
+			filesAndDirs = parent.listAllChildren();
 		} catch (FileSystemException e) {
 			// TODO improve that
 			e.printStackTrace();
