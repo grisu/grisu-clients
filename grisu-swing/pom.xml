@@ -12,7 +12,7 @@
 	<artifactId>grisu-client-swing</artifactId>
 	<name>grisu-client-swing</name>
 	<version>0.3-SNAPSHOT</version>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>com.jgoodies</groupId>
@@ -25,32 +25,32 @@
 			<artifactId>swingx</artifactId>
 			<version>0.9.5-2</version>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.vpac.grisu</groupId>-->
-<!--			<artifactId>grisu-local</artifactId>-->
-<!--			<version>0.3-SNAPSHOT</version>-->
-<!--			<scope>compile</scope>-->
-<!--		</dependency>-->
+		<!--		<dependency>-->
+		<!--			<groupId>org.vpac.grisu</groupId>-->
+		<!--			<artifactId>grisu-local</artifactId>-->
+		<!--			<version>0.3-SNAPSHOT</version>-->
+		<!--			<scope>compile</scope>-->
+		<!--		</dependency>-->
 		<dependency>
 			<groupId>org.vpac.grisu</groupId>
 			<artifactId>grisu-client-lib-old</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
 
-<!--		<dependency>-->
-<!--			<groupId>org.vpac.grisu</groupId>-->
-<!--			<artifactId>grisu-client-xfire</artifactId>-->
-<!--			<version>0.3-SNAPSHOT</version>-->
-<!--			<scope>compile</scope>-->
-<!--		</dependency>-->
-		
+		<!--		<dependency>-->
+		<!--			<groupId>org.vpac.grisu</groupId>-->
+		<!--			<artifactId>grisu-client-xfire</artifactId>-->
+		<!--			<version>0.3-SNAPSHOT</version>-->
+		<!--			<scope>compile</scope>-->
+		<!--		</dependency>-->
+
 		<dependency>
 			<groupId>org.vpac.grisu</groupId>
 			<artifactId>xfire-frontend</artifactId>
 			<version>0.3-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
-		
+
 	</dependencies>
 
 	<build>
@@ -62,6 +62,29 @@
 					<source>1.5</source>
 					<target>1.5</target>
 				</configuration>
+			</plugin>
+			
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+
+					<descriptors>
+						<descriptor>grisu-swing-client.assembly.xml</descriptor>
+					</descriptors>
+					<finalName>grisu</finalName>
+					<archive>
+
+						<index>true</index>
+						<manifest>
+							<mainClass>org.vpac.grisu.client.view.swing.mainPanel.Grisu</mainClass>
+						</manifest>
+						<manifestEntries>
+							<Class-Path>bcprov.jar bcprov-jdk15-140.jar	grisu-local-backend.jar</Class-Path>
+						</manifestEntries>
+					</archive>
+
+				</configuration>
+
 			</plugin>
 		</plugins>
 	</build>

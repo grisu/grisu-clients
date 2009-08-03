@@ -48,27 +48,27 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-
-					<descriptors>
-						<descriptor>grisu-client-swing.assembly.xml</descriptor>
-						<!--						<descriptor>gricli.assembly.xml</descriptor>-->
-						<!--						<descriptor>grisu-local-backend.assembly.xml</descriptor>-->
-						<!--						<descriptor>grisu-client-batch.assembly.xml</descriptor>-->
-						<!--						<descriptor>grisu-client-slim.assembly.xml</descriptor>-->
-					</descriptors>
-
-					<archive>
-						<index>true</index>
-						<manifest>
-							<addClasspath>true</addClasspath>
-						</manifest>
-					</archive>
-
-				</configuration>
-			</plugin>
+<!--			<plugin>-->
+<!--				<artifactId>maven-assembly-plugin</artifactId>-->
+<!--				<configuration>-->
+<!---->
+<!--					<descriptors>-->
+<!--						<descriptor>grisu-client-swing.assembly.xml</descriptor>-->
+<!--												<descriptor>gricli.assembly.xml</descriptor>-->
+<!--												<descriptor>grisu-local-backend.assembly.xml</descriptor>-->
+<!--												<descriptor>grisu-client-batch.assembly.xml</descriptor>-->
+<!--												<descriptor>grisu-client-slim.assembly.xml</descriptor>-->
+<!--					</descriptors>-->
+<!---->
+<!--					<archive>-->
+<!--						<index>true</index>-->
+<!--						<manifest>-->
+<!--							<addClasspath>true</addClasspath>-->
+<!--						</manifest>-->
+<!--					</archive>-->
+<!---->
+<!--				</configuration>-->
+<!--			</plugin>-->
 		</plugins>
 	</build>
 </project>
