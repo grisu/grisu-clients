@@ -27,6 +27,8 @@ import org.vpac.grisu.model.FqanListener;
 import org.vpac.grisu.model.GrisuRegistry;
 import org.vpac.grisu.model.info.UserApplicationInformation;
 
+import au.org.arcs.jcommons.constants.Constants;
+
 public class Version extends JPanel implements TemplateNodePanel,
 		ActionListener, ValueListener, FqanListener {
 
@@ -291,20 +293,23 @@ public class Version extends JPanel implements TemplateNodePanel,
 		case ANY_VERSION_MODE:
 			switchToAnyVersionMode();
 			registry.getHistoryManager().addHistoryEntry(TemplateTagConstants.getGlobalLastVersionModeKey(infoObject.getApplicationName()), ANY_MODE_STRING, new Date());
+			fireVersionChanged(Constants.NO_VERSION_INDICATOR_STRING);
 			break;
 		case DEFAULT_VERSION_MODE:
 			switchToDefaultVersionMode();
 			registry.getHistoryManager().addHistoryEntry(TemplateTagConstants.getGlobalLastVersionModeKey(infoObject.getApplicationName()), DEFAULT_MODE_STRING, new Date());
+			fireVersionChanged((String)(versionModel.getSelectedItem()));
 			break;
 		case EXACT_VERSION_MODE:
 			switchToExactVersionMode();
 			registry.getHistoryManager().addHistoryEntry(TemplateTagConstants.getGlobalLastVersionModeKey(infoObject.getApplicationName()), EXACT_MODE_STRING, new Date());
+			fireVersionChanged((String)(versionModel.getSelectedItem()));
 			break;
 		default:
 			myLogger
 					.error("Can't switch to mode: " + mode + ". Not supported.");
 		}
-		fireVersionChanged((String)(versionModel.getSelectedItem()));
+		
 	}
 
 	private void switchToExactVersionMode() {
@@ -369,7 +374,11 @@ public class Version extends JPanel implements TemplateNodePanel,
 
 	public String getExternalSetValue() {
 
-		return (String)(versionModel.getSelectedItem());
+		if ( getAnyRadioButton().isSelected() ) {
+			return Constants.NO_VERSION_INDICATOR_STRING;
+		} else {
+			return (String)(versionModel.getSelectedItem());
+		}
 		
 	}
 

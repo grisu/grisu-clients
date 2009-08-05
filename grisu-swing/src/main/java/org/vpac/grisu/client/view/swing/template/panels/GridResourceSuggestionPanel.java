@@ -110,7 +110,7 @@ public class GridResourceSuggestionPanel extends JPanel implements TemplateNodeP
 //		containerPanel.repaint();
 		
 		Map<JobSubmissionProperty, String> tempJobProperties = new HashMap<JobSubmissionProperty, String>();
-		tempJobProperties.put(JobSubmissionProperty.APPLICATIONNAME, newValue);
+		tempJobProperties.put(JobSubmissionProperty.APPLICATIONVERSION, newValue);
 		currentBestGridResources = infoObject.getBestSubmissionLocations(tempJobProperties, registry.getUserEnvironmentManager().getCurrentFqan());
 		 
 		try {
@@ -123,7 +123,7 @@ public class GridResourceSuggestionPanel extends JPanel implements TemplateNodeP
 			String bestSubLoc = SubmissionLocationHelpers.createSubmissionLocationString(currentBestGridResources.get(0));
 			setStagingFS(bestSubLoc);
 			
-			int max = 5;
+			int max = 10;
 			
 			if ( currentBestGridResources.size() < 5 ) {
 				max = currentBestGridResources.size();
