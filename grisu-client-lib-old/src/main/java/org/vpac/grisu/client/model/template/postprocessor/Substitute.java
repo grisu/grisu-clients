@@ -39,7 +39,7 @@ public class Substitute extends ElementPostprocessor {
 	}
 	
 	public static final String BASENAME_KEY = "basename";
-	public static final String BASENAME_RELATIVE_TO_EXECUTION_HOST_FS_KEY = "basenameRelativeToExecutionHostFs";
+//	public static final String BASENAME_RELATIVE_TO_EXECUTION_HOST_FS_KEY = "basenameRelativeToExecutionHostFs";
 	public static final String PREFIX_KEY = "prefix";
 	public static final String BASENAMEPREFIX_KEY = "basenameprefix";
 	public static final String FILEEXTENSION_KEY = "basenamechangeextension";
@@ -137,17 +137,17 @@ public class Substitute extends ElementPostprocessor {
 			myLogger.debug("Calculated replacement for \""+replacement+"\" using method \""+config+"\": "+basename);
 			return basename;
 
-		} else if ( BASENAME_RELATIVE_TO_EXECUTION_HOST_FS_KEY.equals(config) ) {
-			
-			String basename = basename(replacement);
-			String directory = template.getCurrentRelativeJobDirectory();
-			
-			if ( directory.endsWith("/") ) {
-				return directory+basename;
-			} else {
-				return directory+"/"+basename;
-			}
-			
+//		} else if ( BASENAME_RELATIVE_TO_EXECUTION_HOST_FS_KEY.equals(cobnfig) ) {
+//			
+//			String basename = basename(replacement);
+//			String directory = template.getCurrentRelativeJobDirectory();
+//			
+//			if ( directory.endsWith("/") ) {
+//				return directory+basename;
+//			} else {
+//				return directory+"/"+basename;
+//			}
+//			
 		} else if ( config.startsWith(PREFIX_KEY) ) {
 			
 			int start = config.indexOf("(");

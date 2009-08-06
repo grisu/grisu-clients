@@ -1,16 +1,10 @@
 package org.vpac.grisu.client.model.template.modules;
 
-import java.util.Enumeration;
 import java.util.Map;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.vpac.grisu.client.TemplateTagConstants;
-import org.vpac.grisu.client.control.EnvironmentManager;
-import org.vpac.grisu.client.control.eventStuff.SubmissionObjectListener;
 import org.vpac.grisu.client.model.SubmissionObject;
 import org.vpac.grisu.client.model.template.JsdlTemplate;
-import org.vpac.grisu.client.model.template.nodes.DefaultTemplateNodeValueSetter;
 import org.vpac.grisu.client.model.template.nodes.TemplateNode;
 
 /**

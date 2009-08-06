@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -111,7 +112,7 @@ public class GridResourceSuggestionPanel extends JPanel implements TemplateNodeP
 		
 		Map<JobSubmissionProperty, String> tempJobProperties = new HashMap<JobSubmissionProperty, String>();
 		tempJobProperties.put(JobSubmissionProperty.APPLICATIONVERSION, newValue);
-		currentBestGridResources = infoObject.getBestSubmissionLocations(tempJobProperties, registry.getUserEnvironmentManager().getCurrentFqan());
+		currentBestGridResources = new LinkedList(infoObject.getBestSubmissionLocations(tempJobProperties, registry.getUserEnvironmentManager().getCurrentFqan()));
 		 
 		try {
 			

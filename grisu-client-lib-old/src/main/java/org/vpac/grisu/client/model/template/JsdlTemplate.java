@@ -109,11 +109,11 @@ public class JsdlTemplate implements TemplateNodeListener {
 	private List<ElementPostprocessor> elementPostprocessors = null;
 
 	private String currentJobname = null;
-	private String currentSubmissionSite = null;
+//	private String currentSubmissionSite = null;
 	private String currentRemoteJobDirectory = null;
 	private String currentFqan = NO_VALID_FQAN;
-	private String currentExecutionHostFileSystem = null;
-	private String currentRelativeJobDirectory = null;
+//	private String currentExecutionHostFileSystem = null;
+//	private String currentRelativeJobDirectory = null;
 	private String currentSubmissionLocation = null;
 
 	private int jobCreationMethod = DEFAULT_JOBNAME_CREATION_METHOD;
@@ -600,9 +600,9 @@ public class JsdlTemplate implements TemplateNodeListener {
 	private void unsetSubmissionLocation() {
 
 		currentRemoteJobDirectory = null;
-		currentSubmissionSite = null;
-		currentExecutionHostFileSystem = null;
-		currentRelativeJobDirectory = null;
+//		currentSubmissionSite = null;
+//		currentExecutionHostFileSystem = null;
+//		currentRelativeJobDirectory = null;
 		currentSubmissionLocation = null;
 	}
 
@@ -630,11 +630,11 @@ public class JsdlTemplate implements TemplateNodeListener {
 				.debug("Setting submissionsite, submissionfqan and jobdirectory for template "
 						+ getApplicationName() + "...");
 
-		currentExecutionHostFileSystem = JsdlHelpers
-				.getUserExecutionHostFs(getTemplateDocument());
-		currentSubmissionSite = getEnvironmentManager().lookupSite(
-				EnvironmentManager.FILE_URL_TYPE,
-				currentExecutionHostFileSystem);
+//		currentExecutionHostFileSystem = JsdlHelpers
+//				.getUserExecutionHostFs(getTemplateDocument());
+//		currentSubmissionSite = getEnvironmentManager().lookupSite(
+//				EnvironmentManager.FILE_URL_TYPE,
+//				currentExecutionHostFileSystem);
 		
 		currentSubmissionLocation = JsdlHelpers.getCandidateHosts(getTemplateDocument())[0];
 		// because the backend doesn't know about NON_VO_FQAN, it uses null for non-vo
@@ -663,13 +663,13 @@ public class JsdlTemplate implements TemplateNodeListener {
 			throw new JobSubmissionException("Could not calculate remote job directory. Cancelling Job submission.", null);
 		
 
-		int i = 1;
-		if (currentExecutionHostFileSystem.endsWith("/"))
-			i = 2;
+//		int i = 1;
+//		if (currentExecutionHostFileSystem.endsWith("/"))
+//			i = 2;
 
-		currentRelativeJobDirectory = currentRemoteJobDirectory.substring(currentExecutionHostFileSystem.length() + i);
-		myLogger.debug("Current relative jobdir: "
-				+ currentRelativeJobDirectory);
+//		currentRelativeJobDirectory = currentRemoteJobDirectory.substring(currentExecutionHostFileSystem.length() + i);
+//		myLogger.debug("Current relative jobdir: "
+//				+ currentRelativeJobDirectory);
 		myLogger.debug("Successfully set.");
 
 	}
@@ -895,15 +895,15 @@ public class JsdlTemplate implements TemplateNodeListener {
 			this.jobCreationMethod = jobCreationMethod;
 	}
 
-	/**
-	 * Gets the submission site for this template.
-	 * 
-	 * @return the site if status > {@link #STATUS_VARIABLES_SUBSTITUTED}, else
-	 *         null
-	 */
-	public String getCurrentSubmissionSite() {
-		return currentSubmissionSite;
-	}
+//	/**
+//	 * Gets the submission site for this template.
+//	 * 
+//	 * @return the site if status > {@link #STATUS_VARIABLES_SUBSTITUTED}, else
+//	 *         null
+//	 */
+//	public String getCurrentSubmissionSite() {
+//		return currentSubmissionSite;
+//	}
 
 	/**
 	 * Gets the currently set job directory for this template.
@@ -925,30 +925,30 @@ public class JsdlTemplate implements TemplateNodeListener {
 		return currentFqan;
 	}
 
-	/**
-	 * Gets the currently set execution file system for this template.
-	 * 
-	 * @return the execution file system if status >
-	 *         {@link #STATUS_VARIABLES_SUBSTITUTED}, else null
-	 */
-	public String getCurrentExecutionHostFileSystem() {
-		return currentExecutionHostFileSystem;
-	}
+//	/**
+//	 * Gets the currently set execution file system for this template.
+//	 * 
+//	 * @return the execution file system if status >
+//	 *         {@link #STATUS_VARIABLES_SUBSTITUTED}, else null
+//	 */
+//	public String getCurrentExecutionHostFileSystem() {
+//		return currentExecutionHostFileSystem;
+//	}
 	
 	public String getCurrentSubmissionLocation() {
 		return currentSubmissionLocation;
 	}
 
-	/**
-	 * Gets the currently set relative job directory for this template (relative
-	 * to execution file system).
-	 * 
-	 * @return the relative job directory if status >=
-	 *         {@link #STATUS_POSTPROCESSORS_EXECUTED}-1, else null
-	 */
-	public String getCurrentRelativeJobDirectory() {
-		return currentRelativeJobDirectory;
-	}
+//	/**
+//	 * Gets the currently set relative job directory for this template (relative
+//	 * to execution file system).
+//	 * 
+//	 * @return the relative job directory if status >=
+//	 *         {@link #STATUS_POSTPROCESSORS_EXECUTED}-1, else null
+//	 */
+//	public String getCurrentRelativeJobDirectory() {
+//		return currentRelativeJobDirectory;
+//	}
 
 	/**
 	 * The current status of the submission of this JsdlTemplate. Only really
