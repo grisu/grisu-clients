@@ -36,6 +36,11 @@ public class GridResourceInfoPanel extends JPanel{
 	public void setGridResource(GridResource resource) {
 		this.resource = resource;
 		
+		if ( resource == null ) {
+			getTextPane().setText("");
+			return;
+		}
+		
 		StringBuffer text = new StringBuffer();
 		text.append("Free job slots: "+resource.getFreeJobSlots()+"\n");
 		text.append("Waiting jobs: "+resource.getWaitingJobs()+"\n");

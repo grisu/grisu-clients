@@ -520,6 +520,7 @@ public class FileManagerTransferHelpers {
 				FileHelpers.saveToDisk(source, newFile);
 				newFile.setLastModified(lastModified);
 			} catch (IOException e) {
+				e.printStackTrace();
 				myLogger.error("Could not save file: "
 						+ remoteFile.lastIndexOf("/") + 1);
 				throw e;

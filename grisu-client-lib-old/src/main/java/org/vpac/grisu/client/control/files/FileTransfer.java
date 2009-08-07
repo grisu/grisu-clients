@@ -686,6 +686,7 @@ public class FileTransfer {
 
 			source = em.getServiceInterface().download(remoteFile).getDataSource();
 		} catch (Exception e) {
+			e.printStackTrace();
 			myLogger.error("Could not download file: " + remoteFile);
 			throw e;
 		}
@@ -740,6 +741,7 @@ public class FileTransfer {
 			}
 			source = handler.getDataSource();
 		} catch (Exception e) {
+			e.printStackTrace();
 			myLogger.error("Could not download file: " + remoteFile);
 			throw e;
 		}
@@ -780,6 +782,7 @@ public class FileTransfer {
 				FileHelpers.saveToDisk(source, newFile);
 				newFile.setLastModified(lastModified);
 			} catch (IOException e) {
+				e.printStackTrace();
 				myLogger.error("Could not save file: "
 						+ remoteFile.lastIndexOf("/") + 1);
 				throw e;

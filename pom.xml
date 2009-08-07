@@ -20,6 +20,25 @@
 		</repository>
 	</repositories>
 
+	<pluginRepositories>
+		<pluginRepository>
+			<id>ARCS plugin</id>
+			<url>http://code.arcs.org.au/nexus/content/groups/public</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>ARCS plugin Snapshots</id>
+			<url>http://code.arcs.org.au/nexus/content/groups/public-snapshots</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
 	<distributionManagement>
 		<repository>
 			<id>arcs.release</id>
@@ -48,27 +67,33 @@
 
 	<build>
 		<plugins>
-<!--			<plugin>-->
-<!--				<artifactId>maven-assembly-plugin</artifactId>-->
-<!--				<configuration>-->
+			<!--			<plugin>-->
+			<!--				<artifactId>maven-assembly-plugin</artifactId>-->
+			<!--				<configuration>-->
 <!---->
-<!--					<descriptors>-->
-<!--						<descriptor>grisu-client-swing.assembly.xml</descriptor>-->
-<!--												<descriptor>gricli.assembly.xml</descriptor>-->
-<!--												<descriptor>grisu-local-backend.assembly.xml</descriptor>-->
-<!--												<descriptor>grisu-client-batch.assembly.xml</descriptor>-->
-<!--												<descriptor>grisu-client-slim.assembly.xml</descriptor>-->
-<!--					</descriptors>-->
+			<!--					<descriptors>-->
+			<!--						<descriptor>grisu-client-swing.assembly.xml</descriptor>-->
+			<!--												<descriptor>gricli.assembly.xml</descriptor>-->
+			<!--
+				<descriptor>grisu-local-backend.assembly.xml</descriptor>
+			-->
+			<!--
+				<descriptor>grisu-client-batch.assembly.xml</descriptor>
+			-->
+			<!--
+				<descriptor>grisu-client-slim.assembly.xml</descriptor>
+			-->
+			<!--					</descriptors>-->
 <!---->
-<!--					<archive>-->
-<!--						<index>true</index>-->
-<!--						<manifest>-->
-<!--							<addClasspath>true</addClasspath>-->
-<!--						</manifest>-->
-<!--					</archive>-->
+			<!--					<archive>-->
+			<!--						<index>true</index>-->
+			<!--						<manifest>-->
+			<!--							<addClasspath>true</addClasspath>-->
+			<!--						</manifest>-->
+			<!--					</archive>-->
 <!---->
-<!--				</configuration>-->
-<!--			</plugin>-->
+			<!--				</configuration>-->
+			<!--			</plugin>-->
 		</plugins>
 	</build>
 </project>

@@ -19,6 +19,7 @@ import org.vpac.grisu.model.FqanEvent;
 import org.vpac.grisu.model.FqanListener;
 import org.vpac.grisu.model.GrisuRegistry;
 
+import au.org.arcs.jcommons.constants.Constants;
 import au.org.arcs.jcommons.constants.JobSubmissionProperty;
 import au.org.arcs.jcommons.interfaces.GridResource;
 import au.org.arcs.jcommons.utils.GridResourceHelpers;
@@ -124,7 +125,7 @@ public class CandidateHost extends JPanel implements TemplateNodePanel,
 	}
 
 	private void calculateAvailableGridResources() {
-
+		
 		siteModel.removeAllElements();
 
 		Map<JobSubmissionProperty, String> jobProperties = new HashMap<JobSubmissionProperty, String>();
@@ -151,6 +152,7 @@ public class CandidateHost extends JPanel implements TemplateNodePanel,
 
 			currentRankedSite = (RankedSite) siteComboBox.getSelectedItem();
 
+
 			if (currentRankedSite == null) {
 				return;
 			}
@@ -160,9 +162,12 @@ public class CandidateHost extends JPanel implements TemplateNodePanel,
 			for (GridResource resource : currentRankedSite.getResources()) {
 				queueModel.addElement(resource);
 			}
+			
 		} else {
 			currentRankedSite = null;
 			currentSubmissionLocation = null;
+			queueModel.removeAllElements();
+			getGridResourceInfoPanel().setGridResource(null);
 		}
 
 	}
@@ -172,6 +177,7 @@ public class CandidateHost extends JPanel implements TemplateNodePanel,
 		if (panel instanceof ApplicationVersion) {
 			this.currentVersion = newValue;
 			calculateAvailableGridResources();
+			
 		}
 
 	}
@@ -250,6 +256,8 @@ public class CandidateHost extends JPanel implements TemplateNodePanel,
 							Object o = queueModel.getSelectedItem();
 							setCurrentSubmissionLocation((GridResource)o);
 						}
+						
+
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

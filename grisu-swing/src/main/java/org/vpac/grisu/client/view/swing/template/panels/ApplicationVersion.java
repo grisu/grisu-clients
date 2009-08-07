@@ -32,6 +32,7 @@ public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 		FqanListener, ActionListener {
 
 	public static final String DEFAULT_VERSION_NOT_AVAILABLE_STRING = "Default version not available.";
+	public static final String ANY_VERSION_STRING = "Auto-selected";
 
 	public static final String ANY_MODE_TEMPLATETAG_KEY = "useAny";
 	public static final String DEFAULT_MODE_TEMPLATETAG_KEY = "useDefault";
@@ -73,6 +74,8 @@ public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 
 	private String currentVersion;
 	private boolean versionLocked = false;
+	
+	private String lastSelectedExactVersion = null;
 
 	private TemplateNode templateNode;
 
@@ -108,6 +111,7 @@ public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 			lastVersion = registry.getHistoryManager().getEntries(
 					TemplateTagConstants.getGlobalLastVersionKey(infoObject
 							.getApplicationName())).get(0);
+			lastSelectedExactVersion = lastVersion;
 		} catch (Exception e) {
 			lastVersion = null;
 		}
@@ -274,6 +278,11 @@ public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 	private void switchToAnyMode() {
 
 		getVersionComboBox().setEnabled(false);
+		versionLocked = true;
+		versionModel.setSelectedItem(ANY_MODE_STRING);
+		versionModel.removeElement(DEFAULT_VERSION_NOT_AVAILABLE_STRING);
+		versionLocked = false;
+
 		this.currentMode = ANY_VERSION_MODE;
 		this.currentVersion = Constants.NO_VERSION_INDICATOR_STRING;
 
@@ -281,12 +290,22 @@ public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 				TemplateTagConstants.getGlobalLastVersionModeKey(infoObject
 						.getApplicationName()), ANY_MODE_STRING, new Date());
 		
+		
 		fireVersionChanged(this.currentVersion);
 
 	}
 
 	private void switchToDefaultMode() {
 
+		versionLocked = true;
+		versionModel.removeElement(ANY_MODE_STRING);
+		int index = versionModel.getIndexOf(defaultVersion);
+		if ( index < 0 ) {
+			defaultVersion = DEFAULT_VERSION_NOT_AVAILABLE_STRING;
+		}
+		versionModel.setSelectedItem(defaultVersion);
+		versionLocked = false;
+		
 		getVersionComboBox().setEnabled(false);
 		this.currentMode = DEFAULT_VERSION_MODE;
 		this.currentVersion = defaultVersion;
@@ -302,6 +321,18 @@ public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 	}
 
 	private void switchToExactMode() {
+		
+		versionLocked = true;
+		versionModel.removeElement(ANY_MODE_STRING);
+		versionModel.removeElement(DEFAULT_VERSION_NOT_AVAILABLE_STRING);
+		if ( DEFAULT_VERSION_NOT_AVAILABLE_STRING.equals(versionModel.getSelectedItem()) || ANY_MODE_STRING.equals(versionModel.getSelectedItem()) ) {
+			versionComboBox.setSelectedIndex(0);
+		}
+		
+		if ( lastSelectedExactVersion != null ) {
+			versionModel.setSelectedItem(lastSelectedExactVersion);
+		}
+		versionLocked = false;
 
 		getVersionComboBox().setEnabled(true);
 		this.currentMode = EXACT_VERSION_MODE;
@@ -334,6 +365,7 @@ public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 																.getApplicationName()),
 												(String) (versionModel
 														.getSelectedItem()));
+								lastSelectedExactVersion = temp;
 							}
 
 						}
