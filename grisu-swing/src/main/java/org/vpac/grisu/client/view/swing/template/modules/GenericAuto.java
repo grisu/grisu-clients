@@ -69,9 +69,9 @@ public class GenericAuto extends AbstractModulePanel {
 	protected void initialize() throws ModuleException {
 		
 		// needs to be done before template node is set...
-		this.template.getTemplateNodes().get(TemplateTagConstants.VERSION_TAG_NAME).setTemplateNodeValueSetter(getVersion());
-		this.template.getTemplateNodes().get(TemplateTagConstants.HOSTNAME_TAG_NAME).setTemplateNodeValueSetter(getGridResourceSuggestionPanel());
-		this.template.getTemplateNodes().get(TemplateTagConstants.EXECUTIONFILESYSTEM_TAG_NAME).setTemplateNodeValueSetter(executionFileSystem);
+//		this.template.getTemplateNodes().get(TemplateTagConstants.VERSION_TAG_NAME).setTemplateNodeValueSetter(getVersion());
+//		this.template.getTemplateNodes().get(TemplateTagConstants.HOSTNAME_TAG_NAME).setTemplateNodeValueSetter(getGridResourceSuggestionPanel());
+//		this.template.getTemplateNodes().get(TemplateTagConstants.EXECUTIONFILESYSTEM_TAG_NAME).setTemplateNodeValueSetter(executionFileSystem);
 		
 		try {
 			getGridResourceSuggestionPanel().setTemplateNode(this.templateModule.getTemplateNodes().get(TemplateTagConstants.HOSTNAME_TAG_NAME));

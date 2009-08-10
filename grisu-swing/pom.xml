@@ -55,22 +55,28 @@
 			<groupId>org.vpac.grisu</groupId>
 			<artifactId>grisu-client-jaxws</artifactId>
 			<version>0.3-SNAPSHOT</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>jaxws-rt</artifactId>
-					<groupId>com.sun.xml.ws</groupId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.xml.ws</groupId>
-					<artifactId>jaxws-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.jws</groupId>
-					<artifactId>jsr181-api</artifactId>
-				</exclusion>
-			</exclusions>
+<!--			<exclusions>-->
+<!--				<exclusion>-->
+<!--					<artifactId>jaxws-rt</artifactId>-->
+<!--					<groupId>com.sun.xml.ws</groupId>-->
+<!--				</exclusion>-->
+<!--				<exclusion>-->
+<!--					<groupId>javax.xml.ws</groupId>-->
+<!--					<artifactId>jaxws-api</artifactId>-->
+<!--				</exclusion>-->
+<!--				<exclusion>-->
+<!--					<groupId>javax.jws</groupId>-->
+<!--					<artifactId>jsr181-api</artifactId>-->
+<!--				</exclusion>-->
+<!--			</exclusions>-->
 		</dependency>
 
+		<dependency>
+			<groupId>org.vpac.grisu</groupId>
+			<artifactId>grisu-core</artifactId>
+			<version>0.3-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

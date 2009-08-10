@@ -104,6 +104,8 @@ public class CandidateHost extends JPanel implements TemplateNodePanel,
 		serviceInterface = node.getTemplate().getEnvironmentManager()
 				.getServiceInterface();
 		registry = GrisuRegistry.getDefault(serviceInterface);
+		
+		registry.getUserEnvironmentManager().addFqanListener(this);
 
 		this.currentFqan = registry.getUserEnvironmentManager()
 				.getCurrentFqan();

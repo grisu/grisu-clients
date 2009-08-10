@@ -11,7 +11,7 @@ public class GenericAuto extends AbstractModule {
 	public static final String HOSTNAME_TEMPLATE_TAG_NAME = "HostName";
 	
 	public static final String[] MODULES_USED = new String[]{
-		"Jobname", VERSION_TEMPLATE_TAG_NAME, "Walltime", "CPUs", HOSTNAME_TEMPLATE_TAG_NAME, "MinMem", "ExecutionFileSystem", "EmailAddress" };
+		"Jobname", VERSION_TEMPLATE_TAG_NAME, "Walltime", "CPUs", HOSTNAME_TEMPLATE_TAG_NAME, "MinMem", "EmailAddress" };
 	
 	public GenericAuto(JsdlTemplate template) {
 		super(template);
