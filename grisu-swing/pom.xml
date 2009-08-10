@@ -51,6 +51,12 @@
 <!--			<scope>compile</scope>-->
 <!--		</dependency>-->
 
+<!--		<dependency>-->
+<!--			<groupId>org.vpac.grisu</groupId>-->
+<!--			<artifactId>grisu-client-jaxws</artifactId>-->
+<!--			<version>0.3-SNAPSHOT</version>-->
+<!--		</dependency>-->
+
 		<dependency>
 			<groupId>org.vpac.grisu</groupId>
 			<artifactId>grisu-client-jaxws</artifactId>
