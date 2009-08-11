@@ -37,6 +37,7 @@ import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
 import org.vpac.grisu.control.info.CachedMdsInformationManager;
 import org.vpac.grisu.frontend.control.login.LoginParams;
 import org.vpac.grisu.frontend.control.login.ServiceInterfaceFactory;
+import org.vpac.grisu.model.GrisuRegistryImpl;
 import org.vpac.grisu.model.GrisuRegistry;
 import org.vpac.grisu.model.MountPoint;
 import org.vpac.grisu.model.dto.DtoFile;
@@ -551,7 +552,7 @@ public class GwtServiceInterfaceWrapperImpl extends RemoteServiceServlet
 		GrisuRegistry gr = (GrisuRegistry) (getSession()
 				.getAttribute("grisuRegistry"));
 		if (gr == null) {
-			gr = new GrisuRegistry(getServiceInterface());
+			gr = new GrisuRegistryImpl(getServiceInterface());
 			getSession().setAttribute("grisuRegistry", gr);
 		}
 		return gr;

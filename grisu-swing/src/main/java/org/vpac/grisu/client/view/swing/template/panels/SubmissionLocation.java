@@ -22,6 +22,7 @@ import org.vpac.grisu.client.view.swing.utils.QueueRenderer;
 import org.vpac.grisu.model.FqanEvent;
 import org.vpac.grisu.model.FqanListener;
 import org.vpac.grisu.model.GrisuRegistry;
+import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.model.MountPoint;
 import org.vpac.grisu.model.info.UserApplicationInformation;
 
@@ -115,7 +116,7 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 		this.templateNode = node;
 		this.templateNode.setTemplateNodeValueSetter(this);
 		
-		registry = GrisuRegistry.getDefault(node.getTemplate().getEnvironmentManager().getServiceInterface());
+		registry = GrisuRegistryManager.getDefault(node.getTemplate().getEnvironmentManager().getServiceInterface());
 
 		registry.getUserEnvironmentManager().addFqanListener(this);
 

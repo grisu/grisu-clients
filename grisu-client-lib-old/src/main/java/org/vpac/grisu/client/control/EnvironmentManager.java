@@ -30,7 +30,7 @@ import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
 import org.vpac.grisu.model.FqanEvent;
 import org.vpac.grisu.model.FqanListener;
-import org.vpac.grisu.model.GrisuRegistry;
+import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.model.MountPoint;
 import org.vpac.grisu.model.UserEnvironmentManager;
 import org.vpac.grisu.settings.ClientPropertiesManager;
@@ -168,7 +168,7 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 //			setHistoryManager(new SimpleHistoryManager(historyFile));
 //		}
 		
-		setHistoryManager(GrisuRegistry.getDefault(serviceInterface).getHistoryManager());
+		setHistoryManager(GrisuRegistryManager.getDefault(serviceInterface).getHistoryManager());
 	}
 
 	/**

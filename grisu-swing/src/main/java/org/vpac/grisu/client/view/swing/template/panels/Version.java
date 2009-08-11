@@ -26,6 +26,7 @@ import org.vpac.grisu.client.model.template.nodes.TemplateNodeEvent;
 import org.vpac.grisu.model.FqanEvent;
 import org.vpac.grisu.model.FqanListener;
 import org.vpac.grisu.model.GrisuRegistry;
+import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.model.info.UserApplicationInformation;
 
 import au.org.arcs.jcommons.constants.Constants;
@@ -105,7 +106,7 @@ public class Version extends JPanel implements TemplateNodePanel,
 		this.applicationName = this.templateNode.getTemplate().getApplicationName();
 		defaultVersion = node.getDefaultValue();
 		
-		registry = GrisuRegistry.getDefault(node.getTemplate().getEnvironmentManager().getServiceInterface());
+		registry = GrisuRegistryManager.getDefault(node.getTemplate().getEnvironmentManager().getServiceInterface());
 		
 		registry.getUserEnvironmentManager().addFqanListener(this);
 		

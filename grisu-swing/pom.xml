@@ -42,15 +42,16 @@
 			<artifactId>grisu-commons</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.vpac.grisu</groupId>
-			<artifactId>grisu-client-xfire</artifactId>
+			<artifactId>grisu-client-lib-old</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.vpac.grisu</groupId>
-			<artifactId>grisu-client-lib-old</artifactId>
+			<artifactId>grisu-client-jaxws</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
 
@@ -86,6 +87,12 @@
 <!--			<version>0.3-SNAPSHOT</version>-->
 <!--			<scope>compile</scope>-->
 <!--		</dependency>-->
+		<dependency>
+			<groupId>org.vpac.grisu</groupId>
+			<artifactId>client-side-mds</artifactId>
+			<version>0.3-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

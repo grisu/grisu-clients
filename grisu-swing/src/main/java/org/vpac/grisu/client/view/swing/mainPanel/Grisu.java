@@ -47,7 +47,9 @@ import org.vpac.grisu.client.view.swing.mountpoints.MountPointsManagementDialog;
 import org.vpac.grisu.client.view.swing.template.SubmissionPanel;
 import org.vpac.grisu.client.view.swing.utils.Utils;
 import org.vpac.grisu.control.ServiceInterface;
+import org.vpac.grisu.frontend.info.clientsidemds.ClientSideGrisuRegistry;
 import org.vpac.grisu.model.GrisuRegistry;
+import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.plugins.ClasspathHacker;
 import org.vpac.grisu.plugins.GrisuPluginFilenameFilter;
 import org.vpac.grisu.settings.Environment;
@@ -629,7 +631,12 @@ public class Grisu implements WindowListener {
 
 				try {
 					application.em = new EnvironmentManager(application.serviceInterface);
-					GrisuRegistry temp = GrisuRegistry.getDefault(application.serviceInterface);
+					
+					GrisuRegistry defaultRegistry = new ClientSideGrisuRegistry(application.serviceInterface);
+					
+					GrisuRegistryManager.setDefault(application.serviceInterface, defaultRegistry);
+					
+					GrisuRegistry temp = GrisuRegistryManager.getDefault(application.serviceInterface);
 					temp.setUserEnvironmentManager(application.em);
 					application.em.initializeHistoryManager();
 					if ( application.serviceInterface == null ) {

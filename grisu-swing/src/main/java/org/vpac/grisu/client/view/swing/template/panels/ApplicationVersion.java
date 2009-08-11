@@ -15,6 +15,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.border.TitledBorder;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -24,10 +25,10 @@ import org.vpac.grisu.client.model.template.nodes.TemplateNodeEvent;
 import org.vpac.grisu.model.FqanEvent;
 import org.vpac.grisu.model.FqanListener;
 import org.vpac.grisu.model.GrisuRegistry;
+import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.model.info.UserApplicationInformation;
 
 import au.org.arcs.jcommons.constants.Constants;
-import javax.swing.border.TitledBorder;
 
 public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 		FqanListener, ActionListener {
@@ -102,7 +103,7 @@ public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 				.getApplicationName();
 		defaultVersion = node.getDefaultValue();
 
-		registry = GrisuRegistry.getDefault(node.getTemplate()
+		registry = GrisuRegistryManager.getDefault(node.getTemplate()
 				.getEnvironmentManager().getServiceInterface());
 		registry.getUserEnvironmentManager().addFqanListener(this);
 

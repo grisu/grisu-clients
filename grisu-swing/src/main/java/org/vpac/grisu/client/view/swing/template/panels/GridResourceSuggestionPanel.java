@@ -19,6 +19,8 @@ import org.vpac.grisu.client.model.template.nodes.TemplateNode;
 import org.vpac.grisu.client.model.template.nodes.TemplateNodeEvent;
 import org.vpac.grisu.client.view.swing.template.modules.genericAuto.GridResourceDisplayPanel;
 import org.vpac.grisu.model.GrisuRegistry;
+import org.vpac.grisu.model.GrisuRegistryImpl;
+import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.model.MountPoint;
 import org.vpac.grisu.model.UserEnvironmentManager;
 import org.vpac.grisu.model.info.UserApplicationInformation;
@@ -172,10 +174,10 @@ public class GridResourceSuggestionPanel extends JPanel implements TemplateNodeP
 			throws TemplateNodePanelException {
 		this.templateNode = node;
 		this.templateNode.setTemplateNodeValueSetter(this);
-		registry = GrisuRegistry.getDefault(node.getTemplate().getEnvironmentManager().getServiceInterface());
+		registry = GrisuRegistryManager.getDefault(node.getTemplate().getEnvironmentManager().getServiceInterface());
 		
-		this.userInformation = GrisuRegistry.getDefault(node.getTemplate().getEnvironmentManager().getServiceInterface()).getUserEnvironmentManager();
-		this.infoObject = GrisuRegistry.getDefault(node.getTemplate().getEnvironmentManager().getServiceInterface())
+		this.userInformation = GrisuRegistryManager.getDefault(node.getTemplate().getEnvironmentManager().getServiceInterface()).getUserEnvironmentManager();
+		this.infoObject = GrisuRegistryManager.getDefault(node.getTemplate().getEnvironmentManager().getServiceInterface())
 		.getUserApplicationInformation(templateNode.getTemplate().getApplicationName());
 		getVersionPanel();
 		add(getScrollPane(), new CellConstraints(2, 2, CellConstraints.FILL, CellConstraints.FILL));

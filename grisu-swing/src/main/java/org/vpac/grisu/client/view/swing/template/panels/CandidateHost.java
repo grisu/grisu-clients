@@ -10,16 +10,18 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.TitledBorder;
 
 import org.apache.log4j.Logger;
 import org.vpac.grisu.client.model.template.nodes.TemplateNode;
 import org.vpac.grisu.client.model.template.nodes.TemplateNodeEvent;
+import org.vpac.grisu.client.view.swing.template.panels.helperPanels.GridResourceInfoPanel;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.model.FqanEvent;
 import org.vpac.grisu.model.FqanListener;
 import org.vpac.grisu.model.GrisuRegistry;
+import org.vpac.grisu.model.GrisuRegistryManager;
 
-import au.org.arcs.jcommons.constants.Constants;
 import au.org.arcs.jcommons.constants.JobSubmissionProperty;
 import au.org.arcs.jcommons.interfaces.GridResource;
 import au.org.arcs.jcommons.utils.GridResourceHelpers;
@@ -30,9 +32,6 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
-import javax.swing.border.TitledBorder;
-import java.awt.BorderLayout;
-import org.vpac.grisu.client.view.swing.template.panels.helperPanels.GridResourceInfoPanel;
 
 public class CandidateHost extends JPanel implements TemplateNodePanel,
 		ValueListener, FqanListener {
@@ -103,7 +102,7 @@ public class CandidateHost extends JPanel implements TemplateNodePanel,
 
 		serviceInterface = node.getTemplate().getEnvironmentManager()
 				.getServiceInterface();
-		registry = GrisuRegistry.getDefault(serviceInterface);
+		registry = GrisuRegistryManager.getDefault(serviceInterface);
 		
 		registry.getUserEnvironmentManager().addFqanListener(this);
 
