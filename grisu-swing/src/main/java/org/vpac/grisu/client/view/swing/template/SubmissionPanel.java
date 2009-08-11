@@ -43,7 +43,7 @@ import org.vpac.grisu.client.model.template.JsdlTemplate;
 import org.vpac.grisu.client.view.swing.environment.FQANSelectorDialog;
 import org.vpac.grisu.client.view.swing.mainPanel.AddApplicationDialog;
 import org.vpac.grisu.client.view.swing.utils.Utils;
-import org.vpac.grisu.control.JobConstants;
+import org.vpac.grisu.control.clientexceptions.NoSuchTemplateExceptionClient;
 import org.vpac.grisu.control.exceptions.NoSuchTemplateException;
 import org.vpac.grisu.model.FqanEvent;
 import org.vpac.grisu.model.FqanListener;
@@ -244,7 +244,7 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 								myLogger.warn("No template found for name: "
 										+ templateName);
 								currentTemplate = old_template;
-								throw new NoSuchTemplateException(
+								throw new NoSuchTemplateExceptionClient(
 										"No template found for name: "
 												+ templateName);
 							}

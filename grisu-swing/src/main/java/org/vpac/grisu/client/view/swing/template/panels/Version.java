@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.border.TitledBorder;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.vpac.grisu.client.TemplateTagConstants;
 import org.vpac.grisu.client.model.template.nodes.TemplateNode;
@@ -133,7 +134,7 @@ public class Version extends JPanel implements TemplateNodePanel,
 				useExact = true;
 			} else if (DEFAULT_MODE_STRING.equals(startMode)) {
 				
-				if (defaultVersion == null || "".equals(defaultVersion)) {
+				if (StringUtils.isBlank(defaultVersion)) {
 					useDefault = false;
 					myLogger
 							.warn("Not using default mode because no default version value is specified in template.");
@@ -218,7 +219,7 @@ public class Version extends JPanel implements TemplateNodePanel,
 
 	}
 	
-	private void fillVersions(String prefferedVersion) {
+	private void fillVersions(String preferredVersion) {
 		
 		versionLocked = true;
 
@@ -227,8 +228,8 @@ public class Version extends JPanel implements TemplateNodePanel,
 			versionModel.addElement(version);
 		}
 
-		if ( versionModel.getIndexOf(prefferedVersion) >= 0 ) {
-			versionModel.setSelectedItem(prefferedVersion);
+		if ( versionModel.getIndexOf(preferredVersion) >= 0 ) {
+			versionModel.setSelectedItem(preferredVersion);
 		} else {
 			if ( versionModel.getSize() > 0 ) {
 				versionModel.setSelectedItem(versionModel.getElementAt(0));

@@ -16,6 +16,7 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.vpac.grisu.client.TemplateTagConstants;
 import org.vpac.grisu.client.model.template.nodes.TemplateNode;
@@ -131,7 +132,7 @@ public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 				useExact = true;
 			} else if (DEFAULT_MODE_STRING.equals(startMode)) {
 
-				if (defaultVersion == null || "".equals(defaultVersion)) {
+				if (StringUtils.isBlank(defaultVersion)) {
 					useDefault = false;
 					myLogger
 							.warn("Not using default mode because no default version value is specified in template.");
@@ -300,7 +301,7 @@ public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 		versionLocked = true;
 		versionModel.removeElement(ANY_MODE_STRING);
 		int index = versionModel.getIndexOf(defaultVersion);
-		if ( index < 0 ) {
+		if ( ! Constants.NO_VERSION_INDICATOR_STRING.equals(defaultVersion) && index < 0 ) {
 			defaultVersion = DEFAULT_VERSION_NOT_AVAILABLE_STRING;
 		}
 		versionModel.setSelectedItem(defaultVersion);
