@@ -34,6 +34,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.apache.log4j.Logger;
 import org.vpac.grisu.client.control.EnvironmentManager;
+import org.vpac.grisu.client.control.clientexceptions.NoSuchTemplateExceptionClient;
 import org.vpac.grisu.client.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.client.control.exceptions.TemplateException;
 import org.vpac.grisu.client.control.template.LocalTemplateManagement;
@@ -43,7 +44,6 @@ import org.vpac.grisu.client.model.template.JsdlTemplate;
 import org.vpac.grisu.client.view.swing.environment.FQANSelectorDialog;
 import org.vpac.grisu.client.view.swing.mainPanel.AddApplicationDialog;
 import org.vpac.grisu.client.view.swing.utils.Utils;
-import org.vpac.grisu.control.clientexceptions.NoSuchTemplateExceptionClient;
 import org.vpac.grisu.control.exceptions.NoSuchTemplateException;
 import org.vpac.grisu.model.FqanEvent;
 import org.vpac.grisu.model.FqanListener;
