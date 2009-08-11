@@ -49,6 +49,7 @@ import org.vpac.grisu.client.view.swing.utils.Utils;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.frontend.info.clientsidemds.ClientSideGrisuRegistry;
 import org.vpac.grisu.model.GrisuRegistry;
+import org.vpac.grisu.model.GrisuRegistryImpl;
 import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.plugins.ClasspathHacker;
 import org.vpac.grisu.plugins.GrisuPluginFilenameFilter;
@@ -632,7 +633,15 @@ public class Grisu implements WindowListener {
 				try {
 					application.em = new EnvironmentManager(application.serviceInterface);
 					
-					GrisuRegistry defaultRegistry = new ClientSideGrisuRegistry(application.serviceInterface);
+					GrisuRegistry defaultRegistry;
+					try {
+						defaultRegistry = new ClientSideGrisuRegistry(application.serviceInterface);
+						myLogger.info("Using client side mds library.");
+					} catch (Exception e) {
+						myLogger.info("Couldn't use client side mds library: "+e.getLocalizedMessage());
+						myLogger.info("Using grisu service interface to calculate mds information...");
+						defaultRegistry = new GrisuRegistryImpl(application.serviceInterface);
+					}
 					
 					GrisuRegistryManager.setDefault(application.serviceInterface, defaultRegistry);
 					
