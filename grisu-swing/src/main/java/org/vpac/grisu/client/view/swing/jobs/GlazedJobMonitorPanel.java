@@ -335,17 +335,27 @@ public class GlazedJobMonitorPanel extends JPanel {
 				try {
 					for (GrisuJobMonitoringObject job : selectionModel
 							.getSelected()) {
+						
+						if ( job.getStatusAsInt(false) > JobConstants.READY_TO_SUBMIT ) {
 						DefaultJobDetailDialog jdp = new DefaultJobDetailDialog(
 								em);
 
 						jdp.setJob(job);
 
 						jdp.setVisible(true);
+						} else {
+							Utils.showErrorMessage(em, GlazedJobMonitorPanel.this,
+									"jobNotSubmittedYet", null);
+							System.out.println("Error Message closed.");
+							setPanelBusy(false);
+						}
 					}
 				} catch (Exception e) {
 					myLogger.error(e);
 					Utils.showErrorMessage(em, GlazedJobMonitorPanel.this,
 							"couldNotFindJobDirecotory", e);
+					setPanelBusy(false);
+					System.out.println("Error Message closed.");
 				} finally {
 					setPanelBusy(false);
 				}

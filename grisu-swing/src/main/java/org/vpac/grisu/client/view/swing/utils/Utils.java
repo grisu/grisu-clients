@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.jdesktop.swingx.JXErrorPane;
 import org.vpac.grisu.client.control.EnvironmentManager;
 import org.vpac.grisu.client.view.swing.mainPanel.Grisu;
+import org.vpac.grisu.settings.ClientPropertiesManager;
 import org.vpac.helpDesk.model.HelpDesk;
 import org.vpac.helpDesk.model.HelpDeskNotAvailableException;
 import org.vpac.helpDesk.model.Person;
@@ -87,7 +88,6 @@ public class Utils {
 		}
 		
 //		HelpDeskErrorDialog errdialog = new HelpDeskErrorDialog();
-		
 		File grisuDebugFile = new File(System.getProperty("user.home")+File.separator+".grisu", "grisu.debug");
 		
 		try {
@@ -100,6 +100,8 @@ public class Utils {
 				    "Could not connect to help desk:\n"+e.getLocalizedMessage(),
 				    "Connection error",
 				    JOptionPane.ERROR_MESSAGE);
+		} catch (Throwable e3) {
+			e3.printStackTrace();
 		}
 		
 //		errdialog.setVisible(true);

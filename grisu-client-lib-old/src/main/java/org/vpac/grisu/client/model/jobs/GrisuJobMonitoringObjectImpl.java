@@ -21,6 +21,8 @@ import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
 
+import au.org.arcs.jcommons.constants.Constants;
+
 /**
  * This is a wrapper class for easy access to the properties of a job.
  * 
@@ -87,36 +89,36 @@ public class GrisuJobMonitoringObjectImpl implements GrisuJobMonitoringObject {
 
 		otherProperties = new HashMap<String, String>(jobProperties);
 
-		applicationType = jobProperties.get("applicationType");
+		applicationType = jobProperties.get(Constants.APPLICATIONNAME_KEY);
 		if (applicationType == null)
 			applicationType = JobConstants.NOT_AVAILABLE_STRING;
 
-		otherProperties.remove("applicationType");
+		otherProperties.remove(Constants.APPLICATIONNAME_KEY);
 
 		try {
-			walltime = new Integer(jobProperties.get("walltime")).toString();
+			walltime = new Integer(jobProperties.get(Constants.WALLTIME_IN_MINUTES_KEY)).toString();
 		} catch (NumberFormatException e) {
 			// does not matter
 		}
 		if (walltime == null)
 			walltime = JobConstants.NOT_AVAILABLE_STRING;
-		otherProperties.remove("walltime");
+		otherProperties.remove(Constants.WALLTIME_IN_MINUTES_KEY);
 
 		try {
-			cpus = new Integer(jobProperties.get("cpus")).toString();
+			cpus = new Integer(jobProperties.get(Constants.NO_CPUS_KEY)).toString();
 		} catch (NumberFormatException e) {
 			// does not matter
 		}
 		if (cpus == null) {
 			cpus = JobConstants.NOT_AVAILABLE_STRING;
 		}
-		otherProperties.remove("cpus");
+		otherProperties.remove(Constants.NO_CPUS_KEY);
 
-		submissionHost = jobProperties.get("hostname");
+		submissionHost = jobProperties.get(Constants.SUBMISSION_HOST_KEY);
 		if (submissionHost == null) {
 			submissionHost = JobConstants.NOT_AVAILABLE_STRING;
 		}
-		otherProperties.remove("hostname");
+		otherProperties.remove(Constants.SUBMISSION_HOST_KEY);
 
 		submissionQueue = jobProperties.get("submissionQueue");
 		if (submissionQueue == null) {
@@ -124,17 +126,17 @@ public class GrisuJobMonitoringObjectImpl implements GrisuJobMonitoringObject {
 		}
 		otherProperties.remove("submissionQueue");
 
-		submissionTime = jobProperties.get("submissionTime");
+		submissionTime = jobProperties.get(Constants.SUBMISSION_TIME_KEY);
 		if (submissionTime == null) {
 			submissionTime = JobConstants.NOT_AVAILABLE_STRING;
 		}
-		otherProperties.remove("submissionTime");
+		otherProperties.remove(Constants.SUBMISSION_TIME_KEY);
 
-		fqan = jobProperties.get("fqan");
+		fqan = jobProperties.get(Constants.FQAN_KEY);
 		if (fqan == null) {
 			fqan = "Non-VO job";
 		}
-		otherProperties.remove("fqan");
+		otherProperties.remove(Constants.FQAN_KEY);
 
 		status = jobProperties.get("status");
 		if (status == null) {
@@ -146,24 +148,24 @@ public class GrisuJobMonitoringObjectImpl implements GrisuJobMonitoringObject {
 		getStatus(true);
 		// ----------------------------------------------------
 		// files
-		jobDirectory = jobProperties.get("jobDirectory");
-		otherProperties.remove("jobDirectory");
+		jobDirectory = jobProperties.get(Constants.JOBDIRECTORY_KEY);
+		otherProperties.remove(Constants.JOBDIRECTORY_KEY);
 
-		stdout = jobProperties.get("stdout");
+		stdout = jobProperties.get(Constants.STDOUT_KEY);
 		if (jobDirectory == null || stdout == null) {
 			stdout = "n/a";
 		} else {
 			stdout = jobDirectory + "/" + stdout;
 		}
-		otherProperties.remove("stdout");
+		otherProperties.remove(Constants.STDOUT_KEY);
 
-		stderr = jobProperties.get("stderr");
+		stderr = jobProperties.get(Constants.STDERR_KEY);
 		if (jobDirectory == null || stderr == null) {
 			stderr = "n/a";
 		} else {
 			stderr = jobDirectory + "/" + stderr;
 		}
-		otherProperties.remove("stderr");
+		otherProperties.remove(Constants.STDERR_KEY);
 
 		if (jobDirectory == null) {
 			jobDirectory = JobConstants.NOT_AVAILABLE_STRING;
