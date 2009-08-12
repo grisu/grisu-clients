@@ -633,17 +633,18 @@ public class Grisu implements WindowListener {
 				try {
 					application.em = new EnvironmentManager(application.serviceInterface);
 					
-					GrisuRegistry defaultRegistry;
-					try {
-						defaultRegistry = new ClientSideGrisuRegistry(application.serviceInterface);
-						myLogger.info("Using client side mds library.");
-					} catch (Exception e) {
-						myLogger.info("Couldn't use client side mds library: "+e.getLocalizedMessage());
-						myLogger.info("Using grisu service interface to calculate mds information...");
-						defaultRegistry = new GrisuRegistryImpl(application.serviceInterface);
-					}
-					
-					GrisuRegistryManager.setDefault(application.serviceInterface, defaultRegistry);
+//					GrisuRegistry defaultRegistry;
+//					try {
+////						throw new RuntimeException();
+//						defaultRegistry = new ClientSideGrisuRegistry(application.serviceInterface);
+//						myLogger.info("Using client side mds library.");
+//					} catch (Exception e) {
+//						myLogger.info("Couldn't use client side mds library: "+e.getLocalizedMessage());
+//						myLogger.info("Using grisu service interface to calculate mds information...");
+//						defaultRegistry = new GrisuRegistryImpl(application.serviceInterface);
+//					}
+//					
+//					GrisuRegistryManager.setDefault(application.serviceInterface, defaultRegistry);
 					
 					GrisuRegistry temp = GrisuRegistryManager.getDefault(application.serviceInterface);
 					temp.setUserEnvironmentManager(application.em);

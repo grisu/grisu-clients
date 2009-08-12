@@ -17,6 +17,7 @@ import org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
 import org.vpac.grisu.model.MountPoint;
+import org.vpac.grisu.settings.ClientPropertiesManager;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
@@ -161,7 +162,7 @@ public class JobManager {
 			jobnames[i] = jobs.get(i).getName();
 		}
 		
-		JobHelper.killJobs(jobnames, em);
+		JobHelper.killJobs(jobnames, em, ClientPropertiesManager.getConcurrentThreadsDefault());
 		refreshJobs(jobnames);
 	}
 	
@@ -179,7 +180,7 @@ public class JobManager {
 			jobnames[i] = jobs.get(i).getName();
 		}
 		
-		JobHelper.cleanJobs(jobnames, em);
+		JobHelper.cleanJobs(jobnames, em, ClientPropertiesManager.getConcurrentThreadsDefault());
 		
 		//TODO check for exception and update allJobs list if necessary
 		allJobs.getReadWriteLock().writeLock().lock();
