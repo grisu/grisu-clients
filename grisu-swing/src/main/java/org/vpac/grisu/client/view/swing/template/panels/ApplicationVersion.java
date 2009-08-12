@@ -218,7 +218,7 @@ public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 	private void fillVersions(String preferedVersion) {
 
 		versionLocked = true;
-
+		this.currentVersion = null;
 		versionModel.removeAllElements();
 		for (String version : infoObject
 				.getAllAvailableVersionsForFqan(registry
@@ -257,8 +257,13 @@ public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 	}
 
 	public void fqansChanged(FqanEvent event) {
-		// TODO Auto-generated method stub
 
+		String currentVersion = (String)versionModel.getSelectedItem();
+		versionModel.removeAllElements();
+		
+		fillVersions(currentVersion);
+		fireVersionChanged((String)(versionModel.getSelectedItem()));
+		
 	}
 
 	private void switchMode(String mode) {
@@ -302,15 +307,18 @@ public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 		versionLocked = true;
 		versionModel.removeElement(ANY_MODE_STRING);
 		int index = versionModel.getIndexOf(defaultVersion);
+		String temp = null;
 		if ( ! Constants.NO_VERSION_INDICATOR_STRING.equals(defaultVersion) && index < 0 ) {
-			defaultVersion = DEFAULT_VERSION_NOT_AVAILABLE_STRING;
+			temp = DEFAULT_VERSION_NOT_AVAILABLE_STRING;
+		} else {
+			temp = defaultVersion;
 		}
-		versionModel.setSelectedItem(defaultVersion);
+		versionModel.setSelectedItem(temp);
 		versionLocked = false;
 		
 		getVersionComboBox().setEnabled(false);
 		this.currentMode = DEFAULT_VERSION_MODE;
-		this.currentVersion = defaultVersion;
+		this.currentVersion = temp;
 
 		registry.getHistoryManager()
 				.addHistoryEntry(

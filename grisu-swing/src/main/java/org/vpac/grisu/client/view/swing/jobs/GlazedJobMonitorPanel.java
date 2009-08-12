@@ -336,7 +336,7 @@ public class GlazedJobMonitorPanel extends JPanel {
 					for (GrisuJobMonitoringObject job : selectionModel
 							.getSelected()) {
 						
-						if ( job.getStatusAsInt(false) > JobConstants.READY_TO_SUBMIT ) {
+						if ( job.getStatusAsInt(true) > JobConstants.READY_TO_SUBMIT ) {
 						DefaultJobDetailDialog jdp = new DefaultJobDetailDialog(
 								em);
 
