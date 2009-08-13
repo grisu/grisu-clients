@@ -138,12 +138,11 @@ public class CPUs extends JPanel implements TemplateNodePanel {
 			comboBox = new JComboBox(cpuComboBoxModel);
 			comboBox.addItemListener(new ItemListener() {
 				public void itemStateChanged(final ItemEvent e) {
-					if (e.getStateChange() == ItemEvent.SELECTED && ! getExternalSetValue().equals(comboBox.getSelectedItem())) {
+					if (e.getStateChange() == ItemEvent.SELECTED) {
 
 						setExternalSetValue((String)(comboBox.getSelectedItem()));
 
-						fireSitePanelEvent((String) cpuComboBoxModel
-								.getSelectedItem());
+						fireSitePanelEvent(getExternalSetValue());
 					}
 				}
 			});
@@ -236,7 +235,8 @@ public class CPUs extends JPanel implements TemplateNodePanel {
 				setExternalSetValue("1");
 			}
 		}
-
+		fireSitePanelEvent((String) cpuComboBoxModel
+				.getSelectedItem());
 	}
 
 	/**

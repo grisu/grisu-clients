@@ -51,7 +51,7 @@
 
 		<dependency>
 			<groupId>org.vpac.grisu</groupId>
-			<artifactId>grisu-client-jaxws</artifactId>
+			<artifactId>xfire-frontend</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
 
@@ -93,12 +93,12 @@
 			<version>0.3-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.vpac.grisu</groupId>
-			<artifactId>grisu-core</artifactId>
-			<version>0.3-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.vpac.grisu</groupId>-->
+<!--			<artifactId>grisu-core</artifactId>-->
+<!--			<version>0.3-SNAPSHOT</version>-->
+<!--			<scope>compile</scope>-->
+<!--		</dependency>-->
 	</dependencies>
 
 	<build>

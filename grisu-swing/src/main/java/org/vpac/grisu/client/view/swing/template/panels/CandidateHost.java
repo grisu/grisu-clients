@@ -65,7 +65,10 @@ public class CandidateHost extends JPanel implements TemplateNodePanel,
 			.getName());
 
 	private String currentSubmissionLocation;
-	private String currentVersion;
+	private String currentVersion = null;
+	private String currentCpus = null;
+	private String currentMemory = null;
+	private String currentWalltime = null;
 	private String currentFqan;
 
 	private String applicationName;
@@ -128,12 +131,17 @@ public class CandidateHost extends JPanel implements TemplateNodePanel,
 	private void calculateAvailableGridResources() {
 		
 		siteModel.removeAllElements();
-
+		
 		Map<JobSubmissionProperty, String> jobProperties = new HashMap<JobSubmissionProperty, String>();
 		jobProperties.put(JobSubmissionProperty.APPLICATIONNAME,
 				applicationName);
 		jobProperties.put(JobSubmissionProperty.APPLICATIONVERSION,
 				currentVersion);
+		jobProperties.put(JobSubmissionProperty.MEMORY_IN_B, currentMemory);
+		jobProperties.put(JobSubmissionProperty.NO_CPUS, currentCpus);
+		jobProperties.put(JobSubmissionProperty.WALLTIME_IN_MINUTES, currentWalltime);
+		
+		myLogger.debug("Trying to find best resources for jobproperties: "+jobProperties.toString());
 
 		SortedSet<GridResource> resources = registry
 				.getUserApplicationInformation(applicationName)
@@ -174,12 +182,20 @@ public class CandidateHost extends JPanel implements TemplateNodePanel,
 	}
 
 	public void valueChanged(TemplateNodePanel panel, String newValue) {
+		
+		myLogger.debug("New value from "+panel.getClass().toString()+": "+newValue);
 
 		if (panel instanceof ApplicationVersion) {
 			this.currentVersion = newValue;
-			calculateAvailableGridResources();
-			
+		} else if ( panel instanceof CPUs ) {
+			this.currentCpus = newValue;
+		} else if ( panel instanceof MemoryInputPanel ) {
+			this.currentMemory = newValue;
+		} else if ( panel instanceof WallTime ) {
+			this.currentWalltime = new Integer(Integer.parseInt(newValue)/60).toString();
 		}
+
+		calculateAvailableGridResources();
 
 	}
 

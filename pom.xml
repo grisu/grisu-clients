@@ -63,6 +63,7 @@
 		<module>grisu-swing-plugins</module>
 		<module>grisu-batch</module>
 		<module>grisu-commandline</module>
+		<module>grisu-gridftp-tests</module>
 	</modules>
 
 	<build>

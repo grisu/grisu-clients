@@ -1,8 +1,8 @@
 package org.vpac.grisu.client.view.swing.template.panels;
 
 import java.awt.Color;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -74,6 +74,17 @@ public class MemoryInputPanel extends JPanel implements TemplateNodePanel {
 	protected JComboBox getMemComboBox() {
 		if (memComboBox == null) {
 			memComboBox = new JComboBox(memComboBoxModel);
+			memComboBox.addItemListener(new ItemListener() {
+				public void itemStateChanged(final ItemEvent e) {
+					if (e.getStateChange() == ItemEvent.SELECTED ) {
+
+//						setExternalSetValue((String)(memComboBox.getSelectedItem()));
+
+						fireSitePanelEvent((String) memComboBox
+								.getSelectedItem());
+					}
+				}
+			});
 			memComboBox.setEditable(false);
 			memComboBox.setEnabled(false);
 		}
@@ -122,6 +133,9 @@ public class MemoryInputPanel extends JPanel implements TemplateNodePanel {
 		} else {
 			getMemComboBox().setEditable(true);
 		}
+		
+		fireSitePanelEvent((String) memComboBox
+				.getSelectedItem());
 		
 	}
 	public void templateNodeUpdated(TemplateNodeEvent event) {

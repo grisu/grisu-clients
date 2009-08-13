@@ -3,6 +3,8 @@
 package org.vpac.grisu.client.view.swing.template.panels;
 
 import java.awt.Color;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -130,6 +132,14 @@ public class WallTime extends JPanel implements TemplateNodePanel{
 	protected JComboBox getDaysComboBox() {
 		if (daysComboBox == null) {
 			daysComboBox = new JComboBox(DAYS_DEFAULTS);
+			daysComboBox.addItemListener(new ItemListener() {
+				public void itemStateChanged(final ItemEvent e) {
+					if (e.getStateChange() == ItemEvent.SELECTED) {
+
+						fireSitePanelEvent(getExternalSetValue());
+					}
+				}
+			});
 			daysComboBox.setEditable(true);
 		}
 		return daysComboBox;
@@ -140,6 +150,14 @@ public class WallTime extends JPanel implements TemplateNodePanel{
 	protected JComboBox getHoursComboBox() {
 		if (hoursComboBox == null) {
 			hoursComboBox = new JComboBox(HOURS_DEFAULTS);
+			hoursComboBox.addItemListener(new ItemListener() {
+				public void itemStateChanged(final ItemEvent e) {
+					if (e.getStateChange() == ItemEvent.SELECTED) {
+
+						fireSitePanelEvent(getExternalSetValue());
+					}
+				}
+			});
 			hoursComboBox.setEditable(true);
 		}
 		return hoursComboBox;
@@ -150,6 +168,14 @@ public class WallTime extends JPanel implements TemplateNodePanel{
 	protected JComboBox getMinutesComboBox() {
 		if (minutesComboBox == null) {
 			minutesComboBox = new JComboBox(MINUTES_DEFAULTS);
+			minutesComboBox.addItemListener(new ItemListener() {
+				public void itemStateChanged(final ItemEvent e) {
+					if (e.getStateChange() == ItemEvent.SELECTED) {
+
+						fireSitePanelEvent(getExternalSetValue());
+					}
+				}
+			});
 			minutesComboBox.setEditable(true);
 		}
 		return minutesComboBox;

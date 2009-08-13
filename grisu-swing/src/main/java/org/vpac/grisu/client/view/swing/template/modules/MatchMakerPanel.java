@@ -30,6 +30,9 @@ public class MatchMakerPanel extends AbstractModulePanel implements ValueListene
 	private Email email;
 	
 	private String currentVersion = null;
+	private String currentCpus = null;
+	private String currentMemory = null;
+	private String currentWalltime = null;
 	private ApplicationVersion applicationVersion;
 	private WallTime wallTime;
 	private CandidateHost candidateHost;
@@ -53,10 +56,13 @@ public class MatchMakerPanel extends AbstractModulePanel implements ValueListene
 				RowSpec.decode("max(73dlu;default):grow"),}));
 		add(getJobName_1(), "1, 1, fill, fill");
 		add(getUs(), "3, 1, 1, 3, fill, fill");
+		getUs().addValueListener(this);
 		add(getWallTime(), "1, 3, 1, 3, fill, fill");
+		getWallTime().addValueListener(this);
 		add(getApplicationVersion(), "1, 7, fill, fill");
 		getApplicationVersion().addValueListener(this);
 		add(getMemoryInputPanel(), "3, 5, 1, 3, fill, fill");
+		getMemoryInputPanel().addValueListener(this);
 		add(getCandidateHost(), "1, 9, 3, 1, fill, fill");
 		add(getEmail(), "1, 11, 3, 1, fill, fill");
 	}
@@ -125,6 +131,15 @@ public class MatchMakerPanel extends AbstractModulePanel implements ValueListene
 			this.currentVersion = newValue;
 			getCandidateHost().valueChanged(panel, newValue);
 		
+		} else if ( panel instanceof CPUs ) {
+			this.currentCpus = newValue;
+			getCandidateHost().valueChanged(panel, newValue);
+		} else if ( panel instanceof MemoryInputPanel ) {
+			this.currentMemory = newValue;
+			getCandidateHost().valueChanged(panel, newValue);
+		} else if ( panel instanceof WallTime ) {
+			this.currentWalltime = newValue;
+			getCandidateHost().valueChanged(panel, newValue);
 		}
 		
 	}
