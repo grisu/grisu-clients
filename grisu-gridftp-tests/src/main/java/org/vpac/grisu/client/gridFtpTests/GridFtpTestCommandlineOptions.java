@@ -25,7 +25,11 @@ public class GridFtpTestCommandlineOptions {
 	private int timeout = 240;
 	private boolean list = false;
 	private int threads = 5;
+	private boolean displayOnlyFailed = false;
 	
+	public boolean displayOnlyFailed() {
+		return displayOnlyFailed;
+	}
 	public String[] getFqans() {
 		return fqans;
 	}
@@ -107,6 +111,10 @@ public class GridFtpTestCommandlineOptions {
 		if ( line.hasOption("help") ) {
 			formatter.printHelp("grisu-grid-test", this.options);
 			System.exit(0);
+		}
+		
+		if ( line.hasOption("displayOnlyFailed") ) {
+			displayOnlyFailed = true;
 		}
 		
 		if ( line.hasOption("list") ) {
@@ -197,6 +205,7 @@ public class GridFtpTestCommandlineOptions {
 		Option list = createOption("list", "l", "list all available tests");
 		Option threads = createOptionWithArg("simultaneousThreads", "s", "how many jobs to submit at once. Default is 5 (which is recommended)");
 		Option help = createOption("help", "h", "this help text");
+		Option onlyFailed = createOption("displayOnlyFailed", "f", "display only failed test items");
 		
 		options = new Options();
 		options.addOption(apps);
@@ -209,6 +218,7 @@ public class GridFtpTestCommandlineOptions {
 		options.addOption(list);
 		options.addOption(threads);
 		options.addOption(help);
+		options.addOption(onlyFailed);
 		return options;
 	}
 	

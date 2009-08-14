@@ -1,198 +1,131 @@
 package org.vpac.grisu.client.gridFtpTests.testElements;
 
-import java.io.File;
-import java.util.Date;
+import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-
 import org.apache.log4j.Logger;
-import org.vpac.grisu.client.gridFtpTests.GridFtpTestStage;
-import org.vpac.grisu.control.ServiceInterface;
-import org.vpac.grisu.model.GrisuRegistry;
-import org.vpac.grisu.model.GrisuRegistryManager;
+import org.vpac.grisu.client.gridFtpTests.GridFtpActionItem;
+import org.vpac.grisu.client.gridFtpTests.GridFtpTestController;
 import org.vpac.grisu.model.MountPoint;
-import org.vpac.grisu.utils.FileHelpers;
 
 public abstract class GridFtpTestElement {
 	
-	static final Logger myLogger = Logger.getLogger(GridFtpTestElement.class.getName());
-	
-	enum Action {
-		copy,
-		download,
-		upload,
-		getLastModifiedTime,
-		getFileSize,
-		getFileType,
-		ls,
-		getChildrenFiles,
-		exists
-	};
-	
-	private final List<GridFtpTestStage> testStages = new LinkedList<GridFtpTestStage>();
-	private GridFtpTestStage currentStage;
-	
-	private boolean failed = false;
-	private boolean interrupted = false;
-	
-	private List<Exception> exceptions = new LinkedList<Exception>();
-	
-	private final static String END_STAGE = "endStage";
-	
-	
-	public Date getStartDate() {
-		return startDate;
+	public static final List<GridFtpTestElement> generateGridTestInfos(
+			GridFtpTestController controller, String[] testnames, Set<MountPoint> mps) {
+
+		List<GridFtpTestElement> result = new LinkedList<GridFtpTestElement>();
+		if (testnames.length == 0) {
+			testnames = new String[] { "SimpleTestElement" };
+		}
+
+		for (String testname : testnames) {
+			
+			try {
+				Class testElementClass = Class.forName("org.vpac.grisu.client.gridFtpTests.testElements."+testname);
+				
+				Constructor testElementConstructor = testElementClass.getConstructor(GridFtpTestController.class, Set.class);
+				
+				GridFtpTestElement el = (GridFtpTestElement) testElementConstructor.newInstance(controller, mps);
+				result.add(el);
+				
+			} catch (Exception e) {
+				System.err.println("Couldn't setup test "+testname+": "+e.getLocalizedMessage());
+				System.exit(1);
+			}
+
+		}
+
+		return result;
 	}
 
-	public Date getEndDate() {
-		return endDate;
-	}
+	static final Logger myLogger = Logger.getLogger(GridFtpTestElement.class
+			.getName());
 
-	public boolean wasInterrupted() {
-		return interrupted;
-	}
+	protected final GridFtpTestController controller;
+
+	protected final Set<MountPoint> mountpoints;
+
+	protected LinkedList<List<GridFtpActionItem>> actionItems;
 	
-	private final Date startDate;
-	private Date endDate = null;
-	private final ServiceInterface si;
-	private final GrisuRegistry registry;
-	
-	private final String source;
-	private final String target;
-	private final Action action;
-	private final Set<MountPoint> mountpoints;
-	
-	private Exception possibleException;
-	
-//	public GridFtpTestElement(ServiceInterface si, Set<MountPoint> mps, Action action, String source) {
-//		if ( this.action.equals(Action.copy) || this.action.equals(Action.download) 
-//				|| this.action.equals(Action.upload) ) {
-//			throw new IllegalArgumentException("No target specified for action "+action);
-//		}
-//		this.si = si;
-//		this.mountpoints = mps;
-//		this.registry = GrisuRegistryManager.getDefault(si);
-//		this.action = action;
-//		this.source = source;
-//		this.target = null;
-//	}
-	
-	public GridFtpTestElement(ServiceInterface si, Set<MountPoint> mps, Action action, String source, String target) {
-		this.si = si;
+	public GridFtpTestElement(GridFtpTestController controller,
+			Set<MountPoint> mps) {
+		this.controller = controller;
 		this.mountpoints = mps;
-		this.registry = GrisuRegistryManager.getDefault(si);
-		this.action = action;
-		this.source = source;
-		this.target = target;
-		this.startDate = new Date();
+	}
+
+	public LinkedList<List<GridFtpActionItem>> getActionItems() {
+		
+		if ( this.actionItems == null ) {
+			this.actionItems = setupGridFtpActionItems();
+		}
+		
+		return this.actionItems;
 	}
 	
-	public void executeTest() {
-		
-		switch (action) {
-		case copy: copy(); break;
-		case download: download(); break;
-		case upload: upload(); break;
-		case getLastModifiedTime: getLastModifiedTime(); break;
-		case getFileSize: getFileSize(); break;
-		case getFileType: getFileType(); break;
-		case ls: ls(); break;
-		case getChildrenFiles: getChildrenFile(); break;
-		case exists: exists(); break;
-		
-		}
-		
-	}
+	abstract protected LinkedList<List<GridFtpActionItem>> setupGridFtpActionItems();
 
-	private void exists() {
-
-		try {
-			si.fileExists(source);
-		} catch (Exception e) {
-			myLogger.debug("Error for test "+toString()+": "+e.getLocalizedMessage());
-		}
-		
-	}
-
-	private void getChildrenFile() {
-
-		try {
-			si.getChildrenFileNames(source, false);
-		} catch (Exception e) {
-			myLogger.debug("Error for test "+toString()+": "+e.getLocalizedMessage());
-		}
-		
-	}
-
-	private void ls() {
-		try {
-			si.ls(source, 1);
-		} catch (Exception e) {
-			myLogger.debug("Error for test "+toString()+": "+e.getLocalizedMessage());
-		}
-	}
-
-	private void getFileType() {
-		try {
-			si.isFolder(source);
-		} catch (Exception e) {
-			myLogger.debug("Error for test "+toString()+": "+e.getLocalizedMessage());
-		}
-	}
-
-	private void getFileSize() {
-		try {
-			si.getFileSize(source);
-		} catch (Exception e) {
-			myLogger.debug("Error for test "+toString()+": "+e.getLocalizedMessage());
-		}
-	}
-
-	private void getLastModifiedTime() {
-		try {
-			si.lastModified(source);
-		} catch (Exception e) {
-			myLogger.debug("Error for test "+toString()+": "+e.getLocalizedMessage());
-		}
-	}
-
-	private void upload() {
-		try {
-			si.upload(new DataHandler(new FileDataSource(source)), target, false);
-		} catch (Exception e) {
-			myLogger.debug("Error for test "+toString()+": "+e.getLocalizedMessage());
-		}
-	}
-
-	private void download() {
-		try {
-			DataHandler dh = si.download(source);
-			FileHelpers.saveToDisk(dh.getDataSource(), new File(target));
-		} catch (Exception e) {
-			myLogger.debug("Error for test "+toString()+": "+e.getLocalizedMessage());
-		}
-	}
-
-	private void copy() {
-		try {
-			si.cp(source, target, true, false);
-		} catch (Exception e) {
-			myLogger.debug("Error for test "+toString()+": "+e.getLocalizedMessage());
-		}
-	}
+	abstract public String getTestName();
 	
+	abstract public String getDescription();
+	
+	abstract public String getTestSpecificResults();
 	
 	@Override
 	public String toString() {
-		if ( target == null ) {
-			return action+"_"+source;
-		} else {
-			return action+"_"+source+"_target";
-		}
+		return getTestName();
 	}
+	
+	public String getResultsForThisTest(boolean onlyFailed, boolean showStackTrace) {
+
+		StringBuffer result = new StringBuffer();
+
+		result.append("Testname:\t" + getTestName() + "\n");
+		result.append("Description:\t" + getDescription() + "\n\n");
+		result.append("Result per mountpoint:\n");
+		
+		for (MountPoint mp : mountpoints) {
+			StringBuffer sourceResults = new StringBuffer();
+			StringBuffer targetResults = new StringBuffer();
+			
+			for (List<GridFtpActionItem> list : getActionItems()) {
+				for (GridFtpActionItem item : list) {
+					if (onlyFailed && item.isSuccess()) {
+						continue;
+					} else {
+						if ((item.getSource() != null && item.getSource()
+								.contains(mp.getRootUrl()))) {
+							// means mountpoint was used as source
+							sourceResults.append(item.getResult(showStackTrace));
+						} else if (item.getTarget() != null
+								&& item.getTarget().contains(mp.getRootUrl())) {
+							// means mountpoint was used as target
+							targetResults.append(item.getResult(showStackTrace));
+						}
+					}
+				}
+			}
+			if ( sourceResults.length() > 0 || targetResults.length() > 0 ) {
+				result.append("\tMountPoint: " + mp.getRootUrl() + " (VO: "
+						+ mp.getFqan() + ")");
+				if ( sourceResults.length() > 0 ) {
+					result.append("\t..as source:\n");
+					result.append(sourceResults+"\n");
+				}
+				if ( targetResults.length() > 0 ) {
+					result.append("\t..as target:\n");
+					result.append(targetResults+"\n\n");
+				}
+			}
+			
+			result.append("Test specific results:\n\n");
+			result.append(getTestSpecificResults());
+			
+		}
+
+		return result.toString();
+	}
+	
 
 }
