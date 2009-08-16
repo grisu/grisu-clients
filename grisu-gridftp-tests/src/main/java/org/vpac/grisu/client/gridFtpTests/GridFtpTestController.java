@@ -18,7 +18,6 @@ import jline.ConsoleReader;
 
 import org.apache.commons.lang.StringUtils;
 import org.vpac.grisu.backend.hibernate.HibernateSessionFactory;
-import org.vpac.grisu.client.gridFtpTests.testElements.GridFtpTestElement;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.frontend.control.login.LoginHelpers;
 import org.vpac.grisu.frontend.control.login.LoginParams;
@@ -213,14 +212,14 @@ public class GridFtpTestController {
 		
 		for ( OutputModule module : outputModules ) {
 			for ( GridFtpTestElement element : elements ) {
-				module.writeTestElement(element, displayOnlyFailed, false);
+				module.writeTestElement(element);
 			}
 		}
 
 		StringBuffer resultAll = new StringBuffer();
 		for (GridFtpTestElement element : elements) {
 
-			resultAll.append(element.getResultsForThisTest(displayOnlyFailed, false));
+			resultAll.append(element.getResultsForThisTest(displayOnlyFailed, false, false));
 		}
 
 		System.out.println(resultAll);

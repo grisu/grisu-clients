@@ -1,9 +1,10 @@
 package org.vpac.grisu.client.gridFtpTests;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
+import java.util.List;
 
-import org.vpac.grisu.client.gridFtpTests.testElements.GridFtpTestElement;
 
 
 public class LogFileOutputModule implements OutputModule {
@@ -14,15 +15,51 @@ public class LogFileOutputModule implements OutputModule {
 		this.output = output;
 	}
 	
-	public void writeTestElement(GridFtpTestElement element, boolean onlyFailed, boolean showStackTrace) {
+	public void writeTestElement(GridFtpTestElement element) {
+
+		File parent = new File(output);
+		parent.mkdir();
 
 		StringBuffer outputString = new StringBuffer();
 
-		outputString.append(element.getResultsForThisTest(onlyFailed, showStackTrace));
+		outputString.append(element.getResultsForThisTest(false, true, false));
 
 		try {
 
-			String uFileName = output;
+			String uFileName = output+File.separator+element.getTestName()+"_allResults.log";
+			FileWriter fileWriter = new FileWriter(uFileName, true);
+			BufferedWriter buffWriter = new BufferedWriter(fileWriter);
+			buffWriter.write(outputString.toString());
+
+			buffWriter.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		outputString = new StringBuffer();
+
+		outputString.append(element.getResultsForThisTest(true, true, false));
+
+		try {
+
+			String uFileName = output+File.separator+element.getTestName()+"_onlyFailed.log";
+			FileWriter fileWriter = new FileWriter(uFileName, true);
+			BufferedWriter buffWriter = new BufferedWriter(fileWriter);
+			buffWriter.write(outputString.toString());
+
+			buffWriter.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		outputString = new StringBuffer();
+		outputString.append(element.getResultsForThisTest(true, false, true));
+
+		try {
+
+			String uFileName = output+File.separator+element.getTestName()+"_shortFailed.log";
 			FileWriter fileWriter = new FileWriter(uFileName, true);
 			BufferedWriter buffWriter = new BufferedWriter(fileWriter);
 			buffWriter.write(outputString.toString());
@@ -37,7 +74,9 @@ public class LogFileOutputModule implements OutputModule {
 	public void writeTestsSetup(String setup) {
 		try {
 
-			String uFileName = output;
+			File parent = new File(output);
+			parent.mkdir();
+			String uFileName = output+File.separator+"testSetup.log";
 			FileWriter fileWriter = new FileWriter(uFileName, true);
 			BufferedWriter buffWriter = new BufferedWriter(fileWriter);
 			buffWriter.write(setup);
@@ -51,8 +90,9 @@ public class LogFileOutputModule implements OutputModule {
 
 	public void writeTestsStatistic(String statistic) {
 		try {
-
-			String uFileName = output;
+			File parent = new File(output);
+			parent.mkdir();
+			String uFileName = output+File.separator+"testStatistics.log";
 			FileWriter fileWriter = new FileWriter(uFileName, true);
 			BufferedWriter buffWriter = new BufferedWriter(fileWriter);
 			buffWriter.write(statistic);

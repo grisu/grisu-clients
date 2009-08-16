@@ -1,13 +1,12 @@
-package org.vpac.grisu.client.gridFtpTests.testElements;
+package org.vpac.grisu.client.gridFtpTests;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.vpac.grisu.client.gridFtpTests.GridFtpActionItem;
-import org.vpac.grisu.client.gridFtpTests.GridFtpTestController;
 import org.vpac.grisu.model.MountPoint;
 
 public abstract class GridFtpTestElement {
@@ -31,8 +30,13 @@ public abstract class GridFtpTestElement {
 				result.add(el);
 				
 			} catch (Exception e) {
-				System.err.println("Couldn't setup test "+testname+": "+e.getLocalizedMessage());
-				System.exit(1);
+				if ( e instanceof InvocationTargetException ) {
+ 					System.err.println("Couldn't setup test "+testname+": "+((InvocationTargetException) e).getTargetException().getLocalizedMessage());
+					System.exit(1);
+				} else {
+					System.err.println("Couldn't setup test "+testname+": "+e.getLocalizedMessage());
+					System.exit(1);
+				}
 			}
 
 		}
@@ -70,14 +74,14 @@ public abstract class GridFtpTestElement {
 	
 	abstract public String getDescription();
 	
-	abstract public String getTestSpecificResults();
+//	abstract public String getTestSpecificResults();
 	
 	@Override
 	public String toString() {
 		return getTestName();
 	}
 	
-	public String getResultsForThisTest(boolean onlyFailed, boolean showStackTrace) {
+	public String getResultsForThisTest(boolean onlyFailed, boolean showStackTrace, boolean shortVersion) {
 
 		StringBuffer result = new StringBuffer();
 
@@ -97,11 +101,11 @@ public abstract class GridFtpTestElement {
 						if ((item.getSource() != null && item.getSource()
 								.contains(mp.getRootUrl()))) {
 							// means mountpoint was used as source
-							sourceResults.append(item.getResult(showStackTrace));
+							sourceResults.append(item.getResult(showStackTrace, shortVersion));
 						} else if (item.getTarget() != null
 								&& item.getTarget().contains(mp.getRootUrl())) {
 							// means mountpoint was used as target
-							targetResults.append(item.getResult(showStackTrace));
+							targetResults.append(item.getResult(showStackTrace, shortVersion));
 						}
 					}
 				}
@@ -120,7 +124,7 @@ public abstract class GridFtpTestElement {
 			}
 			
 			result.append("Test specific results:\n\n");
-			result.append(getTestSpecificResults());
+//			result.append(getTestSpecificResults());
 			
 		}
 

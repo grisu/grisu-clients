@@ -96,8 +96,9 @@ public class GridFtpActionItem {
 		return runId;
 	}
 
-	public String getResult(boolean showFullException) {
+	public String getResult(boolean showFullException, boolean shortVersion) {
 		StringBuilder result = new StringBuilder();
+		if ( ! shortVersion ) {
 		result.append("---------------------------------\n");
 		result.append("Testaction:\t"
 				+ getAction().getName() + "\n");
@@ -106,6 +107,7 @@ public class GridFtpActionItem {
 		result.append("Duration:\t" + getStartDate()
 				+ " - " + getEndDate() + "\n");
 		result.append("Executed:\t" + isExecuted() + "\n");
+		}
 		if (isExecuted()) {
 			result.append("Success:\t" + isSuccess()
 					+ "\n");

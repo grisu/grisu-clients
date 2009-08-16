@@ -8,6 +8,7 @@ import java.util.Set;
 import org.vpac.grisu.client.gridFtpTests.GridFtpAction;
 import org.vpac.grisu.client.gridFtpTests.GridFtpActionItem;
 import org.vpac.grisu.client.gridFtpTests.GridFtpTestController;
+import org.vpac.grisu.client.gridFtpTests.GridFtpTestElement;
 import org.vpac.grisu.client.gridFtpTests.TestSetupException;
 import org.vpac.grisu.model.MountPoint;
 
