@@ -12,13 +12,13 @@ import org.vpac.grisu.client.gridFtpTests.GridFtpTestElement;
 import org.vpac.grisu.client.gridFtpTests.TestSetupException;
 import org.vpac.grisu.model.MountPoint;
 
-public class SimpleTestElement extends GridFtpTestElement {
+public class SimpleUploadTest extends GridFtpTestElement {
 
 	private final String sourceFile;
 	private final String targetFileName = "simpleTestTarget.txt";
 	private final String targetDownloadFile;
 
-	public SimpleTestElement(GridFtpTestController controller,
+	public SimpleUploadTest(GridFtpTestController controller,
 			Set<MountPoint> mps) throws TestSetupException {
 
 		super(controller, mps);
@@ -94,7 +94,7 @@ public class SimpleTestElement extends GridFtpTestElement {
 
 	@Override
 	public String getTestName() {
-		return "SimpleTest";
+		return "SimpleUploadTest";
 	}
 
 	@Override

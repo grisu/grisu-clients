@@ -134,14 +134,7 @@ public class GridFtpTestController {
 		}
 
 		timeout = options.getTimeout();
-
-		if (options.listTests()) {
-
-			// TODO
-
-			System.exit(0);
-		}
-
+		
 		gridtestNames = options.getGridTestNames();
 		Arrays.sort(gridtestNames);
 
@@ -150,6 +143,44 @@ public class GridFtpTestController {
 
 		outputModules.add(new LogFileOutputModule(output));
 		// outputModules.add(new XmlRpcOutputModule());
+
+
+
+		if (options.listTests()) {
+			
+			gridtestNames = null;
+
+			Set<MountPoint> mountPointsToUse = calculateMountPointsToUse();
+			List<GridFtpTestElement> elements = GridFtpTestElement
+					.generateGridTestInfos(this, gridtestNames, mountPointsToUse);
+
+			System.out.println("Available tests: ");
+			for ( GridFtpTestElement element : elements ) {
+				System.out.println("Testname: "+element.getTestName());
+				System.out.println();
+				System.out.println("Description: "+element.getDescription());
+				System.out.println();
+				System.out.println("Test elements:");
+				System.out.println();				
+				for ( List<GridFtpActionItem> list : element.getActionItems() ) {
+					for ( GridFtpActionItem item : list ) {
+						System.out.println("\tAction:\t"+item.getAction().getAction().toString()+" (Actionname: "+item.getAction().getName()+")");
+						if ( item.getSource() != null ) {
+							System.out.println("\tSource:\t"+item.getSource());
+						}
+						if ( item.getTarget() != null ) {
+							System.out.println("\tTarget:\t"+item.getTarget());
+						}
+						System.out.println();	
+					}
+					System.out.println();
+					System.out.println();
+				}
+				System.out.println();
+			}
+
+			System.exit(0);
+		}
 
 	}
 
@@ -160,23 +191,48 @@ public class GridFtpTestController {
 	public int getConcurrentThreads() {
 		return threads;
 	}
+	
+	private Set<MountPoint> calculateMountPointsToUse() {
+		
+		Set<MountPoint> mps = new HashSet<MountPoint>();
+		
+		for (String fqan : fqans) {
+
+			for ( MountPoint mp : registry.getUserEnvironmentManager().getMountPoints(fqan) ) {
+
+				boolean ignoreThisMountPoint = false;
+				if (includes.length == 0) {
+					for (String filter : excludes) {
+						if (mp.getRootUrl().indexOf(filter) >= 0) {
+							ignoreThisMountPoint = true;
+						}
+					}
+				} else {
+					for (String filter : includes) {
+						if (mp.getRootUrl().indexOf(filter) < 0) {
+							ignoreThisMountPoint = true;
+						}
+					}
+				}
+				if ( ! ignoreThisMountPoint ) {
+					mps.add(mp);
+				}
+
+			}
+
+		}
+		
+		return mps;
+	}
 
 	public void start() {
 
-		Set<MountPoint> mountPointsToUse = new HashSet<MountPoint>();
+		Set<MountPoint> mountPointsToUse = calculateMountPointsToUse();
 
-		for (String fqan : fqans) {
-
-			mountPointsToUse.addAll(registry.getUserEnvironmentManager()
-					.getMountPoints(fqan));
-
-		}
-
+		
 		List<GridFtpTestElement> elements = GridFtpTestElement
 				.generateGridTestInfos(this, gridtestNames, mountPointsToUse);
 
-		// LinkedList<List<GridFtpActionItem>> allActionItems = new
-		// LinkedList<List<GridFtpActionItem>>();
 
 		for (GridFtpTestElement element : elements) {
 

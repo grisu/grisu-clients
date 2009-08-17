@@ -54,7 +54,7 @@ public class FiveTimesMultipleUpload extends GridFtpTestElement {
 		// delete file
 		for ( MountPoint mp : mountpoints ) {
 			
-			for ( int i=0; i<controller.getConcurrentThreads(); i++ ) {
+			for ( int i=0; i<5; i++ ) {
 				GridFtpActionItem item = new GridFtpActionItem(mp.getAlias()+i, action, mp.getRootUrl()+"/"+targetFileName+i, null);
 				list.add(item);
 			}
@@ -76,7 +76,7 @@ public class FiveTimesMultipleUpload extends GridFtpTestElement {
 	
 	@Override
 	public String getTestName() {
-		return "SimpleTest";
+		return "FiveTimesMultipleUpload";
 	}
 
 	@Override

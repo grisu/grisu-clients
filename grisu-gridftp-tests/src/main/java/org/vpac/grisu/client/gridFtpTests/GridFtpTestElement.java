@@ -11,12 +11,18 @@ import org.vpac.grisu.model.MountPoint;
 
 public abstract class GridFtpTestElement {
 	
+	public static final String[] IMPLEMENTED_TESTS = new String[]{
+		"SimpleUploadTest", "FiveTimesMultipleUpload", "SimpleMultipleUpload", "HundredTimesMultipleUpload",
+		"HundredTimesMultipleDownload", "SimpleMultipleDownload"
+	};
+	
 	public static final List<GridFtpTestElement> generateGridTestInfos(
 			GridFtpTestController controller, String[] testnames, Set<MountPoint> mps) {
 
+
 		List<GridFtpTestElement> result = new LinkedList<GridFtpTestElement>();
-		if (testnames.length == 0) {
-			testnames = new String[] { "SimpleTestElement" };
+		if ( testnames == null || testnames.length == 0) {
+			testnames = IMPLEMENTED_TESTS;
 		}
 
 		for (String testname : testnames) {
@@ -28,7 +34,6 @@ public abstract class GridFtpTestElement {
 				
 				GridFtpTestElement el = (GridFtpTestElement) testElementConstructor.newInstance(controller, mps);
 				result.add(el);
-				
 			} catch (Exception e) {
 				if ( e instanceof InvocationTargetException ) {
  					System.err.println("Couldn't setup test "+testname+": "+((InvocationTargetException) e).getTargetException().getLocalizedMessage());
@@ -83,18 +88,42 @@ public abstract class GridFtpTestElement {
 	
 	public String getResultsForThisTest(boolean onlyFailed, boolean showStackTrace, boolean shortVersion) {
 
+
 		StringBuffer result = new StringBuffer();
 
 		result.append("Testname:\t" + getTestName() + "\n");
 		result.append("Description:\t" + getDescription() + "\n\n");
 		result.append("Result per mountpoint:\n");
 		
+		int total = 0;
+		int failed = 0;
+		int success = 0;
+		int notExecuted = 0;
+		
+		for ( List<GridFtpActionItem> list : getActionItems() ) {
+			for ( GridFtpActionItem item : list ) {
+				total = total + 1;
+
+				if ( item.isExecuted() ) {
+					if ( item.isSuccess() ) {
+						success = success + 1;
+					} else {
+						failed = failed + 1;
+					}
+				} else {
+					notExecuted = notExecuted + 1;
+				}
+			}
+		}
+
 		for (MountPoint mp : mountpoints) {
-			StringBuffer sourceResults = new StringBuffer();
+			
+						StringBuffer sourceResults = new StringBuffer();
 			StringBuffer targetResults = new StringBuffer();
 			
 			for (List<GridFtpActionItem> list : getActionItems()) {
 				for (GridFtpActionItem item : list) {
+
 					if (onlyFailed && item.isSuccess()) {
 						continue;
 					} else {
@@ -123,10 +152,15 @@ public abstract class GridFtpTestElement {
 				}
 			}
 			
-			result.append("Test specific results:\n\n");
+			
+//			result.append("\nTest specific results:\n\n");
 //			result.append(getTestSpecificResults());
 			
 		}
+		result.append("\nTotal number of tests: "+total);
+		result.append("\nSuccessful tests: "+success);
+		result.append("\nFailed tests: "+failed);
+		result.append("\nNot executed tests: "+notExecuted);
 
 		return result.toString();
 	}

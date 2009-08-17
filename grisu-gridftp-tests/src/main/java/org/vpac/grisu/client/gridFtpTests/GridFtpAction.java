@@ -59,6 +59,10 @@ public class GridFtpAction {
 		this.si = controller.getServiceInterface();
 	}
 	
+	public Action getAction() {
+		return action;
+	}
+	
 	public String getName() {
 		return name;
 	}

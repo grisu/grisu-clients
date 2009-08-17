@@ -12,12 +12,12 @@ import org.vpac.grisu.client.gridFtpTests.GridFtpTestElement;
 import org.vpac.grisu.client.gridFtpTests.TestSetupException;
 import org.vpac.grisu.model.MountPoint;
 
-public class SimpleMultipleUpload extends GridFtpTestElement {
+public class HundredTimesMultipleUpload extends GridFtpTestElement {
 	
 	private final String sourceFile;
 	private final String targetFileName = "simpleTestTarget.txt";
 	
-	public SimpleMultipleUpload(GridFtpTestController controller, Set<MountPoint> mps) throws TestSetupException {
+	public HundredTimesMultipleUpload(GridFtpTestController controller, Set<MountPoint> mps) throws TestSetupException {
 		
 		super(controller, mps);
 
@@ -41,7 +41,7 @@ public class SimpleMultipleUpload extends GridFtpTestElement {
 		// upload file
 		for ( MountPoint mp : mountpoints ) {
 			
-			for ( int i=0; i<controller.getConcurrentThreads(); i++ ) {
+			for ( int i=0; i<100; i++ ) {
 				GridFtpActionItem item = new GridFtpActionItem(mp.getAlias()+i, action, sourceFile, mp.getRootUrl()+"/"+targetFileName+i);
 				list.add(item);
 			}
@@ -49,17 +49,17 @@ public class SimpleMultipleUpload extends GridFtpTestElement {
 		}
 		actionItems.add(list);
 		
-		action = new GridFtpAction(GridFtpAction.Action.delete, "delete1", controller);
-		list = new LinkedList<GridFtpActionItem>();
-		// delete file
-		for ( MountPoint mp : mountpoints ) {
-			
-			for ( int i=0; i<controller.getConcurrentThreads(); i++ ) {
-				GridFtpActionItem item = new GridFtpActionItem(mp.getAlias()+i, action, mp.getRootUrl()+"/"+targetFileName+i, null);
-				list.add(item);
-			}
-		}
-		actionItems.add(list);
+//		action = new GridFtpAction(GridFtpAction.Action.delete, "delete1", controller);
+//		list = new LinkedList<GridFtpActionItem>();
+//		// delete file
+//		for ( MountPoint mp : mountpoints ) {
+//			
+//			for ( int i=0; i<100; i++ ) {
+//				GridFtpActionItem item = new GridFtpActionItem(mp.getAlias()+i, action, mp.getRootUrl()+"/"+targetFileName+i, null);
+//				list.add(item);
+//			}
+//		}
+//		actionItems.add(list);
 		
 		return actionItems;
 		
@@ -76,12 +76,13 @@ public class SimpleMultipleUpload extends GridFtpTestElement {
 	
 	@Override
 	public String getTestName() {
-		return "SimpleMultipleUpload";
+		return "HundredTimesMultipleUpload";
 	}
 
 	@Override
 	public String getDescription() {
-		return "A very simple multiple upload and remote deletion of a small text file. This test uploads as many times to the same filesystem as there are concurrent threads in this testrun.";
+		return "A very simple multiple upload of a small text file. This test uploads 100 times to the same filesystem.";
+
 	}
 
 
