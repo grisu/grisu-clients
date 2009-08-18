@@ -8,6 +8,8 @@ import javax.activation.FileDataSource;
 
 import org.apache.log4j.Logger;
 import org.vpac.grisu.control.ServiceInterface;
+import org.vpac.grisu.model.GrisuRegistry;
+import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.utils.FileHelpers;
 
 public class GridFtpAction {
@@ -165,6 +167,8 @@ public class GridFtpAction {
 
 	private void upload(GridFtpActionItem actionItem, String source, String target) {
 		try {
+//			si.deleteFile(target);
+//			GrisuRegistryManager.getDefault(si).getFileManager().uploadFile(source, target);
 			si.upload(new DataHandler(new FileDataSource(source)), target, false);
 		} catch (Exception e) {
 			actionItem.setException(e);
