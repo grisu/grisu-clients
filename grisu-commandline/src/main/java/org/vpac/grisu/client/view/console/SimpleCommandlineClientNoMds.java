@@ -8,13 +8,13 @@ import jline.ConsoleReader;
 import org.apache.log4j.Logger;
 import org.vpac.grisu.client.control.EnvironmentManager;
 import org.vpac.grisu.client.control.ServiceInterfaceFactoryOld;
+import org.vpac.grisu.client.control.clientexceptions.JobCreationException;
 import org.vpac.grisu.client.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.client.control.exceptions.SubmissionLocationException;
 import org.vpac.grisu.client.control.generic.GenericJobWrapper;
 import org.vpac.grisu.client.model.SubmissionLocation;
 import org.vpac.grisu.client.model.template.JsdlTemplateEvent;
 import org.vpac.grisu.client.model.template.JsdlTemplateListener;
-import org.vpac.grisu.control.exceptions.JobCreationException;
 import org.vpac.grisu.frontend.control.login.LoginParams;
 
 public class SimpleCommandlineClientNoMds implements JsdlTemplateListener {

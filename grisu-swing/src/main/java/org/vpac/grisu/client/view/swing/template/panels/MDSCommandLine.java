@@ -19,6 +19,7 @@ import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
 
 import org.apache.log4j.Logger;
+import org.vpac.grisu.client.control.clientexceptions.JobCreationException;
 import org.vpac.grisu.client.control.eventStuff.SubmissionObjectListener;
 import org.vpac.grisu.client.model.SubmissionObject;
 import org.vpac.grisu.client.model.template.modules.SubmissionObjectHolder;
@@ -26,7 +27,6 @@ import org.vpac.grisu.client.model.template.modules.TemplateModule;
 import org.vpac.grisu.client.model.template.nodes.TemplateNode;
 import org.vpac.grisu.client.model.template.nodes.TemplateNodeEvent;
 import org.vpac.grisu.client.view.swing.utils.HelpDialog;
-import org.vpac.grisu.control.exceptions.JobCreationException;
 import org.vpac.historyRepeater.HistoryManager;
 
 import com.jgoodies.forms.factories.FormFactory;

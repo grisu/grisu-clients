@@ -9,6 +9,7 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.vpac.grisu.client.control.EnvironmentManager;
 import org.vpac.grisu.client.control.ServiceInterfaceFactoryOld;
+import org.vpac.grisu.client.control.clientexceptions.JobCreationException;
 import org.vpac.grisu.client.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.client.control.exceptions.SubmissionLocationException;
 import org.vpac.grisu.client.control.exceptions.TemplateException;
@@ -21,7 +22,6 @@ import org.vpac.grisu.client.model.template.modules.Common;
 import org.vpac.grisu.client.model.template.nodes.DefaultTemplateNodeValueSetter;
 import org.vpac.grisu.client.model.template.nodes.TemplateNode;
 import org.vpac.grisu.client.model.template.nodes.templatePreProcessor.TemplatePreProcessorException;
-import org.vpac.grisu.control.exceptions.JobCreationException;
 import org.vpac.grisu.frontend.control.login.LoginParams;
 import org.vpac.grisu.utils.SeveralXMLHelpers;
 import org.w3c.dom.Document;
@@ -167,7 +167,7 @@ public class GenericJobWrapper {
 	}
 	
 	private void initialize(String application, Document xmlTemplateDoc) throws TemplateException {
-		JsdlHelpers.setApplicationType(xmlTemplateDoc, application);
+		JsdlHelpers.setApplicationName(xmlTemplateDoc, application);
 		template = new JsdlTemplate(this.em, xmlTemplateDoc);
 		if ( template == null ) {
 			throw new TemplateException("Couldn't create base template.");
@@ -464,7 +464,7 @@ public class GenericJobWrapper {
 	 * @param newApplication the new application type.
 	 */
 	public void changeApplication(String newApplication) {
-		JsdlHelpers.setApplicationType(template.getTemplateDocument(), application);
+		JsdlHelpers.setApplicationName(template.getTemplateDocument(), application);
 		getCommonGenericModule().setApplication(newApplication);
 	}
 	
