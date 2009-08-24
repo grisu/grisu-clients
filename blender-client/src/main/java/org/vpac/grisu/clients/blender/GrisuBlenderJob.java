@@ -1,5 +1,7 @@
 package org.vpac.grisu.clients.blender;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -7,16 +9,13 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.apache.commons.lang.StringUtils;
+import org.vpac.grisu.client.control.clientexceptions.FileTransferException;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.control.exceptions.MultiPartJobException;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
-import org.vpac.grisu.control.exceptions.ServiceInterfaceException;
-import org.vpac.grisu.frontend.control.login.LoginParams;
-import org.vpac.grisu.frontend.control.login.ServiceInterfaceFactory;
-import org.vpac.grisu.frontend.model.job.BackendException;
+import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
 import org.vpac.grisu.frontend.model.job.JobObject;
-import org.vpac.grisu.frontend.model.job.JobsException;
 import org.vpac.grisu.frontend.model.job.MultiPartJobObject;
 import org.vpac.grisu.model.GrisuRegistry;
 import org.vpac.grisu.model.GrisuRegistryManager;
@@ -35,8 +34,6 @@ public class GrisuBlenderJob {
 	private final UserApplicationInformation userApplicationInfo;
 	private final GrisuRegistry registry;
 	private final ServiceInterface serviceInterface;
-	private final Set<String> versions;
-	private final String fqan;
 	private final String multiJobName;
 	private final MultiPartJobObject multiPartJob;
 
@@ -50,9 +47,22 @@ public class GrisuBlenderJob {
 		this.registry = GrisuRegistryManager.getDefault(serviceInterface);
 		this.userApplicationInfo = registry.getUserApplicationInformation(BLENDER_APP_NAME);
 		this.multiJobName = multiPartJobId;
-		this.multiPartJob = new MultiPartJobObject(serviceInterface, this.multiJobName, this.fqan);
-		this.fqan = fqan;
-		this.versions = this.userApplicationInfo.getAllAvailableVersionsForFqan(fqan);
+		this.multiPartJob = new MultiPartJobObject(serviceInterface, this.multiJobName, fqan);
+
+	}
+	
+	public GrisuBlenderJob(ServiceInterface serviceInterface, String multiPartJobId) throws MultiPartJobException, NoSuchJobException {
+		
+		this.serviceInterface = serviceInterface;
+		this.registry = GrisuRegistryManager.getDefault(serviceInterface);
+		this.userApplicationInfo = registry.getUserApplicationInformation(BLENDER_APP_NAME);
+		this.multiJobName = multiPartJobId;
+		this.multiPartJob = new MultiPartJobObject(serviceInterface, this.multiJobName, false);
+		
+	}
+	
+	public String getProgress() {
+		return multiPartJob.getProgress(null);
 	}
 	
 	public SortedSet<GridResource> findBestResources() {
@@ -63,7 +73,7 @@ public class GrisuBlenderJob {
 		properties.put(JobSubmissionProperty.APPLICATIONVERSION, version);
 		properties.put(JobSubmissionProperty.WALLTIME_IN_MINUTES, new Integer(walltimeInSeconds/60).toString());
 		
-		return this.userApplicationInfo.getBestSubmissionLocations(properties, fqan);
+		return this.userApplicationInfo.getBestSubmissionLocations(properties, multiPartJob.getFqan());
 		
 	}
 	
@@ -89,7 +99,7 @@ public class GrisuBlenderJob {
 		
 	}
 	
-	public void createAndSubmitBlenderJob() throws JobsException, BackendException, JobSubmissionException {
+	public void createAndSubmitBlenderJob() throws JobSubmissionException {
 		
 		SortedSet<GridResource> resourcesAvailable = findBestResources();
 		
@@ -101,7 +111,11 @@ public class GrisuBlenderJob {
 			multiPartJob.addInputFile(inputFile);
 		}
 		
-		multiPartJob.prepareAndCreateJobs();
+		try {
+			multiPartJob.prepareAndCreateJobs();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		try {
 			multiPartJob.submit();
@@ -110,51 +124,10 @@ public class GrisuBlenderJob {
 		}
 		
 	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) throws Exception {
+	
+	public void downloadResult() throws RemoteFileSystemException, FileTransferException, IOException {
 		
-		String username = args[0];
-		char[] password = args[1].toCharArray();
-
-		LoginParams loginParams = new LoginParams(
-//				"http://localhost:8080/xfire-backend/services/grisu",
-//				"https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
-//				 "https://ngportal.vpac.org/grisu-ws/services/grisu",
-				 "Local",
-//				"Dummy",
-				username, password);
-
-		ServiceInterface si = null;
-		try {
-			si = ServiceInterfaceFactory
-					.createInterface(loginParams);
-		} catch (ServiceInterfaceException e) {
-			System.err.println(e.getLocalizedMessage());
-			System.exit(1);
-		}
-		
-		GrisuBlenderJob blenderJob;
-		try {
-			blenderJob = new GrisuBlenderJob(si, "blenderJob1", "/ARCS/NGAdmin");
-		} catch (Exception e) {
-			si.deleteMultiPartJob("blenderJob1", true);
-			blenderJob = new GrisuBlenderJob(si, "blenderJob1", "/ARCS/NGAdmin");
-		}
-		
-		Set<GridResource> resources = blenderJob.findBestResources();
-		
-		blenderJob.addInputFile("/home/markus/Desktop/CubesTest.blend");
-		
-		for ( int i=0; i<10; i++ ) {
-			blenderJob.addJob("blender -b "+INPUT_PATH_VARIABLE+"/CubesTest.blend -F PNG -o cubes_ -f "+i, 3600);
-		}
-		
-		blenderJob.createAndSubmitBlenderJob();
-		
-		System.out.println("Blender job submission finished.");
+		multiPartJob.downloadResults(new File("/home/markus/Desktop/blender"), new String[]{"cubes"}, false, false);
 		
 	}
 	
