@@ -1,13 +1,9 @@
 package org.vpac.grisu.clients.blender;
 
-import java.util.Set;
-
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.ServiceInterfaceException;
 import org.vpac.grisu.frontend.control.login.LoginParams;
 import org.vpac.grisu.frontend.control.login.ServiceInterfaceFactory;
-
-import au.org.arcs.jcommons.interfaces.GridResource;
 
 public class Blender_check {
 
@@ -22,8 +18,8 @@ public class Blender_check {
 		LoginParams loginParams = new LoginParams(
 //				"http://localhost:8080/xfire-backend/services/grisu",
 //				"https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
-//				 "https://ngportal.vpac.org/grisu-ws/services/grisu",
-				 "Local",
+				 "https://ngportal.vpac.org/grisu-ws/services/grisu",
+//				 "Local",
 //				"Dummy",
 				username, password);
 

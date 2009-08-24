@@ -22,8 +22,8 @@ public class Blender_submit {
 		LoginParams loginParams = new LoginParams(
 //				"http://localhost:8080/xfire-backend/services/grisu",
 //				"https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
-//				 "https://ngportal.vpac.org/grisu-ws/services/grisu",
-				 "Local",
+				 "https://ngportal.vpac.org/grisu-ws/services/grisu",
+//				 "Local",
 //				"Dummy",
 				username, password);
 
@@ -46,9 +46,16 @@ public class Blender_submit {
 		
 		
 		blenderJob.addInputFile("/home/markus/Desktop/CubesTest.blend");
+
+		int walltime = 3600; 
 		
-		for ( int i=1; i<11; i++ ) {
-			blenderJob.addJob("blender -b "+GrisuBlenderJob.INPUT_PATH_VARIABLE+"/CubesTest.blend -F PNG -o cubes_ -f "+i, 3600);
+		for ( int i=1; i<=150; i++ ) {
+			int w = walltime;
+			
+			if ( i > 70 ) {
+				w = walltime * 2;
+			}
+			blenderJob.addJob("blender -b "+GrisuBlenderJob.INPUT_PATH_VARIABLE+"/CubesTest.blend -F PNG -o cubes_ -f "+i, w);
 		}
 		
 		blenderJob.createAndSubmitBlenderJob();
