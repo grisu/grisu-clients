@@ -418,7 +418,7 @@ public class JsdlTemplate implements TemplateNodeListener {
 		myLogger.info("Creating job on server backend...");
 		currentJobname = JsdlHelpers.getJobname(template);
 		try {
-			currentJobname = em.getServiceInterface().createJobUsingJsdl(SeveralXMLHelpers.toString(getTemplateDocument()),
+			currentJobname = em.getServiceInterface().createJob(SeveralXMLHelpers.toString(getTemplateDocument()),
 					this.currentFqan, Constants.FORCE_NAME_METHOD);
 		} catch (RuntimeException e1) {
 

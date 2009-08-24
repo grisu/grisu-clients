@@ -64,6 +64,7 @@
 		<module>grisu-batch</module>
 		<module>grisu-commandline</module>
 		<module>grisu-gridftp-tests</module>
+		<module>blender-client</module>
 	</modules>
 
 	<build>

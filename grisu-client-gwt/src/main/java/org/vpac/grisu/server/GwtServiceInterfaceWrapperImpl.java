@@ -481,7 +481,7 @@ public class GwtServiceInterfaceWrapperImpl extends RemoteServiceServlet
 
 
 		try {
-			getServiceInterface().createJobUsingJsdl(jso.getJobDescriptionDocumentAsString(), fqan, "force-name");
+			getServiceInterface().createJob(jso.getJobDescriptionDocumentAsString(), fqan, "force-name");
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new JobCreationException(e.getLocalizedMessage());
