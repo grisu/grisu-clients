@@ -52,9 +52,9 @@ public class Blender_submit {
 		
 		blenderJob.addInputFile("/home/markus/Desktop/CubesTest.blend");
 
-		int walltime = 120; 
+		int walltime = 3600; 
 		
-		for ( int i=1; i<=10; i++ ) {
+		for ( int i=1; i<=15; i++ ) {
 			int w = walltime;
 			
 			if ( i > 70 ) {
