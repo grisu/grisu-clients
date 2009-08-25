@@ -22,7 +22,9 @@ public class Blender_submit {
 		LoginParams loginParams = new LoginParams(
 //				"http://localhost:8080/xfire-backend/services/grisu",
 //				"https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
-				 "https://ngportal.vpac.org/grisu-ws/services/grisu",
+//				 "https://ngportal.vpac.org/grisu-ws/services/grisu",
+//				"https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
+				"http://localhost:8080/enunciate-backend/soap/GrisuService",
 //				 "Local",
 //				"Dummy",
 				username, password);
@@ -36,8 +38,8 @@ public class Blender_submit {
 			System.exit(1);
 		}
 		
-		si.deleteMultiPartJob("blenderJob1", true);
-		System.exit(1);
+//		si.deleteMultiPartJob("blenderJob1", true);
+//		System.exit(1);
 		
 		GrisuBlenderJob blenderJob;
 		try {
@@ -52,7 +54,7 @@ public class Blender_submit {
 
 		int walltime = 120; 
 		
-		for ( int i=1; i<=100; i++ ) {
+		for ( int i=1; i<=10; i++ ) {
 			int w = walltime;
 			
 			if ( i > 70 ) {

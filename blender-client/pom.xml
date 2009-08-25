@@ -1,35 +1,43 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>grisu-clients</artifactId>
-    <groupId>org.vpac.grisu</groupId>
-    <version>0.3-SNAPSHOT</version>
-  </parent>
-  <groupId>org.vpac.grisu</groupId>
-  <artifactId>blender-client</artifactId>
-  <version>0.3-SNAPSHOT</version>
-  <dependencies>
-    <dependency>
-      <groupId>org.vpac.grisu</groupId>
-      <artifactId>grisu-client</artifactId>
-      <version>0.3-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.vpac.grisu</groupId>
-      <artifactId>grisu-core</artifactId>
-      <version>0.3-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.vpac.grisu</groupId>
-    	<artifactId>xfire-frontend</artifactId>
-    	<version>0.3-SNAPSHOT</version>
-    	<scope>compile</scope>
-    </dependency>
-  </dependencies>
-  
-  	<build>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>grisu-clients</artifactId>
+		<groupId>org.vpac.grisu</groupId>
+		<version>0.3-SNAPSHOT</version>
+	</parent>
+	<groupId>org.vpac.grisu</groupId>
+	<artifactId>blender-client</artifactId>
+	<version>0.3-SNAPSHOT</version>
+	<dependencies>
+<!--		<dependency>-->
+<!--			<groupId>org.vpac.grisu</groupId>-->
+<!--			<artifactId>grisu-client</artifactId>-->
+<!--			<version>0.3-SNAPSHOT</version>-->
+<!--			<scope>compile</scope>-->
+<!--		</dependency>-->
+		<dependency>
+			<groupId>org.vpac.grisu</groupId>
+			<artifactId>grisu-core</artifactId>
+			<version>0.3-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.vpac.grisu</groupId>
+			<artifactId>grisu-client-xfire</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+
+		<!--    <dependency>-->
+		<!--    	<groupId>org.vpac.grisu</groupId>-->
+		<!--    	<artifactId>xfire-frontend</artifactId>-->
+		<!--    	<version>0.3-SNAPSHOT</version>-->
+		<!--    	<scope>compile</scope>-->
+		<!--    </dependency>-->
+	</dependencies>
+
+	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -41,5 +49,5 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 </project>
