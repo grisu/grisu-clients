@@ -36,6 +36,9 @@ public class Blender_submit {
 			System.exit(1);
 		}
 		
+		si.deleteMultiPartJob("blenderJob1", true);
+		System.exit(1);
+		
 		GrisuBlenderJob blenderJob;
 		try {
 			blenderJob = new GrisuBlenderJob(si, "blenderJob1", "/ARCS/NGAdmin");
@@ -47,9 +50,9 @@ public class Blender_submit {
 		
 		blenderJob.addInputFile("/home/markus/Desktop/CubesTest.blend");
 
-		int walltime = 3600; 
+		int walltime = 120; 
 		
-		for ( int i=1; i<=150; i++ ) {
+		for ( int i=1; i<=100; i++ ) {
 			int w = walltime;
 			
 			if ( i > 70 ) {
