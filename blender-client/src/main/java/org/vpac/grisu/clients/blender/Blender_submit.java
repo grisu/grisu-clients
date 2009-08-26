@@ -23,8 +23,8 @@ public class Blender_submit {
 //				"http://localhost:8080/xfire-backend/services/grisu",
 //				"https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
 //				 "https://ngportal.vpac.org/grisu-ws/services/grisu",
-//				"https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
-				"http://localhost:8080/enunciate-backend/soap/GrisuService",
+				"https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
+//				"http://localhost:8080/enunciate-backend/soap/GrisuService",
 //				 "Local",
 //				"Dummy",
 				username, password);
@@ -50,22 +50,26 @@ public class Blender_submit {
 		}
 		
 		
-		blenderJob.addInputFile("/home/markus/Desktop/CubesTest.blend");
-
-		int walltime = 3600; 
+//		int walltime = 3600; 
+//		
+//		for ( int i=1; i<=10; i++ ) {
+//			int w = walltime;
+//			
+//			if ( i > 70 ) {
+//				w = walltime * 2;
+//			}
+//			blenderJob.addJob("blender -b "+GrisuBlenderJob.INPUT_PATH_VARIABLE+"/CubesTest.blend -F PNG -o cubes_ -f "+i, w);
+//		}
 		
-		for ( int i=1; i<=15; i++ ) {
-			int w = walltime;
-			
-			if ( i > 70 ) {
-				w = walltime * 2;
-			}
-			blenderJob.addJob("blender -b "+GrisuBlenderJob.INPUT_PATH_VARIABLE+"/CubesTest.blend -F PNG -o cubes_ -f "+i, w);
-		}
+		blenderJob.setBlenderFile("/home/markus/Desktop/CubesTest.blend");
+		blenderJob.setFirstFrame(1);
+		blenderJob.setLastFrame(150);
+		blenderJob.setDefaultWalltimeInSeconds(300);
+//		blenderJob.setSitesToExclude(new String[]{"vpac"});
 		
-		blenderJob.createAndSubmitBlenderJob();
+		blenderJob.createAndSubmitJobs();
 		
-		System.out.println("Blender job submission finished.");
+ 		System.out.println("Blender job submission finished.");
 		
 	}
 
