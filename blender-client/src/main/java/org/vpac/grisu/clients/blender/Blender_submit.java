@@ -23,9 +23,9 @@ public class Blender_submit {
 //				"http://localhost:8080/xfire-backend/services/grisu",
 //				"https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
 //				 "https://ngportal.vpac.org/grisu-ws/services/grisu",
-				"https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
+//				"https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
 //				"http://localhost:8080/enunciate-backend/soap/GrisuService",
-//				 "Local",
+				 "Local",
 //				"Dummy",
 				username, password);
 
@@ -63,9 +63,10 @@ public class Blender_submit {
 		
 		blenderJob.setBlenderFile("/home/markus/Desktop/CubesTest.blend");
 		blenderJob.setFirstFrame(1);
-		blenderJob.setLastFrame(150);
+		blenderJob.setLastFrame(10);
 		blenderJob.setDefaultWalltimeInSeconds(300);
 //		blenderJob.setSitesToExclude(new String[]{"vpac"});
+//		blenderJob.setSitesToInclude(new String[]{"anter"});
 		
 		blenderJob.createAndSubmitJobs();
 		

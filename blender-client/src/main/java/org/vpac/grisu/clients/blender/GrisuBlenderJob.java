@@ -155,21 +155,26 @@ public class GrisuBlenderJob {
 			if ( sitesToInclude != null ) {
 				
 				for ( String site : sitesToInclude ) {
-					if ( site.equalsIgnoreCase(resource.getSiteName()) ) {
+					if ( resource.getSiteName().toLowerCase().contains(site.toLowerCase()) ) {
 						resourcesToUse.put(resource, new Long(0L));
 						ranks.add(resource.getRank());
 						allRanks = allRanks + resource.getRank();
+						break;
 					}
 				}
 				
 			} else if ( sitesToExclude != null ) {
-				
+				boolean useSite = true;
 				for ( String site : sitesToExclude ) {
-					if ( ! site.equalsIgnoreCase(resource.getSiteName()) ) {
-						resourcesToUse.put(resource, new Long(0L));
-						ranks.add(resource.getRank());
-						allRanks = allRanks + resource.getRank();
+					if ( resource.getSiteName().toLowerCase().contains(site.toLowerCase()) ) {
+						useSite = false;
+						break;
 					}
+				}
+				if ( useSite ) {
+					resourcesToUse.put(resource, new Long(0L));
+					ranks.add(resource.getRank());
+					allRanks = allRanks + resource.getRank();					
 				}
 				
 			} else {
@@ -201,6 +206,11 @@ public class GrisuBlenderJob {
 				} else {
 					myLogger.debug("Rank percentage: "+rankPercentage+". Walltime percentage: "+wallTimePercentage+". Not using resource: "+resource.getQueueName());
 				}
+			}
+			
+			if ( subLocResource == null ) {
+				subLocResource = resourcesToUse.keySet().iterator().next();
+				myLogger.error("Couldn't find resource for frame: "+i);
 			}
 			
 			String command = createCommandline(i, i);
