@@ -9,6 +9,19 @@
 	<groupId>org.vpac.grisu</groupId>
 	<artifactId>blender-client</artifactId>
 	<version>0.3-SNAPSHOT</version>
+	
+	<repositories>
+		<repository>
+			<id>ARCS</id>
+			<url>http://code.arcs.org.au/nexus/content/groups/public</url>
+		</repository>
+		<repository>
+			<id>ARCS Snapshots</id>
+			<url>http://code.arcs.org.au/nexus/content/groups/public-snapshots</url>
+		</repository>
+	</repositories>
+	
+	
 	<dependencies>
 <!--		<dependency>-->
 <!--			<groupId>org.vpac.grisu</groupId>-->
@@ -35,6 +48,18 @@
 		<!--    	<version>0.3-SNAPSHOT</version>-->
 		<!--    	<scope>compile</scope>-->
 		<!--    </dependency>-->
+		<dependency>
+			<groupId>uk.co.flamingpenguin.jewelcli</groupId>
+			<artifactId>jewelcli</artifactId>
+			<version>0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>jline</groupId>
+			<artifactId>jline</artifactId>
+			<version>0.9.94</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -1,13 +1,9 @@
 package org.vpac.grisu.clients.blender;
 
-import java.util.Set;
-
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.ServiceInterfaceException;
 import org.vpac.grisu.frontend.control.login.LoginParams;
 import org.vpac.grisu.frontend.control.login.ServiceInterfaceFactory;
-
-import au.org.arcs.jcommons.interfaces.GridResource;
 
 public class Blender_submit {
 
@@ -63,9 +59,9 @@ public class Blender_submit {
 		
 		blenderJob.setBlenderFile("/home/markus/Desktop/CubesTest.blend");
 		blenderJob.setFirstFrame(1);
-		blenderJob.setLastFrame(10);
-		blenderJob.setDefaultWalltimeInSeconds(300);
-//		blenderJob.setSitesToExclude(new String[]{"vpac"});
+		blenderJob.setLastFrame(150);
+		blenderJob.setDefaultWalltimeInSeconds(3600);
+//		blenderJob.setSitesToExclude(new String[]{"vpac", "ersa"});
 //		blenderJob.setSitesToInclude(new String[]{"anter"});
 		
 		blenderJob.createAndSubmitJobs();

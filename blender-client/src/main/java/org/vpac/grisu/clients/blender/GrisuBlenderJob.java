@@ -4,12 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -28,7 +25,6 @@ import org.vpac.grisu.model.info.UserApplicationInformation;
 
 import au.org.arcs.jcommons.constants.JobSubmissionProperty;
 import au.org.arcs.jcommons.interfaces.GridResource;
-import au.org.arcs.jcommons.utils.SubmissionLocationHelpers;
 
 public class GrisuBlenderJob {
 	
@@ -56,9 +52,6 @@ public class GrisuBlenderJob {
 	private String outputFileName = "frame_";
 	private int firstFrame = 0;
 	private int lastFrame = -1;
-	
-	private String[] sitesToInclude;
-	private String[] sitesToExclude;
 	
 	private RenderFormat format = RenderFormat.PNG;
 	
@@ -103,6 +96,8 @@ public class GrisuBlenderJob {
 		this.userApplicationInfo = registry.getUserApplicationInformation(BLENDER_APP_NAME);
 		this.multiJobName = multiPartJobId;
 		this.multiPartJob = new MultiPartJobObject(serviceInterface, this.multiJobName, fqan);
+		this.multiPartJob.setDefaultApplication(BLENDER_APP_NAME);
+		this.multiPartJob.setDefaultVersion(BLENDER_DEFAULT_VERSION);
 
 	}
 	
@@ -139,84 +134,16 @@ public class GrisuBlenderJob {
 			throw new JobCreationException("Last frame before first frame.");
 		}
 		
-		Long allWalltime = 0L;
-		for ( int i=firstFrame; i<=lastFrame; i++ ) {
-			allWalltime = allWalltime + walltimesPerFrame.get(i);
-		}
-		
-		Map<GridResource, Long> resourcesToUse = new TreeMap<GridResource, Long>();
-		List<Integer> ranks = new LinkedList<Integer>();
-		Long allRanks = 0L;
-		for ( GridResource resource : findBestResources() ) {
-			
-			if ( resource.getQueueName().contains("sque") ) {
-				continue;
-			}
-			if ( sitesToInclude != null ) {
-				
-				for ( String site : sitesToInclude ) {
-					if ( resource.getSiteName().toLowerCase().contains(site.toLowerCase()) ) {
-						resourcesToUse.put(resource, new Long(0L));
-						ranks.add(resource.getRank());
-						allRanks = allRanks + resource.getRank();
-						break;
-					}
-				}
-				
-			} else if ( sitesToExclude != null ) {
-				boolean useSite = true;
-				for ( String site : sitesToExclude ) {
-					if ( resource.getSiteName().toLowerCase().contains(site.toLowerCase()) ) {
-						useSite = false;
-						break;
-					}
-				}
-				if ( useSite ) {
-					resourcesToUse.put(resource, new Long(0L));
-					ranks.add(resource.getRank());
-					allRanks = allRanks + resource.getRank();					
-				}
-				
-			} else {
-				resourcesToUse.put(resource, new Long(0L));
-				ranks.add(resource.getRank());
-				allRanks = allRanks + resource.getRank();
-			}
-		}
-		
-		myLogger.debug("Rank summary: "+allRanks);
-		myLogger.debug("Walltime summary: "+allWalltime);
 		
 		//TODO change that later on so more than one frames can be included in one job
 		for ( int i=firstFrame; i<=lastFrame; i++ ) {
-			
-			
-			GridResource subLocResource = null;
-			long oldWalltimeSummary = 0L;
-			for ( GridResource resource : resourcesToUse.keySet() ) {
-				
-				long rankPercentage = (resource.getRank()*100)/(allRanks);
-				long wallTimePercentage = ((walltimesPerFrame.get(i)+resourcesToUse.get(resource))*100)/(allWalltime);
-				
-				if ( rankPercentage >= wallTimePercentage ) {
-					subLocResource = resource;
-					oldWalltimeSummary = resourcesToUse.get(subLocResource);
-					myLogger.debug("Rank percentage: "+rankPercentage+". Walltime percentage: "+wallTimePercentage+". Using resource: "+resource.getQueueName());
-					break;
-				} else {
-					myLogger.debug("Rank percentage: "+rankPercentage+". Walltime percentage: "+wallTimePercentage+". Not using resource: "+resource.getQueueName());
-				}
-			}
-			
-			if ( subLocResource == null ) {
-				subLocResource = resourcesToUse.keySet().iterator().next();
-				myLogger.error("Couldn't find resource for frame: "+i);
-			}
-			
+
 			String command = createCommandline(i, i);
-			addJob(command, SubmissionLocationHelpers.createSubmissionLocationString(subLocResource), walltimesPerFrame.get(i));
-			resourcesToUse.put(subLocResource, oldWalltimeSummary+walltimesPerFrame.get(i));
+			
+			addJob(command, walltimesPerFrame.get(i));
 		}
+		
+		multiPartJob.fillOrOverwriteSubmissionLocationsUsingMatchmaker();
 		
 		createAndSubmitBlenderJob();
 		
@@ -273,7 +200,7 @@ public class GrisuBlenderJob {
 		for ( String inputFile : inputFiles ) {
 			multiPartJob.addInputFile(inputFile);
 		}
-		
+		multiPartJob.setConcurrentJobCreationThreads(1);
 		try {
 			multiPartJob.prepareAndCreateJobs();
 		} catch (Exception e) {
@@ -417,13 +344,11 @@ public class GrisuBlenderJob {
 	}
 
 	public void setSitesToInclude(String[] sites) {
-		this.sitesToInclude = sites;
-		this.sitesToExclude = null;
+		this.multiPartJob.setSitesToInclude(sites);
 	}
 	
 	public void setSitesToExclude(String[] sites) {
-		this.sitesToExclude = sites;
-		this.sitesToInclude = null;
+		this.multiPartJob.setSitesToExclude(sites);
 	}
 
 }
