@@ -112,7 +112,7 @@ public class GridFtpTestController {
 			LoginParams loginParams = new LoginParams("Local", null, null,
 					"myproxy2.arcs.org.au", "443");
 			try {
-				serviceInterface = LoginHelpers.login(loginParams, LocalProxy
+				serviceInterface = LoginHelpers.gssCredentialLogin(loginParams, LocalProxy
 						.loadGSSCredential());
 			} catch (Exception e) {
 				System.out.println("Could not login: "

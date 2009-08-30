@@ -46,4 +46,6 @@ public interface BlenderCommandLineArgs {
 	public List<String> getInclude();
 	public boolean isInclude();
 	
+	@Option(description = "enable verbose log output")
+	public boolean isVerbose();
 }

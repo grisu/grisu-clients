@@ -1,0 +1,45 @@
+<assembly>
+	<id>blender</id>
+	<formats>
+		<format>jar</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<dependencySets>
+		<dependencySet>
+			<unpack>true</unpack>
+			<useTransitiveDependencies>true</useTransitiveDependencies>
+			<useTransitiveFiltering>true</useTransitiveFiltering>
+			<useProjectArtifact>true</useProjectArtifact>
+			<outputDirectory>/</outputDirectory>
+			<includes>
+				<include>org.vpac.grisu:blender-client</include>
+				<include>org.vpac.grisu:client-side-mds</include>
+			</includes>
+			<excludes>
+				<exclude>junit:junit</exclude>
+				<exclude>bouncycastle:bcprov-jdk15</exclude>
+			</excludes>
+			<unpackOptions>
+				<excludes>
+					<exclude>**/INDEX.LIST</exclude>
+					<exclude>**/MANIFEST.MF</exclude>
+					<exclude>**/LICENSE.txt</exclude>
+					<exclude>**/NOTICE.txt</exclude>
+				</excludes>
+			</unpackOptions>
+		</dependencySet>
+	</dependencySets>
+
+	<!-- probably unnecessary -->
+	<files>
+		<file>
+			<source>src/main/resources/log4j.properties</source>
+			<outputDirectory>/</outputDirectory>
+		</file>
+		<file>
+			<source>src/main/resources/gluev12r2-ext-class-map.properties</source>
+			<outputDirectory>/</outputDirectory>
+		</file>
+	</files>
+
+</assembly>

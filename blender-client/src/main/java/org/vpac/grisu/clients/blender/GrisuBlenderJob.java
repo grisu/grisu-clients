@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -18,15 +17,13 @@ import org.vpac.grisu.control.exceptions.MultiPartJobException;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
 import org.vpac.grisu.frontend.model.job.JobObject;
+import org.vpac.grisu.frontend.model.job.MultiPartJobEventListener;
 import org.vpac.grisu.frontend.model.job.MultiPartJobObject;
 import org.vpac.grisu.model.GrisuRegistry;
 import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.model.info.UserApplicationInformation;
 
-import au.org.arcs.jcommons.constants.JobSubmissionProperty;
-import au.org.arcs.jcommons.interfaces.GridResource;
-
-public class GrisuBlenderJob {
+public class GrisuBlenderJob implements MultiPartJobEventListener {
 	
 	static final Logger myLogger = Logger.getLogger(GrisuBlenderJob.class.getName());
 	
@@ -41,8 +38,6 @@ public class GrisuBlenderJob {
 	private final String multiJobName;
 	private final MultiPartJobObject multiPartJob;
 
-	private int maxWalltimeInSecondsAcrossFrames = 3600;
-	private int defaultWalltime = 3600;
 	private Map<Integer, Integer> walltimesPerFrame = new HashMap<Integer, Integer>();
 	private int noCpus = 1;
 	private String version = BLENDER_DEFAULT_VERSION;
@@ -54,6 +49,8 @@ public class GrisuBlenderJob {
 	private int lastFrame = -1;
 	
 	private RenderFormat format = RenderFormat.PNG;
+	
+	public boolean verbose = false;
 	
 	public enum RenderFormat {
 		
@@ -98,6 +95,7 @@ public class GrisuBlenderJob {
 		this.multiPartJob = new MultiPartJobObject(serviceInterface, this.multiJobName, fqan);
 		this.multiPartJob.setDefaultApplication(BLENDER_APP_NAME);
 		this.multiPartJob.setDefaultVersion(BLENDER_DEFAULT_VERSION);
+		this.multiPartJob.addJobStatusChangeListener(this);
 
 	}
 	
@@ -108,6 +106,7 @@ public class GrisuBlenderJob {
 		this.userApplicationInfo = registry.getUserApplicationInformation(BLENDER_APP_NAME);
 		this.multiJobName = multiPartJobId;
 		this.multiPartJob = new MultiPartJobObject(serviceInterface, this.multiJobName, false);
+		this.multiPartJob.addJobStatusChangeListener(this);
 		
 	}
 	
@@ -115,18 +114,18 @@ public class GrisuBlenderJob {
 		return multiPartJob.getProgress(null);
 	}
 	
-	public SortedSet<GridResource> findBestResources() {
-		
-		Map<JobSubmissionProperty, String> properties = new HashMap<JobSubmissionProperty, String>();
-		
-		properties.put(JobSubmissionProperty.NO_CPUS, new Integer(noCpus).toString());
-		properties.put(JobSubmissionProperty.APPLICATIONVERSION, version);
-		properties.put(JobSubmissionProperty.WALLTIME_IN_MINUTES, new Integer(maxWalltimeInSecondsAcrossFrames/60).toString());
-		
-		SortedSet<GridResource> result = this.userApplicationInfo.getBestSubmissionLocations(properties, multiPartJob.getFqan());
-		return result;
-		
-	}
+//	public SortedSet<GridResource> findBestResources() {
+//		
+//		Map<JobSubmissionProperty, String> properties = new HashMap<JobSubmissionProperty, String>();
+//		
+//		properties.put(JobSubmissionProperty.NO_CPUS, new Integer(noCpus).toString());
+//		properties.put(JobSubmissionProperty.APPLICATIONVERSION, version);
+//		properties.put(JobSubmissionProperty.WALLTIME_IN_MINUTES, new Integer(multiPartJob.getMaxWalltimeInSeconds()/60).toString());
+//		
+//		SortedSet<GridResource> result = this.userApplicationInfo.getBestSubmissionLocations(properties, multiPartJob.getFqan());
+//		return result;
+//		
+//	}
 	
 	public void createAndSubmitJobs() throws JobCreationException, JobSubmissionException {
 		
@@ -200,17 +199,18 @@ public class GrisuBlenderJob {
 		for ( String inputFile : inputFiles ) {
 			multiPartJob.addInputFile(inputFile);
 		}
-		multiPartJob.setConcurrentJobCreationThreads(1);
+
 		try {
 			multiPartJob.prepareAndCreateJobs();
 		} catch (Exception e) {
 			e.printStackTrace();
+			throw new JobSubmissionException("Couldn't preapare or create job(s): "+e.getLocalizedMessage());
 		}
 		
 		try {
 			multiPartJob.submit();
 		} catch (NoSuchJobException e) {
-			throw new RuntimeException(e);
+			throw new JobSubmissionException("Could not submit job(s): "+e.getLocalizedMessage());
 		}
 		
 	}
@@ -224,24 +224,20 @@ public class GrisuBlenderJob {
 	
 	
 	public int getMaxWalltimeInSeconds() {
-		return maxWalltimeInSecondsAcrossFrames;
+		return multiPartJob.getMaxWalltimeInSeconds();
 	}
 	
 	public int getDefaultWalltime() {
-		return this.defaultWalltime;
+		return multiPartJob.getDefaultWalltime();
 	}
 
 	public void setDefaultWalltimeInSeconds(int walltimeInSeconds) {
-		this.defaultWalltime = walltimeInSeconds;
-		this.maxWalltimeInSecondsAcrossFrames = walltimeInSeconds;
+		this.multiPartJob.setDefaultWalltimeInSeconds(walltimeInSeconds);
 		createDefaultWalltimeMap();
 	}
 	
 	private void setWalltimeForFrame(int frame, int walltimeInSeconds) {
 		this.walltimesPerFrame.put(frame, walltimeInSeconds);
-		if ( walltimeInSeconds > maxWalltimeInSecondsAcrossFrames ) {
-			maxWalltimeInSecondsAcrossFrames = walltimeInSeconds;
-		}
 	}
 	
 	private void createDefaultWalltimeMap() {
@@ -249,7 +245,7 @@ public class GrisuBlenderJob {
 		walltimesPerFrame.clear();
 		if ( firstFrame <= lastFrame ) {
 			for ( int i=firstFrame; i<=lastFrame; i++ ) {
-				walltimesPerFrame.put(i, defaultWalltime);
+				walltimesPerFrame.put(i, multiPartJob.getDefaultWalltime());
 			}
 		}
 		
@@ -350,5 +346,17 @@ public class GrisuBlenderJob {
 	public void setSitesToExclude(String[] sites) {
 		this.multiPartJob.setSitesToExclude(sites);
 	}
+
+	public void eventOccured(MultiPartJobObject job, String eventMessage) {
+
+		if (verbose) {
+			System.out.println(eventMessage);
+		}
+	}
+	
+	public void setVerbose(boolean verbose) {
+		this.verbose = verbose;
+	}
+
 
 }

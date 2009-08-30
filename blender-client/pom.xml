@@ -9,7 +9,7 @@
 	<groupId>org.vpac.grisu</groupId>
 	<artifactId>blender-client</artifactId>
 	<version>0.3-SNAPSHOT</version>
-	
+
 	<repositories>
 		<repository>
 			<id>ARCS</id>
@@ -20,27 +20,16 @@
 			<url>http://code.arcs.org.au/nexus/content/groups/public-snapshots</url>
 		</repository>
 	</repositories>
-	
-	
-	<dependencies>
-<!--		<dependency>-->
-<!--			<groupId>org.vpac.grisu</groupId>-->
-<!--			<artifactId>grisu-client</artifactId>-->
-<!--			<version>0.3-SNAPSHOT</version>-->
-<!--			<scope>compile</scope>-->
-<!--		</dependency>-->
-		<dependency>
-			<groupId>org.vpac.grisu</groupId>
-			<artifactId>grisu-core</artifactId>
-			<version>0.3-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
 
-		<dependency>
-			<groupId>org.vpac.grisu</groupId>
-			<artifactId>grisu-client-xfire</artifactId>
-			<version>0.3-SNAPSHOT</version>
-		</dependency>
+
+	<dependencies>
+		<!--		<dependency>-->
+		<!--			<groupId>org.vpac.grisu</groupId>-->
+		<!--			<artifactId>grisu-client</artifactId>-->
+		<!--			<version>0.3-SNAPSHOT</version>-->
+		<!--			<scope>compile</scope>-->
+		<!--		</dependency>-->
+
 
 		<!--    <dependency>-->
 		<!--    	<groupId>org.vpac.grisu</groupId>-->
@@ -60,6 +49,13 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.vpac.grisu</groupId>
+			<artifactId>grisu-client</artifactId>
+			<version>0.3-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -72,6 +68,29 @@
 					<target>1.5</target>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+
+					<descriptors>
+						<descriptor>blender-client.assembly.xml</descriptor>
+					</descriptors>
+					<finalName>grid</finalName>
+					<archive>
+
+						<index>true</index>
+						<manifest>
+							<mainClass>org.vpac.grisu.clients.blender.GridBlender</mainClass>
+						</manifest>
+						<manifestEntries>
+							<Class-Path>bcprov.jar bcprov-jdk15-143.jar	grisu-local-backend.jar</Class-Path>
+						</manifestEntries>
+					</archive>
+
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
 

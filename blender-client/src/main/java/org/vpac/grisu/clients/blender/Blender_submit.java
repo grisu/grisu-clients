@@ -34,8 +34,8 @@ public class Blender_submit {
 			System.exit(1);
 		}
 		
-//		si.deleteMultiPartJob("blenderJob1", true);
-//		System.exit(1);
+		si.deleteMultiPartJob("grisutest3", true);
+		System.exit(1);
 		
 		GrisuBlenderJob blenderJob;
 		try {

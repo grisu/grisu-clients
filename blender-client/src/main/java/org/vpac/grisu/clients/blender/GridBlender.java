@@ -7,6 +7,8 @@ import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.control.exceptions.MultiPartJobException;
 import org.vpac.grisu.control.exceptions.ServiceInterfaceException;
+import org.vpac.grisu.frontend.control.login.LoginException;
+import org.vpac.grisu.frontend.control.login.LoginHelpers;
 import org.vpac.grisu.frontend.control.login.LoginParams;
 import org.vpac.grisu.frontend.control.login.ServiceInterfaceFactory;
 
@@ -57,8 +59,11 @@ public class GridBlender {
 
 		ServiceInterface si = null;
 		try {
-			si = ServiceInterfaceFactory.createInterface(loginParams);
+			si = LoginHelpers.myProxyLogin(loginParams);
 		} catch (ServiceInterfaceException e) {
+			System.err.println(e.getLocalizedMessage());
+			System.exit(1);
+		} catch (LoginException e) {
 			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		}
@@ -73,11 +78,13 @@ public class GridBlender {
 			System.err.println("Could not create blender job: "
 					+ e.getLocalizedMessage());
 		}
+		
+		job.setVerbose(result.isVerbose());
 
 		job.setBlenderFile(result.getBlendFile());
 		job.setFirstFrame(result.getStartFrame());
 		job.setLastFrame(result.getEndFrame());
-		job.setDefaultWalltimeInSeconds(result.getWalltime() * 60);
+		job.setDefaultWalltimeInSeconds(result.getWalltime());
 		if (result.isExclude()) {
 			job.setSitesToExclude(result.getExclude().toArray(new String[] {}));
 		}
@@ -97,7 +104,7 @@ public class GridBlender {
 			System.exit(1);
 		}
 
-		System.out.println("Blender job submission finished successfully...");
+//		System.out.println("Blender job submission finished successfully...");
 
 	}
 

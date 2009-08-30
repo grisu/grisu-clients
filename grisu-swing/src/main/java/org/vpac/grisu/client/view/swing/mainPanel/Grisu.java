@@ -51,14 +51,15 @@ import org.vpac.grisu.frontend.info.clientsidemds.ClientSideGrisuRegistry;
 import org.vpac.grisu.model.GrisuRegistry;
 import org.vpac.grisu.model.GrisuRegistryImpl;
 import org.vpac.grisu.model.GrisuRegistryManager;
-import org.vpac.grisu.plugins.ClasspathHacker;
-import org.vpac.grisu.plugins.GrisuPluginFilenameFilter;
 import org.vpac.grisu.settings.Environment;
+import org.vpac.grisu.utils.GrisuPluginFilenameFilter;
 import org.vpac.helpDesk.control.HelpDeskManager;
 import org.vpac.helpDesk.model.HelpDesk;
 import org.vpac.helpDesk.model.HelpDeskNotAvailableException;
 import org.vpac.helpDesk.view.TicketSubmissionDialogMultipleHelpdesks;
 import org.vpac.security.light.control.CertificateFiles;
+
+import au.org.arcs.jcommons.dependencies.ClasspathHacker;
 
 
 public class Grisu implements WindowListener {
@@ -580,6 +581,9 @@ public class Grisu implements WindowListener {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				
+				final Grisu application = new Grisu();
+
+				
 				 Toolkit tk = Toolkit.getDefaultToolkit( );
 			      tk.addAWTEventListener(WindowSaver.getInstance( ),
 			          AWTEvent.WINDOW_EVENT_MASK);
@@ -611,7 +615,6 @@ public class Grisu implements WindowListener {
 					System.exit(0);
 				}
 				
-				final Grisu application = new Grisu();
 				application.serviceInterface = ld.getServiceInterface();
 				myLogger.debug("Removing login dialog.");
 				ld.dispose();
