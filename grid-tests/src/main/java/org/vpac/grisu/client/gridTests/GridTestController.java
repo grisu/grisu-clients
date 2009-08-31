@@ -28,7 +28,11 @@ import org.vpac.grisu.frontend.control.login.ServiceInterfaceFactory;
 import org.vpac.grisu.model.GrisuRegistry;
 import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.settings.Environment;
+import org.vpac.grisu.utils.GrisuPluginFilenameFilter;
 import org.vpac.security.light.plainProxy.LocalProxy;
+
+import au.org.arcs.jcommons.dependencies.ClasspathHacker;
+import au.org.arcs.jcommons.dependencies.DependencyManager;
 
 public class GridTestController {
 
@@ -74,7 +78,8 @@ public class GridTestController {
 
 		Environment.setGrisuDirectory(this.grisu_base_directory);
 		
-<<<<<<< HEAD:grid-tests/src/main/java/org/vpac/grisu/client/gridTests/GridTestController.java
+		ClasspathHacker.initFolder(new File(Environment.getGrisuPluginDirectory()), new GrisuPluginFilenameFilter());
+		
 		// try to setup hibernate for local tests if a local Backend is used
 		try {
 			
@@ -91,11 +96,6 @@ public class GridTestController {
 		} catch (Exception e) {
 			// doesn't really matter
 		}
-=======
-//		HibernateSessionFactory
-//				.setCustomHibernateConfigFile(this.grisu_base_directory
-//						+ File.separator + "grid-tests-hibernate-file.cfg.xml");
->>>>>>> c428b3feafc74bbb873cc37beb541bd8e1d615cb:grid-tests/src/main/java/org/vpac/grisu/client/gridTests/GridTestController.java
 
 		grid_tests_directory = new File(this.grisu_base_directory, "tests");
 

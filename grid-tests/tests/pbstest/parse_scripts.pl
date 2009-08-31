@@ -30,6 +30,7 @@ print "Parsing XML script: $file\n";
 $parser->parse($text);
 
 # PBS parses(s)
+my $status=0;
 foreach $file (@ARGV)
   {
 print "Parsing PBS script: $file\n";
@@ -39,11 +40,13 @@ print "Parsing PBS script: $file\n";
   parse_pbs($file);
 
 # compare data in the hashes
-  parse_compare();
+  $status += parse_compare();
   }
 
+print "status= $status\n";
+
 # all done
-exit;
+exit $status;
 
 
 # --- handle element open
@@ -107,7 +110,7 @@ while (<INP>)
       $_ = @_[2];
       if (/\=/)
         {
-# assume - no spaces (eg vmem=1000mb) 
+# assumes no spaces (eg vmem=1000mb) 
         @tmp = split('=', @_[2]);
         $type = @tmp[0];
         $value = @tmp[1];
@@ -197,18 +200,21 @@ $module_xml = $table_xml{"Module"};
 $module_pbs = $table_pbs{"module"};
 
 # TODO - mpi / mpirun test
+my $status=0;
 
 # expect pbs request = xml request
-parse_test("   CPU", $cpu_xml, $cpu_pbs);
+$status += parse_test("   CPU", $cpu_xml, $cpu_pbs);
 
 # expect pbs request = xml request
-parse_test("  Time", $time_xml, $time_pbs);
+$status += parse_test("  Time", $time_xml, $time_pbs);
 
 # expect pbs request to be xml request x cpus
-parse_test("Memory", $cpu_xml*$mem_xml, $mem_pbs);
+$status += parse_test("Memory", $cpu_xml*$mem_xml, $mem_pbs);
 
 # expect pbs request = xml request
-parse_test("Module", $module_xml, $module_pbs);
+$status += parse_test("Module", $module_xml, $module_pbs);
+
+return $status;
 }
 
 # --- simple pass/fail test message
@@ -221,10 +227,12 @@ $b = shift;
 if ($a eq $b)
   {
   print "PASS : $text (XML=$a) (PBS=$b)\n";
+  return 0;
   }
 else
   {
   print "FAIL : $text (XML=$a) (PBS=$b)\n";
+  return 1;
   }
 }
 
