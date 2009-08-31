@@ -61,8 +61,7 @@
 							<mainClass>org.vpac.grisu.client.gridTests.GridTestController</mainClass>
 						</manifest>
 						<manifestEntries>
-							<Class-Path>bcprov.jar bcprov-jdk15-140.jar
-								grisu-local-backend.jar</Class-Path>
+							<Class-Path>bcprov.jar bcprov-jdk15-140.jar grisu-local-backend.jar</Class-Path>
 						</manifestEntries>
 					</archive>
 

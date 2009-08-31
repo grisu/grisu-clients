@@ -12,7 +12,7 @@
 			<useProjectArtifact>true</useProjectArtifact>
 			<outputDirectory>/</outputDirectory>
 			<includes>
-				<include>org.vpac.grisu:grisu-grid-tests</include>
+				<include>org.vpac.grisu:grid-tests</include>
 			</includes>
 			<excludes>
 				<exclude>junit:junit</exclude>
