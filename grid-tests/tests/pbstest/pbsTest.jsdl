@@ -1,0 +1,24 @@
+<JobDefinition xmlns="http://schemas.ggf.org/jsdl/2005/11/jsdl">
+<JobDescription>
+<JobIdentification><JobName>pbsTest</JobName></JobIdentification>
+<Application>
+<ApplicationName>generic</ApplicationName>
+<POSIXApplication xmlns="http://schemas.ggf.org/jsdl/2005/11/jsdl-posix">
+<WorkingDirectory filesystemName="userExecutionHostFs">grisu-jobs-dir/siesta_13-02-2009_12:00:02</WorkingDirectory>
+<Executable>cat</Executable>
+<Argument>pbsTest.jsdl</Argument>
+<Output>stdout.txt</Output>
+<Error>stderr.txt</Error>
+<Module></Module>
+</POSIXApplication>
+<TotalCPUCount>1</TotalCPUCount>
+<TotalCPUTime>20</TotalCPUTime>
+<TotalPhysicalMemory><LowerBoundedRange>1024000</LowerBoundedRange></TotalPhysicalMemory>
+</Application>
+<Resources>
+<CandidateHosts><HostName></HostName></CandidateHosts>
+<FileSystem name="userExecutionHostFs">
+<MountSource></MountSource>
+<DiskSpace><LowerBoundedRange>300000</LowerBoundedRange></DiskSpace>
+<FileSystemType>normal</FileSystemType>
+</FileSystem></Resources></JobDescription></JobDefinition>
