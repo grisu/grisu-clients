@@ -72,9 +72,10 @@ public class GridTestController {
 		}
 
 		Environment.setGrisuDirectory(this.grisu_base_directory);
-		HibernateSessionFactory
-				.setCustomHibernateConfigFile(this.grisu_base_directory
-						+ File.separator + "grid-tests-hibernate-file.cfg.xml");
+		
+//		HibernateSessionFactory
+//				.setCustomHibernateConfigFile(this.grisu_base_directory
+//						+ File.separator + "grid-tests-hibernate-file.cfg.xml");
 
 		grid_tests_directory = new File(this.grisu_base_directory, "tests");
 
