@@ -12,11 +12,11 @@ import org.vpac.grisu.client.control.clientexceptions.JobCreationException;
 import org.vpac.grisu.client.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.client.control.exceptions.SubmissionLocationException;
 import org.vpac.grisu.client.control.generic.GenericJobWrapper;
-import org.vpac.grisu.client.control.login.LoginHelpers;
 import org.vpac.grisu.client.model.SubmissionLocation;
 import org.vpac.grisu.client.model.template.JsdlTemplateEvent;
 import org.vpac.grisu.client.model.template.JsdlTemplateListener;
 import org.vpac.grisu.control.ServiceInterface;
+import org.vpac.grisu.frontend.control.login.LoginHelpers;
 import org.vpac.grisu.frontend.control.login.LoginParams;
 
 public class SimpleCommandlineClient implements JsdlTemplateListener {
@@ -169,8 +169,7 @@ public class SimpleCommandlineClient implements JsdlTemplateListener {
 			ServiceInterface serviceInterface = null;
 			while (serviceInterface == null) {
 				try {
-					serviceInterface = LoginHelpers.login(certPassphrase,
-							loginparams);
+					serviceInterface = LoginHelpers.localProxyLogin(certPassphrase,	loginparams);
 				} catch (Exception e) {
 					print("Could not login: " + e.getLocalizedMessage());
 					print("Please try again.");

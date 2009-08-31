@@ -12,12 +12,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 
-import org.vpac.grisu.client.control.login.LoginException;
-import org.vpac.grisu.client.control.login.LoginHelpers;
 import org.vpac.grisu.client.model.login.LoginPanelsHolder;
 import org.vpac.grisu.client.view.swing.utils.Utils;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.ServiceInterfaceException;
+import org.vpac.grisu.frontend.control.login.LoginException;
+import org.vpac.grisu.frontend.control.login.LoginHelpers;
 import org.vpac.grisu.settings.ClientPropertiesManager;
 import org.vpac.helpDesk.model.Person;
 import org.vpac.helpDesk.model.PersonException;
@@ -86,7 +86,7 @@ public class CertificateLoginPanel extends JPanel {
 		getLoginButton().setEnabled(false);
 		ServiceInterface serviceInterface = null;
 		try {
-			serviceInterface = LoginHelpers.login(getPasswordField().getPassword(), loginPanelHolder.getLoginParams());
+			serviceInterface = LoginHelpers.localProxyLogin(getPasswordField().getPassword(), loginPanelHolder.getLoginParams());
 		} catch (LoginException e1) {
 			Utils.showErrorMessage(getUser(), CertificateLoginPanel.this, "loginError", e1);
 			getLoginButton().setEnabled(true);

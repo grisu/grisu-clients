@@ -749,26 +749,9 @@ public class Grisu implements WindowListener {
 	
 	private void addPluginsToClasspath() {
 		
+		ClasspathHacker.initFolder(new File(Environment.getGrisuPluginDirectory()), new GrisuPluginFilenameFilter());
 		
-		
-		File pluginFolder = new File(Environment.getGrisuPluginDirectory());
-		
-		File[] plugins = pluginFolder.listFiles(new GrisuPluginFilenameFilter());
 
-		if ( plugins == null ) {
-			return;
-		}
-		
-		for ( File plugin : plugins ) {
-			
-			try {
-				ClasspathHacker.addFile(plugin);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}
  
 	}
 	

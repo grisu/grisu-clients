@@ -63,8 +63,9 @@
 		<module>grisu-swing-plugins</module>
 		<module>grisu-batch</module>
 		<module>grisu-commandline</module>
-		<module>grisu-gridftp-tests</module>
 		<module>blender-client</module>
+		<module>grid-tests</module>
+		<module>gridftp-tests</module>
 	</modules>
 
 	<build>

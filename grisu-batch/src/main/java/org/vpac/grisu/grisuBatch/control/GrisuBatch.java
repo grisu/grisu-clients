@@ -24,14 +24,14 @@ import org.vpac.grisu.client.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.client.control.exceptions.SubmissionLocationException;
 import org.vpac.grisu.client.control.generic.GenericJobWrapper;
 import org.vpac.grisu.client.control.generic.SimpleJsdlListener;
-import org.vpac.grisu.client.control.login.LoginException;
-import org.vpac.grisu.client.control.login.LoginHelpers;
 import org.vpac.grisu.client.model.SubmissionLocation;
 import org.vpac.grisu.client.model.files.GrisuFileObject;
 import org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObject;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.control.exceptions.ServiceInterfaceException;
+import org.vpac.grisu.frontend.control.login.LoginException;
+import org.vpac.grisu.frontend.control.login.LoginHelpers;
 import org.vpac.grisu.frontend.control.login.LoginParams;
 import org.vpac.grisu.utils.FileHelpers;
 
@@ -124,7 +124,7 @@ public class GrisuBatch {
 		// "http://localhost:8080/grisu-ws/services/grisu", null,
 		// null, "myproxy.apac.edu.au", "7512");
 
-		ServiceInterface serviceInterface = LoginHelpers.login(null,
+		ServiceInterface serviceInterface = LoginHelpers.localProxyLogin(null,
 				loginParams);
 
 		em = new EnvironmentManager(serviceInterface);

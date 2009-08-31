@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.vpac.grisu.client.control.login.LoginException;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.ServiceInterfaceCreator;
 import org.vpac.grisu.control.exceptions.ServiceInterfaceException;
+import org.vpac.grisu.frontend.control.login.LoginException;
 import org.vpac.grisu.frontend.control.login.LoginParams;
 import org.vpac.grisu.frontend.control.login.ServiceInterfaceFactory;
 
@@ -32,8 +32,8 @@ public class ServiceInterfaceFactoryOld {
 			"DummyServiceInterfaceCreator",
 //			"JaxWsServiceInterfaceCreator",
 //			"XfireServiceInterfaceCreator",
-//			"XFireServiceInterfaceCreator",// old xfire client
-			"EnunciateXFireServiceInterfaceCreator" 
+			"XFireServiceInterfaceCreator" // old xfire client
+//			"EnunciateXFireServiceInterfaceCreator" 
 			
 	};
 

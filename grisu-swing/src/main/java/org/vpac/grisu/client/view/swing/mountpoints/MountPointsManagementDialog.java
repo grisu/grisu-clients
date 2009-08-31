@@ -8,8 +8,8 @@ import javax.swing.JDialog;
 
 import org.vpac.grisu.client.control.EnvironmentManager;
 import org.vpac.grisu.client.control.ServiceInterfaceFactoryOld;
-import org.vpac.grisu.client.control.login.LoginException;
 import org.vpac.grisu.control.exceptions.ServiceInterfaceException;
+import org.vpac.grisu.frontend.control.login.LoginException;
 import org.vpac.grisu.frontend.control.login.LoginParams;
 
 public class MountPointsManagementDialog extends JDialog {

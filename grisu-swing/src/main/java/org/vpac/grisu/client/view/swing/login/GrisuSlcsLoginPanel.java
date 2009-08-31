@@ -5,12 +5,12 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 
 import org.globus.gsi.GlobusCredential;
-import org.vpac.grisu.client.control.login.LoginException;
-import org.vpac.grisu.client.control.login.LoginHelpers;
 import org.vpac.grisu.client.model.login.LoginPanelsHolder;
 import org.vpac.grisu.client.view.swing.utils.Utils;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.ServiceInterfaceException;
+import org.vpac.grisu.frontend.control.login.LoginException;
+import org.vpac.grisu.frontend.control.login.LoginHelpers;
 import org.vpac.grisu.settings.ClientPropertiesManager;
 import org.vpac.helpDesk.model.Person;
 import org.vpac.helpDesk.model.PersonException;
@@ -80,7 +80,7 @@ public class GrisuSlcsLoginPanel extends JPanel implements SlcsPanelListener, Ht
 		ServiceInterface serviceInterface = null;
 		
 		try {
-			serviceInterface = LoginHelpers.login(this.loginPanelHolder.getLoginParams(), cred);
+			serviceInterface = LoginHelpers.globusCredentialLogin(this.loginPanelHolder.getLoginParams(), cred);
 		} catch (LoginException e) {
 			Utils.showErrorMessage(getUser(), GrisuSlcsLoginPanel.this, "loginError", e);
 			return;

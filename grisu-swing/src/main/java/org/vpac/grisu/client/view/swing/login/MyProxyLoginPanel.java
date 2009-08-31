@@ -14,12 +14,12 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import org.vpac.grisu.client.control.login.LoginException;
-import org.vpac.grisu.client.control.login.LoginHelpers;
 import org.vpac.grisu.client.model.login.LoginPanelsHolder;
 import org.vpac.grisu.client.view.swing.utils.Utils;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.ServiceInterfaceException;
+import org.vpac.grisu.frontend.control.login.LoginException;
+import org.vpac.grisu.frontend.control.login.LoginHelpers;
 import org.vpac.grisu.frontend.control.login.LoginParams;
 import org.vpac.grisu.settings.ClientPropertiesManager;
 import org.vpac.grisu.settings.MyProxyServerParams;
@@ -134,7 +134,7 @@ public class MyProxyLoginPanel extends JPanel {
 		params.setMyProxyPassphrase(passwordField.getPassword());
 		
 		try {
-			serviceInterface = LoginHelpers.login(params);
+			serviceInterface = LoginHelpers.myProxyLogin(params);
 		} catch (LoginException e1) {
 			Utils.showErrorMessage(getUser(), MyProxyLoginPanel.this, "loginError", e1);
 			getLoginButton().setEnabled(true);
