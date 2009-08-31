@@ -1,5 +1,7 @@
 package org.vpac.grisu.clients.blender;
 
+import java.io.IOException;
+
 import jline.ConsoleReader;
 
 import org.vpac.grisu.client.control.clientexceptions.JobCreationException;
@@ -9,6 +11,7 @@ import org.vpac.grisu.control.exceptions.MultiPartJobException;
 import org.vpac.grisu.control.exceptions.ServiceInterfaceException;
 import org.vpac.grisu.frontend.control.login.LoginException;
 import org.vpac.grisu.frontend.control.login.LoginHelpers;
+import org.vpac.grisu.frontend.control.login.LoginManager;
 import org.vpac.grisu.frontend.control.login.LoginParams;
 import org.vpac.grisu.frontend.control.login.ServiceInterfaceFactory;
 
@@ -59,8 +62,8 @@ public class GridBlender {
 
 		ServiceInterface si = null;
 		try {
-			si = LoginHelpers.myProxyLogin(loginParams);
-		} catch (ServiceInterfaceException e) {
+			si = LoginManager.login(null, null, null, null, loginParams);
+		} catch (IOException e) {
 			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		} catch (LoginException e) {

@@ -1,6 +1,7 @@
 package org.vpac.grisu.grisuBatch.control;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -32,6 +33,7 @@ import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.control.exceptions.ServiceInterfaceException;
 import org.vpac.grisu.frontend.control.login.LoginException;
 import org.vpac.grisu.frontend.control.login.LoginHelpers;
+import org.vpac.grisu.frontend.control.login.LoginManager;
 import org.vpac.grisu.frontend.control.login.LoginParams;
 import org.vpac.grisu.utils.FileHelpers;
 
@@ -114,7 +116,7 @@ public class GrisuBatch {
 
 	}
 
-	private void createEnvironmentManager() throws LoginException, ServiceInterfaceException {
+	private void createEnvironmentManager() throws LoginException, IOException {
 
 		LoginParams loginParams = new LoginParams(
 				serviceInterfaceUrl, null,
@@ -124,14 +126,15 @@ public class GrisuBatch {
 		// "http://localhost:8080/grisu-ws/services/grisu", null,
 		// null, "myproxy.apac.edu.au", "7512");
 
-		ServiceInterface serviceInterface = LoginHelpers.localProxyLogin(null,
-				loginParams);
-
+//		ServiceInterface serviceInterface = LoginHelpers.localProxyLogin(null,
+//				loginParams);
+		ServiceInterface serviceInterface = LoginManager.login(null, null, null, null, loginParams);
+		
 		em = new EnvironmentManager(serviceInterface);
 
 	}
 
-	public void login() throws LoginException, ServiceInterfaceException {
+	public void login() throws LoginException, IOException {
 
 		System.out.println("Logging in...");
 		createEnvironmentManager();

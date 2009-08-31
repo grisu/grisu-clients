@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.vpac.grisu.backend.hibernate.HibernateSessionFactory;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.frontend.control.login.LoginHelpers;
+import org.vpac.grisu.frontend.control.login.LoginManager;
 import org.vpac.grisu.frontend.control.login.LoginParams;
 import org.vpac.grisu.frontend.control.login.ServiceInterfaceFactory;
 import org.vpac.grisu.model.GrisuRegistry;
@@ -112,8 +113,8 @@ public class GridFtpTestController {
 			LoginParams loginParams = new LoginParams("Local", null, null,
 					"myproxy2.arcs.org.au", "443");
 			try {
-				serviceInterface = LoginHelpers.gssCredentialLogin(loginParams, LocalProxy
-						.loadGSSCredential());
+				serviceInterface = LoginManager.login(LocalProxy.loadGlobusCredential(), null, null, null, loginParams);
+
 			} catch (Exception e) {
 				System.out.println("Could not login: "
 						+ e.getLocalizedMessage());

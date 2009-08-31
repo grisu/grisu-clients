@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.Map;
 
 import javax.swing.JButton;
@@ -20,6 +21,7 @@ import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.ServiceInterfaceException;
 import org.vpac.grisu.frontend.control.login.LoginException;
 import org.vpac.grisu.frontend.control.login.LoginHelpers;
+import org.vpac.grisu.frontend.control.login.LoginManager;
 import org.vpac.grisu.frontend.control.login.LoginParams;
 import org.vpac.grisu.settings.ClientPropertiesManager;
 import org.vpac.grisu.settings.MyProxyServerParams;
@@ -134,13 +136,13 @@ public class MyProxyLoginPanel extends JPanel {
 		params.setMyProxyPassphrase(passwordField.getPassword());
 		
 		try {
-			serviceInterface = LoginHelpers.myProxyLogin(params);
+			serviceInterface = LoginManager.login(null, null, null, null, params);
 		} catch (LoginException e1) {
 			Utils.showErrorMessage(getUser(), MyProxyLoginPanel.this, "loginError", e1);
 			getLoginButton().setEnabled(true);
 			return;
-		} catch (ServiceInterfaceException e) {
-			Utils.showErrorMessage(getUser(), MyProxyLoginPanel.this, "serviceInterfaceError", e);
+		} catch (IOException e) {
+			Utils.showErrorMessage(getUser(), MyProxyLoginPanel.this, "pluginError", e);
 			getLoginButton().setEnabled(true);
 			return;
 		}
