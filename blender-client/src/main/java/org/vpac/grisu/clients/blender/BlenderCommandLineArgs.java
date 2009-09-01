@@ -4,11 +4,15 @@ import uk.co.flamingpenguin.jewel.cli.Option;
 
 public interface BlenderCommandLineArgs {
 	
-	@Option(helpRequest = true, description = "this help text")
+	@Option(shortName = "h", helpRequest = true, description = "this help text or the help text for the mode you choose")
 	boolean getHelp();
+	
+	@Option(shortName = "m", description = "the mode to use. Choose either: submit|check")
+	public String getMode();
 
 	@Option(shortName = "n", description = "the name of the job")
 	public String getJobname();
+	public boolean isJobname();
 	
 	@Option(shortName = "u", description = "either the myproxy or shibboleth username. If the -i option is specified, shib auth is used. If this option is not present, the client tries to use a x509 certificate.")
 	public String getUsername();

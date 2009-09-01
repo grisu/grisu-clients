@@ -42,7 +42,7 @@ public class Blender_check {
 			System.exit(1);
 		}
 		
-		System.out.println(blenderJob.getProgress());
+		System.out.println(blenderJob.getMultiPartJobObject().getProgress(null));
 		
 		blenderJob.downloadResult();
 		

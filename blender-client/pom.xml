@@ -81,7 +81,7 @@
 
 						<index>true</index>
 						<manifest>
-							<mainClass>org.vpac.grisu.clients.blender.GridBlender</mainClass>
+							<mainClass>org.vpac.grisu.clients.blender.GrisuBlender</mainClass>
 						</manifest>
 						<manifestEntries>
 							<Class-Path>bcprov.jar bcprov-jdk15-143.jar	grisu-local-backend.jar</Class-Path>

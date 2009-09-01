@@ -107,8 +107,9 @@ public class GrisuBlenderJob implements MultiPartJobEventListener {
 		
 	}
 	
-	public String getProgress() {
-		return multiPartJob.getProgress(null);
+	public MultiPartJobObject getMultiPartJobObject() {
+		
+		return multiPartJob;
 	}
 	
 //	public SortedSet<GridResource> findBestResources() {
