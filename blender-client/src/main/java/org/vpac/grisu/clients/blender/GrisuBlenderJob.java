@@ -32,7 +32,6 @@ public class GrisuBlenderJob implements MultiPartJobEventListener {
 	
 	public static final String INPUT_PATH_VARIABLE = "${INPUT_FILE_PATH}";
 	
-	private final UserApplicationInformation userApplicationInfo;
 	private final GrisuRegistry registry;
 	private final ServiceInterface serviceInterface;
 	private final String multiJobName;
@@ -90,7 +89,6 @@ public class GrisuBlenderJob implements MultiPartJobEventListener {
 	public GrisuBlenderJob(ServiceInterface serviceInterface, String multiPartJobId, String fqan) throws MultiPartJobException {
 		this.serviceInterface = serviceInterface;
 		this.registry = GrisuRegistryManager.getDefault(serviceInterface);
-		this.userApplicationInfo = registry.getUserApplicationInformation(BLENDER_APP_NAME);
 		this.multiJobName = multiPartJobId;
 		this.multiPartJob = new MultiPartJobObject(serviceInterface, this.multiJobName, fqan);
 		this.multiPartJob.setDefaultApplication(BLENDER_APP_NAME);
@@ -103,7 +101,6 @@ public class GrisuBlenderJob implements MultiPartJobEventListener {
 		
 		this.serviceInterface = serviceInterface;
 		this.registry = GrisuRegistryManager.getDefault(serviceInterface);
-		this.userApplicationInfo = registry.getUserApplicationInformation(BLENDER_APP_NAME);
 		this.multiJobName = multiPartJobId;
 		this.multiPartJob = new MultiPartJobObject(serviceInterface, this.multiJobName, false);
 		this.multiPartJob.addJobStatusChangeListener(this);
