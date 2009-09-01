@@ -44,7 +44,7 @@ public class Blender_check {
 		
 		System.out.println(blenderJob.getMultiPartJobObject().getProgress(null));
 		
-		blenderJob.downloadResult();
+//		blenderJob.downloadResult();
 		
 	}
 

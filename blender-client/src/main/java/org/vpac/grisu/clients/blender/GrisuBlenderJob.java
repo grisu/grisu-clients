@@ -2,6 +2,8 @@ package org.vpac.grisu.clients.blender;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -21,7 +23,6 @@ import org.vpac.grisu.frontend.model.job.MultiPartJobEventListener;
 import org.vpac.grisu.frontend.model.job.MultiPartJobObject;
 import org.vpac.grisu.model.GrisuRegistry;
 import org.vpac.grisu.model.GrisuRegistryManager;
-import org.vpac.grisu.model.info.UserApplicationInformation;
 
 public class GrisuBlenderJob implements MultiPartJobEventListener {
 	
@@ -30,12 +31,17 @@ public class GrisuBlenderJob implements MultiPartJobEventListener {
 	public static final String BLENDER_APP_NAME = "Blender";
 	public static final String BLENDER_DEFAULT_VERSION = "2.49a";
 	
+	public static final String BLENDER_OUTPUTFILENAME_KEY = "blenderOutputFileNamePattern";
+	
 	public static final String INPUT_PATH_VARIABLE = "${INPUT_FILE_PATH}";
 	
 	private final GrisuRegistry registry;
 	private final ServiceInterface serviceInterface;
 	private final String multiJobName;
 	private final MultiPartJobObject multiPartJob;
+	
+	private final NumberFormat formatter = new DecimalFormat("0000");
+
 
 	private Map<Integer, Integer> walltimesPerFrame = new HashMap<Integer, Integer>();
 	private int noCpus = 1;
@@ -137,13 +143,14 @@ public class GrisuBlenderJob implements MultiPartJobEventListener {
 
 			String command = createCommandline(i, i);
 			
-			addJob(command, walltimesPerFrame.get(i));
+			addJob(i, command, walltimesPerFrame.get(i));
 		}
 		
 		multiPartJob.fillOrOverwriteSubmissionLocationsUsingMatchmaker();
 		
 		createAndSubmitBlenderJob();
 		
+		setOutputFilenameJobProperty();
 	}
 	
 
@@ -170,16 +177,17 @@ public class GrisuBlenderJob implements MultiPartJobEventListener {
 		multiPartJob.addJob(job);
 	}
 	
-	private void addJob(String commandline, int walltimeInSeconds) {
-		addJob(commandline, null, walltimeInSeconds);
+	private void addJob(int framenumber, String commandline, int walltimeInSeconds) {
+		addJob(framenumber, commandline, null, walltimeInSeconds);
 	}
 	
-	private void addJob(String commandline, String submissionLocation, int walltimeInSeconds) {
+	private void addJob(int framenumber, String commandline, String submissionLocation, int walltimeInSeconds) {
 		
 		commandline = commandline.replace(INPUT_PATH_VARIABLE, multiPartJob.pathToInputFiles());
 		
 		JobObject jo = new JobObject(serviceInterface);
-		jo.setJobname(multiJobName+"_" + multiPartJob.getJobs().size() );
+		String number = formatter.format(framenumber);
+		jo.setJobname(multiJobName+"_" + number );
 		jo.setApplication("blender");
 		jo.setApplicationVersion(version);
 		jo.setCommandline(commandline);
@@ -212,12 +220,12 @@ public class GrisuBlenderJob implements MultiPartJobEventListener {
 		}
 		
 	}
-	
-	public void downloadResult() throws RemoteFileSystemException, FileTransferException, IOException {
-		
-		multiPartJob.downloadResults(new File("/home/markus/Desktop/blender"), new String[]{"cubes"}, false, false);
-		
-	}
+//	
+//	public void downloadResult() throws RemoteFileSystemException, FileTransferException, IOException {
+//		
+//		multiPartJob.downloadResults(new File("/home/markus/Desktop/blender"), new String[]{"cubes"}, false, false);
+//		
+//	}
 	
 	
 	
@@ -354,6 +362,14 @@ public class GrisuBlenderJob implements MultiPartJobEventListener {
 	
 	public void setVerbose(boolean verbose) {
 		this.verbose = verbose;
+	}
+	
+	private void setOutputFilenameJobProperty() {
+		multiPartJob.addJobProperty(BLENDER_OUTPUTFILENAME_KEY, outputFileName);
+	}
+	
+	public String getOutputFilenameJobProperty() {
+		return multiPartJob.getJobProperty(BLENDER_OUTPUTFILENAME_KEY);
 	}
 
 
