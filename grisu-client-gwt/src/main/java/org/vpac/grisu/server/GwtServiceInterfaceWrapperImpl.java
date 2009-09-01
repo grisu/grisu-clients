@@ -306,7 +306,7 @@ public class GwtServiceInterfaceWrapperImpl extends RemoteServiceServlet
 				jobProperties.put(JobSubmissionProperty.APPLICATIONNAME, application);
 				jobProperties.put(JobSubmissionProperty.APPLICATIONVERSION, version);
 				List<GridResource> resources = getMatchMaker()
-						.findMatchingResources(jobProperties, fqan);
+						.findAllResources(jobProperties, fqan);
 				allResources.addAll(resources);
 			}
 		}

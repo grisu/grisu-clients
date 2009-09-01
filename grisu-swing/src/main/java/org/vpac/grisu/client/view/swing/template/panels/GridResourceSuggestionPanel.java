@@ -114,7 +114,7 @@ public class GridResourceSuggestionPanel extends JPanel implements TemplateNodeP
 		
 		Map<JobSubmissionProperty, String> tempJobProperties = new HashMap<JobSubmissionProperty, String>();
 		tempJobProperties.put(JobSubmissionProperty.APPLICATIONVERSION, newValue);
-		currentBestGridResources = new LinkedList(infoObject.getBestSubmissionLocations(tempJobProperties, registry.getUserEnvironmentManager().getCurrentFqan()));
+		currentBestGridResources = new LinkedList(infoObject.getAllSubmissionLocationsAsGridResources(tempJobProperties, registry.getUserEnvironmentManager().getCurrentFqan()));
 		 
 		try {
 			

@@ -145,7 +145,7 @@ public class CandidateHost extends JPanel implements TemplateNodePanel,
 
 		SortedSet<GridResource> resources = registry
 				.getUserApplicationInformation(applicationName)
-				.getBestSubmissionLocations(jobProperties, currentFqan);
+				.getAllSubmissionLocationsAsGridResources(jobProperties, currentFqan);
 
 		currentRankedSites = GridResourceHelpers.asSetOfRankedSites(resources);
 
