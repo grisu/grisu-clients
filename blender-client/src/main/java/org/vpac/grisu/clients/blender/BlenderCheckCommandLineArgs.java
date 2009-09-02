@@ -12,7 +12,7 @@ public interface BlenderCheckCommandLineArgs extends BlenderCommandLineArgs {
 	@Option(shortName = "j", description = "get detailed job status")
 	public boolean isDetailed();
 
-	@Option(shortName = "l", description = "wait for all jobs to finish. you can specify an optional check intervall time in minutes")
+	@Option(shortName = "l", description = "wait for all jobs to finish. you need to specify an check-intervall time in minutes")
 	public int getLoopUntilFinished();
 	public boolean isLoopUntilFinished();
 	
