@@ -1,43 +1,44 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>grisu-clients</artifactId>
-    <groupId>org.vpac.grisu</groupId>
-    <version>0.3-SNAPSHOT</version>
-  </parent>
-  <groupId>org.vpac.grisu</groupId>
-  <artifactId>gridftp-tests</artifactId>
-  <version>0.3-SNAPSHOT</version>
-  <name>Grisu-Gridftp-Tests</name>
-  <description>Gridftp tests using the Grisu framework</description>
-  
-    <dependencies>
-    <dependency>
-      <groupId>org.vpac.grisu</groupId>
-      <artifactId>grisu-client</artifactId>
-      <version>0.3-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.vpac.grisu</groupId>
-    	<artifactId>grisu-core</artifactId>
-    	<version>0.3-SNAPSHOT</version>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>jline</groupId>
-    	<artifactId>jline</artifactId>
-    	<version>0.9.94</version>
-    </dependency>
-    <dependency>
-    	<groupId>org.apache.xmlrpc</groupId>
-    	<artifactId>xmlrpc-client</artifactId>
-    	<version>3.1.2</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-  </dependencies>
-    	<build>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>grisu-clients</artifactId>
+		<groupId>org.vpac.grisu</groupId>
+		<version>0.3-SNAPSHOT</version>
+	</parent>
+	<groupId>org.vpac.grisu</groupId>
+	<artifactId>gridftp-tests</artifactId>
+	<version>0.3-SNAPSHOT</version>
+	<name>Grisu-Gridftp-Tests</name>
+	<description>Gridftp tests using the Grisu framework</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.vpac.grisu</groupId>
+			<artifactId>grisu-client</artifactId>
+			<version>0.3-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.vpac.grisu</groupId>
+			<artifactId>grisu-core</artifactId>
+			<version>0.3-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>jline</groupId>
+			<artifactId>jline</artifactId>
+			<version>0.9.94</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xmlrpc</groupId>
+			<artifactId>xmlrpc-client</artifactId>
+			<version>3.1.2</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -49,26 +50,34 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<configuration>
 
-					<descriptors>
-						<descriptor>grisu-gridftp-tests.assembly.xml</descriptor>
-					</descriptors>
-					<finalName>grisu</finalName>
-					<archive>
+							<descriptors>
+								<descriptor>grisu-gridftp-tests.assembly.xml</descriptor>
+							</descriptors>
+							<finalName>grisu</finalName>
+							<archive>
 
-						<index>true</index>
-						<manifest>
-							<mainClass>org.vpac.grisu.client.gridFtpTests.GridFtpTestController</mainClass>
-						</manifest>
-						<manifestEntries>
-							<Class-Path>bcprov.jar bcprov-jdk15-140.jar	grisu-local-backend.jar</Class-Path>
-						</manifestEntries>
-					</archive>
+								<index>true</index>
+								<manifest>
+									<mainClass>org.vpac.grisu.client.gridFtpTests.GridFtpTestController</mainClass>
+								</manifest>
+								<manifestEntries>
+									<Class-Path>bcprov.jar bcprov-jdk15-143.jar local-backend.jar</Class-Path>
+								</manifestEntries>
+							</archive>
 
-				</configuration>
+						</configuration>
+						<goals>
+							<goal>attached</goal>
+						</goals>
+					</execution>
+				</executions>
 
 			</plugin>
-        </plugins>
-    </build>
+		</plugins>
+	</build>
 </project>

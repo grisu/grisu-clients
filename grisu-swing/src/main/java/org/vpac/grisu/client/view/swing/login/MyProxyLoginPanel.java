@@ -141,7 +141,7 @@ public class MyProxyLoginPanel extends JPanel {
 			Utils.showErrorMessage(getUser(), MyProxyLoginPanel.this, "loginError", e1);
 			getLoginButton().setEnabled(true);
 			return;
-		} catch (IOException e) {
+		} catch (RuntimeException e) {
 			Utils.showErrorMessage(getUser(), MyProxyLoginPanel.this, "pluginError", e);
 			getLoginButton().setEnabled(true);
 			return;

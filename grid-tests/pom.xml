@@ -48,24 +48,32 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<configuration>
 
-					<descriptors>
-						<descriptor>grisu-grid-tests.assembly.xml</descriptor>
-					</descriptors>
-					<finalName>grisu</finalName>
-					<archive>
+							<descriptors>
+								<descriptor>grisu-grid-tests.assembly.xml</descriptor>
+							</descriptors>
+							<finalName>grisu</finalName>
+							<archive>
 
-						<index>true</index>
-						<manifest>
-							<mainClass>org.vpac.grisu.client.gridTests.GridTestController</mainClass>
-						</manifest>
-						<manifestEntries>
-							<Class-Path>bcprov.jar bcprov-jdk15-140.jar grisu-local-backend.jar</Class-Path>
-						</manifestEntries>
-					</archive>
+								<index>true</index>
+								<manifest>
+									<mainClass>org.vpac.grisu.client.gridTests.GridTestController</mainClass>
+								</manifest>
+								<manifestEntries>
+									<Class-Path>bcprov.jar bcprov-jdk15-143.jar local-backend.jar</Class-Path>
+								</manifestEntries>
+							</archive>
 
-				</configuration>
+						</configuration>
+						<goals>
+							<goal>attached</goal>
+						</goals>
+					</execution>
+				</executions>
 
 			</plugin>
 			<plugin>

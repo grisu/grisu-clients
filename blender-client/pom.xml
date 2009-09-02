@@ -71,24 +71,32 @@
 
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<configuration>
 
-					<descriptors>
-						<descriptor>blender-client.assembly.xml</descriptor>
-					</descriptors>
-					<finalName>grid</finalName>
-					<archive>
+							<descriptors>
+								<descriptor>blender-client.assembly.xml</descriptor>
+							</descriptors>
+							<finalName>grid</finalName>
+							<archive>
 
-						<index>true</index>
-						<manifest>
-							<mainClass>org.vpac.grisu.clients.blender.GrisuBlender</mainClass>
-						</manifest>
-						<manifestEntries>
-							<Class-Path>bcprov.jar bcprov-jdk15-143.jar	grisu-local-backend.jar</Class-Path>
-						</manifestEntries>
-					</archive>
+								<index>true</index>
+								<manifest>
+									<mainClass>org.vpac.grisu.clients.blender.GrisuBlender</mainClass>
+								</manifest>
+								<manifestEntries>
+									<Class-Path>bcprov.jar bcprov-jdk15-143.jar	local-backend.jar</Class-Path>
+								</manifestEntries>
+							</archive>
 
-				</configuration>
+						</configuration>
+						<goals>
+							<goal>attached</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 		</plugins>

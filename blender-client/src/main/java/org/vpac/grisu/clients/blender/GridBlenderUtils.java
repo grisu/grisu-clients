@@ -67,7 +67,7 @@ public class GridBlenderUtils {
 					si = LoginManager
 							.login(null, null, null, null, loginParams);
 					return si;
-				} catch (IOException e) {
+				} catch (RuntimeException e) {
 					System.err.println(e.getLocalizedMessage());
 					System.exit(1);
 				} catch (LoginException e) {
@@ -107,7 +107,7 @@ public class GridBlenderUtils {
 					}
 					
 					return si;
-				} catch (IOException e) {
+				} catch (RuntimeException e) {
 					System.err.println(e.getLocalizedMessage());
 					System.exit(1);
 				} catch (LoginException e) {
@@ -161,7 +161,7 @@ public class GridBlenderUtils {
 				// means using existing proxy
 				si = LoginManager.login(cred, null, null, null, loginParams);
 				return si;
-			} catch (IOException e) {
+			} catch (RuntimeException e) {
 				System.err.println(e.getLocalizedMessage());
 				System.exit(1);
 			} catch (LoginException e) {

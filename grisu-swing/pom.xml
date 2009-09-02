@@ -31,12 +31,12 @@
 		<!--			<version>0.3-SNAPSHOT</version>-->
 		<!--			<scope>compile</scope>-->
 		<!--		</dependency>-->
-		
-<!--		<dependency>-->
-<!--			<groupId>org.vpac.grisu</groupId>-->
-<!--			<artifactId>grisu-client-jaxws</artifactId>-->
-<!--			<version>0.3-SNAPSHOT</version>-->
-<!--		</dependency>-->
+
+		<!--		<dependency>-->
+		<!--			<groupId>org.vpac.grisu</groupId>-->
+		<!--			<artifactId>grisu-client-jaxws</artifactId>-->
+		<!--			<version>0.3-SNAPSHOT</version>-->
+		<!--		</dependency>-->
 		<dependency>
 			<groupId>org.vpac.grisu</groupId>
 			<artifactId>grisu-commons</artifactId>
@@ -49,39 +49,39 @@
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
 
-<!--		<dependency>-->
-<!--			<groupId>org.vpac.grisu</groupId>-->
-<!--			<artifactId>xfire-frontend</artifactId>-->
-<!--			<version>0.3-SNAPSHOT</version>-->
-<!--		</dependency>-->
+		<!--		<dependency>-->
+		<!--			<groupId>org.vpac.grisu</groupId>-->
+		<!--			<artifactId>xfire-frontend</artifactId>-->
+		<!--			<version>0.3-SNAPSHOT</version>-->
+		<!--		</dependency>-->
 
 
-<!--		<dependency>-->
-<!--			<groupId>org.vpac.grisu</groupId>-->
-<!--			<artifactId>xfire-frontend</artifactId>-->
-<!--			<version>0.3-SNAPSHOT</version>-->
-<!--			<scope>compile</scope>-->
-<!--		</dependency>-->
+		<!--		<dependency>-->
+		<!--			<groupId>org.vpac.grisu</groupId>-->
+		<!--			<artifactId>xfire-frontend</artifactId>-->
+		<!--			<version>0.3-SNAPSHOT</version>-->
+		<!--			<scope>compile</scope>-->
+		<!--		</dependency>-->
 
-<!--		<dependency>-->
-<!--			<groupId>org.vpac.grisu</groupId>-->
-<!--			<artifactId>grisu-client-jaxws</artifactId>-->
-<!--			<version>0.3-SNAPSHOT</version>-->
-<!--		</dependency>-->
+		<!--		<dependency>-->
+		<!--			<groupId>org.vpac.grisu</groupId>-->
+		<!--			<artifactId>grisu-client-jaxws</artifactId>-->
+		<!--			<version>0.3-SNAPSHOT</version>-->
+		<!--		</dependency>-->
 
 
-<!--		<dependency>-->
-<!--			<groupId>org.vpac.grisu</groupId>-->
-<!--			<artifactId>grisu-core</artifactId>-->
-<!--			<version>0.3-SNAPSHOT</version>-->
-<!--			<scope>compile</scope>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>org.vpac.grisu</groupId>-->
-<!--			<artifactId>grisu-core</artifactId>-->
-<!--			<version>0.3-SNAPSHOT</version>-->
-<!--			<scope>compile</scope>-->
-<!--		</dependency>-->
+		<!--		<dependency>-->
+		<!--			<groupId>org.vpac.grisu</groupId>-->
+		<!--			<artifactId>grisu-core</artifactId>-->
+		<!--			<version>0.3-SNAPSHOT</version>-->
+		<!--			<scope>compile</scope>-->
+		<!--		</dependency>-->
+		<!--		<dependency>-->
+		<!--			<groupId>org.vpac.grisu</groupId>-->
+		<!--			<artifactId>grisu-core</artifactId>-->
+		<!--			<version>0.3-SNAPSHOT</version>-->
+		<!--			<scope>compile</scope>-->
+		<!--		</dependency>-->
 	</dependencies>
 	<build>
 		<plugins>
@@ -93,27 +93,35 @@
 					<target>1.5</target>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<configuration>
 
-					<descriptors>
-						<descriptor>grisu-swing-client.assembly.xml</descriptor>
-					</descriptors>
-					<finalName>grisu</finalName>
-					<archive>
+							<descriptors>
+								<descriptor>grisu-swing-client.assembly.xml</descriptor>
+							</descriptors>
+							<finalName>grisu</finalName>
+							<archive>
 
-						<index>true</index>
-						<manifest>
-							<mainClass>org.vpac.grisu.client.view.swing.mainPanel.Grisu</mainClass>
-						</manifest>
-						<manifestEntries>
-							<Class-Path>bcprov.jar bcprov-jdk15-140.jar	grisu-local-backend.jar</Class-Path>
-						</manifestEntries>
-					</archive>
+								<index>true</index>
+								<manifest>
+									<mainClass>org.vpac.grisu.client.view.swing.mainPanel.Grisu</mainClass>
+								</manifest>
+								<manifestEntries>
+									<Class-Path>bcprov.jar bcprov-jdk15-143.jar local-backend.jar</Class-Path>
+								</manifestEntries>
+							</archive>
 
-				</configuration>
+						</configuration>
+						<goals>
+							<goal>attached</goal>
+						</goals>
+					</execution>
+				</executions>
 
 			</plugin>
 		</plugins>

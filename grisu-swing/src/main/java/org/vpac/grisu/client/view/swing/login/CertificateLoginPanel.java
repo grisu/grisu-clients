@@ -94,7 +94,7 @@ public class CertificateLoginPanel extends JPanel {
 			Utils.showErrorMessage(getUser(), CertificateLoginPanel.this, "loginError", e1);
 			getLoginButton().setEnabled(true);
 			return;
-		} catch (IOException e) {
+		} catch (RuntimeException e) {
 			Utils.showErrorMessage(getUser(), CertificateLoginPanel.this, "pluginError", e);
 			getLoginButton().setEnabled(true);
 			return;

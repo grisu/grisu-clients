@@ -87,7 +87,7 @@ public class GrisuSlcsLoginPanel extends JPanel implements SlcsPanelListener, Ht
 		} catch (LoginException e) {
 			Utils.showErrorMessage(getUser(), GrisuSlcsLoginPanel.this, "loginError", e);
 			return;
-		} catch (IOException e2) {
+		} catch (RuntimeException e2) {
 			Utils.showErrorMessage(getUser(), GrisuSlcsLoginPanel.this, "pluginError", e2);
 			return;
 		}
