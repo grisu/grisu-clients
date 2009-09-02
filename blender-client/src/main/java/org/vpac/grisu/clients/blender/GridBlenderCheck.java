@@ -89,7 +89,8 @@ public class GridBlenderCheck implements BlenderMode, MultiPartJobEventListener 
 			try {
 				sleepTime = commandlineArgs.getLoopUntilFinished() * 60 * 1000;
 			} catch (Exception e) {
-				e.printStackTrace();
+//				e.printStackTrace();
+				// doesn't matter
 			}
 
 			while (!blenderMultiPartJobObject.isFinished(false) || firstTime) {
