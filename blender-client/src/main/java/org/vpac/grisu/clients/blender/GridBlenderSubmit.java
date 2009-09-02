@@ -95,6 +95,7 @@ public class GridBlenderSubmit implements BlenderMode {
 		job.setFirstFrame(commandlineArgs.getStartFrame());
 		job.setLastFrame(commandlineArgs.getEndFrame());
 		job.setDefaultWalltimeInSeconds(commandlineArgs.getWalltime() * 60);
+		job.setOutputFileName(commandlineArgs.getOutput());
 		if (commandlineArgs.isExclude()) {
 			job.setSitesToExclude(commandlineArgs.getExclude().toArray(
 					new String[] {}));

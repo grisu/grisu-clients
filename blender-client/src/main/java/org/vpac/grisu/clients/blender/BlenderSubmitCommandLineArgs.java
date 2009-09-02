@@ -21,6 +21,9 @@ public interface BlenderSubmitCommandLineArgs extends BlenderCommandLineArgs {
 	@Option(shortName = "w", description = "the walltime for a single frame-render job in minutes. Use a high enough number so the job doesn't get killed on the cluster. But don't make it too high because your job might take longer to get started.")
 	public int getWalltime();
 	
+	@Option(shortName = "o", description = "the name of the output file")
+	public String getOutput();
+	
 	@Option(shortName = "v", description = "the vo to use to submit this job. Can be omitted if you are only member of one VO")
 	public String getVo();
 	
