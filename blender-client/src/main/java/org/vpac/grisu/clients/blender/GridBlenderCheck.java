@@ -83,7 +83,7 @@ public class GridBlenderCheck implements BlenderMode, MultiPartJobEventListener 
 
 		boolean firstTime = true;
 
-		if (commandlineArgs.isLoopUntilFinished()) {
+		if ( commandlineArgs.isLoopUntilFinished() || firstTime ) {
 
 			int sleepTime = 60 * 1000;
 			try {
