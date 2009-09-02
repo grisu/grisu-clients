@@ -108,8 +108,9 @@ public class GridBlenderCheck implements BlenderMode, MultiPartJobEventListener 
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					firstTime = false;
 				}
+
+				firstTime = false;
 
 				blenderMultiPartJobObject.refresh();
 				if (commandlineArgs.isDetailed()) {
