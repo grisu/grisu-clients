@@ -4,6 +4,7 @@ import org.vpac.grisu.client.control.clientexceptions.JobCreationException;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.control.exceptions.MultiPartJobException;
+import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.frontend.model.job.MultiPartJobEventListener;
 import org.vpac.grisu.frontend.model.job.MultiPartJobObject;
 
@@ -62,6 +63,8 @@ public class GridBlenderSubmit implements BlenderMode {
 								.println("Deleting of existing multipart job "
 										+ jobname + " finished.");
 					}
+				} catch (NoSuchJobException nsje) {
+					// that's ok.
 				} catch (Exception e) {
 					System.out.println("Could not delete existing job "
 							+ jobname + ": " + e.getLocalizedMessage());
