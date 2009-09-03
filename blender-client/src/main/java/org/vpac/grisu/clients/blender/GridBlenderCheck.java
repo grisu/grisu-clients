@@ -125,7 +125,10 @@ public class GridBlenderCheck implements BlenderMode, MultiPartJobEventListener 
 							.getProgress(null));
 				}
 				
-				if ( blenderMultiPartJobObject.isFinished(false) || ! commandlineArgs.isLoopUntilFinished() ) {
+				boolean finished = blenderMultiPartJobObject.isFinished(false);
+				boolean cmdln = commandlineArgs.isLoopUntilFinished();
+
+				if ( finished || ! cmdln ) {
 					break;
 				}
 
