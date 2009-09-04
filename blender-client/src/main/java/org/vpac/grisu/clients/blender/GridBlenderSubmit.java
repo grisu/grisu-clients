@@ -1,10 +1,10 @@
 package org.vpac.grisu.clients.blender;
 
-import org.vpac.grisu.client.control.clientexceptions.JobCreationException;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.control.exceptions.MultiPartJobException;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
+import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
 import org.vpac.grisu.frontend.model.job.MultiPartJobEventListener;
 import org.vpac.grisu.frontend.model.job.MultiPartJobObject;
 

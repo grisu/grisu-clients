@@ -10,7 +10,6 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.vpac.grisu.client.TemplateTagConstants;
 import org.vpac.grisu.client.control.EnvironmentManager;
-import org.vpac.grisu.client.control.clientexceptions.JobCreationException;
 import org.vpac.grisu.client.control.eventStuff.SubmissionObjectListener;
 import org.vpac.grisu.client.control.exceptions.SubmissionLocationException;
 import org.vpac.grisu.client.control.utils.MountPointEvent;
@@ -25,6 +24,7 @@ import org.vpac.grisu.client.model.template.nodes.DefaultTemplateNodeValueSetter
 import org.vpac.grisu.client.model.template.nodes.TemplateNode;
 import org.vpac.grisu.client.model.template.nodes.TemplateNodeValueSetter;
 import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
+import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
 import org.vpac.grisu.model.FqanEvent;
 import org.vpac.grisu.model.FqanListener;
 

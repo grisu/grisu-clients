@@ -5,7 +5,6 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 
-import org.vpac.grisu.client.control.clientexceptions.JobCreationException;
 import org.vpac.grisu.client.control.eventStuff.SubmissionObjectListener;
 import org.vpac.grisu.client.control.template.ModuleException;
 import org.vpac.grisu.client.model.SubmissionObject;
@@ -18,6 +17,7 @@ import org.vpac.grisu.client.view.swing.template.panels.JobName;
 import org.vpac.grisu.client.view.swing.template.panels.MemoryInputPanel;
 import org.vpac.grisu.client.view.swing.template.panels.TemplateNodePanelException;
 import org.vpac.grisu.client.view.swing.template.panels.WallTime;
+import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.CellConstraints;

@@ -21,7 +21,6 @@ import javax.swing.border.TitledBorder;
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 import org.vpac.grisu.client.control.EnvironmentManager;
-import org.vpac.grisu.client.control.clientexceptions.JobCreationException;
 import org.vpac.grisu.client.control.eventStuff.SubmissionObjectListener;
 import org.vpac.grisu.client.control.exceptions.SubmissionLocationException;
 import org.vpac.grisu.client.model.ApplicationInfoObject;
@@ -31,6 +30,7 @@ import org.vpac.grisu.client.model.SubmissionObject;
 import org.vpac.grisu.client.model.template.modules.SubmissionObjectHolder;
 import org.vpac.grisu.client.model.template.modules.TemplateModule;
 import org.vpac.grisu.client.model.template.nodes.TemplateNode;
+import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.CellConstraints;
