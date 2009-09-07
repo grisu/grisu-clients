@@ -79,6 +79,8 @@ public class GridTestController {
 
 		Environment.setGrisuDirectory(this.grisu_base_directory);
 		
+		DependencyManager.initArcsCommonJavaLibDir();
+		DependencyManager.checkForBouncyCastleDependency();
 		ClasspathHacker.initFolder(new File(Environment.getGrisuPluginDirectory()), new GrisuPluginFilenameFilter());
 		
 		// try to setup hibernate for local tests if a local Backend is used
@@ -123,8 +125,7 @@ public class GridTestController {
 						// "https://ngportaldev.vpac.org/grisu-ws/services/grisu",
 						"Local", options.getMyproxyUsername(), password);
 
-				serviceInterface = ServiceInterfaceFactory
-						.createInterface(loginParams);
+				serviceInterface = LoginManager.login(null, null, null, null, loginParams);
 			} catch (Exception e) {
 				System.out.println("Could not login: "
 						+ e.getLocalizedMessage());

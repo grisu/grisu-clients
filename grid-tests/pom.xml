@@ -50,23 +50,39 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
 					<execution>
+						<id>build-executable-jar</id>
 						<phase>package</phase>
 						<configuration>
 
 							<descriptors>
 								<descriptor>grisu-grid-tests.assembly.xml</descriptor>
 							</descriptors>
-							<finalName>grisu</finalName>
+							<finalName>grid</finalName>
 							<archive>
 
 								<index>true</index>
 								<manifest>
-									<mainClass>org.vpac.grisu.client.gridTests.GridTestController</mainClass>
+									<mainClass>org.vpac.grisu.clients.gridTests.GridTestController</mainClass>
 								</manifest>
 								<manifestEntries>
 									<Class-Path>bcprov.jar bcprov-jdk15-143.jar local-backend.jar</Class-Path>
 								</manifestEntries>
 							</archive>
+
+						</configuration>
+						<goals>
+							<goal>attached</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>create-zip-distribution</id>
+						<phase>package</phase>
+						<configuration>
+
+							<descriptors>
+								<descriptor>grisu-grid-tests.zip.assembly.xml</descriptor>
+							</descriptors>
+							<finalName>grid</finalName>
 
 						</configuration>
 						<goals>

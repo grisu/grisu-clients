@@ -28,7 +28,7 @@ public abstract class GridFtpTestElement {
 		for (String testname : testnames) {
 			
 			try {
-				Class testElementClass = Class.forName("org.vpac.grisu.client.gridFtpTests.testElements."+testname);
+				Class testElementClass = Class.forName("org.vpac.grisu.clients.gridFtpTests.testElements."+testname);
 				
 				Constructor testElementConstructor = testElementClass.getConstructor(GridFtpTestController.class, Set.class);
 				

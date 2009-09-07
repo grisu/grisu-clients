@@ -1,5 +1,5 @@
 <assembly>
-	<id>grid-tests</id>
+	<id>tests</id>
 	<formats>
 		<format>jar</format>
 	</formats>

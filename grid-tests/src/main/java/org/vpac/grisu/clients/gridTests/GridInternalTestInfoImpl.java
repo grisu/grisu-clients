@@ -35,7 +35,7 @@ public class GridInternalTestInfoImpl implements GridTestInfo {
 		this.fqans = fqans;
 
 		testClass = Class
-				.forName("org.vpac.grisu.client.gridTests.testElements."
+				.forName("org.vpac.grisu.clients.gridTests.testElements."
 						+ testname + "GridTestElement");
 
 		try {
