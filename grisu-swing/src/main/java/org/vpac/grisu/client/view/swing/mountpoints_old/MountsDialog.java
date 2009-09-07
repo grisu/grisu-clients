@@ -164,7 +164,7 @@ public class MountsDialog extends JDialog implements MountPointsListener{
 			addMountPointButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					
-					final AddMountPointDialog mpdialog = new AddMountPointDialog(null, em.getServiceInterface().getAllSites());
+					final AddMountPointDialog mpdialog = new AddMountPointDialog(null, em.getServiceInterface().getAllSites().asArray());
 					mpdialog.setVisible(true);
 					int option = mpdialog.getUserOption();
 					

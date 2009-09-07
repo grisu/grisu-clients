@@ -83,7 +83,7 @@ public class SiteWizardPanel extends JPanel {
 	 */
 	private JList getJList() {
 		if (jList == null) {
-			String[] allSites = serviceInterface.getAllSites();
+			String[] allSites = serviceInterface.getAllSites().asArray();
 			jList = new JList(allSites);
 			if (jList.getModel().getSize() > 0)
 				jList.setSelectedIndex(0);

@@ -36,6 +36,7 @@ import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
 import org.vpac.grisu.model.FqanEvent;
 import org.vpac.grisu.model.FqanListener;
+import org.vpac.grisu.model.dto.DtoStringList;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -133,8 +134,8 @@ public class ApplicationChooserPanel extends JPanel implements
 		serviceInterface = environmentManager.getServiceInterface();
 
 		allGridApps = serviceInterface
-		.getAllAvailableApplications(environmentManager
-				.getAllOfTheUsersSites().toArray(new String[]{}));
+		.getAllAvailableApplications(DtoStringList.fromStringColletion(environmentManager
+				.getAllOfTheUsersSites())).asArray();
 
 		initTree();
 	}

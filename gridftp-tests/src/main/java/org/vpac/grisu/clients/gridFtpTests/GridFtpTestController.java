@@ -125,7 +125,7 @@ public class GridFtpTestController {
 		registry = GrisuRegistryManager.getDefault(this.serviceInterface);
 
 		if (options.getFqans().length == 0) {
-			fqans = serviceInterface.getFqans();
+			fqans = serviceInterface.getFqans().asArray();
 		} else {
 			fqans = options.getFqans();
 		}

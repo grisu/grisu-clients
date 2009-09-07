@@ -120,7 +120,7 @@ public class GwtServiceInterfaceWrapperImpl extends RemoteServiceServlet
 
 	public String[] getAllFqans() {
 
-		return getServiceInterface().getFqans();
+		return getServiceInterface().getFqans().asArray();
 	}
 
 	public String getJobsStatus() {
@@ -210,7 +210,7 @@ public class GwtServiceInterfaceWrapperImpl extends RemoteServiceServlet
 
 	public String[] getAllApplicationsOnTheGrid() {
 
-		return getServiceInterface().getAllAvailableApplications(null);
+		return getServiceInterface().getAllAvailableApplications(null).asArray();
 
 	}
 
@@ -292,7 +292,7 @@ public class GwtServiceInterfaceWrapperImpl extends RemoteServiceServlet
 
 	public String[] getAllAvailableVOs() {
 
-		return getServiceInterface().getFqans();
+		return getServiceInterface().getFqans().asArray();
 	}
 
 	public GwtGridResourceWrapper[] findGridResourcesForVersionsAndFqans(

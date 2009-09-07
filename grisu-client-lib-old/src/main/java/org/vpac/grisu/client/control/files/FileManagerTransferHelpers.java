@@ -241,7 +241,7 @@ public class FileManagerTransferHelpers {
 			String[] childs = null;
 			try {
 				childs = serviceInterface.getChildrenFileNames(remoteFile.getURI()
-						.toString(), false);
+						.toString(), false).asArray();
 			} catch (Exception e) {
 				failed_downloads.put(remoteFile.getURI().toString(), e);
 				break;

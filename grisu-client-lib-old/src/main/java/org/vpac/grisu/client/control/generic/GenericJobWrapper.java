@@ -23,6 +23,7 @@ import org.vpac.grisu.client.model.template.nodes.templatePreProcessor.TemplateP
 import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
 import org.vpac.grisu.frontend.control.login.LoginException;
 import org.vpac.grisu.frontend.control.login.LoginParams;
+import org.vpac.grisu.model.dto.DtoStringList;
 import org.vpac.grisu.utils.SeveralXMLHelpers;
 import org.w3c.dom.Document;
 
@@ -537,7 +538,7 @@ public class GenericJobWrapper {
 				if ( application == null || "".equals(application) ) {
 					StringBuffer allApps = new StringBuffer();
 					allApps.append("Available applications: ");
-					for ( String name : em.getServiceInterface().getAllAvailableApplications(em.getAllOfTheUsersSites().toArray(new String[]{})) ) {
+					for ( String name : em.getServiceInterface().getAllAvailableApplications(DtoStringList.fromStringColletion(em.getAllOfTheUsersSites())).getStringList() ) {
 						allApps.append(name+" ");
 					}
 					System.out.println(allApps.toString());

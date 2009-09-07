@@ -720,7 +720,7 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 		
 		if ( allAvailableVersionsForApplicationPerSubmissionLocation.get(fqan+"_"+subLoc.getLocation()+"_"+application) == null ) {
 			
-			String [] allVersions = getServiceInterface().getVersionsOfApplicationOnSubmissionLocation(application, subLoc.getLocation());
+			String [] allVersions = getServiceInterface().getVersionsOfApplicationOnSubmissionLocation(application, subLoc.getLocation()).asArray();
 			
 			allAvailableVersionsForApplicationPerSubmissionLocation.put(fqan+"_"+subLoc.getLocation()+"_"+application, allVersions);
 		}
@@ -750,9 +750,9 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 			Set<String> result = new TreeSet<String>();
 			for (SubmissionLocation subLoc : getAllAvailableSubmissionLocationsForFqan(fqan) ) {
 				result
-						.addAll(Arrays.asList(serviceInterface
+						.addAll(serviceInterface
 								.getVersionsOfApplicationOnSubmissionLocation(
-										applicationName, subLoc.getLocation())));
+										applicationName, subLoc.getLocation()).getStringList());
 			}
 			Date end = new Date();
 			myLogger.debug("[BENCHMARK] Getting all version locations for "
@@ -1018,7 +1018,7 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 				.get(submissionLocation) == null) {
 
 			String[] urls = serviceInterface
-					.getStagingFileSystemForSubmissionLocation(submissionLocation);
+					.getStagingFileSystemForSubmissionLocation(submissionLocation).asArray();
 
 			Set<MountPoint> result = new TreeSet<MountPoint>();
 			for (String url : urls) {
@@ -1054,7 +1054,7 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 			String submissionLocation, String fqan) {
 
 		String[] urls = serviceInterface
-				.getStagingFileSystemForSubmissionLocation(submissionLocation);
+				.getStagingFileSystemForSubmissionLocation(submissionLocation).asArray();
 
 		Set<MountPoint> result = new TreeSet<MountPoint>();
 
@@ -1134,7 +1134,7 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 	 */
 	public synchronized String[] getFqans() {
 		if (fqans == null) {
-			fqans = serviceInterface.getFqans();
+			fqans = serviceInterface.getFqans().asArray();
 			fireFqanEvent(FqanEvent.FQANS_REFRESHED, fqans);
 		}
 		return fqans;
@@ -1273,7 +1273,7 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 		String[] fs = alreadyQueriedQueues.get(submissionLocation);
 		if (fs == null || "".equals(submissionLocation)) {
 			fs = serviceInterface
-					.getStagingFileSystemForSubmissionLocation(submissionLocation);
+					.getStagingFileSystemForSubmissionLocation(submissionLocation).asArray();
 			alreadyQueriedQueues.put(submissionLocation, fs);
 		}
 		return fs;
@@ -1569,7 +1569,7 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 	 * @return all Sites gridwise
 	 */
 	public String[] getAllSitesOfTheGrid() {
-		return getServiceInterface().getAllSites();
+		return getServiceInterface().getAllSites().asArray();
 	}
 
 	public String[] getAllAvailableFqans() {

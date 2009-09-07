@@ -489,7 +489,7 @@ public class FileTransfer {
 			String[] childs = null;
 			try {
 				childs = em.getServiceInterface().getChildrenFileNames(remoteFile.getURI()
-						.toString(), false);
+						.toString(), false).asArray();
 			} catch (Exception e) {
 				e.printStackTrace();
 				failed_downloads.put(remoteFile.getURI().toString(), e);

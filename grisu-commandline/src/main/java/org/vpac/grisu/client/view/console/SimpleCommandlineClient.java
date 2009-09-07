@@ -19,6 +19,7 @@ import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
 import org.vpac.grisu.frontend.control.login.LoginHelpers;
 import org.vpac.grisu.frontend.control.login.LoginManager;
 import org.vpac.grisu.frontend.control.login.LoginParams;
+import org.vpac.grisu.model.dto.DtoStringList;
 
 public class SimpleCommandlineClient implements JsdlTemplateListener {
 
@@ -219,7 +220,7 @@ public class SimpleCommandlineClient implements JsdlTemplateListener {
 		// are available for the sites the user has got access to.
 		// this has to be done before anything else
 		String[] allApplications = em.getServiceInterface()
-				.getAllAvailableApplications(em.getAllOfTheUsersSites().toArray(new String[]{}));
+				.getAllAvailableApplications(DtoStringList.fromStringColletion(em.getAllOfTheUsersSites())).asArray();
 
 		String application = (String) scc
 				.displayChoices(
