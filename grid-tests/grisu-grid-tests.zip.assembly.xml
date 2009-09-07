@@ -37,7 +37,7 @@
 		</file>
 		<file>
 			<source>grid-tests-hibernate-file.cfg.xml</source>
-			<outputDirectory>/grisu-grid-tests</outputDirectory>
+			<outputDirectory>/grid-tests</outputDirectory>
 		</file>
 		<file>
 			<source>grisu-server.config</source>
