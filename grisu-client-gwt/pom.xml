@@ -9,16 +9,15 @@
   <packaging>war</packaging>
   <version>0.3-SNAPSHOT</version>
   <name>grisu-client-gwt</name>
-  	<properties>
+	<properties>
+
 		<!-- convenience to define GWT version in one place -->
-		<gwt.version>1.6.4</gwt.version>
+		<gwt.version>1.7.0</gwt.version>
+
 		<!--  tell the compiler we can use 1.5 -->
 		<maven.compiler.source>1.5</maven.compiler.source>
 		<maven.compiler.target>1.5</maven.compiler.target>
-		<!-- define a transient output directory for gwt -->
-		<gwt.output.directory>${basedir}/target/gwt</gwt.output.directory>
-		<!-- the value of the rename-to attribute in your GWT module configuration -->
-		<gwt.module.alias>Application</gwt.module.alias>
+
 	</properties>
 
 	<repositories>
@@ -93,90 +92,53 @@
 
   <description>A web client for grisu. It uses a local backend to access the grid and gwt to render it's web interface.</description>
   <build>
-    <outputDirectory>${gwt.output.directory}/WEB-INF/classes</outputDirectory>
+    <outputDirectory>war/WEB-INF/classes</outputDirectory>
     <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <version>1.1-SNAPSHOT</version>
-        <executions>
-        					<execution>
-						<phase>process-classes</phase>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>gwt-maven-plugin</artifactId>
+				<version>1.1-SNAPSHOT</version>
+				<executions>
+					<execution>
 						<configuration>
-								<generateDirectory>${gwt.output.directory}/${gwt.module.alias}</generateDirectory>
-								<webappDirectory>${gwt.output.directory}</webappDirectory>
-<!--							<output>${gwt.output.directory}</output>-->
-							<logLevel>INFO</logLevel>
+							<module>org.vpac.grisu.Application</module>
 						</configuration>
 						<goals>
 							<goal>compile</goal>
+							<!--              <goal>generateAsync</goal>-->
+							<!--              <goal>test</goal>-->
 						</goals>
 					</execution>
-					</executions>
-      </plugin>
+				</executions>
+
+				<configuration>
+					<runTarget>webclient/Application.html</runTarget>
+				</configuration>
+			</plugin>
+
       
-      			<plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<webResources>
+						<resource>
+							<directory>war</directory>
+							<excludes>
+								<exclude>**/webclient/*</exclude>
+							</excludes>
+						</resource>
+					</webResources>
+				</configuration>
+			</plugin>
+
+						<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.0.2</version>
 				<configuration>
 					<source>${maven.compiler.source}</source>
 					<target>${maven.compiler.target}</target>
-					<encoding>UTF-8</encoding>
-		            <!-- Fix for GWT issue #3439 -->
-					<excludes>
-						<exclude>javax/servlet/**</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			
-			
-						<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.3</version>
-				<!-- set encoding to something not platform dependent -->
-				<configuration>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
-			
-						<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.2</version>
-				<executions>
-					<!-- This execution copies the war folder to the gwt transient output directory -->
-					<execution>
-						<id>war-folder-creation</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<tasks>
-								<copy todir="${gwt.output.directory}">
-									<fileset dir="${basedir}/src/main/webapp" />
-								</copy>
-							</tasks>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			
-						<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<!-- Include GWT compiler output in the war -->
-				<configuration>
-					<webResources>
-						<resource>
-		              		<!-- this is relative to the pom.xml directory, it's the GWT compiler output -->
-							<directory>${gwt.output.directory}/${gwt.module.alias}</directory>
-							<!-- override the destination directory (WEB-INF/classes) for this resource -->
-							<targetPath>${gwt.module.alias}</targetPath>
-						</resource>
-					</webResources>
 				</configuration>
 			</plugin>
 
