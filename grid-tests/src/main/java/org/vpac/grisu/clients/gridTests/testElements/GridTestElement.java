@@ -371,7 +371,14 @@ public abstract class GridTestElement implements JobStatusChangeListener, Compar
 			return subLoc;
 		}
 		int fqan = this.getFqan().compareTo(o.getFqan());
-		return fqan;
+		if ( fqan != 0 ) {
+			return fqan;
+		}
+		
+		int id = this.getTestId().compareTo(o.getTestId());
+		
+		return id;
+		
 	}
 	
 	@Override
@@ -397,13 +404,17 @@ public abstract class GridTestElement implements JobStatusChangeListener, Compar
 			return false;
 		}
 		
+		if ( ! this.getTestId().equals(other.getTestId()) ) {
+			return false;
+		}
+		
 		return true;
 	}
 	
 	@Override
 	public int hashCode() {
 		
-		return (23*getTestInfo().getApplicationName().hashCode())+(12*getTestInfo().getTestname().hashCode())+(3*getVersion().hashCode())+(5*getFqan().hashCode());
+		return (23*getTestInfo().getApplicationName().hashCode())+(12*getTestInfo().getTestname().hashCode())+(3*getVersion().hashCode())+(5*getFqan().hashCode()+3*getTestId().hashCode());
 		
 	}
 	
