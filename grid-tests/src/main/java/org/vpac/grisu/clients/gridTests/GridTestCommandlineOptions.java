@@ -25,6 +25,7 @@ public class GridTestCommandlineOptions {
 	private int timeout = 240;
 	private boolean list = false;
 	private int threads = 5;
+	private int jobsToSameSubmissionLocation = 1;
 	
 	public String[] getFqans() {
 		return fqans;
@@ -32,6 +33,10 @@ public class GridTestCommandlineOptions {
 	
 	public int getSimultaneousThreads() {
 		return threads;
+	}
+	
+	public int getSameSubmissionLocation() {
+		return jobsToSameSubmissionLocation;
 	}
 
 	public String[] getGridTestNames() {
@@ -156,6 +161,15 @@ public class GridTestCommandlineOptions {
 				System.exit(1);
 			}
 		}
+		if (line.hasOption("sameSubmissionLocation")) {
+			try {
+				jobsToSameSubmissionLocation = Integer.parseInt(line.getOptionValue("sameSubmissionLocation"));
+			} catch (Exception e) {
+				System.err.println("sameSubmissionLocation value is not an integer.");
+				formatter.printHelp("grisu-grid-test", this.options);
+				System.exit(1);
+			}
+		}
 		
 	}
 	
@@ -196,6 +210,7 @@ public class GridTestCommandlineOptions {
 		Option timeoutInMinutes = createOptionWithArg("cancel", "c", "timeout in minutes after which all jobs that aren't finished are getting killed (default: 240)");
 		Option list = createOption("list", "l", "list all available tests");
 		Option threads = createOptionWithArg("simultaneousThreads", "s", "how many jobs to submit at once. Default is 5 (which is recommended)");
+		Option sameSubLoc = createOptionWithArg("sameSubmissionLocation", "d", "duplicate the test job and submit it to the same submissionlocation x times (default: 1)");
 		Option help = createOption("help", "h", "this help text");
 		
 		options = new Options();
@@ -208,6 +223,7 @@ public class GridTestCommandlineOptions {
 		options.addOption(timeoutInMinutes);
 		options.addOption(list);
 		options.addOption(threads);
+		options.addOption(sameSubLoc);
 		options.addOption(help);
 		return options;
 	}

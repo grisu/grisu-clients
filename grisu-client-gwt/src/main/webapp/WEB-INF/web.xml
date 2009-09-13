@@ -15,15 +15,13 @@
    	<servlet-name>Login</servlet-name>
    	<display-name>Login</display-name>
    	<description></description>
-   	<servlet-class>
-   	org.vpac.grisu.web.login.Login</servlet-class>
+   	<servlet-class>org.vpac.grisu.web.login.Login</servlet-class>
    </servlet>
    <servlet>
    	<servlet-name>CertLogin</servlet-name>
    	<display-name>CertLogin</display-name>
    	<description></description>
-   	<servlet-class>
-   	org.vpac.grisu.web.login.CertLogin</servlet-class>
+   	<servlet-class>org.vpac.grisu.web.login.CertLogin</servlet-class>
    </servlet>
 
       <servlet-mapping>

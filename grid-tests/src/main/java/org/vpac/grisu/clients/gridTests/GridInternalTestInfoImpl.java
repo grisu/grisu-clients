@@ -162,7 +162,9 @@ public class GridInternalTestInfoImpl implements GridTestInfo {
 					// means only one version
 					Set<String> subLocs = appInfo.getAvailableSubmissionLocationsForVersionAndFqan(versionName, fqan);
 					for ( String subLoc : subLocs ) {
-						results.add(createGridTestElement(versionName, subLoc, fqan));
+						for ( int i=0; i<controller.getSameSubmissionLocation(); i++ ) {
+							results.add(createGridTestElement(versionName, subLoc, fqan));
+						}
 					}
 				} else {
 					// means all versions
@@ -170,14 +172,18 @@ public class GridInternalTestInfoImpl implements GridTestInfo {
 					for ( String version : versions ) {
 						Set<String> subLocs = appInfo.getAvailableSubmissionLocationsForVersionAndFqan(version, fqan);
 						for ( String subLoc : subLocs ) {
-							results.add(createGridTestElement(version, subLoc, fqan));
+							for ( int i=0; i<controller.getSameSubmissionLocation(); i++ ) {
+								results.add(createGridTestElement(version, subLoc, fqan));
+							}
 						}
 					}
 				}
 			} else {
 				String[] subLocs = GrisuRegistryManager.getDefault(controller.getServiceInterface()).getResourceInformation().getAllAvailableSubmissionLocations(fqan);
 				for ( String subLoc : subLocs ) {
-					results.add(createGridTestElement(Constants.NO_VERSION_INDICATOR_STRING, subLoc, fqan));
+					for ( int i=0; i<controller.getSameSubmissionLocation(); i++ ) {
+						results.add(createGridTestElement(Constants.NO_VERSION_INDICATOR_STRING, subLoc, fqan));
+					}
 				}
 			}
 			

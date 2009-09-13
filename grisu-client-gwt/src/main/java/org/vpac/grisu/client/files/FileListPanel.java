@@ -196,6 +196,11 @@ public class FileListPanel extends Panel implements GridCellListener,
 				mountPointCache = new TreeMap<String, Set<GwtMountPointWrapper>>();
 				mountPointMap = new TreeMap<String, GwtMountPointWrapper>();
 				for (GwtMountPointWrapper mp : arg0) {
+					String site = mp.getSite();
+					if ( site == null || "".equals(site) ) {
+						// ignoring it...
+						continue;
+					}
 					Set<GwtMountPointWrapper> tempSet = mountPointCache.get(mp
 							.getSite());
 					if (tempSet == null) {

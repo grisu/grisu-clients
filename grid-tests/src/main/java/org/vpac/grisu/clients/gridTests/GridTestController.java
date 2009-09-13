@@ -65,6 +65,8 @@ public class GridTestController {
 
 	private Date timeoutDate;
 	private final int timeout;
+	
+	private int sameSubloc = 1;
 
 	private List<OutputModule> outputModules = new LinkedList<OutputModule>();
 
@@ -160,6 +162,8 @@ public class GridTestController {
 
 		timeout = options.getTimeout();
 		
+		sameSubloc = options.getSameSubmissionLocation();
+		
 		if ( options.listTests() ) {
 			
 			List<GridTestInfo> infos = new LinkedList<GridTestInfo>();
@@ -214,6 +218,10 @@ public class GridTestController {
 
 	public File getGridTestDirectory() {
 		return grid_tests_directory;
+	}
+	
+	public int getSameSubmissionLocation() {
+		return sameSubloc;
 	}
 	
 //	public String getFqan() {
