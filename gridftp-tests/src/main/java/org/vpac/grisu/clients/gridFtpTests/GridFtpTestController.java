@@ -123,8 +123,7 @@ public class GridFtpTestController {
 						// "https://ngportaldev.vpac.org/grisu-ws/services/grisu",
 						"Local", options.getMyproxyUsername(), password);
 
-				serviceInterface = ServiceInterfaceFactory
-						.createInterface(loginParams);
+				serviceInterface = LoginManager.login(null, null, null, null, loginParams);
 			} catch (Exception e) {
 				System.out.println("Could not login: "
 						+ e.getLocalizedMessage());
