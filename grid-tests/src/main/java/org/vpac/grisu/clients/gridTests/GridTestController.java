@@ -44,7 +44,7 @@ public class GridTestController {
 	private final ExecutorService submitJobExecutor;
 	private final ExecutorService processJobExecutor;
 
-	private Map<String, Thread> createAndSubmitJobThreads = new HashMap<String, Thread>();
+	private LinkedList<Thread> createAndSubmitJobThreads = new LinkedList<Thread>();
 	private Map<String, Thread> checkAndKillJobThreads = new HashMap<String, Thread>();
 
 	private Map<String, GridTestElement> gridTestElements = new HashMap<String, GridTestElement>();
@@ -405,7 +405,7 @@ public class GridTestController {
 
 	public void createAndSubmitAllJobs() {
 
-		for (Thread thread : createAndSubmitJobThreads.values()) {
+		for (Thread thread : createAndSubmitJobThreads) {
 			submitJobExecutor.execute(thread);
 		}
 
@@ -461,8 +461,7 @@ public class GridTestController {
 
 				Thread createJobThread = createCreateAndSubmitJobThread(
 						el);
-				createAndSubmitJobThreads.put(el.getTestId(),
-						createJobThread);
+				createAndSubmitJobThreads.add(createJobThread);
 				
 			}
 			
