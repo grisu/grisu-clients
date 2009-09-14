@@ -25,6 +25,7 @@ public class GridFtpAction {
 		getFileSize(true, false),
 		getFileType(true, false),
 		ls(true, false),
+		recursiveLs(true, false),
 		getChildrenFiles(true, false),
 		exists(true, false),
 		delete(true, false);
@@ -86,6 +87,7 @@ public class GridFtpAction {
 		case getFileSize: getFileSize(actionItem, source); break;
 		case getFileType: getFileType(actionItem, source); break;
 		case ls: ls(actionItem, source); break;
+		case recursiveLs: recursiveLs(actionItem, source); break;
 		case getChildrenFiles: getChildrenFile(actionItem, source); break;
 		case exists: exists(actionItem, source); break;
 		case delete: delete(actionItem, source); break;
@@ -132,6 +134,15 @@ public class GridFtpAction {
 	private void ls(GridFtpActionItem actionItem, String source) {
 		try {
 			si.ls(source, 1);
+		} catch (Exception e) {
+			actionItem.setException(e);
+			return;
+		}
+	}
+	
+	private void recursiveLs(GridFtpActionItem actionItem, String source) {
+		try {
+			si.ls(source, 0);
 		} catch (Exception e) {
 			actionItem.setException(e);
 			return;

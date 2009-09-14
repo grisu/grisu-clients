@@ -4,7 +4,9 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
+import org.apache.commons.io.FileUtils;
 import org.vpac.grisu.clients.gridFtpTests.GridFtpAction;
 import org.vpac.grisu.clients.gridFtpTests.GridFtpActionItem;
 import org.vpac.grisu.clients.gridFtpTests.GridFtpTestController;
@@ -16,7 +18,7 @@ public class SimpleUploadTest extends GridFtpTestElement {
 
 	private final String sourceFile;
 	private final String targetFileName = "simpleTestTarget.txt";
-	private final String targetDownloadFile;
+	private final String targetDownloadFolder;
 
 	public SimpleUploadTest(GridFtpTestController controller,
 			Set<MountPoint> mps) throws TestSetupException {
@@ -35,11 +37,13 @@ public class SimpleUploadTest extends GridFtpTestElement {
 					+ ".");
 		}
 
-		targetDownloadFile = System.getProperty("java.io.tmpdir")
+		targetDownloadFolder = System.getProperty("java.io.tmpdir")
 				+ File.separator + "downloadTarget";
-		if (!new File(targetDownloadFile).getParentFile().canWrite()) {
+		FileUtils.deleteQuietly(new File(targetDownloadFolder));
+		new File(targetDownloadFolder).mkdirs();
+		if (!new File(targetDownloadFolder).getParentFile().canWrite()) {
 			throw new TestSetupException("Download target file not writeable: "
-					+ targetDownloadFile + ".");
+					+ targetDownloadFolder + ".");
 		}
 
 	}
@@ -66,7 +70,7 @@ public class SimpleUploadTest extends GridFtpTestElement {
 		for (MountPoint mp : mountpoints) {
 			GridFtpActionItem item = new GridFtpActionItem(mp.getAlias(),
 					action, mp.getRootUrl() + "/" + targetFileName,
-					targetDownloadFile);
+					targetDownloadFolder+File.separator+UUID.randomUUID().toString());
 			list.add(item);
 		}
 		actionItems.add(list);
