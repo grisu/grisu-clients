@@ -1,5 +1,5 @@
 <assembly>
-	<id>gridftp-tests</id>
+	<id>tests</id>
 	<formats>
 		<format>jar</format>
 	</formats>
@@ -12,7 +12,7 @@
 			<useProjectArtifact>true</useProjectArtifact>
 			<outputDirectory>/</outputDirectory>
 			<includes>
-				<include>org.vpac.grisu:grisu-gridftp-tests</include>
+				<include>org.vpac.grisu:gridftp-tests</include>
 			</includes>
 			<excludes>
 				<exclude>junit:junit</exclude>

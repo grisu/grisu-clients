@@ -1,0 +1,31 @@
+<assembly>
+	<id>tests</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+
+	<files>
+		<file>
+			<source>target/gridftp-tests.jar</source>
+			<outputDirectory>/gridftp-tests</outputDirectory>
+		</file>
+		<file>
+			<source>grid-tests-hibernate-file.cfg.xml</source>
+			<outputDirectory>/gridftp-tests</outputDirectory>
+		</file>
+		<file>
+			<source>grisu-server.config</source>
+			<outputDirectory>/gridftp-tests</outputDirectory>
+		</file>
+	</files>
+  <fileSets>
+    <fileSet>
+	<directory>tests</directory>
+  	<outputDirectory>gridftp-tests/tests</outputDirectory>
+
+    </fileSet>
+  </fileSets>
+
+
+</assembly>

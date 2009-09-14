@@ -1,6 +1,7 @@
 package org.vpac.grisu.clients.gridFtpTests;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,7 +10,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -17,9 +17,7 @@ import java.util.concurrent.TimeUnit;
 import jline.ConsoleReader;
 
 import org.apache.commons.lang.StringUtils;
-import org.vpac.grisu.backend.hibernate.HibernateSessionFactory;
 import org.vpac.grisu.control.ServiceInterface;
-import org.vpac.grisu.frontend.control.login.LoginHelpers;
 import org.vpac.grisu.frontend.control.login.LoginManager;
 import org.vpac.grisu.frontend.control.login.LoginParams;
 import org.vpac.grisu.frontend.control.login.ServiceInterfaceFactory;
@@ -27,7 +25,11 @@ import org.vpac.grisu.model.GrisuRegistry;
 import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.model.MountPoint;
 import org.vpac.grisu.settings.Environment;
+import org.vpac.grisu.utils.GrisuPluginFilenameFilter;
 import org.vpac.security.light.plainProxy.LocalProxy;
+
+import au.org.arcs.jcommons.dependencies.ClasspathHacker;
+import au.org.arcs.jcommons.dependencies.DependencyManager;
 
 public class GridFtpTestController {
 
@@ -71,9 +73,30 @@ public class GridFtpTestController {
 		}
 
 		Environment.setGrisuDirectory(this.grisu_base_directory);
-		HibernateSessionFactory
-				.setCustomHibernateConfigFile(this.grisu_base_directory
-						+ File.separator + "grid-tests-hibernate-file.cfg.xml");
+		
+		DependencyManager.initArcsCommonJavaLibDir();
+		DependencyManager.checkForBouncyCastleDependency();
+		ClasspathHacker.initFolder(new File(Environment.getGrisuPluginDirectory()), new GrisuPluginFilenameFilter());
+		
+		try {
+			
+//			HibernateSessionFactory
+//			.setCustomHibernateConfigFile(this.grisu_base_directory
+//					+ File.separator + "grid-tests-hibernate-file.cfg.xml");
+
+			Class hsfc = Class.forName("org.vpac.grisu.backend.hibernate.HibernateSessionFactory");
+			Method method = hsfc.getMethod("setCustomHibernateConfigFile", String.class);
+			
+			method.invoke(null, this.grisu_base_directory
+					+ File.separator + "grid-tests-hibernate-file.cfg.xml");
+
+		} catch (Exception e) {
+			// doesn't really matter
+		}
+		
+//		HibernateSessionFactory
+//				.setCustomHibernateConfigFile(this.grisu_base_directory
+//						+ File.separator + "grid-tests-hibernate-file.cfg.xml");
 
 		grid_tests_directory = new File(this.grisu_base_directory, "tests");
 
