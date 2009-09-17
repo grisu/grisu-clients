@@ -96,7 +96,7 @@ public class GridBlenderUtils {
 						// "Dummy",
 						null, null);
 
-				char[] password = askForPassword("Please enter your idp password: ");
+				char[] password = askForPassword("Please enter the password for IDP '"+args.getIdp()+"': ");
 
 				try {
 					si = LoginManager.login(null, password, args.getUsername(),

@@ -17,10 +17,15 @@ public class GridBlenderSubmit implements BlenderMode {
 	private BlenderSubmitCommandLineArgs commandlineArgs;
 	private final ServiceInterface si;
 
-	public GridBlenderSubmit(String[] args) {
-		
+	public GridBlenderSubmit(String[] args, boolean help) {
+
 		final Cli<BlenderSubmitCommandLineArgs> cli = CliFactory
 				.createCli(BlenderSubmitCommandLineArgs.class);
+		
+		if ( help ) {
+			System.out.println(cli.getHelpMessage());
+			System.exit(0);
+		}
 
 		try {
 			commandlineArgs = cli.parseArguments(args);
@@ -30,6 +35,8 @@ public class GridBlenderSubmit implements BlenderMode {
 			System.out.println(cli.getHelpMessage());
 			System.exit(1);
 		}
+		
+
 		
 		if ( ! commandlineArgs.isJobname() ) {
 			System.out.println("Jobname not specified.");

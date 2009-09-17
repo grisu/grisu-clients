@@ -1,12 +1,9 @@
 package org.vpac.grisu.clients.blender;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.apache.commons.lang.StringUtils;
 import org.vpac.grisu.control.ServiceInterface;
-import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
-import org.vpac.grisu.frontend.control.clientexceptions.FileTransferException;
 import org.vpac.grisu.frontend.model.job.MultiPartJobEventListener;
 import org.vpac.grisu.frontend.model.job.MultiPartJobObject;
 
@@ -19,10 +16,15 @@ public class GridBlenderCheck implements BlenderMode, MultiPartJobEventListener 
 	private BlenderCheckCommandLineArgs commandlineArgs = null;
 	private final ServiceInterface si;
 
-	public GridBlenderCheck(String[] args) {
+	public GridBlenderCheck(String[] args, boolean help) {
 
 		final Cli<BlenderCheckCommandLineArgs> cli = CliFactory
 				.createCli(BlenderCheckCommandLineArgs.class);
+		
+		if ( help ) {
+			System.out.println(cli.getHelpMessage());
+			System.exit(0);
+		}
 
 		try {
 			commandlineArgs = cli.parseArguments(args);
