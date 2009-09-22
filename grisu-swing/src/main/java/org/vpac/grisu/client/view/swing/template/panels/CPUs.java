@@ -29,6 +29,8 @@ import com.jgoodies.forms.layout.RowSpec;
 public class CPUs extends JPanel implements TemplateNodePanel {
 
 	static final Logger myLogger = Logger.getLogger(CPUs.class.getName());
+	
+	boolean lockCpuModel = false;
 
 	public static final String FORCE_STRING = "force";
 	public static final String FORCE_PARALLEL_STRING = "parallel";
@@ -139,10 +141,14 @@ public class CPUs extends JPanel implements TemplateNodePanel {
 			comboBox.addItemListener(new ItemListener() {
 				public void itemStateChanged(final ItemEvent e) {
 					if (e.getStateChange() == ItemEvent.SELECTED) {
-
+						
+						if ( ! lockCpuModel ) {
+							lockCpuModel = true;
 						setExternalSetValue((String)(comboBox.getSelectedItem()));
 
 						fireSitePanelEvent(getExternalSetValue());
+							lockCpuModel = false;
+						}
 					}
 				}
 			});

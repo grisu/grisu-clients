@@ -5,8 +5,6 @@ import org.vpac.grisu.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.control.exceptions.MultiPartJobException;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
-import org.vpac.grisu.frontend.model.job.MultiPartJobEventListener;
-import org.vpac.grisu.frontend.model.job.MultiPartJobObject;
 
 import uk.co.flamingpenguin.jewel.cli.ArgumentValidationException;
 import uk.co.flamingpenguin.jewel.cli.Cli;

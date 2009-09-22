@@ -258,8 +258,8 @@ public class ApplicationInfoObject implements SubmissionObject, FqanListener,
 				+ tempCurrentLocation.getLocation()) == null) {
 			// lookup executables
 			Map<String, String> tempDetails = em.getServiceInterface()
-					.getApplicationDetailsForVersionAndSite(getCurrentApplicationName(),
-							tempCurrentVersion, tempCurrentLocation.getSite()).getDetailsAsMap();
+					.getApplicationDetailsForVersionAndSubmissionLocation(getCurrentApplicationName(),
+							tempCurrentVersion, tempCurrentLocation.getLocation()).getDetailsAsMap();
 			detailsCache.put(tempCurrentVersion + "_"
 					+ tempCurrentLocation.getLocation(), tempDetails);
 		}

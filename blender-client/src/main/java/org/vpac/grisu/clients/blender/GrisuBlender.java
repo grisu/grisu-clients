@@ -1,11 +1,5 @@
 package org.vpac.grisu.clients.blender;
 
-import org.apache.commons.lang.StringUtils;
-import org.vpac.grisu.control.ServiceInterface;
-
-import uk.co.flamingpenguin.jewel.cli.ArgumentValidationException;
-import uk.co.flamingpenguin.jewel.cli.Cli;
-import uk.co.flamingpenguin.jewel.cli.CliFactory;
 
 public class GrisuBlender {
 	

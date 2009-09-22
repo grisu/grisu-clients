@@ -146,33 +146,33 @@ public class VersionObject implements Comparable<VersionObject>, SubmissionObjec
 		return locations;
 	}
 
-	public String[] getExecutables(String site) {
-
-		Map<String, String> details = applicationDetails.get(site);
-		if (details == null) {
-			details = application.getServiceInterface().getApplicationDetailsForVersionAndSite(
-					application.getCurrentApplicationName(), version, site).getDetailsAsMap();
-			applicationDetails.put(site, details);
-		}
-
-		return details.get("Executables").split(",");
-	}
-
-	public String[] getModules(String site) {
-
-		Map<String, String> details = applicationDetails.get(site);
-		if (details == null) {
-			details = application.getServiceInterface().getApplicationDetailsForVersionAndSite(
-					application.getCurrentApplicationName(), version, site).getDetailsAsMap();
-			applicationDetails.put(site, details);
-		}
-
-		if ( details.get("Module") == null || details.get("Module").length() == 0 ) {
-			return new String[]{};
-		}
-			
-		return details.get("Module").split(",");
-	}
+//	public String[] getExecutables(String site) {
+//
+//		Map<String, String> details = applicationDetails.get(site);
+//		if (details == null) {
+//			details = application.getServiceInterface().getApplicationDetailsForVersionAndSite(
+//					application.getCurrentApplicationName(), version, site).getDetailsAsMap();
+//			applicationDetails.put(site, details);
+//		}
+//
+//		return details.get("Executables").split(",");
+//	}
+//
+//	public String[] getModules(String site) {
+//
+//		Map<String, String> details = applicationDetails.get(site);
+//		if (details == null) {
+//			details = application.getServiceInterface().getApplicationDetailsForVersionAndSite(
+//					application.getCurrentApplicationName(), version, site).getDetailsAsMap();
+//			applicationDetails.put(site, details);
+//		}
+//
+//		if ( details.get("Module") == null || details.get("Module").length() == 0 ) {
+//			return new String[]{};
+//		}
+//			
+//		return details.get("Module").split(",");
+//	}
 
 	public String[] getCurrentExecutables() {
 		

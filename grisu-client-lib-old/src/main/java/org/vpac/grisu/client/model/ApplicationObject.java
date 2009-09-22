@@ -425,8 +425,8 @@ public class ApplicationObject implements SubmissionObject, FqanListener,
 		if (detailsCache.get(version + loc.getLocation()) == null) {
 			// lookup executables
 			Map<String, String> tempDetails = serviceInterface
-					.getApplicationDetailsForVersionAndSite(applicationName, version, loc
-							.getSite()).getDetailsAsMap();
+					.getApplicationDetailsForVersionAndSubmissionLocation(applicationName, version, loc
+							.getLocation()).getDetailsAsMap();
 			detailsCache.put(version + loc.getLocation(), tempDetails);
 		}
 
