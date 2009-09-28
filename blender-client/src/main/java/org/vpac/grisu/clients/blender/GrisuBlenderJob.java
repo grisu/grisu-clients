@@ -96,9 +96,7 @@ public class GrisuBlenderJob implements MultiPartJobEventListener {
 		this.serviceInterface = serviceInterface;
 		this.registry = GrisuRegistryManager.getDefault(serviceInterface);
 		this.multiJobName = multiPartJobId;
-		this.multiPartJob = new MultiPartJobObject(serviceInterface, this.multiJobName, fqan);
-		this.multiPartJob.setDefaultApplication(BLENDER_APP_NAME);
-		this.multiPartJob.setDefaultVersion(BLENDER_DEFAULT_VERSION);
+		this.multiPartJob = new MultiPartJobObject(serviceInterface, this.multiJobName, fqan, BLENDER_APP_NAME, BLENDER_DEFAULT_VERSION);
 		this.multiPartJob.addJobStatusChangeListener(this);
 
 	}
@@ -370,6 +368,14 @@ public class GrisuBlenderJob implements MultiPartJobEventListener {
 	
 	public String getOutputFilenameJobProperty() {
 		return multiPartJob.getJobProperty(BLENDER_OUTPUTFILENAME_KEY);
+	}
+	
+	public void addJobStatusChangeListener(MultiPartJobEventListener l) {
+		multiPartJob.addJobStatusChangeListener(l);
+	}
+	
+	public void removeJobStatusChangeListener(MultiPartJobEventListener l) {
+		multiPartJob.removeJobStatusChangeListener(l);
 	}
 
 
