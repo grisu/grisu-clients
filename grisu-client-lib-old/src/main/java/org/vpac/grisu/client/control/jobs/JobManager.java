@@ -287,7 +287,7 @@ public class JobManager {
 		allJobs.getReadWriteLock().writeLock().lock();
 		allJobs.clear();
 		
-		String[] allJobnamesTemp = em.getServiceInterface().getAllJobnames().asArray();
+		String[] allJobnamesTemp = em.getServiceInterface().getAllJobnames(null).asArray();
 		allJobnames = new TreeSet<String>();
 		
 		for ( String jobname : allJobnamesTemp ) {
