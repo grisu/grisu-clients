@@ -15,6 +15,7 @@ import com.gwtext.client.widgets.layout.AnchorLayout;
 import com.gwtext.client.widgets.layout.AnchorLayoutData;
 
 public class FileViewerPanel extends Panel {
+	
 	private Label label;
 	private final GwtServiceInterfaceWrapperAsync service;
 	FileTypeViewerPanel temp;
