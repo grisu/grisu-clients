@@ -13,16 +13,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.apache.log4j.Logger;
-import org.jdesktop.swingx.JXErrorPane;
 import org.vpac.grisu.client.control.EnvironmentManager;
-import org.vpac.grisu.client.view.swing.mainPanel.Grisu;
 import org.vpac.grisu.settings.ClientPropertiesManager;
 import org.vpac.helpDesk.model.HelpDesk;
 import org.vpac.helpDesk.model.HelpDeskNotAvailableException;
 import org.vpac.helpDesk.model.Person;
 import org.vpac.helpDesk.model.PersonException;
 import org.vpac.helpDesk.view.DispalyErrorMessageUsingJXErrorPane;
-import org.vpac.helpDesk.view.HelpDeskErrorDialog;
 
 public class Utils {
 	
@@ -94,7 +91,7 @@ public class Utils {
 //			errdialog.initialize(new String[]{"org.vpac.helpDesk.model.anonymousRT.AnonymousRTHelpDesk", "org.vpac.helpDesk.model.irc.IrcHelpDesk", "org.vpac.helpDesk.model.trac.TracHelpDesk"}, 
 //			errdialog.initialize(new String[]{"org.vpac.helpDesk.model.anonymousRT.AnonymousRTHelpDesk", "org.vpac.helpDesk.model.trac.TracHelpDesk"}, 
 //				"support.properties", user, errorMessages.getString(message+".title"), message_new, new Object[]{e, grisuDebugFile});
-			DispalyErrorMessageUsingJXErrorPane.display(parent, user, errorMessages.getString(message+".title"), message_new, new Object[]{e, grisuDebugFile}, Grisu.DEFAULT_HELPDESK_CLASSES, Grisu.HELPDESK_CONFIG);
+			DispalyErrorMessageUsingJXErrorPane.display(parent, user, errorMessages.getString(message+".title"), message_new, new Object[]{e, grisuDebugFile}, ClientPropertiesManager.getDefaultHelpDesks(), ClientPropertiesManager.getHelpDeskConfig());
 		} catch (HelpDeskNotAvailableException e1) {
 			JOptionPane.showMessageDialog(null,
 				    "Could not connect to help desk:\n"+e.getLocalizedMessage(),
@@ -135,7 +132,7 @@ public class Utils {
 		try {
 //			errdialog.initialize(new String[]{"org.vpac.helpDesk.model.irc.IrcHelpDesk", "org.vpac.helpDesk.model.trac.TracHelpDesk"}, 
 //				"support.properties", user, errorMessages.getString(message+".title"), message_new, new Object[]{e, grisuDebugFile});
-			DispalyErrorMessageUsingJXErrorPane.display(parent, user, errorMessages.getString(message+".title"), message_new, new Object[]{e, grisuDebugFile}, Grisu.DEFAULT_HELPDESK_CLASSES, Grisu.HELPDESK_CONFIG);
+			DispalyErrorMessageUsingJXErrorPane.display(parent, user, errorMessages.getString(message+".title"), message_new, new Object[]{e, grisuDebugFile}, ClientPropertiesManager.getDefaultHelpDesks(), ClientPropertiesManager.getHelpDeskConfig());
 		} catch (HelpDeskNotAvailableException e1) {
 			JOptionPane.showMessageDialog(null,
 				    "Could not connect to help desk: "+e.getLocalizedMessage(),

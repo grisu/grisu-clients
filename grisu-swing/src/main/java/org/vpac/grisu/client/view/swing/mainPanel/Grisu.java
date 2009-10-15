@@ -49,6 +49,7 @@ import org.vpac.grisu.client.view.swing.utils.Utils;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.model.GrisuRegistry;
 import org.vpac.grisu.model.GrisuRegistryManager;
+import org.vpac.grisu.settings.ClientPropertiesManager;
 import org.vpac.grisu.settings.Environment;
 import org.vpac.grisu.utils.GrisuPluginFilenameFilter;
 import org.vpac.helpDesk.control.HelpDeskManager;
@@ -67,9 +68,6 @@ public class Grisu implements WindowListener {
 	public static final String apache2License = "http://www.apache.org/licenses/LICENSE-2.0";
 
     public static final String GRISU_VERSION = "v0.2";
-    
-    public static final String[] DEFAULT_HELPDESK_CLASSES = new String[]{"org.vpac.helpDesk.model.anonymousRT.AnonymousRTHelpDesk", "org.vpac.helpDesk.model.trac.TracHelpDesk"};
-    public static final String HELPDESK_CONFIG = "support.properties";
 
 	private JFrame jFrame = null; // @jve:decl-index=0:visual-constraint="10,10"
 
@@ -334,11 +332,11 @@ public class Grisu implements WindowListener {
 					
 					new Runnable() {
 						public void run() {
-							HelpDesk[] helpDesks = new HelpDesk[DEFAULT_HELPDESK_CLASSES.length];
+							HelpDesk[] helpDesks = new HelpDesk[ClientPropertiesManager.getDefaultHelpDesks().length];
 							Configuration config = null;
 							try {
 							try {
-								config = new PropertiesConfiguration(HELPDESK_CONFIG);
+								config = new PropertiesConfiguration(ClientPropertiesManager.getHelpDeskConfig());
 							} catch (ConfigurationException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -346,8 +344,8 @@ public class Grisu implements WindowListener {
 										"Could not init helpdesks because of misconfiguration.");
 							}
 
-							for (int i=0; i<DEFAULT_HELPDESK_CLASSES.length; i++) {
-								String helpDeskClass = DEFAULT_HELPDESK_CLASSES[i];
+							for (int i=0; i<ClientPropertiesManager.getDefaultHelpDesks().length; i++) {
+								String helpDeskClass = ClientPropertiesManager.getDefaultHelpDesks()[i];
 								HelpDesk hd = HelpDeskManager.createHelpDesk(helpDeskClass, config);
 								if (hd != null) {
 									helpDesks[i] = hd;

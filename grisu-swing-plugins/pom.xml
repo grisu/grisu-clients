@@ -15,8 +15,10 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.vpac.grisu</groupId>
-			<artifactId>grisu-client-swing</artifactId>
+			<artifactId>grisu-client-lib-old</artifactId>
 			<version>0.3-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 	<description>Application specific plugins for the swing client.</description>

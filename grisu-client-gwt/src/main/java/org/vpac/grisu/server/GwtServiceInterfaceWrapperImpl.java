@@ -125,7 +125,7 @@ public class GwtServiceInterfaceWrapperImpl extends RemoteServiceServlet
 
 	public String getJobsStatus() {
 
-		DtoJobs result = getServiceInterface().ps(true);
+		DtoJobs result = getServiceInterface().ps(null, true);
 
 		return SeveralXMLHelpers.toString(JobsToXMLConverter.getJobsInformation(result));
 	}
