@@ -21,6 +21,7 @@ import org.vpac.grisu.client.model.files.FileConstants;
 import org.vpac.grisu.client.model.files.FileSystemException;
 import org.vpac.grisu.client.model.files.GrisuFileObject;
 import org.vpac.grisu.control.ServiceInterface;
+import org.vpac.grisu.model.dto.DtoStringList;
 import org.vpac.grisu.utils.FileHelpers;
 
 /**
@@ -137,7 +138,7 @@ public class FileManagerTransferHelpers {
 			ServiceInterface serviceInterface, GrisuFileObject sourceFile,
 			GrisuFileObject targetDirectory) throws FileSystemException {
 		try {
-			serviceInterface.cp(sourceFile.getURI().toString(), targetDirectory
+			serviceInterface.cp(DtoStringList.fromSingleString(sourceFile.getURI().toString()), targetDirectory
 					.getURI().toString()
 					+ "/" + sourceFile.getName(), false, true);
 		} catch (Exception e) {

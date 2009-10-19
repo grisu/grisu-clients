@@ -23,6 +23,7 @@ import org.vpac.grisu.client.control.utils.progress.ProgressDisplay;
 import org.vpac.grisu.client.model.files.FileConstants;
 import org.vpac.grisu.client.model.files.FileSystemException;
 import org.vpac.grisu.client.model.files.GrisuFileObject;
+import org.vpac.grisu.model.dto.DtoStringList;
 import org.vpac.grisu.utils.FileHelpers;
 
 public class FileTransfer {
@@ -387,7 +388,7 @@ public class FileTransfer {
 			GrisuFileObject sourceFile,
 			GrisuFileObject targetDirectory) throws FileSystemException {
 		try {
-			em.getServiceInterface().cp(sourceFile.getURI().toString(), targetDirectory
+			em.getServiceInterface().cp(DtoStringList.fromSingleString(sourceFile.getURI().toString()), targetDirectory
 					.getURI().toString()
 					+ "/" + sourceFile.getName(), false, true);
 		} catch (Exception e) {

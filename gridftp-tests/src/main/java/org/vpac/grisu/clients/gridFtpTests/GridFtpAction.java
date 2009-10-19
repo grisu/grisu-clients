@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.model.GrisuRegistry;
 import org.vpac.grisu.model.GrisuRegistryManager;
+import org.vpac.grisu.model.dto.DtoStringList;
 import org.vpac.grisu.utils.FileHelpers;
 
 public class GridFtpAction {
@@ -199,7 +200,7 @@ public class GridFtpAction {
 
 	private void copy(GridFtpActionItem actionItem, String source, String target) {
 		try {
-			si.cp(source, target, true, false);
+			si.cp(DtoStringList.fromSingleString(source), target, true, false);
 		} catch (Exception e) {
 			actionItem.setException(e);
 			return;
