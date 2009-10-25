@@ -76,7 +76,7 @@ public class GridFtpTestController {
 		
 		DependencyManager.initArcsCommonJavaLibDir();
 		DependencyManager.checkForBouncyCastleDependency();
-		ClasspathHacker.initFolder(new File(Environment.getGrisuPluginDirectory()), new GrisuPluginFilenameFilter());
+		ClasspathHacker.initFolder(Environment.getGrisuPluginDirectory(), new GrisuPluginFilenameFilter());
 		
 		try {
 			

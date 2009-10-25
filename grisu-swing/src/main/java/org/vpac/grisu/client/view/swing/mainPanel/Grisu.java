@@ -747,7 +747,7 @@ public class Grisu implements WindowListener {
 	
 	private void addPluginsToClasspath() {
 		
-		ClasspathHacker.initFolder(new File(Environment.getGrisuPluginDirectory()), new GrisuPluginFilenameFilter());
+		ClasspathHacker.initFolder(Environment.getGrisuPluginDirectory(), new GrisuPluginFilenameFilter());
 		
 
  

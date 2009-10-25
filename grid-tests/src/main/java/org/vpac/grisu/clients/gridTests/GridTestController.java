@@ -83,7 +83,7 @@ public class GridTestController {
 		
 		DependencyManager.initArcsCommonJavaLibDir();
 		DependencyManager.checkForBouncyCastleDependency();
-		ClasspathHacker.initFolder(new File(Environment.getGrisuPluginDirectory()), new GrisuPluginFilenameFilter());
+		ClasspathHacker.initFolder(Environment.getGrisuPluginDirectory(), new GrisuPluginFilenameFilter());
 		
 		// try to setup hibernate for local tests if a local Backend is used
 		try {
