@@ -3,7 +3,12 @@
   <!--
     GWT-Maven archetype generated POM
   -->
-  <modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>grisu-clients</artifactId>
+		<groupId>org.vpac.grisu</groupId>
+		<version>0.3-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
   <artifactId>grisu-client-gwt</artifactId>
   <packaging>war</packaging>
   <name>grisu-client-gwt</name>

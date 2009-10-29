@@ -58,11 +58,8 @@
 
 	<modules>
 		<module>grisu-client-lib-old</module>
-		<module>grisu-client-gwt</module>
 		<module>grisu-swing</module>
 		<module>grisu-swing-plugins</module>
-		<module>grisu-batch</module>
-		<module>grisu-commandline</module>
 		<module>blender-client</module>
 		<module>grid-tests</module>
 		<module>gridftp-tests</module>
