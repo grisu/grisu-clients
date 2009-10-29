@@ -4,15 +4,13 @@
     GWT-Maven archetype generated POM
   -->
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.vpac.grisu</groupId>
   <artifactId>grisu-client-gwt</artifactId>
   <packaging>war</packaging>
-  <version>0.3-SNAPSHOT</version>
   <name>grisu-client-gwt</name>
 	<properties>
 
 		<!-- convenience to define GWT version in one place -->
-		<gwt.version>1.7.0</gwt.version>
+		<gwt.version>1.7.1</gwt.version>
 
 		<!--  tell the compiler we can use 1.5 -->
 		<maven.compiler.source>1.5</maven.compiler.source>
