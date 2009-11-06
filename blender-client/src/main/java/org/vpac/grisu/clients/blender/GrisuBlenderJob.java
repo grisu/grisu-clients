@@ -1,7 +1,5 @@
 package org.vpac.grisu.clients.blender;
 
-import java.io.File;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
@@ -11,20 +9,21 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.bushe.swing.event.EventBus;
+import org.bushe.swing.event.EventTopicSubscriber;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.control.exceptions.MultiPartJobException;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
-import org.vpac.grisu.frontend.control.clientexceptions.FileTransferException;
 import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
+import org.vpac.grisu.frontend.model.events.MultiPartJobEvent;
 import org.vpac.grisu.frontend.model.job.JobObject;
-import org.vpac.grisu.frontend.model.job.MultiPartJobEventListener;
 import org.vpac.grisu.frontend.model.job.MultiPartJobObject;
 import org.vpac.grisu.model.GrisuRegistry;
 import org.vpac.grisu.model.GrisuRegistryManager;
 
-public class GrisuBlenderJob implements MultiPartJobEventListener {
+public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> {
 	
 	static final Logger myLogger = Logger.getLogger(GrisuBlenderJob.class.getName());
 	
@@ -97,8 +96,7 @@ public class GrisuBlenderJob implements MultiPartJobEventListener {
 		this.registry = GrisuRegistryManager.getDefault(serviceInterface);
 		this.multiJobName = multiPartJobId;
 		this.multiPartJob = new MultiPartJobObject(serviceInterface, this.multiJobName, fqan, BLENDER_APP_NAME, BLENDER_DEFAULT_VERSION);
-		this.multiPartJob.addJobStatusChangeListener(this);
-
+		EventBus.subscribe(this.multiJobName, this);
 	}
 	
 	public GrisuBlenderJob(ServiceInterface serviceInterface, String multiPartJobId) throws MultiPartJobException, NoSuchJobException {
@@ -107,8 +105,7 @@ public class GrisuBlenderJob implements MultiPartJobEventListener {
 		this.registry = GrisuRegistryManager.getDefault(serviceInterface);
 		this.multiJobName = multiPartJobId;
 		this.multiPartJob = new MultiPartJobObject(serviceInterface, this.multiJobName, false);
-		this.multiPartJob.addJobStatusChangeListener(this);
-		
+		EventBus.subscribe(this.multiJobName, this);
 	}
 	
 	public MultiPartJobObject getMultiPartJobObject() {
@@ -353,9 +350,6 @@ public class GrisuBlenderJob implements MultiPartJobEventListener {
 
 	public void eventOccured(MultiPartJobObject job, String eventMessage) {
 
-		if (verbose) {
-			System.out.println(eventMessage);
-		}
 	}
 	
 	public void setVerbose(boolean verbose) {
@@ -369,13 +363,13 @@ public class GrisuBlenderJob implements MultiPartJobEventListener {
 	public String getOutputFilenameJobProperty() {
 		return multiPartJob.getJobProperty(BLENDER_OUTPUTFILENAME_KEY);
 	}
-	
-	public void addJobStatusChangeListener(MultiPartJobEventListener l) {
-		multiPartJob.addJobStatusChangeListener(l);
-	}
-	
-	public void removeJobStatusChangeListener(MultiPartJobEventListener l) {
-		multiPartJob.removeJobStatusChangeListener(l);
+
+	public void onEvent(String arg0, MultiPartJobEvent arg1) {
+
+		if (verbose) {
+			System.out.println(arg1.getMessage());
+		}
+
 	}
 
 
