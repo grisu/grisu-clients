@@ -5,6 +5,7 @@ import org.vpac.grisu.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.control.exceptions.MultiPartJobException;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
+import org.vpac.grisu.model.dto.DtoActionStatus;
 
 import uk.co.flamingpenguin.jewel.cli.ArgumentValidationException;
 import uk.co.flamingpenguin.jewel.cli.Cli;
@@ -62,14 +63,26 @@ public class GridBlenderSubmit implements BlenderMode {
 						System.out.println("Deleting existing multipart job "
 								+ jobname + ". This might take a while...");
 					}
-					si.deleteMultiPartJob(jobname, true);
+					
+					try {
+						si.kill(jobname, true);
+						
+						DtoActionStatus status;
+						while ( ! (status = si.getActionStatus(jobname)).isFinished() ) {
+							double percentage = status.getCurrentElements() * 100 / status.getTotalElements();
+							System.out.println("Deletion "+percentage+"% finished.");
+							Thread.sleep(3000);
+						}
+					} catch (NoSuchJobException ne) {
+						// good
+					}
+
 					if (commandlineArgs.isVerbose()) {
 						System.out
 								.println("Deleting of existing multipart job "
 										+ jobname + " finished.");
 					}
-				} catch (NoSuchJobException nsje) {
-					// that's ok.
+
 				} catch (Exception e) {
 					System.out.println("Could not delete existing job "
 							+ jobname + ": " + e.getLocalizedMessage());
@@ -100,8 +113,12 @@ public class GridBlenderSubmit implements BlenderMode {
 		job.setVerbose(commandlineArgs.isVerbose());
 
 		job.setBlenderFile(commandlineArgs.getBlendFile());
-		job.setFirstFrame(commandlineArgs.getStartFrame());
-		job.setLastFrame(commandlineArgs.getEndFrame());
+		if ( commandlineArgs.isStartFrame() ) {
+			job.setFirstFrame(commandlineArgs.getStartFrame());
+		}
+		if ( commandlineArgs.isEndFrame() ) {
+			job.setLastFrame(commandlineArgs.getEndFrame());
+		}
 		job.setDefaultWalltimeInSeconds(commandlineArgs.getWalltime() * 60);
 		job.setOutputFileName(commandlineArgs.getOutput());
 		if (commandlineArgs.isExclude()) {

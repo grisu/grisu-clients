@@ -1,12 +1,20 @@
 package org.vpac.grisu.clients.blender;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.bushe.swing.event.EventBus;
@@ -22,6 +30,7 @@ import org.vpac.grisu.frontend.model.job.JobObject;
 import org.vpac.grisu.frontend.model.job.MultiPartJobObject;
 import org.vpac.grisu.model.GrisuRegistry;
 import org.vpac.grisu.model.GrisuRegistryManager;
+import org.vpac.grisu.settings.Environment;
 
 public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> {
 	
@@ -40,14 +49,30 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 	private final MultiPartJobObject multiPartJob;
 	
 	private final NumberFormat formatter = new DecimalFormat("0000");
-
-
+	
+	public static final File BLENDER_PLUGIN_DIR = new File(Environment.getGrisuDirectory(), "blender");
+	public static final File BLENDER_RESOURCE_PYTHYON_SCRIPT = new File(BLENDER_PLUGIN_DIR, "ListResources.py");
+	static {
+		if ( ! BLENDER_PLUGIN_DIR.exists() ) {
+			BLENDER_PLUGIN_DIR.mkdirs();
+		}
+		
+		InputStream in = GrisuBlenderJob.class.getResourceAsStream("/ListResources.py");
+		
+		try {
+			IOUtils.copy(in, new FileOutputStream(BLENDER_RESOURCE_PYTHYON_SCRIPT));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		
+	}
+	
 	private Map<Integer, Integer> walltimesPerFrame = new HashMap<Integer, Integer>();
 	private int noCpus = 1;
 	private String version = BLENDER_DEFAULT_VERSION;
-	private Set<String> inputFiles = new HashSet<String>();
+//	private Set<String> inputFiles = new HashSet<String>();
 
-	private String blenderFile;
+	private BlendFile blendFile;
 	private String outputFileName = "frame_";
 	private int firstFrame = 0;
 	private int lastFrame = -1;
@@ -141,7 +166,12 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 			addJob(i, command, walltimesPerFrame.get(i));
 		}
 		
-		multiPartJob.fillOrOverwriteSubmissionLocationsUsingMatchmaker();
+		try {
+			serviceInterface.optimizeMultiPartJob(this.multiJobName);
+		} catch (NoSuchJobException e) {
+			throw new RuntimeException(e);
+		}
+//		multiPartJob.fillOrOverwriteSubmissionLocationsUsingMatchmaker();
 		
 		createAndSubmitBlenderJob();
 		
@@ -158,7 +188,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 			framesToCalculatePart = " -s "+startFrame+" -e "+endFrame+" -a";
 		}
 		String result = "blender "+
-		"-b "+multiPartJob.pathToInputFiles()+"/"+registry.getFileManager().getFilename(blenderFile) +
+		"-b "+multiPartJob.pathToInputFiles()+"/"+registry.getFileManager().getFilename(blendFile.getFile().toString()) +
 		" -F " + format.toString() +
 		" -o " + outputFileName +
 		framesToCalculatePart;		
@@ -197,12 +227,15 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 	
 	private void createAndSubmitBlenderJob() throws JobSubmissionException {
 		
-		for ( String inputFile : inputFiles ) {
-			multiPartJob.addInputFile(inputFile);
+		multiPartJob.addInputFile(blendFile.getFile().toString());
+		
+		for ( File file : blendFile.getReferrencedFiles().keySet() ) {
+			//TODO fix this for windows.
+			multiPartJob.addInputFile(file.toString(), blendFile.getReferrencedFiles().get(file));
 		}
 
 		try {
-			multiPartJob.prepareAndCreateJobs();
+			multiPartJob.prepareAndCreateJobs(true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new JobSubmissionException("Couldn't preapare or create job(s): "+e.getLocalizedMessage());
@@ -272,20 +305,20 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 		return multiJobName;
 	}
 
-	public Set<String> getInputFiles() {
-		return inputFiles;
-	}
+//	public Set<String> getInputFiles() {
+//		return inputFiles;
+//	}
+//	
+//	public void addInputFile(String inputFile) {
+//		this.inputFiles.add(inputFile);
+//	}
+//
+//	private void setInputFiles(Set<String> inputFiles) {
+//		this.inputFiles = inputFiles;
+//	}
 	
-	public void addInputFile(String inputFile) {
-		this.inputFiles.add(inputFile);
-	}
-
-	private void setInputFiles(Set<String> inputFiles) {
-		this.inputFiles = inputFiles;
-	}
-	
-	public String getBlenderFile() {
-		return blenderFile;
+	public BlendFile getBlendFile() {
+		return blendFile;
 	}
 
 	public void setBlenderFile(String blenderFile) {
@@ -302,8 +335,18 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 			}
 		}
 		
-		this.blenderFile = blenderFile;
-		this.addInputFile(blenderFile);
+//		this.addInputFile(blenderFile);
+		
+		blendFile = new BlendFile(registry.getFileManager().getLocalCacheFile(blenderFile));
+		
+		System.out.println("StartFrame: "+blendFile.getStartFrame());
+		System.out.println("EndFrame: "+blendFile.getEndFrame());
+		System.out.println(StringUtils.join(blendFile.getReferrencedFiles().values(), "\n"));
+
+		setFirstFrame(blendFile.getStartFrame());
+		setLastFrame(blendFile.getEndFrame());
+		
+		
 	}
 
 	public String getOutputFileName() {
