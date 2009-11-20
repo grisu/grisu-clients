@@ -2,6 +2,7 @@ package org.vpac.grisu.clients.blender;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,7 +22,7 @@ import org.bushe.swing.event.EventBus;
 import org.bushe.swing.event.EventTopicSubscriber;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.JobSubmissionException;
-import org.vpac.grisu.control.exceptions.MultiPartJobException;
+import org.vpac.grisu.control.exceptions.BatchJobException;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
 import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
@@ -48,7 +49,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 	private final String multiJobName;
 	private final MultiPartJobObject multiPartJob;
 	
-	private final NumberFormat formatter = new DecimalFormat("0000");
+	private static final NumberFormat formatter = new DecimalFormat("0000");
 	
 	public static final File BLENDER_PLUGIN_DIR = new File(Environment.getGrisuDirectory(), "blender");
 	public static final File BLENDER_RESOURCE_PYTHYON_SCRIPT = new File(BLENDER_PLUGIN_DIR, "ListResources.py");
@@ -116,7 +117,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 		
 	}
 	
-	public GrisuBlenderJob(ServiceInterface serviceInterface, String multiPartJobId, String fqan) throws MultiPartJobException {
+	public GrisuBlenderJob(ServiceInterface serviceInterface, String multiPartJobId, String fqan) throws BatchJobException {
 		this.serviceInterface = serviceInterface;
 		this.registry = GrisuRegistryManager.getDefault(serviceInterface);
 		this.multiJobName = multiPartJobId;
@@ -124,7 +125,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 		EventBus.subscribe(this.multiJobName, this);
 	}
 	
-	public GrisuBlenderJob(ServiceInterface serviceInterface, String multiPartJobId) throws MultiPartJobException, NoSuchJobException {
+	public GrisuBlenderJob(ServiceInterface serviceInterface, String multiPartJobId) throws BatchJobException, NoSuchJobException {
 		
 		this.serviceInterface = serviceInterface;
 		this.registry = GrisuRegistryManager.getDefault(serviceInterface);
@@ -167,7 +168,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 		}
 		
 		try {
-			serviceInterface.optimizeMultiPartJob(this.multiJobName);
+			serviceInterface.redistributeBatchJob(this.multiJobName);
 		} catch (NoSuchJobException e) {
 			throw new RuntimeException(e);
 		}
@@ -188,7 +189,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 			framesToCalculatePart = " -s "+startFrame+" -e "+endFrame+" -a";
 		}
 		String result = "blender "+
-		"-b "+multiPartJob.pathToInputFiles()+"/"+registry.getFileManager().getFilename(blendFile.getFile().toString()) +
+		"-b "+multiPartJob.pathToInputFiles()+"/"+blendFile.getRelativeBlendFilePath() +
 		" -F " + format.toString() +
 		" -o " + outputFileName +
 		framesToCalculatePart;		
@@ -227,12 +228,23 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 	
 	private void createAndSubmitBlenderJob() throws JobSubmissionException {
 		
-		multiPartJob.addInputFile(blendFile.getFile().toString());
+		multiPartJob.addInputFile(blendFile.getFile().toString(), blendFile.getRelativeBlendFilePath());
 		
 		for ( File file : blendFile.getReferrencedFiles().keySet() ) {
 			//TODO fix this for windows.
 			multiPartJob.addInputFile(file.toString(), blendFile.getReferrencedFiles().get(file));
 		}
+		
+		// upload possible physics files
+		for ( File file : blendFile.getBlendCacheFiles(firstFrame, lastFrame) ) {
+			multiPartJob.addInputFile(file.toString(), blendFile.getRelativeBlendCacheFolderPath()+"/"+file.getName());
+		}
+		
+		// upload possible fluid files
+		for ( File file : blendFile.getFluidFiles(firstFrame, lastFrame) ) {
+			multiPartJob.addInputFile(file.toString(), blendFile.getFluidsFolderPath()+"/"+file.getName());
+		}
+		
 
 		try {
 			multiPartJob.prepareAndCreateJobs(true);
@@ -321,7 +333,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 		return blendFile;
 	}
 
-	public void setBlenderFile(String blenderFile) {
+	public void setBlenderFile(String blenderFile, String fluidFolder) throws FileNotFoundException {
 		
 		if ( StringUtils.isBlank(blenderFile) ) {
 			throw new IllegalArgumentException("No blender file specified.");
@@ -337,7 +349,11 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 		
 //		this.addInputFile(blenderFile);
 		
-		blendFile = new BlendFile(registry.getFileManager().getLocalCacheFile(blenderFile));
+		File fluidFolderFile = null;
+		if ( StringUtils.isNotBlank(fluidFolder) ) {
+			fluidFolderFile = registry.getFileManager().getLocalCacheFile(fluidFolder);
+		}
+		blendFile = new BlendFile(registry.getFileManager().getLocalCacheFile(blenderFile), fluidFolderFile);
 		
 		System.out.println("StartFrame: "+blendFile.getStartFrame());
 		System.out.println("EndFrame: "+blendFile.getEndFrame());

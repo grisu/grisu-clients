@@ -12,6 +12,10 @@ public interface BlenderSubmitCommandLineArgs extends BlenderCommandLineArgs {
 	@Option(shortName = "F", description = "set the render format, Valid options are: TGA IRIS HAMX JPEG MOVIE IRIZ RAWTGA AVIRAW AVIJPEG PNG BMP FRAMESERVER")
 	public String getRenderFormat();
 	
+	@Option(description = "path to folder that contains the fluids files")
+	public String getFluidsFolder();
+	public boolean isFluidsFolder();
+	
 	@Option(shortName = "s", description = "set start to frame <frame>")
 	public int getStartFrame();
 	public boolean isStartFrame();

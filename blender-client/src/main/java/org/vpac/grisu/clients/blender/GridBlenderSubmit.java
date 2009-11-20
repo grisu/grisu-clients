@@ -1,8 +1,10 @@
 package org.vpac.grisu.clients.blender;
 
+import java.io.FileNotFoundException;
+
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.JobSubmissionException;
-import org.vpac.grisu.control.exceptions.MultiPartJobException;
+import org.vpac.grisu.control.exceptions.BatchJobException;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
 import org.vpac.grisu.model.dto.DtoActionStatus;
@@ -105,14 +107,25 @@ public class GridBlenderSubmit implements BlenderMode {
 
 		try {
 			job = new GrisuBlenderJob(si, jobname, fqan);
-		} catch (MultiPartJobException e) {
+		} catch (BatchJobException e) {
 			System.err.println("Could not create blender job: "
 					+ e.getLocalizedMessage());
 		}
 
 		job.setVerbose(commandlineArgs.isVerbose());
 
-		job.setBlenderFile(commandlineArgs.getBlendFile());
+		String fluidsFolder = null;
+		if ( commandlineArgs.isFluidsFolder() ) {
+			fluidsFolder = commandlineArgs.getFluidsFolder();
+		}
+		try {
+			job.setBlenderFile(commandlineArgs.getBlendFile(), fluidsFolder);
+		} catch (FileNotFoundException e1) {
+			System.err.println("Could not create job: "
+					+ e1.getLocalizedMessage());
+			System.exit(1);
+		}
+		
 		if ( commandlineArgs.isStartFrame() ) {
 			job.setFirstFrame(commandlineArgs.getStartFrame());
 		}

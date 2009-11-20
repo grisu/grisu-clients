@@ -57,7 +57,7 @@ public class Blender_submit {
 //			blenderJob.addJob("blender -b "+GrisuBlenderJob.INPUT_PATH_VARIABLE+"/CubesTest.blend -F PNG -o cubes_ -f "+i, w);
 //		}
 		
-		blenderJob.setBlenderFile("/home/markus/Desktop/CubesTest.blend");
+		blenderJob.setBlenderFile("/home/markus/Desktop/CubesTest.blend", null);
 		blenderJob.setFirstFrame(1);
 		blenderJob.setLastFrame(150);
 		blenderJob.setDefaultWalltimeInSeconds(3600);
