@@ -6,14 +6,14 @@ import org.apache.commons.lang.StringUtils;
 import org.bushe.swing.event.EventBus;
 import org.bushe.swing.event.EventTopicSubscriber;
 import org.vpac.grisu.control.ServiceInterface;
-import org.vpac.grisu.frontend.model.events.MultiPartJobEvent;
-import org.vpac.grisu.frontend.model.job.MultiPartJobObject;
+import org.vpac.grisu.frontend.model.events.BatchJobEvent;
+import org.vpac.grisu.frontend.model.job.BatchJobObject;
 
 import uk.co.flamingpenguin.jewel.cli.ArgumentValidationException;
 import uk.co.flamingpenguin.jewel.cli.Cli;
 import uk.co.flamingpenguin.jewel.cli.CliFactory;
 
-public class GridBlenderCheck implements BlenderMode, EventTopicSubscriber<MultiPartJobEvent> {
+public class GridBlenderCheck implements BlenderMode, EventTopicSubscriber<BatchJobEvent> {
 
 	private BlenderCheckCommandLineArgs commandlineArgs = null;
 	private final ServiceInterface si;
@@ -87,7 +87,7 @@ public class GridBlenderCheck implements BlenderMode, EventTopicSubscriber<Multi
 			System.exit(1);
 		}
 
-		MultiPartJobObject blenderMultiPartJobObject = blenderJob
+		BatchJobObject blenderMultiPartJobObject = blenderJob
 				.getMultiPartJobObject();
 
 		boolean firstTime = true;
@@ -165,7 +165,7 @@ public class GridBlenderCheck implements BlenderMode, EventTopicSubscriber<Multi
 	}
 
 	private void downloadCurrentlyFinishedFiles(
-			MultiPartJobObject blenderMultiPartJobObject) {
+			BatchJobObject blenderMultiPartJobObject) {
 		File downloadDirectory = commandlineArgs.getDownloadResults();
 
 		String pattern = blenderMultiPartJobObject
@@ -189,7 +189,7 @@ public class GridBlenderCheck implements BlenderMode, EventTopicSubscriber<Multi
 		}
 	}
 
-	public void onEvent(String arg0, MultiPartJobEvent arg1) {
+	public void onEvent(String arg0, BatchJobEvent arg1) {
 		System.out.println(arg1.getMessage());
 	}
 

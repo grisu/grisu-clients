@@ -113,6 +113,12 @@ public class GridBlenderSubmit implements BlenderMode {
 		}
 
 		job.setVerbose(commandlineArgs.isVerbose());
+		
+		if ( commandlineArgs.isExclude() ) {
+			job.setSitesToExclude(commandlineArgs.getExclude().toArray(new String[]{}));
+		} else if ( commandlineArgs.isInclude() ){
+			job.setSitesToInclude(commandlineArgs.getInclude().toArray(new String[]{}));
+		}
 
 		String fluidsFolder = null;
 		if ( commandlineArgs.isFluidsFolder() ) {

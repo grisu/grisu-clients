@@ -26,14 +26,14 @@ import org.vpac.grisu.control.exceptions.BatchJobException;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
 import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
-import org.vpac.grisu.frontend.model.events.MultiPartJobEvent;
+import org.vpac.grisu.frontend.model.events.BatchJobEvent;
 import org.vpac.grisu.frontend.model.job.JobObject;
-import org.vpac.grisu.frontend.model.job.MultiPartJobObject;
+import org.vpac.grisu.frontend.model.job.BatchJobObject;
 import org.vpac.grisu.model.GrisuRegistry;
 import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.settings.Environment;
 
-public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> {
+public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 	
 	static final Logger myLogger = Logger.getLogger(GrisuBlenderJob.class.getName());
 	
@@ -47,7 +47,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 	private final GrisuRegistry registry;
 	private final ServiceInterface serviceInterface;
 	private final String multiJobName;
-	private final MultiPartJobObject multiPartJob;
+	private final BatchJobObject multiPartJob;
 	
 	private static final NumberFormat formatter = new DecimalFormat("0000");
 	
@@ -121,7 +121,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 		this.serviceInterface = serviceInterface;
 		this.registry = GrisuRegistryManager.getDefault(serviceInterface);
 		this.multiJobName = multiPartJobId;
-		this.multiPartJob = new MultiPartJobObject(serviceInterface, this.multiJobName, fqan, BLENDER_APP_NAME, BLENDER_DEFAULT_VERSION);
+		this.multiPartJob = new BatchJobObject(serviceInterface, this.multiJobName, fqan, BLENDER_APP_NAME, BLENDER_DEFAULT_VERSION);
 		EventBus.subscribe(this.multiJobName, this);
 	}
 	
@@ -130,11 +130,11 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 		this.serviceInterface = serviceInterface;
 		this.registry = GrisuRegistryManager.getDefault(serviceInterface);
 		this.multiJobName = multiPartJobId;
-		this.multiPartJob = new MultiPartJobObject(serviceInterface, this.multiJobName, false);
+		this.multiPartJob = new BatchJobObject(serviceInterface, this.multiJobName, false);
 		EventBus.subscribe(this.multiJobName, this);
 	}
 	
-	public MultiPartJobObject getMultiPartJobObject() {
+	public BatchJobObject getMultiPartJobObject() {
 		
 		return multiPartJob;
 	}
@@ -167,11 +167,11 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 			addJob(i, command, walltimesPerFrame.get(i));
 		}
 		
-		try {
-			serviceInterface.redistributeBatchJob(this.multiJobName);
-		} catch (NoSuchJobException e) {
-			throw new RuntimeException(e);
-		}
+//		try {
+//			serviceInterface.redistributeBatchJob(this.multiJobName);
+//		} catch (NoSuchJobException e) {
+//			throw new RuntimeException(e);
+//		}
 //		multiPartJob.fillOrOverwriteSubmissionLocationsUsingMatchmaker();
 		
 		createAndSubmitBlenderJob();
@@ -407,7 +407,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 		this.multiPartJob.setSitesToExclude(sites);
 	}
 
-	public void eventOccured(MultiPartJobObject job, String eventMessage) {
+	public void eventOccured(BatchJobObject job, String eventMessage) {
 
 	}
 	
@@ -423,7 +423,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<MultiPartJobEvent> 
 		return multiPartJob.getJobProperty(BLENDER_OUTPUTFILENAME_KEY);
 	}
 
-	public void onEvent(String arg0, MultiPartJobEvent arg1) {
+	public void onEvent(String arg0, BatchJobEvent arg1) {
 
 		if (verbose) {
 			System.out.println(arg1.getMessage());
