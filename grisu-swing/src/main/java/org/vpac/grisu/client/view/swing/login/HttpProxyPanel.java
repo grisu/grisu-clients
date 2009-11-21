@@ -21,10 +21,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.globus.gsi.GlobusCredential;
 import org.vpac.grisu.settings.ClientPropertiesManager;
-
-import au.org.mams.slcs.client.view.swing.SlcsPanelListener;
 
 public class HttpProxyPanel extends JPanel implements ItemListener {
 
