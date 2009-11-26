@@ -41,32 +41,32 @@ public class LoginPanel extends JPanel implements LoginPanelsHolder, HttpProxyPa
 	 */
 	public LoginPanel() {
 		super();
-		setLayout(new FormLayout(
-			new ColumnSpec[] {
+		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
-				new ColumnSpec("default:grow(1.0)"),
+				ColumnSpec.decode("default:grow"),
 				FormFactory.RELATED_GAP_COLSPEC,
 				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC},
+				FormFactory.RELATED_GAP_COLSPEC,},
 			new RowSpec[] {
 				FormFactory.RELATED_GAP_ROWSPEC,
-				new RowSpec("132dlu"),
+				RowSpec.decode("132dlu"),
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
-				new RowSpec("113dlu"),
-				new RowSpec("top:7dlu")}));
+				RowSpec.decode("133dlu"),
+				RowSpec.decode("top:7dlu"),}));
 
 		 tabbedPane = new JTabbedPane();
+
 		add(tabbedPane, new CellConstraints(2, 2, 3, 1, CellConstraints.DEFAULT, CellConstraints.FILL));
 		
+		tabbedPane.addTab("Shibboleth login", null, getGrisuSlcsLoginPanel(), null);
+
 		if ( ProxyLightLibraryManager.prerequisitesForProxyCreationAvailable() ) {
 			tabbedPane.addTab("Standard login", null, getCertificateLoginPanel(), null);
 		}
 		tabbedPane.addTab("MyProxy login", null, getMyProxyLoginPanel(), null);
 		
-				tabbedPane.addTab("Shibboleth login", null, getGrisuSlcsLoginPanel(), null);
-
 
 		add(getServiceInterfaceUrlsPanel(), new CellConstraints(2, 4, 3, 1));
 		add(getHttpProxyPanel(), new CellConstraints(2, 6, 3, 1, CellConstraints.DEFAULT, CellConstraints.TOP));
