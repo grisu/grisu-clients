@@ -44,6 +44,8 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 	
 	public static final String INPUT_PATH_VARIABLE = "${INPUT_FILE_PATH}";
 	
+	public static final int UPLOAD_THREADS = 10;
+	
 	private final GrisuRegistry registry;
 	private final ServiceInterface serviceInterface;
 	private final String multiJobName;
@@ -122,6 +124,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 		this.registry = GrisuRegistryManager.getDefault(serviceInterface);
 		this.multiJobName = multiPartJobId;
 		this.multiPartJob = new BatchJobObject(serviceInterface, this.multiJobName, fqan, BLENDER_APP_NAME, BLENDER_DEFAULT_VERSION);
+		this.multiPartJob.setConcurrentInputFileUploadThreads(UPLOAD_THREADS);
 		EventBus.subscribe(this.multiJobName, this);
 	}
 	
@@ -429,6 +432,12 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 			System.out.println(arg1.getMessage());
 		}
 
+	}
+	
+	public void setJobDistributionMethod(String method) {
+		
+		getMultiPartJobObject().setJobDistributionMethod(method);
+		
 	}
 
 

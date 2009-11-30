@@ -2,7 +2,6 @@ package org.vpac.grisu.client.control;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -10,6 +9,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -103,7 +103,7 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 
 	// all mountpoints of the user
 	private MountPoint[] mountPoints = null;
-	private Set<String> sites = null;
+	private SortedSet<String> sites = null;
 
 	// all sites of the grid. This info is not really useful since it doesn't
 	// tell you whether the user has got access to all of them or not...
@@ -552,13 +552,13 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 
 	}
 
-	public synchronized Set<String> getAllOfTheUsersSites() {
+	public synchronized SortedSet<String> getAllOfTheUsersSites() {
 
 		if (sites == null) {
 			myLogger.debug("Benchmarking getting of all of the users sites: ");
 			StringBuffer temp = new StringBuffer();
 			Date start = new Date();
-			Set<String> allSitesTemp = new TreeSet<String>();
+			SortedSet<String> allSitesTemp = new TreeSet<String>();
 			for (MountPoint mp : getMountPoints()) {
 				String site = lookupSite(FILE_URL_TYPE, mp.getRootUrl());
 				if (site == null) {
@@ -1576,7 +1576,7 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 		return getFqans();
 	}
 
-	public Set<String> getAllAvailableSites() {
+	public SortedSet<String> getAllAvailableSites() {
 
 		return getAllOfTheUsersSites();
 	}
@@ -1598,6 +1598,25 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 		} else {
 			return null;
 		}
+	}
+
+	public SortedSet<MountPoint> getMountPointsForSite(String site) {
+
+		throw new RuntimeException("Not implemented for this class.");
+		
+	}
+
+	public boolean isMountPointAlias(String string) {
+		throw new RuntimeException("Not implemented for this class.");
+
+	}
+
+	public MountPoint getMountPointForAlias(String url) {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public boolean isMountPointRoot(String rootUrl) {
+		throw new RuntimeException("Not implemented for this class.");
 	}
 
 

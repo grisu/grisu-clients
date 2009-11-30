@@ -7,8 +7,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
-import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
-import org.vpac.grisu.model.MountPoint;
 import org.vpac.grisu.model.dto.DtoFile;
 import org.vpac.grisu.model.dto.DtoFolder;
 import org.vpac.grisu.model.dto.DtoRemoteObject;
@@ -62,7 +60,7 @@ public class DtoFolderToXmlConverter {
 	}
 
 	private static void buildDirectoryStructure(final Document output,
-			final Element parentElement, final DtoRemoteObject parent,
+			final Element parentElement, final DtoFolder parent,
 			final int currentRecursion, final int maxRecursion) {
 
 		List<DtoRemoteObject> filesAndDirs;
@@ -87,7 +85,7 @@ public class DtoFolderToXmlConverter {
 					if (currentRecursion < maxRecursion) {
 						Element element = createElement(output, fo);
 						parentElement.appendChild(element);
-						buildDirectoryStructure(output, element, fo,
+						buildDirectoryStructure(output, element, (DtoFolder)fo,
 								currentRecursion + 1, maxRecursion);
 					} else {
 						Element element = createElement(output, fo);
