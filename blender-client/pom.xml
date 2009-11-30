@@ -6,9 +6,7 @@
 		<groupId>org.vpac.grisu</groupId>
 		<version>0.3-SNAPSHOT</version>
 	</parent>
-	<groupId>org.vpac.grisu</groupId>
 	<artifactId>blender-client</artifactId>
-	<version>0.3-SNAPSHOT</version>
 
 	<repositories>
 		<repository>

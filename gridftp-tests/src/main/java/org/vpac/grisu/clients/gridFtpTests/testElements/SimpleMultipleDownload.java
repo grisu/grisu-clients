@@ -60,7 +60,7 @@ public class SimpleMultipleDownload extends GridFtpTestElement {
 		try {
 			for (MountPoint mp : mps) {
 				controller.getServiceInterface().upload(dh,
-						mp.getRootUrl() + "/simpleTestFile.txt", true);
+						mp.getRootUrl() + "/simpleTestFile.txt");
 			}
 		} catch (Exception e) {
 			throw new TestSetupException("Could not upload source file: "

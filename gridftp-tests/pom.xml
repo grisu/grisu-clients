@@ -6,9 +6,7 @@
 		<groupId>org.vpac.grisu</groupId>
 		<version>0.3-SNAPSHOT</version>
 	</parent>
-	<groupId>org.vpac.grisu</groupId>
 	<artifactId>gridftp-tests</artifactId>
-	<version>0.3-SNAPSHOT</version>
 	<name>Grisu-Gridftp-Tests</name>
 	<description>Gridftp tests using the Grisu framework</description>
 

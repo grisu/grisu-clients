@@ -1,10 +1,13 @@
 package org.vpac.grisu.clients.blender;
 
+import java.io.FileNotFoundException;
+
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.JobSubmissionException;
-import org.vpac.grisu.control.exceptions.MultiPartJobException;
+import org.vpac.grisu.control.exceptions.BatchJobException;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
+import org.vpac.grisu.model.dto.DtoActionStatus;
 
 import uk.co.flamingpenguin.jewel.cli.ArgumentValidationException;
 import uk.co.flamingpenguin.jewel.cli.Cli;
@@ -62,14 +65,26 @@ public class GridBlenderSubmit implements BlenderMode {
 						System.out.println("Deleting existing multipart job "
 								+ jobname + ". This might take a while...");
 					}
-					si.deleteMultiPartJob(jobname, true);
+					
+					try {
+						si.kill(jobname, true);
+						
+						DtoActionStatus status;
+						while ( ! (status = si.getActionStatus(jobname)).isFinished() ) {
+							double percentage = status.getCurrentElements() * 100 / status.getTotalElements();
+							System.out.println("Deletion "+percentage+"% finished.");
+							Thread.sleep(3000);
+						}
+					} catch (NoSuchJobException ne) {
+						// good
+					}
+
 					if (commandlineArgs.isVerbose()) {
 						System.out
 								.println("Deleting of existing multipart job "
 										+ jobname + " finished.");
 					}
-				} catch (NoSuchJobException nsje) {
-					// that's ok.
+
 				} catch (Exception e) {
 					System.out.println("Could not delete existing job "
 							+ jobname + ": " + e.getLocalizedMessage());
@@ -92,16 +107,37 @@ public class GridBlenderSubmit implements BlenderMode {
 
 		try {
 			job = new GrisuBlenderJob(si, jobname, fqan);
-		} catch (MultiPartJobException e) {
+		} catch (BatchJobException e) {
 			System.err.println("Could not create blender job: "
 					+ e.getLocalizedMessage());
 		}
 
 		job.setVerbose(commandlineArgs.isVerbose());
+		
+		if ( commandlineArgs.isExclude() ) {
+			job.setSitesToExclude(commandlineArgs.getExclude().toArray(new String[]{}));
+		} else if ( commandlineArgs.isInclude() ){
+			job.setSitesToInclude(commandlineArgs.getInclude().toArray(new String[]{}));
+		}
 
-		job.setBlenderFile(commandlineArgs.getBlendFile());
-		job.setFirstFrame(commandlineArgs.getStartFrame());
-		job.setLastFrame(commandlineArgs.getEndFrame());
+		String fluidsFolder = null;
+		if ( commandlineArgs.isFluidsFolder() ) {
+			fluidsFolder = commandlineArgs.getFluidsFolder();
+		}
+		try {
+			job.setBlenderFile(commandlineArgs.getBlendFile(), fluidsFolder);
+		} catch (FileNotFoundException e1) {
+			System.err.println("Could not create job: "
+					+ e1.getLocalizedMessage());
+			System.exit(1);
+		}
+		
+		if ( commandlineArgs.isStartFrame() ) {
+			job.setFirstFrame(commandlineArgs.getStartFrame());
+		}
+		if ( commandlineArgs.isEndFrame() ) {
+			job.setLastFrame(commandlineArgs.getEndFrame());
+		}
 		job.setDefaultWalltimeInSeconds(commandlineArgs.getWalltime() * 60);
 		job.setOutputFileName(commandlineArgs.getOutput());
 		if (commandlineArgs.isExclude()) {

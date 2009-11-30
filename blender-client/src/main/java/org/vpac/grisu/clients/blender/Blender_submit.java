@@ -34,14 +34,14 @@ public class Blender_submit {
 			System.exit(1);
 		}
 		
-		si.deleteMultiPartJob("grisutest3", true);
+		si.kill("grisutest3", true);
 		System.exit(1);
 		
 		GrisuBlenderJob blenderJob;
 		try {
 			blenderJob = new GrisuBlenderJob(si, "blenderJob1", "/ARCS/NGAdmin");
 		} catch (Exception e) {
-			si.deleteMultiPartJob("blenderJob1", true);
+			si.kill("blenderJob1", true);
 			blenderJob = new GrisuBlenderJob(si, "blenderJob1", "/ARCS/NGAdmin");
 		}
 		
@@ -57,7 +57,7 @@ public class Blender_submit {
 //			blenderJob.addJob("blender -b "+GrisuBlenderJob.INPUT_PATH_VARIABLE+"/CubesTest.blend -F PNG -o cubes_ -f "+i, w);
 //		}
 		
-		blenderJob.setBlenderFile("/home/markus/Desktop/CubesTest.blend");
+		blenderJob.setBlenderFile("/home/markus/Desktop/CubesTest.blend", null);
 		blenderJob.setFirstFrame(1);
 		blenderJob.setLastFrame(150);
 		blenderJob.setDefaultWalltimeInSeconds(3600);

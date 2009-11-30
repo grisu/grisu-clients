@@ -5,6 +5,8 @@ package org.vpac.grisu.client.view.swing.login;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
@@ -13,6 +15,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -21,10 +24,10 @@ import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.globus.gsi.GlobusCredential;
+import org.apache.commons.lang.StringUtils;
 import org.vpac.grisu.settings.ClientPropertiesManager;
 
-import au.org.mams.slcs.client.view.swing.SlcsPanelListener;
+import au.org.arcs.jcommons.utils.HttpProxyManager;
 
 public class HttpProxyPanel extends JPanel implements ItemListener {
 
@@ -62,7 +65,7 @@ public class HttpProxyPanel extends JPanel implements ItemListener {
 		gridBagConstraints8.gridx = 1;
 		GridBagConstraints gridBagConstraints7 = new GridBagConstraints();
 		gridBagConstraints7.gridx = 0;
-		gridBagConstraints7.insets = new Insets(0, 15, 15, 0);
+		gridBagConstraints7.insets = new Insets(0, 15, 15, 5);
 		gridBagConstraints7.anchor = GridBagConstraints.EAST;
 		gridBagConstraints7.gridy = 3;
 		jLabel3 = new JLabel();
@@ -89,7 +92,7 @@ public class HttpProxyPanel extends JPanel implements ItemListener {
 		gridBagConstraints4.gridx = 3;
 		GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
 		gridBagConstraints3.gridx = 2;
-		gridBagConstraints3.insets = new Insets(15, 0, 10, 0);
+		gridBagConstraints3.insets = new Insets(15, 0, 10, 5);
 		gridBagConstraints3.weightx = 0.0;
 		gridBagConstraints3.gridy = 1;
 		jLabel2 = new JLabel();
@@ -103,18 +106,18 @@ public class HttpProxyPanel extends JPanel implements ItemListener {
 		GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
 		gridBagConstraints1.gridx = 0;
 		gridBagConstraints1.anchor = GridBagConstraints.EAST;
-		gridBagConstraints1.insets = new Insets(0, 15, 10, 0);
+		gridBagConstraints1.insets = new Insets(0, 15, 10, 5);
 		gridBagConstraints1.gridy = 2;
 		jLabel1 = new JLabel();
 		jLabel1.setText("Http proxy username:");
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.anchor = GridBagConstraints.EAST;
-		gridBagConstraints.insets = new Insets(15, 15, 10, 0);
+		gridBagConstraints.insets = new Insets(15, 15, 10, 5);
 		gridBagConstraints.gridy = 1;
 		jLabel = new JLabel();
 		jLabel.setText("Http proxy server:");
-		this.setSize(501, 169);
+		this.setSize(501, 207);
 		this.setLayout(new GridBagLayout());
 		this.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
 		this.add(jLabel, gridBagConstraints);
@@ -126,6 +129,12 @@ public class HttpProxyPanel extends JPanel implements ItemListener {
 		this.add(getAdvancedCheckBox(), gridBagConstraints6);
 		this.add(jLabel3, gridBagConstraints7);
 		this.add(getProxyPasswordField(), gridBagConstraints8);
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.anchor = GridBagConstraints.EAST;
+		gbc.insets = new Insets(0, 0, 10, 10);
+		gbc.gridx = 3;
+		gbc.gridy = 4;
+		add(getButton(), gbc);
 		
 		boolean show;
 		try {
@@ -180,11 +189,11 @@ public class HttpProxyPanel extends JPanel implements ItemListener {
 	private JTextField getPortTextField() {
 		if (portTextField == null) {
 			portTextField = new JTextField();
-			portTextField.addKeyListener(new KeyAdapter() {
-				public void keyTyped(final KeyEvent e) {
-					fireHttpProxyValuesChanged();
-				}
-			});
+//			portTextField.addKeyListener(new KeyAdapter() {
+//				public void keyTyped(final KeyEvent e) {
+//					fireHttpProxyValuesChanged();
+//				}
+//			});
 			try {
 				// set proxy server from last time
 				String httpProxyPort = (String)ClientPropertiesManager.getClientConfiguration().getProperty("httpProxyPort");
@@ -302,6 +311,7 @@ public class HttpProxyPanel extends JPanel implements ItemListener {
 			jLabel1.setVisible(true);
 			jLabel2.setVisible(true);
 			jLabel3.setVisible(true);
+			getButton().setVisible(true);
 		} else {
 			getProxyPasswordField().setVisible(false);
 			getUsernameTextField().setVisible(false);
@@ -311,6 +321,7 @@ public class HttpProxyPanel extends JPanel implements ItemListener {
 			jLabel1.setVisible(false);
 			jLabel2.setVisible(false);
 			jLabel3.setVisible(false);
+			getButton().setVisible(false);
 		}
 		
 	}
@@ -324,6 +335,7 @@ public class HttpProxyPanel extends JPanel implements ItemListener {
 	// ---------------------------------------------------------------------------------------
 	// Event stuff (MountPoints)
 	private Vector<HttpProxyPanelListener> httpProxyPanelListener;
+	private JButton button;
 
 	private void fireHttpProxyValuesChanged() {
 		// if we have no mountPointsListeners, do nothing...
@@ -367,4 +379,29 @@ public class HttpProxyPanel extends JPanel implements ItemListener {
 	}
 	
 	
+	private JButton getButton() {
+		if (button == null) {
+			button = new JButton("Apply");
+			button.setVisible(false);
+			button.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					
+					String host = getProxyServer();
+					int port = getProxyPort();
+					
+					if ( host != null ) {
+						if ( StringUtils.isNotBlank(getProxyUsername()) ) {
+							String username = getProxyUsername();
+							char[] password = getProxyPassword();
+							HttpProxyManager.setHttpProxy(host, port, username, password);
+						} else {
+							HttpProxyManager.setHttpProxy(host, port, null, null);
+						}
+					}
+					fireHttpProxyValuesChanged();
+				}
+			});
+		}
+		return button;
+	}
 }  //  @jve:decl-index=0:visual-constraint="10,10"

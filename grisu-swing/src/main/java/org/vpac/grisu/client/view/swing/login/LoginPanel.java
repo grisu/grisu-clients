@@ -24,7 +24,7 @@ import com.jgoodies.forms.layout.RowSpec;
 
 public class LoginPanel extends JPanel implements LoginPanelsHolder, HttpProxyPanelListener{
 
-	private GrisuSlcsLoginPanel grisuSlcsLoginPanel;
+	private NewGrisuSlcsLoginPanel grisuSlcsLoginPanel;
 	private MyProxyLoginPanel myProxyLoginPanel;
 	private HttpProxyPanel httpProxyPanel;
 	private ServiceInterfaceUrlsPanel serviceInterfaceUrlsPanel;
@@ -41,32 +41,32 @@ public class LoginPanel extends JPanel implements LoginPanelsHolder, HttpProxyPa
 	 */
 	public LoginPanel() {
 		super();
-		setLayout(new FormLayout(
-			new ColumnSpec[] {
+		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
-				new ColumnSpec("default:grow(1.0)"),
+				ColumnSpec.decode("default:grow"),
 				FormFactory.RELATED_GAP_COLSPEC,
 				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC},
+				FormFactory.RELATED_GAP_COLSPEC,},
 			new RowSpec[] {
 				FormFactory.RELATED_GAP_ROWSPEC,
-				new RowSpec("132dlu"),
+				RowSpec.decode("132dlu"),
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
-				new RowSpec("113dlu"),
-				new RowSpec("top:7dlu")}));
+				RowSpec.decode("133dlu"),
+				RowSpec.decode("top:7dlu"),}));
 
 		 tabbedPane = new JTabbedPane();
-		add(tabbedPane, new CellConstraints(2, 2, 3, 1, CellConstraints.DEFAULT, CellConstraints.FILL));
 
-		tabbedPane.addTab("Shibboleth login", null, getGrisuSlcsLoginPanel(), null);
+		add(tabbedPane, new CellConstraints(2, 2, 3, 1, CellConstraints.DEFAULT, CellConstraints.FILL));
 		
+		tabbedPane.addTab("Shibboleth login", null, getGrisuSlcsLoginPanel(), null);
+
 		if ( ProxyLightLibraryManager.prerequisitesForProxyCreationAvailable() ) {
 			tabbedPane.addTab("Standard login", null, getCertificateLoginPanel(), null);
 		}
 		tabbedPane.addTab("MyProxy login", null, getMyProxyLoginPanel(), null);
-
+		
 
 		add(getServiceInterfaceUrlsPanel(), new CellConstraints(2, 4, 3, 1));
 		add(getHttpProxyPanel(), new CellConstraints(2, 6, 3, 1, CellConstraints.DEFAULT, CellConstraints.TOP));
@@ -175,9 +175,9 @@ public class LoginPanel extends JPanel implements LoginPanelsHolder, HttpProxyPa
 	/**
 	 * @return
 	 */
-	protected GrisuSlcsLoginPanel getGrisuSlcsLoginPanel() {
+	protected NewGrisuSlcsLoginPanel getGrisuSlcsLoginPanel() {
 		if (grisuSlcsLoginPanel == null) {
-			grisuSlcsLoginPanel = new GrisuSlcsLoginPanel();
+			grisuSlcsLoginPanel = new NewGrisuSlcsLoginPanel();
 			grisuSlcsLoginPanel.setParamsHolder(this);
 		}
 		return grisuSlcsLoginPanel;
@@ -185,7 +185,7 @@ public class LoginPanel extends JPanel implements LoginPanelsHolder, HttpProxyPa
 
 	public void httpProxyValueChanged() {
 		
-		getGrisuSlcsLoginPanel().getSlcsLoginPanel().disableLoginButtonUntilIDPRefreshButtonIsPressed();
+//		getGrisuSlcsLoginPanel().getSlcsLoginPanel().disableLoginButtonUntilIDPRefreshButtonIsPressed();
 		
 	}
 

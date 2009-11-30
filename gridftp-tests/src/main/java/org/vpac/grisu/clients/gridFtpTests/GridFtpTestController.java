@@ -6,9 +6,11 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,7 +30,9 @@ import org.vpac.grisu.settings.Environment;
 import org.vpac.grisu.utils.GrisuPluginFilenameFilter;
 import org.vpac.security.light.plainProxy.LocalProxy;
 
+import au.org.arcs.jcommons.constants.ArcsEnvironment;
 import au.org.arcs.jcommons.dependencies.ClasspathHacker;
+import au.org.arcs.jcommons.dependencies.Dependency;
 import au.org.arcs.jcommons.dependencies.DependencyManager;
 
 public class GridFtpTestController {
@@ -74,8 +78,12 @@ public class GridFtpTestController {
 
 		Environment.setGrisuDirectory(this.grisu_base_directory);
 		
-		DependencyManager.initArcsCommonJavaLibDir();
-		DependencyManager.checkForBouncyCastleDependency();
+		Map<Dependency, String> dependencies = new HashMap<Dependency, String>();
+
+		dependencies.put(Dependency.BOUNCYCASTLE, "jdk15-143");
+
+		DependencyManager.addDependencies(dependencies, ArcsEnvironment.getArcsCommonJavaLibDirectory());
+
 		ClasspathHacker.initFolder(Environment.getGrisuPluginDirectory(), new GrisuPluginFilenameFilter());
 		
 		try {

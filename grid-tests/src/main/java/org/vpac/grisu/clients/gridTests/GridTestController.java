@@ -32,7 +32,9 @@ import org.vpac.grisu.settings.Environment;
 import org.vpac.grisu.utils.GrisuPluginFilenameFilter;
 import org.vpac.security.light.plainProxy.LocalProxy;
 
+import au.org.arcs.jcommons.constants.ArcsEnvironment;
 import au.org.arcs.jcommons.dependencies.ClasspathHacker;
+import au.org.arcs.jcommons.dependencies.Dependency;
 import au.org.arcs.jcommons.dependencies.DependencyManager;
 
 public class GridTestController {
@@ -81,8 +83,12 @@ public class GridTestController {
 
 		Environment.setGrisuDirectory(this.grisu_base_directory);
 		
-		DependencyManager.initArcsCommonJavaLibDir();
-		DependencyManager.checkForBouncyCastleDependency();
+		Map<Dependency, String> dependencies = new HashMap<Dependency, String>();
+
+		dependencies.put(Dependency.BOUNCYCASTLE, "jdk15-143");
+
+		DependencyManager.addDependencies(dependencies, ArcsEnvironment.getArcsCommonJavaLibDirectory());
+		
 		ClasspathHacker.initFolder(Environment.getGrisuPluginDirectory(), new GrisuPluginFilenameFilter());
 		
 		// try to setup hibernate for local tests if a local Backend is used

@@ -12,11 +12,17 @@ public interface BlenderSubmitCommandLineArgs extends BlenderCommandLineArgs {
 	@Option(shortName = "F", description = "set the render format, Valid options are: TGA IRIS HAMX JPEG MOVIE IRIZ RAWTGA AVIRAW AVIJPEG PNG BMP FRAMESERVER")
 	public String getRenderFormat();
 	
+	@Option(description = "path to folder that contains the fluids files")
+	public String getFluidsFolder();
+	public boolean isFluidsFolder();
+	
 	@Option(shortName = "s", description = "set start to frame <frame>")
 	public int getStartFrame();
+	public boolean isStartFrame();
 	
 	@Option(shortName = "e", description = "set end to frame <frame> (use before the -a argument)")
 	public int getEndFrame();
+	public boolean isEndFrame();
 	
 	@Option(shortName = "w", description = "the walltime for a single frame-render job in minutes. Use a high enough number so the job doesn't get killed on the cluster. But don't make it too high because your job might take longer to get started.")
 	public int getWalltime();

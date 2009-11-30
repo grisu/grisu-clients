@@ -181,7 +181,7 @@ public class GridFtpAction {
 		try {
 //			si.deleteFile(target);
 //			GrisuRegistryManager.getDefault(si).getFileManager().uploadFile(source, target);
-			si.upload(new DataHandler(new FileDataSource(source)), target, false);
+			si.upload(new DataHandler(new FileDataSource(source)), target);
 		} catch (Exception e) {
 			actionItem.setException(e);
 			return;

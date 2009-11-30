@@ -3,21 +3,25 @@ package org.vpac.grisu.clients.blender;
 import java.io.File;
 
 import org.apache.commons.lang.StringUtils;
+import org.bushe.swing.event.EventBus;
+import org.bushe.swing.event.EventTopicSubscriber;
 import org.vpac.grisu.control.ServiceInterface;
-import org.vpac.grisu.frontend.model.job.MultiPartJobEventListener;
-import org.vpac.grisu.frontend.model.job.MultiPartJobObject;
+import org.vpac.grisu.frontend.model.events.BatchJobEvent;
+import org.vpac.grisu.frontend.model.job.BatchJobObject;
 
 import uk.co.flamingpenguin.jewel.cli.ArgumentValidationException;
 import uk.co.flamingpenguin.jewel.cli.Cli;
 import uk.co.flamingpenguin.jewel.cli.CliFactory;
 
-public class GridBlenderCheck implements BlenderMode, MultiPartJobEventListener {
+public class GridBlenderCheck implements BlenderMode, EventTopicSubscriber<BatchJobEvent> {
 
 	private BlenderCheckCommandLineArgs commandlineArgs = null;
 	private final ServiceInterface si;
+	
+	private final String jobname;
 
 	public GridBlenderCheck(String[] args, boolean help) {
-
+		
 		final Cli<BlenderCheckCommandLineArgs> cli = CliFactory
 				.createCli(BlenderCheckCommandLineArgs.class);
 		
@@ -45,6 +49,10 @@ public class GridBlenderCheck implements BlenderMode, MultiPartJobEventListener 
 			System.exit(1);
 		}
 
+		jobname = commandlineArgs.getJobname();
+		
+		EventBus.subscribe(jobname, this);
+		
 		if (commandlineArgs.isDownloadResults()) {
 			try {
 				File downloadDir = commandlineArgs.getDownloadResults();
@@ -79,9 +87,8 @@ public class GridBlenderCheck implements BlenderMode, MultiPartJobEventListener 
 			System.exit(1);
 		}
 
-		MultiPartJobObject blenderMultiPartJobObject = blenderJob
+		BatchJobObject blenderMultiPartJobObject = blenderJob
 				.getMultiPartJobObject();
-		blenderMultiPartJobObject.addJobStatusChangeListener(this);
 
 		boolean firstTime = true;
 
@@ -158,7 +165,7 @@ public class GridBlenderCheck implements BlenderMode, MultiPartJobEventListener 
 	}
 
 	private void downloadCurrentlyFinishedFiles(
-			MultiPartJobObject blenderMultiPartJobObject) {
+			BatchJobObject blenderMultiPartJobObject) {
 		File downloadDirectory = commandlineArgs.getDownloadResults();
 
 		String pattern = blenderMultiPartJobObject
@@ -182,8 +189,11 @@ public class GridBlenderCheck implements BlenderMode, MultiPartJobEventListener 
 		}
 	}
 
-	public void eventOccured(MultiPartJobObject job, String eventMessage) {
-		System.out.println(eventMessage);
+	public void onEvent(String arg0, BatchJobEvent arg1) {
+		System.out.println(arg1.getMessage());
 	}
+
+
+
 
 }

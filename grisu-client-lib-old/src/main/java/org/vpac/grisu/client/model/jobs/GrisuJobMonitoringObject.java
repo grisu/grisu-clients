@@ -7,7 +7,7 @@ import java.util.Map;
 import org.vpac.grisu.client.control.EnvironmentManager;
 import org.vpac.grisu.client.model.files.GrisuFileObject;
 import org.vpac.grisu.control.ServiceInterface;
-import org.vpac.grisu.control.exceptions.MultiPartJobException;
+import org.vpac.grisu.control.exceptions.BatchJobException;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
 
@@ -72,9 +72,9 @@ public interface GrisuJobMonitoringObject {
 	 * Kills the current job. Leaves the jobdirectory on the server.
 	 * @throws VomsException if the vo to access this job is not available
 	 * @throws NoSuchJobException if the job is already killed
-	 * @throws MultiPartJobException 
+	 * @throws BatchJobException 
 	 */
-	public abstract void kill() throws NoSuchJobException, MultiPartJobException;
+	public abstract void kill() throws NoSuchJobException, BatchJobException;
 	/**
 	 * Kills the current job and deletes the whole jobdirectory on the server.
 	 * @throws RemoteFileSystemException if the jobdirectory could not be accessed/deleted.

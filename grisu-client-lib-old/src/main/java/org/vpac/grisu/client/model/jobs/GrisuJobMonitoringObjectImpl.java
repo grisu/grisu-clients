@@ -18,7 +18,7 @@ import org.vpac.grisu.client.control.jobs.JobManager;
 import org.vpac.grisu.client.model.files.GrisuFileObject;
 import org.vpac.grisu.control.JobConstants;
 import org.vpac.grisu.control.ServiceInterface;
-import org.vpac.grisu.control.exceptions.MultiPartJobException;
+import org.vpac.grisu.control.exceptions.BatchJobException;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
 
@@ -432,7 +432,7 @@ public class GrisuJobMonitoringObjectImpl implements GrisuJobMonitoringObject {
 		return jobDirectoryObject;
 	}
 
-	public void kill() throws NoSuchJobException, MultiPartJobException {
+	public void kill() throws NoSuchJobException, BatchJobException {
 		try {
 			getServiceInterface().kill(getName(), false);
 		} catch (RemoteFileSystemException e) {

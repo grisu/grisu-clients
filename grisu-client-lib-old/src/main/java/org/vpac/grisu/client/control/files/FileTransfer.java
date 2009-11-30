@@ -446,7 +446,7 @@ public class FileTransfer {
 
 				em.getServiceInterface().upload(new DataHandler(source), targetDirectory.getURI()
 						.toString()
-						+ "/" + filename, true);
+						+ "/" + filename);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 				throw new FileSystemException("Could not upload file \""

@@ -9,10 +9,8 @@
 		<version>0.3-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.vpac.grisu</groupId>
 	<artifactId>grisu-client-commandline</artifactId>
 	<name>grisu-client-commandline</name>
-	<version>0.3-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>

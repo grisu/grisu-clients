@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import org.bushe.swing.event.annotation.AnnotationProcessor;
+import org.bushe.swing.event.annotation.EventSubscriber;
 import org.vpac.grisu.clients.gridTests.GridTestInfo;
 import org.vpac.grisu.clients.gridTests.GridTestStage;
 import org.vpac.grisu.clients.gridTests.GridTestStageStatus;
@@ -14,16 +16,17 @@ import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.JobPropertiesException;
 import org.vpac.grisu.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.frontend.control.clientexceptions.MdsInformationException;
+import org.vpac.grisu.frontend.model.events.JobStatusEvent;
 import org.vpac.grisu.frontend.model.job.JobObject;
-import org.vpac.grisu.frontend.model.job.JobStatusChangeListener;
 
-public abstract class GridTestElement implements JobStatusChangeListener, Comparable<GridTestElement> {
+public abstract class GridTestElement implements Comparable<GridTestElement> {
 
 	protected final ServiceInterface serviceInterface;
 	protected final String version;
 	protected final String submissionLocation;
 
 	protected final String id;
+	protected final String jobname;
 	
 	protected final String fqan;
 
@@ -73,20 +76,22 @@ public abstract class GridTestElement implements JobStatusChangeListener, Compar
 		addMessage("Creating JobObject...");
 		this.jobObject = createJobObject();
 		this.id = UUID.randomUUID().toString();
-		this.jobObject.setJobname(this.info.getApplicationName()+"_"+this.version+"_"+this.id);
+		this.jobname = this.info.getApplicationName()+"_"+this.version+"_"+this.id;
+		this.jobObject.setJobname(jobname);
 		this.jobObject.setSubmissionLocation(submissionLocation);
 		addMessage("JobObject created.");
-		this.jobObject.addJobStatusChangeListener(this);
+		AnnotationProcessor.process(this);
 		currentStage.setStatus(GridTestStageStatus.FINISHED_SUCCESS);
 	}
 	
-	public void addJobStatusChangeListener(JobStatusChangeListener jscl) {
-		this.jobObject.addJobStatusChangeListener(jscl);
-	}
-	
-	public void removeJobStatusChangeListener(JobStatusChangeListener jscl) {
-		this.jobObject.removeJobStatusChangeListener(jscl);
-	}
+	@EventSubscriber(eventClass=JobStatusEvent.class)
+    public void onEvent(JobStatusEvent statusEvent) {
+
+		if ( this.jobname.equals(statusEvent.getJob().getJobname()) ) {
+			addMessage("New job status: " + JobConstants.translateStatus(statusEvent.getNewStatus()));			
+		}
+
+    }
 
 	
 	public static boolean useMds(String application) {
@@ -287,12 +292,6 @@ public abstract class GridTestElement implements JobStatusChangeListener, Compar
 		currentStage.setStatus(GridTestStageStatus.FINISHED_SUCCESS);
 		}
 		
-	}
-
-	public void jobStatusChanged(JobObject job, int oldStatus, int newStatus) {
-
-		addMessage("New job status: " + JobConstants.translateStatus(newStatus));
-
 	}
 
 	public void printTestResults() {
