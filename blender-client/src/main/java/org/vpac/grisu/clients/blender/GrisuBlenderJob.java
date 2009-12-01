@@ -403,11 +403,11 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 	}
 
 	public void setSitesToInclude(String[] sites) {
-		this.multiPartJob.setSitesToInclude(sites);
+		this.multiPartJob.setLocationsToInclude(sites);
 	}
 	
 	public void setSitesToExclude(String[] sites) {
-		this.multiPartJob.setSitesToExclude(sites);
+		this.multiPartJob.setLocationsToExclude(sites);
 	}
 
 	public void eventOccured(BatchJobObject job, String eventMessage) {
