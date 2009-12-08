@@ -1,10 +1,11 @@
 package org.vpac.grisu.clients.blender;
 
 import java.io.FileNotFoundException;
+import java.util.Date;
 
 import org.vpac.grisu.control.ServiceInterface;
-import org.vpac.grisu.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.control.exceptions.BatchJobException;
+import org.vpac.grisu.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
 import org.vpac.grisu.model.dto.DtoActionStatus;
@@ -48,6 +49,8 @@ public class GridBlenderSubmit implements BlenderMode {
 	}
 
 	public void execute() {
+		
+		Date start = new Date();
 
 		String fqan = commandlineArgs.getVo();
 		String jobname = commandlineArgs.getJobname();
@@ -161,7 +164,10 @@ public class GridBlenderSubmit implements BlenderMode {
 			System.exit(1);
 		}
 
-		// System.out.println("Blender job submission finished successfully...");
+		 System.out.println("Blender job submission finished successfully...");
+		 
+		 System.out.println("Submission start: "+start.toString());
+		 System.out.println("Submission end: "+new Date().toString());
 
 	}
 

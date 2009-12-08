@@ -44,8 +44,6 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 	
 	public static final String INPUT_PATH_VARIABLE = "${INPUT_FILE_PATH}";
 	
-	public static final int UPLOAD_THREADS = 10;
-	
 	private final GrisuRegistry registry;
 	private final ServiceInterface serviceInterface;
 	private final String multiJobName;
@@ -83,6 +81,8 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 	private RenderFormat format = RenderFormat.PNG;
 	
 	public boolean verbose = false;
+	
+	private int UPLOAD_THREADS = 10;
 	
 	public enum RenderFormat {
 		
@@ -192,7 +192,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 			framesToCalculatePart = " -s "+startFrame+" -e "+endFrame+" -a";
 		}
 		String result = "blender "+
-		"-b "+multiPartJob.pathToInputFiles()+"/"+blendFile.getRelativeBlendFilePath() +
+		"-b "+multiPartJob.pathToInputFiles()+blendFile.getRelativeBlendFilePath() +
 		" -F " + format.toString() +
 		" -o " + outputFileName +
 		framesToCalculatePart;		

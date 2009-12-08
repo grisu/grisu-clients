@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -33,6 +34,7 @@ import org.vpac.grisu.model.FqanListener;
 import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.model.MountPoint;
 import org.vpac.grisu.model.UserEnvironmentManager;
+import org.vpac.grisu.model.files.FileSystemItem;
 import org.vpac.grisu.settings.ClientPropertiesManager;
 import org.vpac.helpDesk.model.Person;
 import org.vpac.helpDesk.model.PersonException;
@@ -1617,6 +1619,48 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 
 	public boolean isMountPointRoot(String rootUrl) {
 		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public String getProperty(String key) {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public void setProperty(String key, String value) {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public Map<String, String> getBookmarks() {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public List<FileSystemItem> getBookmarksFilesystems() {
+		throw new RuntimeException("Not implemented for this class.");
+
+	}
+
+	public FileSystemItem getFileSystemForUrl(String url) {
+		throw new RuntimeException("Not implemented for this class.");
+
+	}
+
+	public List<FileSystemItem> getFileSystems() {
+
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public List<FileSystemItem> getLocalFileSystems() {
+		throw new RuntimeException("Not implemented for this class.");
+
+	}
+
+	public List<FileSystemItem> getRemoteSites() {
+		throw new RuntimeException("Not implemented for this class.");
+
+	}
+
+	public void setBookmark(String alias, String url) {
+		throw new RuntimeException("Not implemented for this class.");
+		
 	}
 
 
