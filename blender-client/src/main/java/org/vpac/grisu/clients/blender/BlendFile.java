@@ -174,11 +174,11 @@ public class BlendFile {
 	public int getStartFrame() {
 		return startFrame;
 	}
-
+	
 	public int getEndFrame() {
 		return endFrame;
 	}
-
+	
 	public Map<File, String> getReferrencedFiles() {
 		return referrencedFiles;
 	}
