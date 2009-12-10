@@ -1,5 +1,6 @@
 package org.vpac.grisu.clients.blender.swing;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -9,29 +10,20 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 import org.apache.commons.lang.StringUtils;
-import org.bushe.swing.event.EventBus;
-import org.bushe.swing.event.EventTopicSubscriber;
+import org.jdesktop.jxlayer.JXLayer;
+import org.jdesktop.jxlayer.plaf.ext.LockableUI;
 import org.vpac.grisu.clients.blender.BlendFile;
 import org.vpac.grisu.clients.blender.GrisuBlenderJob;
-import org.vpac.grisu.control.ServiceInterface;
-import org.vpac.grisu.control.exceptions.BatchJobException;
-import org.vpac.grisu.control.exceptions.JobSubmissionException;
-import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
-import org.vpac.grisu.frontend.model.events.ActionStatusEvent;
-import org.vpac.grisu.frontend.model.events.BatchJobEvent;
-import org.vpac.grisu.model.GrisuRegistryManager;
-import org.vpac.grisu.model.UserEnvironmentManager;
 import org.vpac.grisu.settings.ClientPropertiesManager;
 
 import com.jgoodies.forms.factories.FormFactory;
@@ -95,7 +87,6 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 	private JTextField textField_2;
 	private JLabel lblGroup;
 	private JComboBox comboBox_3;
-
 //	private final ServiceInterface si;
 //	private final UserEnvironmentManager em;
 
@@ -103,7 +94,7 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 	private final BlenderJobCreationPanel parent;
 
 	public BlenderBasicJobPropertiesPanel(BlenderJobCreationPanel parent) {
-
+		
 		this.parent = parent;
 
 		setLayout(new FormLayout(new ColumnSpec[] {
@@ -250,6 +241,13 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 							.showOpenDialog(BlenderBasicJobPropertiesPanel.this);
 
 					if (result == JFileChooser.APPROVE_OPTION) {
+
+						try {
+							Thread.sleep(4000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						ClientPropertiesManager.setProperty(
 								LAST_BLENDER_FILE_DIR, fc.getCurrentDirectory()
 										.toString());
@@ -258,6 +256,7 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 						getBlendFileTextField().setText(
 								blendFileObject.getFile().toString());
 						getChckbxSpecifyFrameRange().setEnabled(true);
+
 					}
 
 				}
@@ -308,12 +307,14 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 					int result = fc.showOpenDialog(BlenderBasicJobPropertiesPanel.this
 							.getTopLevelAncestor());
 					if (result == FolderChooser.APPROVE_OPTION) {
+						
 						File temp = fc.getSelectedFolder();
 						if (temp != null && temp.exists()) {
 							getFluidsfolderTextField().setText(temp.toString());
 							setFluidsFolder(temp);
 							button.setEnabled(true);
 						}
+
 					}
 
 				}

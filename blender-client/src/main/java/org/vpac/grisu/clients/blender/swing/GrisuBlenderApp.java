@@ -6,30 +6,34 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
+import org.jdesktop.swingx.JXBusyLabel;
+import org.jdesktop.swingx.JXFrame;
+import org.jdesktop.swingx.JXPanel;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.frontend.control.login.LoginException;
 import org.vpac.grisu.frontend.control.login.LoginManager;
 
 public class GrisuBlenderApp {
 
-	private JFrame frame;
+	private JXFrame frame;
 	private ServiceInterface si;
 
 	/**
 	 * Launch the application.
-	 * @throws LoginException 
+	 * 
+	 * @throws LoginException
 	 */
 	public static void main(String[] args) throws LoginException {
-		
+
 		try {
-			UIManager.setLookAndFeel(UIManager
-					.getSystemLookAndFeelClassName());
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
-			
+
 		}
 
-		final ServiceInterface si = LoginManager.login();
-		
+		final ServiceInterface si = LoginManager.myProxyLogin("Local", args[0],
+				args[1].toCharArray());
+
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -54,13 +58,18 @@ public class GrisuBlenderApp {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
+
+		frame = new JXFrame();
 		frame.setBounds(100, 100, 567, 526);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
-		
-		BlenderJobCreationPanel blenderJobCreationPanel = new BlenderJobCreationPanel(si);
-		frame.getContentPane().add(blenderJobCreationPanel, BorderLayout.CENTER);
+
+
+
+		BlenderJobCreationPanel blenderJobCreationPanel = new BlenderJobCreationPanel(
+				si);
+		frame.getContentPane()
+				.add(blenderJobCreationPanel, BorderLayout.CENTER);
 	}
 
 }
