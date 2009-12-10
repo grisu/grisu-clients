@@ -5,17 +5,33 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 import org.apache.commons.lang.StringUtils;
+import org.bushe.swing.event.EventBus;
+import org.bushe.swing.event.EventTopicSubscriber;
 import org.vpac.grisu.clients.blender.BlendFile;
+import org.vpac.grisu.clients.blender.GrisuBlenderJob;
+import org.vpac.grisu.control.ServiceInterface;
+import org.vpac.grisu.control.exceptions.BatchJobException;
+import org.vpac.grisu.control.exceptions.JobSubmissionException;
+import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
+import org.vpac.grisu.frontend.model.events.ActionStatusEvent;
+import org.vpac.grisu.frontend.model.events.BatchJobEvent;
+import org.vpac.grisu.model.GrisuRegistryManager;
+import org.vpac.grisu.model.UserEnvironmentManager;
 import org.vpac.grisu.settings.ClientPropertiesManager;
 
 import com.jgoodies.forms.factories.FormFactory;
@@ -25,21 +41,23 @@ import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.layout.Sizes;
 import com.jidesoft.swing.FolderChooser;
 import com.jidesoft.swing.RangeSlider;
+import javax.swing.JTabbedPane;
 
-public class BlenderJobCreationPanel extends JPanel {
+public class BlenderJobCreationPanel extends JPanel implements
+		EventTopicSubscriber {
 
 	public static final String LAST_BLENDER_FILE_DIR = "lastBlenderFileDir";
-	
+
 	public static final FileFilter BLEND_FILE_FILTER = new FileFilter() {
-		
+
 		@Override
 		public String getDescription() {
 			return "*.blend";
 		}
-		
+
 		@Override
 		public boolean accept(File f) {
-			if ( f.isDirectory() || f.getName().endsWith(".blend") ) {
+			if (f.isDirectory() || f.getName().endsWith(".blend")) {
 				return true;
 			} else {
 				return false;
@@ -47,38 +65,40 @@ public class BlenderJobCreationPanel extends JPanel {
 		}
 	};
 
-	private JTextField blendFileTextField;
-	private JButton blendFileBrowseButton;
-	private JLabel lblBlendFile;
-	
 	private BlendFile blendFileObject;
 	private File dotBlendFile;
 	private File fluidsFolder;
-	
-	private JLabel lblFluidsFolder;
-	private JTextField fluidsfolderTextField;
-	private JButton btnBrowse;
-	private RangeSlider slider;
-	private JLabel startLabel;
-	private JLabel lblMax;
-	private JLabel firstLabel;
-	private JTextField textField;
-	private JLabel lastLabel;
-	private JTextField textField_1;
-	private JButton button;
-	private JButton infoButton;
-	
+	private JButton btnSubmit;
+	private JTextArea statusTextArea;
 
-	public BlenderJobCreationPanel() {
+	private final ServiceInterface si;
+	private final UserEnvironmentManager em;
+
+	private GrisuBlenderJob job = null;
+	private JScrollPane scrollPane;
+	private JTabbedPane tabbedPane;
+	private BlenderBasicJobPropertiesPanel blenderBasicJobPropertiesPanel;
+	
+	private String currentJobname = null;
+	private BlenderAdvancedJobPropertiesPanel blenderAdvancedJobPropertiesPanel;
+
+	public BlenderJobCreationPanel(ServiceInterface si) {
+
+		this.si = si;
+		this.em = GrisuRegistryManager.getDefault(si)
+				.getUserEnvironmentManager();
+
 		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(50dlu;default):grow"),
+				FormFactory.RELATED_GAP_COLSPEC,
+				new ColumnSpec(ColumnSpec.FILL, Sizes.bounded(Sizes.PREFERRED, Sizes.constant("50dlu", true), Sizes.constant("50dlu", true)), 1),
+				FormFactory.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(30dlu;default)"),
+				FormFactory.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(59dlu;default):grow"),
+				FormFactory.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("max(50dlu;default)"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				new ColumnSpec(ColumnSpec.FILL, Sizes.bounded(Sizes.PREFERRED, Sizes.constant("50dlu", true), Sizes.constant("50dlu", true)), 0),
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("default:grow"),
 				FormFactory.RELATED_GAP_COLSPEC,
 				new ColumnSpec(ColumnSpec.FILL, Sizes.bounded(Sizes.PREFERRED, Sizes.constant("23dlu", true), Sizes.constant("50dlu", true)), 0),
 				FormFactory.RELATED_GAP_COLSPEC,
@@ -88,253 +108,148 @@ public class BlenderJobCreationPanel extends JPanel {
 				FormFactory.RELATED_GAP_COLSPEC,},
 			new RowSpec[] {
 				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
+				RowSpec.decode("default:grow"),
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("default:grow"),}));
-		add(getLblBlendFile(), "2, 2, 11, 1");
-		add(getBlendFileTextField(), "2, 4, 9, 1, fill, default");
-		add(getInfoButton(), "12, 4");
-		add(getBlendFileBrowseButton(), "14, 4");
-		add(getLblFluidsFolder(), "2, 6, 11, 1");
-		add(getFluidsfolderTextField(), "2, 8, 9, 1, fill, default");
-		add(getUnsetFluidFolderButton(), "12, 8");
-		add(getBtnBrowse(), "14, 8");
-		add(getSlider(), "2, 10, 13, 1");
-		add(getStartLabel(), "2, 12, left, default");
-		add(getLblMax(), "14, 12, right, default");
-		add(getFirstLabel(), "2, 14, right, default");
-		add(getFirstField(), "4, 14, fill, default");
-		add(getLastField(), "10, 14, 3, 1, fill, default");
-		add(getLastLabel(), "14, 14, left, default");
-	}
-
-	private JTextField getBlendFileTextField() {
-		if (blendFileTextField == null) {
-			blendFileTextField = new JTextField();
-			blendFileTextField.setEditable(false);
-			blendFileTextField.setColumns(10);
-		}
-		return blendFileTextField;
+				RowSpec.decode("default:grow"),
+				FormFactory.RELATED_GAP_ROWSPEC,}));
+		add(getTabbedPane(), "2, 2, 15, 1, fill, fill");
+		add(getBtnSubmit(), "14, 4, 3, 1");
+		add(getScrollPane(), "2, 6, 15, 1, fill, fill");
+//		add(getStatusTextArea(), "2, 26, 15, 1, fill, fill");
 	}
 	
-	public void createBlendFile() {
+	public String setBlendFile(BlendFile file) {
+		this.blendFileObject = file;
 		
-		if ( dotBlendFile == null ) {
-			return;
+		String name = file.getFile().getName();
+		int i = name.lastIndexOf(".");
+		if ( i > 0 ) {
+			name = name.substring(0, i);
 		}
-		try {
-			blendFileObject = new BlendFile(dotBlendFile, fluidsFolder);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return;
-		}
-		
-		getSlider().setEnabled(true);
-		getSlider().setMinimum(blendFileObject.getStartFrame());
-		getSlider().setMaximum(blendFileObject.getEndFrame());
-		getSlider().setLowValue(blendFileObject.getStartFrame());
-		getSlider().setHighValue(blendFileObject.getEndFrame());
-		getStartLabel().setText("Min: "+blendFileObject.getStartFrame());
-		getLblMax().setText("Max: "+blendFileObject.getEndFrame());
-		getInfoButton().setEnabled(true);
-		
+		setJobname(em.calculateUniqueJobname(name));
+		return this.currentJobname;
 	}
 	
-	private void setDotBlendFile(File blendFile) {
-		this.dotBlendFile = blendFile;
-		createBlendFile();
-	}
-	
-	private void setFluidsFolder(File folder) {
-		this.fluidsFolder = folder;
-		if ( dotBlendFile != null && dotBlendFile.exists() ) {
-			createBlendFile();
+	public void setJobname(String jobname) {
+		if ( this.currentJobname != null) {
+			EventBus.unsubscribe(this.currentJobname, this);
 		}
+		this.currentJobname = jobname;
+		EventBus.subscribe(this.currentJobname, this);
 	}
 
-	private JButton getBlendFileBrowseButton() {
-		if (blendFileBrowseButton == null) {
-			blendFileBrowseButton = new JButton("Browse");
-			blendFileBrowseButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent arg0) {
 
-					String lastDir = ClientPropertiesManager
-							.getProperty(LAST_BLENDER_FILE_DIR);
-					if (StringUtils.isBlank(lastDir) || ! new File(lastDir).exists() ) {
-						lastDir = System.getProperty("user.home");
-					}
 
-					JFileChooser fc = new JFileChooser();
-					fc.setDialogTitle("Open .blend file");
+	private void submitJob() {
 
-					// Choose only files, not directories
-					fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-					fc.setCurrentDirectory(new File(lastDir));
-					// Set filter for Java source files.
-					fc.setFileFilter(BLEND_FILE_FILTER);
+		Thread thread = new Thread() {
+			public void run() {
 
-					int result = fc
-							.showOpenDialog(BlenderJobCreationPanel.this);
-					
-					if ( result == JFileChooser.APPROVE_OPTION ) {
-						ClientPropertiesManager.setProperty(LAST_BLENDER_FILE_DIR, fc.getCurrentDirectory().toString());
-						
-						setDotBlendFile(fc.getSelectedFile());
-						getBlendFileTextField().setText(blendFileObject.getFile().toString());
-						
-					}
-
-					
-					
+				try {
+					job = new GrisuBlenderJob(si, currentJobname,
+							blenderBasicJobPropertiesPanel.getSelectedFqan());
+				} catch (BatchJobException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return;
 				}
-			});
-		}
-		return blendFileBrowseButton;
-	}
 
-	private JLabel getLblBlendFile() {
-		if (lblBlendFile == null) {
-			lblBlendFile = new JLabel("Blend file");
-		}
-		return lblBlendFile;
-	}
-	private JLabel getLblFluidsFolder() {
-		if (lblFluidsFolder == null) {
-			lblFluidsFolder = new JLabel("Fluids folder (optional)");
-		}
-		return lblFluidsFolder;
-	}
-	private JTextField getFluidsfolderTextField() {
-		if (fluidsfolderTextField == null) {
-			fluidsfolderTextField = new JTextField();
-			fluidsfolderTextField.setEditable(false);
-			fluidsfolderTextField.setColumns(10);
-		}
-		return fluidsfolderTextField;
-	}
-	private JButton getBtnBrowse() {
-		if (btnBrowse == null) {
-			btnBrowse = new JButton("Browse");
-			btnBrowse.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					
-					FolderChooser fc = new FolderChooser();
-					
-					String lastDir = ClientPropertiesManager
-					.getProperty(LAST_BLENDER_FILE_DIR);
-					if (StringUtils.isBlank(lastDir) || ! new File(lastDir).exists() ) {
-						lastDir = System.getProperty("user.home");
-					}
-					fc.setCurrentDirectory(new File(lastDir));
-					
-					int result = fc.showOpenDialog(BlenderJobCreationPanel.this.getTopLevelAncestor());
-					if (result == FolderChooser.APPROVE_OPTION) {
-						File temp = fc.getSelectedFolder();
-						if ( temp != null && temp.exists() ) {
-							getFluidsfolderTextField().setText(temp.toString());
-							setFluidsFolder(temp);
-							button.setEnabled(true);
-						}
-					}
+				job.setBlenderFile(blendFileObject);
 
-					
+				job.setFirstFrame(blenderBasicJobPropertiesPanel.getFirstFrame());
+				job.setLastFrame(blenderBasicJobPropertiesPanel.getLastFrame());
+
+				job.setDefaultWalltimeInSeconds(blenderBasicJobPropertiesPanel.getCurrentWalltimeInSeconds());
+				job.setOutputFileName(currentJobname);
+
+//				job.setSitesToInclude(new String[]{"vpac"});
+
+				try {
+					job.createAndSubmitJobs();
+				} catch (JobCreationException e) {
+					e.printStackTrace();
+					return;
+				} catch (JobSubmissionException e) {
+					e.printStackTrace();
+					return;
 				}
-			});
-		}
-		return btnBrowse;
+
+			}
+		};
+		
+		thread.start();
+
 	}
 
+	private JButton getBtnSubmit() {
+		if (btnSubmit == null) {
+			btnSubmit = new JButton("Submit");
+			btnSubmit.addActionListener(new ActionListener() {
 
-	
-
-	private RangeSlider getSlider() {
-		if (slider == null) {
-			slider = new RangeSlider(0, 100, 0, 0);
-			slider.setEnabled(false);
-			slider.setPaintTicks(true);
-			slider.setMajorTickSpacing(10);
-			slider.addChangeListener(new ChangeListener() {
-	            public void stateChanged(ChangeEvent e) {
-	                getFirstField().setText(""+slider.getLowValue());
-	                getLastField().setText("" + slider.getHighValue());
-	            }
-	        });
-		}
-		return slider;
-	}
-	private JLabel getStartLabel() {
-		if (startLabel == null) {
-			startLabel = new JLabel("Min: n/a");
-		}
-		return startLabel;
-	}
-	private JLabel getLblMax() {
-		if (lblMax == null) {
-			lblMax = new JLabel("Max: n/a");
-		}
-		return lblMax;
-	}
-	private JLabel getFirstLabel() {
-		if (firstLabel == null) {
-			firstLabel = new JLabel("First frame");
-		}
-		return firstLabel;
-	}
-	private JTextField getFirstField() {
-		if (textField == null) {
-			textField = new JTextField();
-			textField.setEditable(false);
-			textField.setColumns(10);
-		}
-		return textField;
-	}
-	private JLabel getLastLabel() {
-		if (lastLabel == null) {
-			lastLabel = new JLabel("Last frame");
-		}
-		return lastLabel;
-	}
-	private JTextField getLastField() {
-		if (textField_1 == null) {
-			textField_1 = new JTextField();
-			textField_1.setEditable(false);
-			textField_1.setColumns(10);
-		}
-		return textField_1;
-	}
-	private JButton getUnsetFluidFolderButton() {
-		if (button == null) {
-			button = new JButton("X");
-			button.setEnabled(false);
-			button.addActionListener(new ActionListener() {
-				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					getFluidsfolderTextField().setText(null);
-					setFluidsFolder(null);
-					button.setEnabled(false);
+
+					submitJob();
+
 				}
 			});
 		}
-		return button;
+		return btnSubmit;
 	}
-	private JButton getInfoButton() {
-		if (infoButton == null) {
-			infoButton = new JButton("Info");
-			infoButton.setEnabled(false);
+
+	private JTextArea getStatusTextArea() {
+		if (statusTextArea == null) {
+			statusTextArea = new JTextArea();
+			statusTextArea.setEditable(false);
 		}
-		return infoButton;
+		return statusTextArea;
+	}
+
+	private JScrollPane getScrollPane() {
+		if (scrollPane == null) {
+			scrollPane = new JScrollPane();
+			scrollPane.setViewportView(getStatusTextArea());
+		}
+		return scrollPane;
+	}
+
+	@Override
+	public void onEvent(String topic, Object data) {
+
+		if ( data instanceof BatchJobEvent ) {
+			getStatusTextArea().append(((BatchJobEvent)data).getMessage()+"\n");	
+		} else if ( data instanceof ActionStatusEvent ) {
+			ActionStatusEvent d = ((ActionStatusEvent)data);
+			getStatusTextArea().append(d.getPrefix()+d.getPercentFinished()+"% finished.\n");
+		}
+		
+	}
+	private JTabbedPane getTabbedPane() {
+		if (tabbedPane == null) {
+			tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+			tabbedPane.addTab("Basic properties", null, getBlenderBasicJobPropertiesPanel(), null);
+			tabbedPane.addTab("Advanced", null, getBlenderAdvancedJobPropertiesPanel(), null);
+		}
+		return tabbedPane;
+	}
+	private BlenderBasicJobPropertiesPanel getBlenderBasicJobPropertiesPanel() {
+		if (blenderBasicJobPropertiesPanel == null) {
+			blenderBasicJobPropertiesPanel = new BlenderBasicJobPropertiesPanel(this);
+		}
+		return blenderBasicJobPropertiesPanel;
+	}
+	
+	public String[] getAllFqans() {
+		
+		return em.getAllAvailableFqans();
+		
+	}
+	private BlenderAdvancedJobPropertiesPanel getBlenderAdvancedJobPropertiesPanel() {
+		if (blenderAdvancedJobPropertiesPanel == null) {
+			blenderAdvancedJobPropertiesPanel = new BlenderAdvancedJobPropertiesPanel();
+		}
+		return blenderAdvancedJobPropertiesPanel;
 	}
 }

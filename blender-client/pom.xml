@@ -81,6 +81,20 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>bouncycastle</groupId>
+			<artifactId>bcprov-jdk15</artifactId>
+			<version>140</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.vpac.grisu</groupId>
+			<artifactId>grisu-core</artifactId>
+			<version>0.3-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

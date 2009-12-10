@@ -1663,6 +1663,19 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 		
 	}
 
+	public String calculateUniqueJobname(String name) {
+		throw new RuntimeException("Not implemented for this class.");
+
+	}
+
+	public SortedSet<String> getCurrentBatchJobnames() {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public SortedSet<String> getCurrentJobnames() {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
 
 
 }

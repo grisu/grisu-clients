@@ -356,7 +356,14 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 		if ( StringUtils.isNotBlank(fluidFolder) ) {
 			fluidFolderFile = registry.getFileManager().getLocalCacheFile(fluidFolder);
 		}
-		blendFile = new BlendFile(registry.getFileManager().getLocalCacheFile(blenderFile), fluidFolderFile);
+		BlendFile file = new BlendFile(registry.getFileManager().getLocalCacheFile(blenderFile), fluidFolderFile);
+		setBlenderFile(file);
+		
+		
+	}
+	
+	public void setBlenderFile(BlendFile file) {
+		blendFile = file;
 		
 		System.out.println("StartFrame: "+blendFile.getStartFrame());
 		System.out.println("EndFrame: "+blendFile.getEndFrame());
@@ -367,7 +374,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 		
 		
 	}
-
+	
 	public String getOutputFileName() {
 		return outputFileName;
 	}
@@ -408,10 +415,6 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 	
 	public void setSitesToExclude(String[] sites) {
 		this.multiPartJob.setLocationsToExclude(sites);
-	}
-
-	public void eventOccured(BatchJobObject job, String eventMessage) {
-
 	}
 	
 	public void setVerbose(boolean verbose) {
