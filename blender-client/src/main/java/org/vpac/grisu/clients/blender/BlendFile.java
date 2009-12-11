@@ -30,6 +30,8 @@ public class BlendFile {
 	
 	private File fluidsFolder;
 	
+	private StringBuffer parseMessage = null;
+	
 	public BlendFile(File blendFile, File fluidsFolder) throws FileNotFoundException {
 
 		this.file = blendFile;
@@ -101,9 +103,12 @@ public class BlendFile {
 	private void getAllReferencedResources() {
 
 		try {
+			
+			parseMessage = new StringBuffer();
+			
 			String command = "blender -b " + file.getPath() + " -P "
 					+ GrisuBlenderJob.BLENDER_RESOURCE_PYTHYON_SCRIPT.getPath();
-			System.out.println("Executing: " + command);
+			parseMessage.append("Executing: " + command+"\n");
 			Process p = Runtime.getRuntime().exec(command);
 
 			BufferedReader stdInput = new BufferedReader(new InputStreamReader(
@@ -118,14 +123,17 @@ public class BlendFile {
 
 				if (s.startsWith(STARTFRAME_KEY)) {
 					startFrame = Integer.parseInt(s.split(" ")[1]);
+					parseMessage.append("Found first frame: "+startFrame+"\n");
 				} else if (s.startsWith(ENDFRAME_KEY)) {
 					endFrame = Integer.parseInt(s.split(" ")[1]);
+					parseMessage.append("Found last frame: "+endFrame+"\n");
 				} else if (s.startsWith(RESOURCE_KEY)) {
 
 					File reference = new File(s.split(" ")[1]);
 
 					String relPath = getRelativePathToBLendFile(reference);
 					referrencedFiles.put(reference, relPath);
+					parseMessage.append("Found referenced file: "+relPath+"\n");
 				}
 			}
 			
@@ -146,14 +154,13 @@ public class BlendFile {
 			
 			
 			for ( File f : referrencedFiles.keySet() ) {
-				//TODO fix for windows 
-				referrencedFiles.put(f, referrencedFiles.get(f).replace("../", ""));
+				referrencedFiles.put(f, referrencedFiles.get(f).replace(".."+File.separator, ""));
 			}
 			
 
 			// read any errors from the attempted command
 			while ((s = stdError.readLine()) != null) {
-				System.out.println(s);
+				parseMessage.append("Error: "+s+"\n");
 			}
 
 			stdInput.close();
@@ -165,6 +172,14 @@ public class BlendFile {
 			throw new RuntimeException(e);
 		}
 
+	}
+	
+	public String getParseMessage() {
+		if ( parseMessage == null ) {
+			return "";
+		} else {
+			return parseMessage.toString();
+		}
 	}
 
 	public File getFile() {

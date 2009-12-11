@@ -6,9 +6,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
-import org.jdesktop.swingx.JXBusyLabel;
 import org.jdesktop.swingx.JXFrame;
-import org.jdesktop.swingx.JXPanel;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.frontend.control.login.LoginException;
 import org.vpac.grisu.frontend.control.login.LoginManager;

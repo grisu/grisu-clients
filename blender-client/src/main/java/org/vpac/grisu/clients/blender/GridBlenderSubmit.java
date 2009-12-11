@@ -162,6 +162,9 @@ public class GridBlenderSubmit implements BlenderMode {
 			System.err.println("Could not submt blender jobs: "
 					+ e.getLocalizedMessage());
 			System.exit(1);
+		} catch (InterruptedException e) {
+			System.err.println("Job submission interrupted: "+e.getLocalizedMessage());
+			System.exit(1);
 		}
 
 		 System.out.println("Blender job submission finished successfully...");

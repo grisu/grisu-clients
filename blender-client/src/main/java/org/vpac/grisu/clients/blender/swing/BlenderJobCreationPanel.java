@@ -1,9 +1,11 @@
 package org.vpac.grisu.clients.blender.swing;
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -15,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
@@ -81,6 +84,8 @@ public class BlenderJobCreationPanel extends JPanel implements
 	
 	private String currentJobname = null;
 	private BlenderAdvancedJobPropertiesPanel blenderAdvancedJobPropertiesPanel;
+	
+	private Thread submissionThread;
 
 	public BlenderJobCreationPanel(ServiceInterface si) {
 
@@ -108,7 +113,7 @@ public class BlenderJobCreationPanel extends JPanel implements
 				FormFactory.RELATED_GAP_COLSPEC,},
 			new RowSpec[] {
 				FormFactory.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("default:grow"),
+				RowSpec.decode("max(173dlu;default)"),
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
@@ -144,15 +149,20 @@ public class BlenderJobCreationPanel extends JPanel implements
 
 	private void submitJob() {
 
-		Thread thread = new Thread() {
+		submissionThread = new Thread() {
 			public void run() {
 
+				getBlenderBasicJobPropertiesPanel().lockUI(true);
+				getBlenderAdvancedJobPropertiesPanel().lockUI(true);
+				
+				try {
+				
 				try {
 					job = new GrisuBlenderJob(si, currentJobname,
 							blenderBasicJobPropertiesPanel.getSelectedFqan());
 				} catch (BatchJobException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					EventBus.unsubscribe(currentJobname, this);
+					addMessage(e.getLocalizedMessage()+"\n");
 					return;
 				}
 
@@ -169,18 +179,59 @@ public class BlenderJobCreationPanel extends JPanel implements
 				try {
 					job.createAndSubmitJobs();
 				} catch (JobCreationException e) {
-					e.printStackTrace();
+					EventBus.unsubscribe(currentJobname, this);
+					addMessage(e.getLocalizedMessage()+"\n");
 					return;
 				} catch (JobSubmissionException e) {
+					EventBus.unsubscribe(currentJobname, this);
+					addMessage(e.getLocalizedMessage()+"\n");
+					return;
+				} catch (InterruptedException e) {
 					e.printStackTrace();
+					EventBus.unsubscribe(currentJobname, this);
+					addMessage(e.getLocalizedMessage()+"\n");
 					return;
 				}
-
+				
+				} finally {
+					getBlenderBasicJobPropertiesPanel().lockUI(false);
+					getBlenderAdvancedJobPropertiesPanel().lockUI(false);
+					setButtonToCancel(false);
+				}
+				
 			}
 		};
 		
-		thread.start();
+		submissionThread.start();
 
+	}
+	
+	private void setButtonToCancel(final boolean cancel) {
+		
+		SwingUtilities.invokeLater(new Thread() {
+			
+			public void run() {
+				if ( cancel ) {
+					getBtnSubmit().setText("Cancel");
+				} else {
+					getBtnSubmit().setText("Submit");
+				}
+			}
+			
+		});
+	}
+	
+	private void cancelJobSubmission() {
+		
+		if ( submissionThread != null ) {
+			addMessage("Cancelling job submission.\n");
+			submissionThread.interrupt();
+			
+		}
+		
+		lockUI(false);
+		
+		
 	}
 
 	private JButton getBtnSubmit() {
@@ -191,7 +242,13 @@ public class BlenderJobCreationPanel extends JPanel implements
 				@Override
 				public void actionPerformed(ActionEvent e) {
 
-					submitJob();
+					if ( "Submit".equals(btnSubmit.getText()) ) {
+						setButtonToCancel(true);
+						submitJob();
+					} else {
+						setButtonToCancel(false);
+						cancelJobSubmission();
+					}
 
 				}
 			});
@@ -214,15 +271,46 @@ public class BlenderJobCreationPanel extends JPanel implements
 		}
 		return scrollPane;
 	}
+	
+	public void addMessage(final String message){
+		SwingUtilities.invokeLater(new Thread() {
+			
+			public void run() {
+				getStatusTextArea().append(message);
+				getStatusTextArea().setCaretPosition(getStatusTextArea().getText().length());
+			}
+			
+		});
+	}
+	
+	public void lockUI(final boolean lock) {
+
+			SwingUtilities.invokeLater(new Thread() {
+				
+				public void run() {
+					if ( lock ) {
+						Cursor waitCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
+						BlenderJobCreationPanel.this.getTopLevelAncestor().setCursor(waitCursor);
+					} else {
+						Cursor defaultCursor = Cursor.getDefaultCursor();
+						BlenderJobCreationPanel.this.getTopLevelAncestor().setCursor(defaultCursor);
+					}
+					getBtnSubmit().setEnabled(!lock);
+					getBlenderBasicJobPropertiesPanel().lockUI(lock);
+					getBlenderAdvancedJobPropertiesPanel().lockUI(lock);
+				}
+				
+			});
+	}
 
 	@Override
 	public void onEvent(String topic, Object data) {
 
 		if ( data instanceof BatchJobEvent ) {
-			getStatusTextArea().append(((BatchJobEvent)data).getMessage()+"\n");	
+			addMessage(((BatchJobEvent)data).getMessage()+"\n");
 		} else if ( data instanceof ActionStatusEvent ) {
 			ActionStatusEvent d = ((ActionStatusEvent)data);
-			getStatusTextArea().append(d.getPrefix()+d.getPercentFinished()+"% finished.\n");
+			addMessage(d.getPrefix()+d.getPercentFinished()+"% finished.\n");
 		}
 		
 	}

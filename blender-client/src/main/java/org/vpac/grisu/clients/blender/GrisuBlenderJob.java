@@ -155,7 +155,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 //		
 //	}
 	
-	public void createAndSubmitJobs() throws JobCreationException, JobSubmissionException {
+	public void createAndSubmitJobs() throws JobCreationException, JobSubmissionException, InterruptedException {
 		
 		if ( lastFrame < firstFrame ) {
 			throw new JobCreationException("Last frame before first frame.");
@@ -170,13 +170,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 			addJob(i, command, walltimesPerFrame.get(i));
 		}
 		
-//		try {
-//			serviceInterface.redistributeBatchJob(this.multiJobName);
-//		} catch (NoSuchJobException e) {
-//			throw new RuntimeException(e);
-//		}
-//		multiPartJob.fillOrOverwriteSubmissionLocationsUsingMatchmaker();
-		
+
 		createAndSubmitBlenderJob();
 		
 		setOutputFilenameJobProperty();
@@ -229,7 +223,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 		
 	}
 	
-	private void createAndSubmitBlenderJob() throws JobSubmissionException {
+	private void createAndSubmitBlenderJob() throws JobSubmissionException, InterruptedException {
 		
 		multiPartJob.addInputFile(blendFile.getFile().toString(), blendFile.getRelativeBlendFilePath());
 		
@@ -251,6 +245,8 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 
 		try {
 			multiPartJob.prepareAndCreateJobs(true);
+		} catch (InterruptedException e) {
+			throw e;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new JobSubmissionException("Couldn't preapare or create job(s): "+e.getLocalizedMessage());
@@ -258,6 +254,8 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 		
 		try {
 			multiPartJob.submit();
+		} catch (InterruptedException e) {
+			throw e;
 		} catch (NoSuchJobException e) {
 			throw new JobSubmissionException("Could not submit job(s): "+e.getLocalizedMessage());
 		}

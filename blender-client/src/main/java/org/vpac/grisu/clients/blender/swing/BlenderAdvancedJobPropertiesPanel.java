@@ -7,6 +7,7 @@ import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.factories.FormFactory;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 public class BlenderAdvancedJobPropertiesPanel extends JPanel {
 	private JTextField textField;
@@ -29,10 +30,26 @@ public class BlenderAdvancedJobPropertiesPanel extends JPanel {
 		JLabel lblNameOfOutput = new JLabel("Name of output frames");
 		add(lblNameOfOutput, "2, 2, right, default");
 		
-		textField = new JTextField();
-		add(textField, "4, 2, fill, default");
-		textField.setColumns(10);
+		add(getOutputNameTextField(), "4, 2, fill, default");
 
+	}
+
+	private JTextField getOutputNameTextField() {
+		if ( textField == null ) {
+			textField = new JTextField();
+			textField.setColumns(10);
+		}
+		return textField;
+	}
+	
+	public void lockUI(final boolean lock) {
+		
+		SwingUtilities.invokeLater(new Thread() {
+			
+			public void run() {
+				getOutputNameTextField().setEnabled(!lock);
+			}
+		});
 	}
 
 }

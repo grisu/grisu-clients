@@ -15,6 +15,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
@@ -33,6 +34,8 @@ import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.layout.Sizes;
 import com.jidesoft.swing.FolderChooser;
 import com.jidesoft.swing.RangeSlider;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class BlenderBasicJobPropertiesPanel extends JPanel {
 
@@ -156,16 +159,16 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 		add(getLastField(), "12, 16, 3, 1, fill, default");
 		add(getLastLabel(), "16, 16, left, default");
 		add(getLblFormat(), "2, 18, left, default");
-		add(getComboBox(), "4, 18, 3, 1");
+		add(getFormatCombobox(), "4, 18, 3, 1");
 		add(getLblHours(), "12, 18, 3, 1, right, bottom");
 		add(getLblMinutes(), "16, 18, right, bottom");
 		add(getLblWalltimePerFrame(), "2, 20, 7, 1, left, default");
 		add(getHoursCombobox(), "12, 20, 3, 1, fill, default");
 		add(getMinutesCombobox(), "16, 20, fill, default");
 		add(getLblJobname(), "2, 22, right, default");
-		add(getTextField_2(), "4, 22, 3, 1, fill, default");
+		add(getJobNameTextField(), "4, 22, 3, 1, fill, default");
 		add(getLblGroup(), "8, 22, 3, 1, right, default");
-		add(getComboBox_3(), "12, 22, 5, 1, fill, default");
+		add(getVOComboBox(), "12, 22, 5, 1, fill, default");
 //		add(getStatusTextArea(), "2, 26, 15, 1, fill, fill");
 	}
 
@@ -199,7 +202,7 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 		getEndLabel().setText("Max: " + blendFileObject.getEndFrame());
 		getInfoButton().setEnabled(true);
 
-		getTextField_2().setText(parent.setBlendFile(blendFileObject));
+		getJobNameTextField().setText(parent.setBlendFile(blendFileObject));
 	}
 
 	private void setDotBlendFile(File blendFile) {
@@ -214,7 +217,41 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 			createBlendFile();
 		}
 	}
+	
 
+	public void lockUI(final boolean lock) {
+		
+		SwingUtilities.invokeLater(new Thread() {
+			
+			public void run() {
+				
+				getBlendFileBrowseButton().setEnabled(!lock);
+				getBtnBrowse().setEnabled(!lock);
+				getChckbxSpecifyFrameRange().setEnabled(!lock);
+				getHoursCombobox().setEnabled(!lock);
+				getMinutesCombobox().setEnabled(!lock);
+				getBlendFileTextField().setEnabled(!lock);
+				getFluidsfolderTextField().setEnabled(!lock);
+				getFormatCombobox().setEnabled(!lock);
+				getJobNameTextField().setEnabled(!lock);
+				getInfoButton().setEnabled(!lock);
+				getUnsetFluidFolderButton().setEnabled(!lock);
+				getVOComboBox().setEnabled(!lock);
+				if ( lock ) {
+					getSlider().setEnabled(false);
+				} else {
+					if ( getChckbxSpecifyFrameRange().isSelected() ) {
+						getSlider().setEnabled(true);
+					} else {
+						getSlider().setEnabled(false);
+					}
+				}
+
+			}
+			
+		});
+	}
+	
 	private JButton getBlendFileBrowseButton() {
 		if (blendFileBrowseButton == null) {
 			blendFileBrowseButton = new JButton("Browse");
@@ -228,7 +265,7 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 						lastDir = System.getProperty("user.home");
 					}
 
-					JFileChooser fc = new JFileChooser();
+					final JFileChooser fc = new JFileChooser();
 					fc.setDialogTitle("Open .blend file");
 
 					// Choose only files, not directories
@@ -241,22 +278,22 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 							.showOpenDialog(BlenderBasicJobPropertiesPanel.this);
 
 					if (result == JFileChooser.APPROVE_OPTION) {
-
-						try {
-							Thread.sleep(4000);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						ClientPropertiesManager.setProperty(
-								LAST_BLENDER_FILE_DIR, fc.getCurrentDirectory()
-										.toString());
-
-						setDotBlendFile(fc.getSelectedFile());
-						getBlendFileTextField().setText(
-								blendFileObject.getFile().toString());
-						getChckbxSpecifyFrameRange().setEnabled(true);
-
+						new Thread() {
+							public void run() {
+								parent.lockUI(true);
+								ClientPropertiesManager.setProperty(
+										LAST_BLENDER_FILE_DIR, fc.getCurrentDirectory()
+												.toString());
+								parent.addMessage("Parsing blend file: "+fc.getSelectedFile().toString()+"\n");
+								
+								setDotBlendFile(fc.getSelectedFile());
+								parent.addMessage(blendFileObject.getParseMessage());
+								getBlendFileTextField().setText(
+										blendFileObject.getFile().toString());
+								getChckbxSpecifyFrameRange().setEnabled(true);
+								parent.lockUI(false);
+							}
+						}.start();
 					}
 
 				}
@@ -327,8 +364,7 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 		if (slider == null) {
 			slider = new RangeSlider(0, 100, 0, 0);
 			slider.setEnabled(false);
-			slider.setPaintTicks(true);
-			slider.setMajorTickSpacing(10);
+			slider.setPaintTicks(false);
 			slider.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
 					getFirstField().setText("" + slider.getLowValue());
@@ -446,7 +482,7 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 		return lblFormat;
 	}
 
-	private JComboBox getComboBox() {
+	private JComboBox getFormatCombobox() {
 		if (comboBox == null) {
 			comboBox = new JComboBox();
 			comboBox.setModel(new DefaultComboBoxModel(new String[] { "TGA",
@@ -505,9 +541,17 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 		return lblJobname;
 	}
 
-	private JTextField getTextField_2() {
+	private JTextField getJobNameTextField() {
 		if (textField_2 == null) {
 			textField_2 = new JTextField();
+			textField_2.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyReleased(KeyEvent e) {
+					
+					parent.setJobname(textField_2.getText());
+					
+				}
+			});
 			textField_2.setColumns(10);
 		}
 		return textField_2;
@@ -520,7 +564,7 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 		return lblGroup;
 	}
 
-	private JComboBox getComboBox_3() {
+	private JComboBox getVOComboBox() {
 		if (comboBox_3 == null) {
 			comboBox_3 = new JComboBox(parent.getAllFqans());
 		}
@@ -539,7 +583,7 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 
 	public String getSelectedFqan() {
 
-		return (String)getComboBox_3().getSelectedItem();
+		return (String)getVOComboBox().getSelectedItem();
 	}
 	
 	public int getFirstFrame() {
