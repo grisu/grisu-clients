@@ -4,22 +4,14 @@ import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.lang.reflect.InvocationTargetException;
+import java.util.Set;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 import org.apache.commons.lang.StringUtils;
@@ -35,16 +27,13 @@ import org.vpac.grisu.frontend.model.events.ActionStatusEvent;
 import org.vpac.grisu.frontend.model.events.BatchJobEvent;
 import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.model.UserEnvironmentManager;
-import org.vpac.grisu.settings.ClientPropertiesManager;
+import org.vpac.grisu.model.info.ApplicationInformation;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.layout.Sizes;
-import com.jidesoft.swing.FolderChooser;
-import com.jidesoft.swing.RangeSlider;
-import javax.swing.JTabbedPane;
 
 public class BlenderJobCreationPanel extends JPanel implements
 		EventTopicSubscriber {
@@ -76,6 +65,7 @@ public class BlenderJobCreationPanel extends JPanel implements
 
 	private final ServiceInterface si;
 	private final UserEnvironmentManager em;
+	private final ApplicationInformation ai;
 
 	private GrisuBlenderJob job = null;
 	private JScrollPane scrollPane;
@@ -83,15 +73,19 @@ public class BlenderJobCreationPanel extends JPanel implements
 	private BlenderBasicJobPropertiesPanel blenderBasicJobPropertiesPanel;
 	
 	private String currentJobname = null;
+	private String currentFqan = null;
 	private BlenderAdvancedJobPropertiesPanel blenderAdvancedJobPropertiesPanel;
 	
 	private Thread submissionThread;
+	
 
 	public BlenderJobCreationPanel(ServiceInterface si) {
 
 		this.si = si;
 		this.em = GrisuRegistryManager.getDefault(si)
 				.getUserEnvironmentManager();
+		this.ai = GrisuRegistryManager.getDefault(si).getApplicationInformation("blender");
+
 
 		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
@@ -123,6 +117,8 @@ public class BlenderJobCreationPanel extends JPanel implements
 		add(getBtnSubmit(), "14, 4, 3, 1");
 		add(getScrollPane(), "2, 6, 15, 1, fill, fill");
 //		add(getStatusTextArea(), "2, 26, 15, 1, fill, fill");
+		
+		setFqan(getBlenderBasicJobPropertiesPanel().getSelectedFqan());
 	}
 	
 	public String setBlendFile(BlendFile file) {
@@ -172,12 +168,22 @@ public class BlenderJobCreationPanel extends JPanel implements
 				job.setLastFrame(blenderBasicJobPropertiesPanel.getLastFrame());
 
 				job.setDefaultWalltimeInSeconds(blenderBasicJobPropertiesPanel.getCurrentWalltimeInSeconds());
+				String outfilename = getBlenderAdvancedJobPropertiesPanel().getOutputFilename();
+				if ( StringUtils.isBlank(outfilename) ) {
+					outfilename = currentJobname;
+				}
 				job.setOutputFileName(currentJobname);
 
-//				job.setSitesToInclude(new String[]{"vpac"});
-
+				if ( getBlenderAdvancedJobPropertiesPanel().getSubLocsToInclude() != null ) {
+					job.setLocationsToInclude(getBlenderAdvancedJobPropertiesPanel().getSubLocsToInclude().toArray(new String[]{}));
+				}
+				if ( getBlenderAdvancedJobPropertiesPanel().getSubLocsToExclude() != null ) {
+					job.setLocationsToExclude(getBlenderAdvancedJobPropertiesPanel().getSubLocsToExclude().toArray(new String[]{}));
+				}
+				
+				
 				try {
-					job.createAndSubmitJobs();
+					job.createAndSubmitJobs(true);
 				} catch (JobCreationException e) {
 					EventBus.unsubscribe(currentJobname, this);
 					addMessage(e.getLocalizedMessage()+"\n");
@@ -192,6 +198,8 @@ public class BlenderJobCreationPanel extends JPanel implements
 					addMessage(e.getLocalizedMessage()+"\n");
 					return;
 				}
+				
+				addMessage("Job "+currentJobname+" submitted successfully.\n");
 				
 				} finally {
 					getBlenderBasicJobPropertiesPanel().lockUI(false);
@@ -334,10 +342,24 @@ public class BlenderJobCreationPanel extends JPanel implements
 		return em.getAllAvailableFqans();
 		
 	}
+	
+	public void setFqan(String fqan) {
+		
+		currentFqan = fqan;
+		getBlenderAdvancedJobPropertiesPanel().setAvailableSubLocs();
+		
+	}
+	
 	private BlenderAdvancedJobPropertiesPanel getBlenderAdvancedJobPropertiesPanel() {
 		if (blenderAdvancedJobPropertiesPanel == null) {
-			blenderAdvancedJobPropertiesPanel = new BlenderAdvancedJobPropertiesPanel();
+			blenderAdvancedJobPropertiesPanel = new BlenderAdvancedJobPropertiesPanel(this);
 		}
 		return blenderAdvancedJobPropertiesPanel;
+	}
+
+	public Set<String> getAllPossibleSubmissionLocations() {
+		
+		return ai.getAvailableSubmissionLocationsForVersionAndFqan(GrisuBlenderJob.BLENDER_DEFAULT_VERSION, currentFqan);
+		
 	}
 }

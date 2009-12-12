@@ -118,9 +118,9 @@ public class GridBlenderSubmit implements BlenderMode {
 		job.setVerbose(commandlineArgs.isVerbose());
 		
 		if ( commandlineArgs.isExclude() ) {
-			job.setSitesToExclude(commandlineArgs.getExclude().toArray(new String[]{}));
+			job.setLocationsToExclude(commandlineArgs.getExclude().toArray(new String[]{}));
 		} else if ( commandlineArgs.isInclude() ){
-			job.setSitesToInclude(commandlineArgs.getInclude().toArray(new String[]{}));
+			job.setLocationsToInclude(commandlineArgs.getInclude().toArray(new String[]{}));
 		}
 
 		String fluidsFolder = null;
@@ -144,16 +144,16 @@ public class GridBlenderSubmit implements BlenderMode {
 		job.setDefaultWalltimeInSeconds(commandlineArgs.getWalltime() * 60);
 		job.setOutputFileName(commandlineArgs.getOutput());
 		if (commandlineArgs.isExclude()) {
-			job.setSitesToExclude(commandlineArgs.getExclude().toArray(
+			job.setLocationsToExclude(commandlineArgs.getExclude().toArray(
 					new String[] {}));
 		}
 		if (commandlineArgs.isInclude()) {
-			job.setSitesToInclude(commandlineArgs.getInclude().toArray(
+			job.setLocationsToInclude(commandlineArgs.getInclude().toArray(
 					new String[] {}));
 		}
 
 		try {
-			job.createAndSubmitJobs();
+			job.createAndSubmitJobs(true);
 		} catch (JobCreationException e) {
 			System.err.println("Could not create blender jobs: "
 					+ e.getLocalizedMessage());

@@ -64,7 +64,7 @@ public class Blender_submit {
 //		blenderJob.setSitesToExclude(new String[]{"vpac", "ersa"});
 //		blenderJob.setSitesToInclude(new String[]{"anter"});
 		
-		blenderJob.createAndSubmitJobs();
+		blenderJob.createAndSubmitJobs(true);
 		
  		System.out.println("Blender job submission finished.");
 		

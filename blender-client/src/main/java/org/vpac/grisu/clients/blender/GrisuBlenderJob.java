@@ -155,7 +155,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 //		
 //	}
 	
-	public void createAndSubmitJobs() throws JobCreationException, JobSubmissionException, InterruptedException {
+	public void createAndSubmitJobs(boolean waitToFinish) throws JobCreationException, JobSubmissionException, InterruptedException {
 		
 		if ( lastFrame < firstFrame ) {
 			throw new JobCreationException("Last frame before first frame.");
@@ -171,7 +171,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 		}
 		
 
-		createAndSubmitBlenderJob();
+		createAndSubmitBlenderJob(waitToFinish);
 		
 		setOutputFilenameJobProperty();
 	}
@@ -223,7 +223,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 		
 	}
 	
-	private void createAndSubmitBlenderJob() throws JobSubmissionException, InterruptedException {
+	private void createAndSubmitBlenderJob(boolean waitToFinish) throws JobSubmissionException, InterruptedException {
 		
 		multiPartJob.addInputFile(blendFile.getFile().toString(), blendFile.getRelativeBlendFilePath());
 		
@@ -253,7 +253,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 		}
 		
 		try {
-			multiPartJob.submit();
+			multiPartJob.submit(waitToFinish);
 		} catch (InterruptedException e) {
 			throw e;
 		} catch (NoSuchJobException e) {
@@ -407,11 +407,11 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 		this.format = RenderFormat.fromString(format);
 	}
 
-	public void setSitesToInclude(String[] sites) {
+	public void setLocationsToInclude(String[] sites) {
 		this.multiPartJob.setLocationsToInclude(sites);
 	}
 	
-	public void setSitesToExclude(String[] sites) {
+	public void setLocationsToExclude(String[] sites) {
 		this.multiPartJob.setLocationsToExclude(sites);
 	}
 	

@@ -28,12 +28,14 @@ import org.vpac.grisu.client.control.utils.MountPointsListener;
 import org.vpac.grisu.client.model.SubmissionLocation;
 import org.vpac.grisu.client.model.files.FileConstants;
 import org.vpac.grisu.control.ServiceInterface;
+import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
 import org.vpac.grisu.model.FqanEvent;
 import org.vpac.grisu.model.FqanListener;
 import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.model.MountPoint;
 import org.vpac.grisu.model.UserEnvironmentManager;
+import org.vpac.grisu.model.dto.DtoBatchJob;
 import org.vpac.grisu.model.files.FileSystemItem;
 import org.vpac.grisu.settings.ClientPropertiesManager;
 import org.vpac.helpDesk.model.Person;
@@ -1673,6 +1675,26 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 	}
 
 	public SortedSet<String> getCurrentJobnames() {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public DtoBatchJob getBatchJob(String jobname, boolean refreshBatchJob)
+			throws NoSuchJobException {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public SortedSet<DtoBatchJob> getBatchJobs(String application,
+			boolean refresh) {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public SortedSet<String> getCurrentBatchJobnames(String application,
+			boolean refresh) {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public SortedSet<String> getCurrentJobnames(String application,
+			boolean refresh) {
 		throw new RuntimeException("Not implemented for this class.");
 	}
 

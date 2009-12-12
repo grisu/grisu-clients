@@ -199,6 +199,11 @@ public abstract class GridTestElement implements Comparable<GridTestElement> {
 			currentStage.setPossibleException(e);
 			currentStage.setStatus(GridTestStageStatus.FINISHED_ERROR);
 			failed = true;
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			currentStage.setPossibleException(e);
+			currentStage.setStatus(GridTestStageStatus.FINISHED_ERROR);
+			failed = true;
 		}
 		} else {
 			currentStage.setStatus(GridTestStageStatus.NOT_EXECUTED);

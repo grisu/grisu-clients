@@ -3,6 +3,8 @@ package org.vpac.grisu.clients.blender.swing;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -36,6 +38,7 @@ import com.jidesoft.swing.FolderChooser;
 import com.jidesoft.swing.RangeSlider;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.JSeparator;
 
 public class BlenderBasicJobPropertiesPanel extends JPanel {
 
@@ -95,6 +98,9 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 
 	private GrisuBlenderJob job = null;
 	private final BlenderJobCreationPanel parent;
+	private JSeparator separator;
+	private JSeparator separator_1;
+	private JSeparator separator_2;
 
 	public BlenderBasicJobPropertiesPanel(BlenderJobCreationPanel parent) {
 		
@@ -127,17 +133,14 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("8dlu"),
 				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("max(13dlu;default)"),
 				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("8dlu"),
 				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("12dlu"),
 				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,
@@ -150,25 +153,28 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 		add(getFluidsfolderTextField(), "2, 8, 11, 1, fill, default");
 		add(getUnsetFluidFolderButton(), "14, 8");
 		add(getBtnBrowse(), "16, 8");
+		add(getSeparator_1(), "2, 9, 15, 1, default, bottom");
 		add(getChckbxSpecifyFrameRange(), "2, 10, 15, 1");
-		add(getSlider(), "2, 12, 15, 1");
-		add(getStartLabel(), "2, 14, left, default");
-		add(getEndLabel(), "16, 14, right, default");
-		add(getFirstLabel(), "2, 16, right, default");
-		add(getFirstField(), "4, 16, fill, default");
-		add(getLastField(), "12, 16, 3, 1, fill, default");
-		add(getLastLabel(), "16, 16, left, default");
-		add(getLblFormat(), "2, 18, left, default");
-		add(getFormatCombobox(), "4, 18, 3, 1");
-		add(getLblHours(), "12, 18, 3, 1, right, bottom");
-		add(getLblMinutes(), "16, 18, right, bottom");
-		add(getLblWalltimePerFrame(), "2, 20, 7, 1, left, default");
-		add(getHoursCombobox(), "12, 20, 3, 1, fill, default");
-		add(getMinutesCombobox(), "16, 20, fill, default");
-		add(getLblJobname(), "2, 22, right, default");
-		add(getJobNameTextField(), "4, 22, 3, 1, fill, default");
-		add(getLblGroup(), "8, 22, 3, 1, right, default");
-		add(getVOComboBox(), "12, 22, 5, 1, fill, default");
+		add(getSlider(), "2, 11, 15, 1");
+		add(getStartLabel(), "2, 12, left, bottom");
+		add(getEndLabel(), "16, 12, right, bottom");
+		add(getFirstLabel(), "2, 13, right, default");
+		add(getFirstField(), "4, 13, fill, default");
+		add(getLastField(), "12, 13, 3, 1, fill, default");
+		add(getLastLabel(), "16, 13, left, default");
+		add(getSeparator_2(), "2, 14, 15, 1");
+		add(getLblFormat(), "2, 15, left, default");
+		add(getFormatCombobox(), "4, 15, 3, 1");
+		add(getSeparator(), "2, 16, 10, 1");
+		add(getLblHours(), "12, 16, 3, 1, right, bottom");
+		add(getLblMinutes(), "16, 16, right, bottom");
+		add(getLblWalltimePerFrame(), "2, 17, 9, 1, right, default");
+		add(getHoursCombobox(), "12, 17, 3, 1, fill, default");
+		add(getMinutesCombobox(), "16, 17, fill, default");
+		add(getLblJobname(), "2, 19, right, default");
+		add(getJobNameTextField(), "4, 19, 3, 1, fill, default");
+		add(getLblGroup(), "8, 19, 3, 1, right, default");
+		add(getVOComboBox(), "12, 19, 5, 1, fill, default");
 //		add(getStatusTextArea(), "2, 26, 15, 1, fill, fill");
 	}
 
@@ -238,12 +244,12 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 				getUnsetFluidFolderButton().setEnabled(!lock);
 				getVOComboBox().setEnabled(!lock);
 				if ( lock ) {
-					getSlider().setEnabled(false);
+					enableManualFrameSelection(false);
 				} else {
 					if ( getChckbxSpecifyFrameRange().isSelected() ) {
-						getSlider().setEnabled(true);
+						enableManualFrameSelection(true);
 					} else {
-						getSlider().setEnabled(false);
+						enableManualFrameSelection(false);
 					}
 				}
 
@@ -451,6 +457,17 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 		}
 		return infoButton;
 	}
+	
+	private void enableManualFrameSelection(boolean checked) {
+		
+		getStartLabel().setEnabled(checked);
+		getEndLabel().setEnabled(checked);
+		getFirstField().setEnabled(checked);
+		getLastLabel().setEnabled(checked);
+		getSlider().setEnabled(checked);
+		getFirstField().setEnabled(checked);
+		getLastField().setEnabled(checked);
+	}
 
 	private JCheckBox getChckbxSpecifyFrameRange() {
 		if (chckbxSpecifyFrameRange == null) {
@@ -461,13 +478,7 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 				public void actionPerformed(ActionEvent e) {
 
 					boolean checked = chckbxSpecifyFrameRange.isSelected();
-					getStartLabel().setEnabled(checked);
-					getEndLabel().setEnabled(checked);
-					getFirstField().setEnabled(checked);
-					getLastLabel().setEnabled(checked);
-					getSlider().setEnabled(checked);
-					getFirstField().setEnabled(checked);
-					getLastField().setEnabled(checked);
+					enableManualFrameSelection(checked);
 
 				}
 			});
@@ -567,6 +578,16 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 	private JComboBox getVOComboBox() {
 		if (comboBox_3 == null) {
 			comboBox_3 = new JComboBox(parent.getAllFqans());
+			comboBox_3.addItemListener(new ItemListener() {
+				
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					if ( ItemEvent.SELECTED == e.getStateChange() ) {
+						parent.setFqan((String)comboBox_3.getSelectedItem());
+					}
+					
+				}
+			});
 		}
 		return comboBox_3;
 	}
@@ -602,4 +623,22 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 		}
 	}
 
+	private JSeparator getSeparator() {
+		if (separator == null) {
+			separator = new JSeparator();
+		}
+		return separator;
+	}
+	private JSeparator getSeparator_1() {
+		if (separator_1 == null) {
+			separator_1 = new JSeparator();
+		}
+		return separator_1;
+	}
+	private JSeparator getSeparator_2() {
+		if (separator_2 == null) {
+			separator_2 = new JSeparator();
+		}
+		return separator_2;
+	}
 }
