@@ -424,7 +424,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 	}
 	
 	public String getOutputFilenameJobProperty() {
-		return multiPartJob.getJobProperty(BLENDER_OUTPUTFILENAME_KEY);
+		return multiPartJob.getProperty(BLENDER_OUTPUTFILENAME_KEY);
 	}
 
 	public void onEvent(String arg0, BatchJobEvent arg1) {

@@ -169,7 +169,7 @@ public class GridBlenderCheck implements BlenderMode, EventTopicSubscriber<Batch
 		File downloadDirectory = commandlineArgs.getDownloadResults();
 
 		String pattern = blenderMultiPartJobObject
-				.getJobProperty(GrisuBlenderJob.BLENDER_OUTPUTFILENAME_KEY);
+				.getProperty(GrisuBlenderJob.BLENDER_OUTPUTFILENAME_KEY);
 		if (StringUtils.isBlank(pattern)) {
 			System.out
 					.println("Could not determine output filename. Exiting...");
