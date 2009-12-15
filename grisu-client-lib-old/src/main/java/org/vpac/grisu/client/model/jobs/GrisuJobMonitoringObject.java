@@ -62,7 +62,7 @@ public interface GrisuJobMonitoringObject {
 	public abstract void fillJobDetails() throws NoSuchJobException;
 	
 	/**
-	 * This is just so that you can retrieve the job properties seperately using {@link ServiceInterface#getAllJobProperties(String)}
+	 * This is just so that you can retrieve the job properties seperately using {@link ServiceInterface#getJob(String)}
 	 * in a seperate thread. If you don't know what you are doing, use {@link #fillJobDetails()}.
 	 * @param jobProperties the porperties for this job.
 	 */

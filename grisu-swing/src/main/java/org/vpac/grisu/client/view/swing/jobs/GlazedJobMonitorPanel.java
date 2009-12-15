@@ -117,7 +117,7 @@ public class GlazedJobMonitorPanel extends JPanel {
 			final Map<String, String> tempMap;
 
 			try {
-				tempMap = em.getServiceInterface().getAllJobProperties(
+				tempMap = em.getServiceInterface().getJob(
 						job.getName()).propertiesAsMap();
 			} catch (NoSuchJobException e) {
 				// TODO Auto-generated catch block
