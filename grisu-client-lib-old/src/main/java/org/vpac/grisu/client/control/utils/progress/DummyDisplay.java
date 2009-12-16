@@ -1,12 +1,11 @@
-
-
 package org.vpac.grisu.client.control.utils.progress;
 
 /**
- * Implementation of {@link ProgressDisplay} that does nothing. It's the default behaviour of this client if no other ProgressDisplay is connected.
+ * Implementation of {@link ProgressDisplay} that does nothing. It's the default
+ * behaviour of this client if no other ProgressDisplay is connected.
  * 
  * @author Markus Binsteiner
- *
+ * 
  */
 public class DummyDisplay implements ProgressDisplay {
 

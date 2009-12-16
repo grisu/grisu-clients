@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.view.swing.preview;
 
 import java.awt.BorderLayout;
@@ -12,9 +10,9 @@ import org.vpac.grisu.client.model.files.GrisuFileObject;
 
 public class PreviewDialog extends JDialog {
 
-	private PreviewPanel previewPanel;
 	/**
 	 * Launch the application
+	 * 
 	 * @param args
 	 */
 	public static void main(String args[]) {
@@ -31,6 +29,8 @@ public class PreviewDialog extends JDialog {
 		}
 	}
 
+	private PreviewPanel previewPanel;
+
 	/**
 	 * Create the dialog
 	 */
@@ -40,13 +40,14 @@ public class PreviewDialog extends JDialog {
 		getContentPane().add(getPreviewPanel(), BorderLayout.CENTER);
 		//
 	}
+
 	protected PreviewPanel getPreviewPanel() {
 		if (previewPanel == null) {
 			previewPanel = new PreviewPanel();
 		}
 		return previewPanel;
 	}
-	
+
 	public void setFile(GrisuFileObject file) {
 		getPreviewPanel().previewFile(file);
 	}

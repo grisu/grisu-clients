@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.view.swing.login;
 
 import java.awt.Dimension;
@@ -23,7 +21,7 @@ public class ServiceInterfaceUrlsPanel extends JPanel {
 	private JLabel jLabel = null;
 	private JComboBox jComboBox = null;
 	private DefaultComboBoxModel comboBoxModel = null;
-	
+
 	public static final String DEFAULT_GRISU_WS_SERVICEINTERFACEURL = "https://grisu.vpac.org/grisu-ws/services/grisu";
 
 	/**
@@ -32,6 +30,46 @@ public class ServiceInterfaceUrlsPanel extends JPanel {
 	public ServiceInterfaceUrlsPanel() {
 		super();
 		initialize();
+	}
+
+	/**
+	 * This method initializes jComboBox
+	 * 
+	 * @return javax.swing.JComboBox
+	 */
+	private JComboBox getJComboBox() {
+		if (jComboBox == null) {
+			comboBoxModel = new DefaultComboBoxModel(ClientPropertiesManager
+					.getServiceInterfaceUrls());
+
+			jComboBox = new JComboBox(comboBoxModel);
+			this.jComboBox.setEnabled(true);
+			jComboBox.setEditable(true);
+			jComboBox.setPreferredSize(new Dimension(4, 24));
+			try {
+				String defaultUrl = System
+						.getProperty("grisu.defaultServiceInterface");
+
+				if (defaultUrl == null || "".equals(defaultUrl)) {
+					defaultUrl = (String) ClientPropertiesManager
+							.getClientConfiguration().getProperty(
+									"defaultServiceInterfaceUrl");
+				}
+
+				// just so that there is a default
+				if (defaultUrl == null || "".equals(defaultUrl)) {
+					defaultUrl = DEFAULT_GRISU_WS_SERVICEINTERFACEURL;
+				}
+				jComboBox.setSelectedItem(defaultUrl);
+			} catch (ConfigurationException e) {
+				// that's ok.
+			}
+		}
+		return jComboBox;
+	}
+
+	public String getServiceInterfaceUrl() {
+		return (String) getJComboBox().getSelectedItem();
 	}
 
 	/**
@@ -60,40 +98,4 @@ public class ServiceInterfaceUrlsPanel extends JPanel {
 		this.add(getJComboBox(), gridBagConstraints1);
 	}
 
-	/**
-	 * This method initializes jComboBox	
-	 * 	
-	 * @return javax.swing.JComboBox	
-	 */
-	private JComboBox getJComboBox() {
-		if (jComboBox == null) {
-			comboBoxModel = new DefaultComboBoxModel(ClientPropertiesManager.getServiceInterfaceUrls());
-
-			jComboBox = new JComboBox(comboBoxModel);
-			this.jComboBox.setEnabled(true);
-			jComboBox.setEditable(true);
-			jComboBox.setPreferredSize(new Dimension(4, 24));
-			try {
-				String defaultUrl = System.getProperty("grisu.defaultServiceInterface");
-				
-				if ( defaultUrl == null || "".equals(defaultUrl) ) {
-					defaultUrl = (String)ClientPropertiesManager.getClientConfiguration().getProperty("defaultServiceInterfaceUrl");
-				} 
-				
-				// just so that there is a default
-				if ( defaultUrl == null || "".equals(defaultUrl) ) {
-					defaultUrl = DEFAULT_GRISU_WS_SERVICEINTERFACEURL;
-				}
-				jComboBox.setSelectedItem(defaultUrl);
-			} catch (ConfigurationException e) {
-				// that's ok.
-			}
-		}
-		return jComboBox;
-	}
-
-	public String getServiceInterfaceUrl() {
-		return (String)getJComboBox().getSelectedItem();
-	}
-
-}  //  @jve:decl-index=0:visual-constraint="10,10"
+} // @jve:decl-index=0:visual-constraint="10,10"

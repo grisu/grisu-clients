@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.view.swing.template;
 
 public class ModulePanelCreationException extends Exception {
@@ -9,13 +7,13 @@ public class ModulePanelCreationException extends Exception {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ModulePanelCreationException(Throwable cause) {
-		super(cause);
+	public ModulePanelCreationException(String message, Throwable cause) {
+		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ModulePanelCreationException(String message, Throwable cause) {
-		super(message, cause);
+	public ModulePanelCreationException(Throwable cause) {
+		super(cause);
 		// TODO Auto-generated constructor stub
 	}
 

@@ -14,24 +14,27 @@ import org.vpac.grisu.frontend.control.login.LoginParams;
 
 public class MountPointsManagementDialog extends JDialog {
 
-	private MountPointManagementPanel mountPointManagementPanel;
-	
-	public static EnvironmentManager loginLocalhost(String username, char[] password) throws LoginException, ServiceInterfaceException {
+	public static EnvironmentManager loginLocalhost(String username,
+			char[] password) throws LoginException, ServiceInterfaceException {
 
-		   EnvironmentManager em = null;
+		EnvironmentManager em = null;
 
-		   // creating an object which holds all the login information. For this example we assume we always use the specified grisu service url and 
-		   // myproxy server/port. It's possible to also set a httproxy here.
-		   LoginParams loginparams = new LoginParams("http://localhost:8080/grisu-ws/services/grisu", username, password, "myproxy.arcs.org.au", "443");
-					
-	     // do the login
-	     em = ServiceInterfaceFactoryOld.login(loginparams);
+		// creating an object which holds all the login information. For this
+		// example we assume we always use the specified grisu service url and
+		// myproxy server/port. It's possible to also set a httproxy here.
+		LoginParams loginparams = new LoginParams(
+				"http://localhost:8080/grisu-ws/services/grisu", username,
+				password, "myproxy.arcs.org.au", "443");
 
-	     return em;
+		// do the login
+		em = ServiceInterfaceFactoryOld.login(loginparams);
+
+		return em;
 	}
-	
+
 	/**
 	 * Launch the application
+	 * 
 	 * @param args
 	 */
 	public static void main(String args[]) {
@@ -43,19 +46,17 @@ public class MountPointsManagementDialog extends JDialog {
 				}
 			});
 			dialog.setVisible(true);
-			
-			EnvironmentManager em = loginLocalhost(args[0], args[1].toCharArray());
+
+			EnvironmentManager em = loginLocalhost(args[0], args[1]
+					.toCharArray());
 			dialog.initialize(em);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public MountPointsManagementDialog(EnvironmentManager em) {
-		this();
-		initialize(em);
-	}
+
+	private MountPointManagementPanel mountPointManagementPanel;
 
 	/**
 	 * Create the dialog
@@ -64,14 +65,17 @@ public class MountPointsManagementDialog extends JDialog {
 		super();
 		this.setModal(true);
 		setBounds(100, 100, 752, 496);
-		getContentPane().add(getMountPointManagementPanel(), BorderLayout.CENTER);
+		getContentPane().add(getMountPointManagementPanel(),
+				BorderLayout.CENTER);
 
 		//
 	}
-	
-	public void initialize(EnvironmentManager em) {
-		getMountPointManagementPanel().initialize(em);
+
+	public MountPointsManagementDialog(EnvironmentManager em) {
+		this();
+		initialize(em);
 	}
+
 	/**
 	 * @return
 	 */
@@ -82,5 +86,8 @@ public class MountPointsManagementDialog extends JDialog {
 		return mountPointManagementPanel;
 	}
 
+	public void initialize(EnvironmentManager em) {
+		getMountPointManagementPanel().initialize(em);
+	}
 
 }

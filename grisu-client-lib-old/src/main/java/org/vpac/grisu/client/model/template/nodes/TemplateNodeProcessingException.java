@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.model.template.nodes;
 
 public class TemplateNodeProcessingException extends Exception {
@@ -13,13 +11,13 @@ public class TemplateNodeProcessingException extends Exception {
 		// TODO Auto-generated constructor stub
 	}
 
-	public TemplateNodeProcessingException(Throwable cause) {
-		super(cause);
+	public TemplateNodeProcessingException(String message, Throwable cause) {
+		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
 
-	public TemplateNodeProcessingException(String message, Throwable cause) {
-		super(message, cause);
+	public TemplateNodeProcessingException(Throwable cause) {
+		super(cause);
 		// TODO Auto-generated constructor stub
 	}
 

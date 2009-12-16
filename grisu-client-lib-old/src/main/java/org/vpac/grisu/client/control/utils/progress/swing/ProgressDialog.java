@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.control.utils.progress.swing;
 
 import java.awt.BorderLayout;
@@ -18,12 +16,13 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
- * This displays a swing dialog with a progress bar and a description of the action that is currently done.
+ * This displays a swing dialog with a progress bar and a description of the
+ * action that is currently done.
  * 
  * @author Markus Binsteiner
- *
+ * 
  */
-public class ProgressDialog extends JDialog implements ChangeListener{
+public class ProgressDialog extends JDialog implements ChangeListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -34,8 +33,14 @@ public class ProgressDialog extends JDialog implements ChangeListener{
 	private JProgressBar jProgressBar = null;
 
 	private JLabel statusLabel = null;
-	
-	private ProgressMonitor monitor; 
+
+	private ProgressMonitor monitor;
+
+	public ProgressDialog(Dialog owner, ProgressMonitor monitor) {
+		super(owner);
+		this.monitor = monitor;
+		initialize();
+	}
 
 	/**
 	 * @param owner
@@ -44,30 +49,6 @@ public class ProgressDialog extends JDialog implements ChangeListener{
 		super(owner, "Progress", true);
 		this.monitor = monitor;
 		initialize();
-	}
-	
-	public ProgressDialog(Dialog owner, ProgressMonitor monitor) {
-		super(owner);
-		this.monitor = monitor;
-		initialize();
-	}
-
-	/**
-	 * This method initializes this
-	 * 
-	 * @return void
-	 */
-	private void initialize() {
-		this.setSize(455, 144);
-		this.setContentPane(getJContentPane());
-	       if(monitor.isIndeterminate()) 
-	           getJProgressBar().setIndeterminate(true); 
-	       else 
-	           getJProgressBar().setValue(monitor.getCurrent()); 
-	       statusLabel.setText(monitor.getStatus()); 
-	       
-	       setDefaultCloseOperation(DO_NOTHING_ON_CLOSE); 
-	       monitor.addChangeListener(this); 
 	}
 
 	/**
@@ -85,9 +66,9 @@ public class ProgressDialog extends JDialog implements ChangeListener{
 	}
 
 	/**
-	 * This method initializes jPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
+	 * This method initializes jPanel
+	 * 
+	 * @return javax.swing.JPanel
 	 */
 	private JPanel getJPanel() {
 		if (jPanel == null) {
@@ -113,9 +94,9 @@ public class ProgressDialog extends JDialog implements ChangeListener{
 	}
 
 	/**
-	 * This method initializes jProgressBar	
-	 * 	
-	 * @return javax.swing.JProgressBar	
+	 * This method initializes jProgressBar
+	 * 
+	 * @return javax.swing.JProgressBar
 	 */
 	private JProgressBar getJProgressBar() {
 		if (jProgressBar == null) {
@@ -123,24 +104,42 @@ public class ProgressDialog extends JDialog implements ChangeListener{
 		}
 		return jProgressBar;
 	}
-	
-	   public void stateChanged(final ChangeEvent ce){ 
-	       // to ensure EDT thread 
-	       if(!SwingUtilities.isEventDispatchThread()){ 
-	           SwingUtilities.invokeLater(new Runnable(){ 
-	               public void run(){ 
-	                   stateChanged(ce); 
-	               } 
-	           }); 
-	           return; 
-	       } 
 
-	       if(monitor.getCurrent()!=monitor.getTotal()){ 
-	           statusLabel.setText(monitor.getStatus()); 
-	           if(!monitor.isIndeterminate()) 
-	               getJProgressBar().setValue(monitor.getCurrent()); 
-	       }else 
-	           dispose(); 
-	   } 
+	/**
+	 * This method initializes this
+	 * 
+	 * @return void
+	 */
+	private void initialize() {
+		this.setSize(455, 144);
+		this.setContentPane(getJContentPane());
+		if (monitor.isIndeterminate())
+			getJProgressBar().setIndeterminate(true);
+		else
+			getJProgressBar().setValue(monitor.getCurrent());
+		statusLabel.setText(monitor.getStatus());
 
-}  //  @jve:decl-index=0:visual-constraint="10,10"
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		monitor.addChangeListener(this);
+	}
+
+	public void stateChanged(final ChangeEvent ce) {
+		// to ensure EDT thread
+		if (!SwingUtilities.isEventDispatchThread()) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					stateChanged(ce);
+				}
+			});
+			return;
+		}
+
+		if (monitor.getCurrent() != monitor.getTotal()) {
+			statusLabel.setText(monitor.getStatus());
+			if (!monitor.isIndeterminate())
+				getJProgressBar().setValue(monitor.getCurrent());
+		} else
+			dispose();
+	}
+
+} // @jve:decl-index=0:visual-constraint="10,10"

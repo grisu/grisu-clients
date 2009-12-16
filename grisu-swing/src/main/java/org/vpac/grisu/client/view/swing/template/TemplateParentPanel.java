@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.view.swing.template;
 
 import java.awt.BorderLayout;
@@ -18,8 +16,9 @@ public class TemplateParentPanel extends JPanel {
 
 	private JPanel panel;
 	private JsdlTemplate template = null;
-	
+
 	private JTabbedPane tabbedPane;
+
 	/**
 	 * Create the panel
 	 */
@@ -28,27 +27,23 @@ public class TemplateParentPanel extends JPanel {
 		setLayout(new BorderLayout());
 		add(getTabbedPane(), BorderLayout.CENTER);
 		//
-		
+
 		// for testing/developing
 		Document xmlTemplate = SeveralXMLHelpers.loadXMLFile(new File(
-		"/home/markus/.grisu/templates/diff.xml"));
+				"/home/markus/.grisu/templates/diff.xml"));
 		setJsdlTemplate(new JsdlTemplate(null, xmlTemplate));
-		
+
 	}
-	
-	public void setJsdlTemplate(JsdlTemplate template) {
-		
-		this.template = template;
-		
-		for ( String moduleName : template.getModules().keySet() ) {
-			
-			
-			
-		}
-		
-		
+
+	/**
+	 * @return
+	 */
+	private ModulePanel createModulePanel(TemplateModule module) {
+
+		return null;
+
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -56,19 +51,19 @@ public class TemplateParentPanel extends JPanel {
 		if (tabbedPane == null) {
 			tabbedPane = new JTabbedPane();
 			tabbedPane.setTabPlacement(SwingConstants.RIGHT);
-//			tabbedPane.addTab("New tab", null, createModulePanel(), null);
+			// tabbedPane.addTab("New tab", null, createModulePanel(), null);
 		}
 		return tabbedPane;
 	}
-	/**
-	 * @return
-	 */
-	private ModulePanel createModulePanel(TemplateModule module) {
-		
-		
-		
-		return null;
-		
+
+	public void setJsdlTemplate(JsdlTemplate template) {
+
+		this.template = template;
+
+		for (String moduleName : template.getModules().keySet()) {
+
+		}
+
 	}
 
 }

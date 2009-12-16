@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.view.swing.files;
 
 import java.awt.Color;
@@ -16,38 +14,39 @@ import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileSystemView;
 
-import org.vpac.grisu.client.model.files.GrisuFileObject;
 import org.vpac.grisu.client.model.files.FileConstants;
 import org.vpac.grisu.client.model.files.FileSystemListFrontend;
+import org.vpac.grisu.client.model.files.GrisuFileObject;
 
 public class JobDirectoryFileObjectCellRenderer implements ListCellRenderer {
-	
-	private static FileSystemView fsView =	FileSystemView.getFileSystemView();
-	private static Icon folderIcon = fsView.getSystemIcon(new File(System.getProperty("user.home")));
-	//TODO think of something better?
+
+	private static FileSystemView fsView = FileSystemView.getFileSystemView();
+	private static Icon folderIcon = fsView.getSystemIcon(new File(System
+			.getProperty("user.home")));
+	// TODO think of something better?
 	private static Icon fileIcon = fsView.getSystemIcon(findFile());
-	
+
 	private static File findFile() {
-		for ( File file : new File(System.getProperty("user.home")).listFiles() ) {
-			if ( file.isFile() ) return file;
+		for (File file : new File(System.getProperty("user.home")).listFiles()) {
+			if (file.isFile())
+				return file;
 		}
-//		return new ImageIcon();
+		// return new ImageIcon();
 		return null;
 	}
-  
-	
+
 	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
-		
-		GrisuFileObject file = (GrisuFileObject)value;
-		FileSystemListFrontend fs = (FileSystemListFrontend)list.getModel();
+
+		GrisuFileObject file = (GrisuFileObject) value;
+		FileSystemListFrontend fs = (FileSystemListFrontend) list.getModel();
 
 		JLabel label = null;
-		if ( ! fs.currentDirectoryIsOnRoot() && index == 0) {
+		if (!fs.currentDirectoryIsOnRoot() && index == 0) {
 			label = new JLabel("..", folderIcon, SwingConstants.LEADING);
-		} else if ( file.getType() == FileConstants.TYPE_FOLDER ) {
+		} else if (file.getType() == FileConstants.TYPE_FOLDER) {
 			String name = file.getName();
-			if ( name != null ) {
+			if (name != null) {
 				try {
 					name = URLDecoder.decode(name, "UTF-8");
 				} catch (UnsupportedEncodingException e) {
@@ -56,13 +55,10 @@ public class JobDirectoryFileObjectCellRenderer implements ListCellRenderer {
 				}
 			}
 			label = new JLabel(name, folderIcon, SwingConstants.LEADING);
-			
 
-				
-			
-		} else if ( file.getType() == FileConstants.TYPE_FILE ) {
+		} else if (file.getType() == FileConstants.TYPE_FILE) {
 			String name = file.getName();
-			if ( name != null ) {
+			if (name != null) {
 				try {
 					name = URLDecoder.decode(name, "UTF-8");
 				} catch (UnsupportedEncodingException e) {
@@ -71,32 +67,34 @@ public class JobDirectoryFileObjectCellRenderer implements ListCellRenderer {
 				}
 			}
 			long size = file.getSize(false);
-			String sizeString = size+" B";
-			if ( size > 1024*1024 ) 
-				sizeString = size/(1024*1024) + "MB";
-			else if ( size > 1024 )
-				sizeString = size/1024 + " KB";
-			
-			label = new JLabel(name + " ("+sizeString+")", fileIcon, SwingConstants.LEADING);
-			if ( "stdout.txt".equals(name) || "stderr.txt".equals(name) ) {
+			String sizeString = size + " B";
+			if (size > 1024 * 1024)
+				sizeString = size / (1024 * 1024) + "MB";
+			else if (size > 1024)
+				sizeString = size / 1024 + " KB";
+
+			label = new JLabel(name + " (" + sizeString + ")", fileIcon,
+					SwingConstants.LEADING);
+			if ("stdout.txt".equals(name) || "stderr.txt".equals(name)) {
 				label.setFont(label.getFont().deriveFont(Font.BOLD));
 
-				if ( "stderr.txt".equals(name) && file.getSize(false) > 0 ) {
+				if ("stderr.txt".equals(name) && file.getSize(false) > 0) {
 					label.setForeground(Color.RED);
 				}
-			} 
-			
+			}
+
 		} else {
-			throw new RuntimeException("File is not a know file type. This should never happen.");
+			throw new RuntimeException(
+					"File is not a know file type. This should never happen.");
 		}
-		
-		if ( isSelected ) {
+
+		if (isSelected) {
 			label.setBackground(Color.lightGray);
 			label.setOpaque(true);
 		} else {
 			label.setOpaque(false);
 		}
-		
+
 		return label;
 	}
 

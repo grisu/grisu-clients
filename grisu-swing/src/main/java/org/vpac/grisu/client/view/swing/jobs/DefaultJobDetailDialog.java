@@ -48,17 +48,13 @@ public class DefaultJobDetailDialog extends JDialog {
 
 	private GrisuJobMonitoringObject job = null;
 	private EnvironmentManager em = null;
-	
+
 	// for wbbuilder pro -- don't use
 	public DefaultJobDetailDialog() {
 		super();
 		initialize();
 	}
-	
-	private void initialize() {
-		setBounds(100, 100, 622, 560);
-		getContentPane().add(getTabbedPane(), BorderLayout.CENTER);
-	}
+
 	/**
 	 * Create the dialog
 	 */
@@ -68,60 +64,6 @@ public class DefaultJobDetailDialog extends JDialog {
 		initialize();
 		//
 	}
-
-	public void setJob(GrisuJobMonitoringObject job) {
-		this.job = job;
-
-		if ( getApplicationSpecificPanel() != null ) {
-			tabbedPane.addTab(job.getApplicationType(), null, getApplicationSpecificPanel(), null);
-		}
-
-		tabbedPane.addTab("Job directory", null, getJobFileListWithPreviewPanel(), null);
-		tabbedPane.addTab("Job details", null, getDefaultJobDetailsPanel_1(), null);
-//		tabbedPane.addTab("Output", null, getDefaultJobFilesPanel(), null);
-//		tabbedPane.addTab("Job directory", null, getJobDirectoryPanel(), null);
-//		tabbedPane.addTab("Job details", null, getDefaultJobDetailsPanel(),	null);
-
-	}
-
-	public void setJob(String jobname) throws NoSuchJobException {
-		myLogger.debug("Creating job monitoring object for: "+jobname);
-		GrisuJobMonitoringObject job = em.getJobManager().getJob(jobname);
-		//.getJobManagement().getJob(jobname);
-		setJob(job);
-	}
-
-	protected JTabbedPane getTabbedPane() {
-		if (tabbedPane == null) {
-			tabbedPane = new JTabbedPane();
-
-		}
-		return tabbedPane;
-	}
-
-//	protected JobDirectoryPanel getJobDirectoryPanel() {
-//		if (jobDirectoryPanel == null) {
-//			jobDirectoryPanel = new JobDirectoryPanel(em);
-//			jobDirectoryPanel.setJob(job);
-//		}
-//		return jobDirectoryPanel;
-//	}
-
-	protected DefaultJobFilesPanel getDefaultJobFilesPanel() {
-		if (defaultJobFilesPanel == null) {
-			defaultJobFilesPanel = new DefaultJobFilesPanel(em);
-			defaultJobFilesPanel.setJob(job);
-		}
-		return defaultJobFilesPanel;
-	}
-
-//	protected DefaultJobDetailsPanel getDefaultJobDetailsPanel() {
-//		if (defaultJobDetailsPanel == null) {
-//			defaultJobDetailsPanel = new DefaultJobDetailsPanel();
-//			defaultJobDetailsPanel.setJob(job);
-//		}
-//		return defaultJobDetailsPanel;
-//	}
 
 	protected JPanel getApplicationSpecificPanel() {
 
@@ -145,19 +87,12 @@ public class DefaultJobDetailDialog extends JDialog {
 						.info("Could not find specific view panel for application: "
 								+ applicationType + ": " + e.getMessage());
 				// panel = new JobDetailPanel(jobProperties, serviceInterface);
-//				e.printStackTrace();
+				// e.printStackTrace();
 				return null;
 			}
 		}
 
 		return applicationSpecificPanel;
-	}
-	protected JobFileListWithPreviewPanel getJobFileListWithPreviewPanel() {
-		if (jobFileListWithPreviewPanel == null) {
-			jobFileListWithPreviewPanel = new JobFileListWithPreviewPanel(em);
-			jobFileListWithPreviewPanel.setJob(job);
-		}
-		return jobFileListWithPreviewPanel;
 	}
 
 	/**
@@ -173,5 +108,77 @@ public class DefaultJobDetailDialog extends JDialog {
 	/**
 	 * @return
 	 */
+
+	protected DefaultJobFilesPanel getDefaultJobFilesPanel() {
+		if (defaultJobFilesPanel == null) {
+			defaultJobFilesPanel = new DefaultJobFilesPanel(em);
+			defaultJobFilesPanel.setJob(job);
+		}
+		return defaultJobFilesPanel;
+	}
+
+	protected JobFileListWithPreviewPanel getJobFileListWithPreviewPanel() {
+		if (jobFileListWithPreviewPanel == null) {
+			jobFileListWithPreviewPanel = new JobFileListWithPreviewPanel(em);
+			jobFileListWithPreviewPanel.setJob(job);
+		}
+		return jobFileListWithPreviewPanel;
+	}
+
+	// protected JobDirectoryPanel getJobDirectoryPanel() {
+	// if (jobDirectoryPanel == null) {
+	// jobDirectoryPanel = new JobDirectoryPanel(em);
+	// jobDirectoryPanel.setJob(job);
+	// }
+	// return jobDirectoryPanel;
+	// }
+
+	protected JTabbedPane getTabbedPane() {
+		if (tabbedPane == null) {
+			tabbedPane = new JTabbedPane();
+
+		}
+		return tabbedPane;
+	}
+
+	// protected DefaultJobDetailsPanel getDefaultJobDetailsPanel() {
+	// if (defaultJobDetailsPanel == null) {
+	// defaultJobDetailsPanel = new DefaultJobDetailsPanel();
+	// defaultJobDetailsPanel.setJob(job);
+	// }
+	// return defaultJobDetailsPanel;
+	// }
+
+	private void initialize() {
+		setBounds(100, 100, 622, 560);
+		getContentPane().add(getTabbedPane(), BorderLayout.CENTER);
+	}
+
+	public void setJob(GrisuJobMonitoringObject job) {
+		this.job = job;
+
+		if (getApplicationSpecificPanel() != null) {
+			tabbedPane.addTab(job.getApplicationType(), null,
+					getApplicationSpecificPanel(), null);
+		}
+
+		tabbedPane.addTab("Job directory", null,
+				getJobFileListWithPreviewPanel(), null);
+		tabbedPane.addTab("Job details", null, getDefaultJobDetailsPanel_1(),
+				null);
+		// tabbedPane.addTab("Output", null, getDefaultJobFilesPanel(), null);
+		// tabbedPane.addTab("Job directory", null, getJobDirectoryPanel(),
+		// null);
+		// tabbedPane.addTab("Job details", null, getDefaultJobDetailsPanel(),
+		// null);
+
+	}
+
+	public void setJob(String jobname) throws NoSuchJobException {
+		myLogger.debug("Creating job monitoring object for: " + jobname);
+		GrisuJobMonitoringObject job = em.getJobManager().getJob(jobname);
+		// .getJobManagement().getJob(jobname);
+		setJob(job);
+	}
 
 }

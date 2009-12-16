@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.view.swing.mountpoints_old;
 
 import java.awt.BorderLayout;
@@ -31,16 +29,6 @@ public class SiteWizard extends JDialog {
 	}
 
 	/**
-	 * This method initializes this
-	 * 
-	 * @return void
-	 */
-	private void initialize() {
-		this.setSize(300, 380);
-		this.setContentPane(getJContentPane());
-	}
-
-	/**
 	 * This method initializes jContentPane
 	 * 
 	 * @return javax.swing.JPanel
@@ -55,9 +43,9 @@ public class SiteWizard extends JDialog {
 	}
 
 	/**
-	 * This method initializes siteWizardPanel	
-	 * 	
-	 * @return org.vpac.grisu.client.view.swing.mountpoints.SiteWizardPanel	
+	 * This method initializes siteWizardPanel
+	 * 
+	 * @return org.vpac.grisu.client.view.swing.mountpoints.SiteWizardPanel
 	 */
 	private SiteWizardPanel getSiteWizardPanel() {
 		if (siteWizardPanel == null) {
@@ -66,4 +54,14 @@ public class SiteWizard extends JDialog {
 		return siteWizardPanel;
 	}
 
-}  //  @jve:decl-index=0:visual-constraint="10,10"
+	/**
+	 * This method initializes this
+	 * 
+	 * @return void
+	 */
+	private void initialize() {
+		this.setSize(300, 380);
+		this.setContentPane(getJContentPane());
+	}
+
+} // @jve:decl-index=0:visual-constraint="10,10"

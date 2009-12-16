@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.model.template.nodes.templatePreProcessor;
 
 public class TemplatePreProcessorException extends Exception {
@@ -13,13 +11,13 @@ public class TemplatePreProcessorException extends Exception {
 		// TODO Auto-generated constructor stub
 	}
 
-	public TemplatePreProcessorException(Throwable cause) {
-		super(cause);
+	public TemplatePreProcessorException(String message, Throwable cause) {
+		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
 
-	public TemplatePreProcessorException(String message, Throwable cause) {
-		super(message, cause);
+	public TemplatePreProcessorException(Throwable cause) {
+		super(cause);
 		// TODO Auto-generated constructor stub
 	}
 

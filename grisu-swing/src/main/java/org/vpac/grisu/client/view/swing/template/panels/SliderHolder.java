@@ -11,7 +11,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.plaf.basic.BasicSliderUI;
 
 import org.apache.log4j.Logger;
 
@@ -22,23 +21,25 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
 public class SliderHolder extends JPanel implements ComponentHolder {
-	
+
 	private JTextField textPane;
 	private JSlider slider_1;
-	static final Logger myLogger = Logger.getLogger(SliderHolder.class.getName());
-	
+	static final Logger myLogger = Logger.getLogger(SliderHolder.class
+			.getName());
+
 	private int min;
 	private int max;
 	private int defaultValue;
 	private int majorTicks;
 	private int minorTicks;
-	
+
 	private JSlider slider = null;
 	private BoundedRangeModel sliderModel = null;
-	
+
 	private AbstractInputPanel parentPanel = null;
-	
-	public SliderHolder(AbstractInputPanel parent, int min, int max, int defaultValue, int majorTicks, int minorTicks) {
+
+	public SliderHolder(AbstractInputPanel parent, int min, int max,
+			int defaultValue, int majorTicks, int minorTicks) {
 		this.parentPanel = parent;
 		this.min = min;
 		this.max = max;
@@ -46,17 +47,16 @@ public class SliderHolder extends JPanel implements ComponentHolder {
 		this.minorTicks = minorTicks;
 		this.defaultValue = defaultValue;
 		sliderModel = new DefaultBoundedRangeModel(defaultValue, 0, min, max);
-		setLayout(new FormLayout(
-			new ColumnSpec[] {
+		setLayout(new FormLayout(new ColumnSpec[] {
 				ColumnSpec.decode("default:grow(1.0)"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("28dlu")},
-			new RowSpec[] {
-				FormFactory.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("40dlu"),
-				FormFactory.RELATED_GAP_ROWSPEC}));
-		add(getSlider(), new CellConstraints(1, 2, CellConstraints.FILL, CellConstraints.FILL));
-		add(getTextPane(), new CellConstraints(3, 2, CellConstraints.FILL, CellConstraints.FILL));
+				FormFactory.RELATED_GAP_COLSPEC, ColumnSpec.decode("28dlu") },
+				new RowSpec[] { FormFactory.RELATED_GAP_ROWSPEC,
+						RowSpec.decode("40dlu"),
+						FormFactory.RELATED_GAP_ROWSPEC }));
+		add(getSlider(), new CellConstraints(1, 2, CellConstraints.FILL,
+				CellConstraints.FILL));
+		add(getTextPane(), new CellConstraints(3, 2, CellConstraints.FILL,
+				CellConstraints.FILL));
 	}
 
 	public Component getComponent() {
@@ -68,36 +68,22 @@ public class SliderHolder extends JPanel implements ComponentHolder {
 		return Integer.toString(sliderModel.getValue());
 	}
 
-	public void setComponentField(String value) {
-
-		try { 
-			int temp = Integer.parseInt(value);
-			sliderModel.setValue(temp);
-		} catch (Exception e) {
-			// do nothing
-			myLogger.warn("Can't convert value "+value+" to integer.");
-			return;
-		}
-		
-		
-		
-	}
-
 	public int getRowSpec() {
 		return 45;
 	}
+
 	/**
 	 * @return
 	 */
 	protected JSlider getSlider() {
 		if (slider_1 == null) {
 			slider_1 = new JSlider(sliderModel);
-//			// seems to be a bug in jslider
-//			int tmp = sliderModel.getValue();
-//			slider_1.setValue(sliderModel.getMinimum());
-//			slider_1.setValue(tmp);
-//			slider_1.revalidate();			
-//			slider_1.setUI(new BasicSliderUI(slider_1));
+			// // seems to be a bug in jslider
+			// int tmp = sliderModel.getValue();
+			// slider_1.setValue(sliderModel.getMinimum());
+			// slider_1.setValue(tmp);
+			// slider_1.revalidate();
+			// slider_1.setUI(new BasicSliderUI(slider_1));
 			slider_1.setSnapToTicks(true);
 			slider_1.setPaintLabels(true);
 			slider_1.setMajorTickSpacing(majorTicks);
@@ -105,12 +91,14 @@ public class SliderHolder extends JPanel implements ComponentHolder {
 			slider_1.setPaintTicks(true);
 			slider_1.addChangeListener(new ChangeListener() {
 				public void stateChanged(final ChangeEvent e) {
-					getTextPane().setText(Integer.toString(sliderModel.getValue()));
+					getTextPane().setText(
+							Integer.toString(sliderModel.getValue()));
 				}
 			});
 		}
 		return slider_1;
 	}
+
 	/**
 	 * @return
 	 */
@@ -123,6 +111,19 @@ public class SliderHolder extends JPanel implements ComponentHolder {
 			textPane.setText(Integer.toString(defaultValue));
 		}
 		return textPane;
+	}
+
+	public void setComponentField(String value) {
+
+		try {
+			int temp = Integer.parseInt(value);
+			sliderModel.setValue(temp);
+		} catch (Exception e) {
+			// do nothing
+			myLogger.warn("Can't convert value " + value + " to integer.");
+			return;
+		}
+
 	}
 
 }

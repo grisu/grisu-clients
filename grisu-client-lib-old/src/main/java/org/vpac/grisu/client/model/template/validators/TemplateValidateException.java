@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.model.template.validators;
 
 public class TemplateValidateException extends Exception {
@@ -13,13 +11,13 @@ public class TemplateValidateException extends Exception {
 		// TODO Auto-generated constructor stub
 	}
 
-	public TemplateValidateException(Throwable cause) {
-		super(cause);
+	public TemplateValidateException(String message, Throwable cause) {
+		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
 
-	public TemplateValidateException(String message, Throwable cause) {
-		super(message, cause);
+	public TemplateValidateException(Throwable cause) {
+		super(cause);
 		// TODO Auto-generated constructor stub
 	}
 

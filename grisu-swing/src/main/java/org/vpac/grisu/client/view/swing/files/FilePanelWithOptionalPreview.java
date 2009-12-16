@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.view.swing.files;
 
 import java.awt.BorderLayout;
@@ -47,21 +45,15 @@ public class FilePanelWithOptionalPreview extends JPanel {
 	 */
 	public FilePanelWithOptionalPreview() {
 		super();
-		setLayout(new FormLayout(
-			new ColumnSpec[] {
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
+		setLayout(new FormLayout(new ColumnSpec[] {
+				FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
 				FormFactory.RELATED_GAP_COLSPEC,
 				new ColumnSpec("default:grow(1.0)"),
-				FormFactory.RELATED_GAP_COLSPEC},
-			new RowSpec[] {
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC}));
+				FormFactory.RELATED_GAP_COLSPEC }, new RowSpec[] {
+				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC }));
 		add(getTextField(), new CellConstraints(4, 2, CellConstraints.FILL,
 				CellConstraints.DEFAULT));
 		add(getLabel(), new CellConstraints(2, 2, CellConstraints.LEFT,
@@ -74,31 +66,6 @@ public class FilePanelWithOptionalPreview extends JPanel {
 		add(getRefreshButton(), new CellConstraints(4, 4,
 				CellConstraints.RIGHT, CellConstraints.DEFAULT));
 		//
-	}
-
-	protected JTextField getTextField() {
-		if (textField == null) {
-			textField = new JTextField();
-		}
-		return textField;
-	}
-
-	protected JLabel getLabel() {
-		if (label == null) {
-			label = new JLabel();
-			label.setText("name");
-		}
-		return label;
-	}
-
-	protected void showPreviewPanel(boolean show) {
-
-		if (show && fileChanged) {
-			getPreviewPanel().previewFile(file);
-			fileChanged = false;
-		}
-		getPreviewPanelHolder().setVisible(show);
-		getRefreshButton().setVisible(show);
 	}
 
 	protected JCheckBox getCheckBox() {
@@ -118,22 +85,12 @@ public class FilePanelWithOptionalPreview extends JPanel {
 		return checkBox;
 	}
 
-	protected JPanel getPreviewPanelHolder() {
-		if (previewPanelHolder == null) {
-			previewPanelHolder = new JPanel();
-			previewPanelHolder.setLayout(new BorderLayout());
-			previewPanelHolder.add(getScrollPane(), BorderLayout.CENTER);
+	protected JLabel getLabel() {
+		if (label == null) {
+			label = new JLabel();
+			label.setText("name");
 		}
-		return previewPanelHolder;
-	}
-
-	protected JScrollPane getScrollPane() {
-		if (scrollPane == null) {
-			scrollPane = new JScrollPane();
-			scrollPane.setMinimumSize(new Dimension(0, 0));
-			scrollPane.setViewportView(getPreviewPanel());
-		}
-		return scrollPane;
+		return label;
 	}
 
 	protected PreviewPanel getPreviewPanel() {
@@ -144,16 +101,13 @@ public class FilePanelWithOptionalPreview extends JPanel {
 		return previewPanel;
 	}
 
-	public void setFile(String title, GrisuFileObject file) {
-		this.file = file;
-		fileChanged = true;
-
-		getLabel().setText(title);
-		getTextField().setText(file.getURI().toString());
-	}
-
-	public void setFile(GrisuFileObject file) {
-		setFile(file.getName(), file);
+	protected JPanel getPreviewPanelHolder() {
+		if (previewPanelHolder == null) {
+			previewPanelHolder = new JPanel();
+			previewPanelHolder.setLayout(new BorderLayout());
+			previewPanelHolder.add(getScrollPane(), BorderLayout.CENTER);
+		}
+		return previewPanelHolder;
 	}
 
 	protected JButton getRefreshButton() {
@@ -179,6 +133,44 @@ public class FilePanelWithOptionalPreview extends JPanel {
 			refreshButton.setIcon(refresh);
 		}
 		return refreshButton;
+	}
+
+	protected JScrollPane getScrollPane() {
+		if (scrollPane == null) {
+			scrollPane = new JScrollPane();
+			scrollPane.setMinimumSize(new Dimension(0, 0));
+			scrollPane.setViewportView(getPreviewPanel());
+		}
+		return scrollPane;
+	}
+
+	protected JTextField getTextField() {
+		if (textField == null) {
+			textField = new JTextField();
+		}
+		return textField;
+	}
+
+	public void setFile(GrisuFileObject file) {
+		setFile(file.getName(), file);
+	}
+
+	public void setFile(String title, GrisuFileObject file) {
+		this.file = file;
+		fileChanged = true;
+
+		getLabel().setText(title);
+		getTextField().setText(file.getURI().toString());
+	}
+
+	protected void showPreviewPanel(boolean show) {
+
+		if (show && fileChanged) {
+			getPreviewPanel().previewFile(file);
+			fileChanged = false;
+		}
+		getPreviewPanelHolder().setVisible(show);
+		getRefreshButton().setVisible(show);
 	}
 
 }

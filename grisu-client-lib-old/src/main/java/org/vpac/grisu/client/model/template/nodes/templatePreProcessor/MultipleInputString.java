@@ -9,92 +9,33 @@ import org.w3c.dom.Element;
 
 public class MultipleInputString extends TemplatePreProcessor {
 
-	ArrayList<Element> addedElements = new ArrayList<Element>();
+	public static void main(String[] args) {
 
-	Element originalElement = null;
-
-	Element oldParent = null;
-
-	public MultipleInputString(TemplateNode templateNode) {
-		super(templateNode);
-		if (originalElement == null) {
-			originalElement = (Element) node.getElement().cloneNode(true);
-		}
-	}
-
-	@Override
-	public void process() throws TemplatePreProcessorException {
-
-		DebugUtils.jsdlDebugOutput("before preprocessing node: " + node.getName(),
-				node.getTemplate().getTemplateDocument());
-		
-		if ( node.getValue() == null || "".equals(node.getValue()) ) {
-			// maybe delete the element?
-			return;
-		}
-		
 		ArrayList<String> strings = null;
 		try {
-			strings = parseString(node.getValue());
+			strings = parseString("cat  hallo \"what is  up\" fellow \" traveller?\"  ");
 		} catch (ParseException e) {
-			throw new TemplatePreProcessorException("Could not parse input string.", e);
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-		if ( strings == null || strings.size() < 1 ) {
-			throw new TemplatePreProcessorException("Not enough input provided to parse arguments.");
+		System.out.println("Parsed strings:");
+		for (String string : strings) {
+			System.out.println("String: " + string);
 		}
-
-		// the first element stays like it is, only one value is set
-		node.getElement().setTextContent(strings.get(strings.size()-1));
-		
-		Element parent = (Element)(node.getElement().getParentNode());
-		oldParent = parent; 
-		// create and insert the cloned elements
-		for (int i = 0; i < strings.size()-1; i++) {
-			Element newElement = (Element) node.getElement().cloneNode(true);
-
-			newElement.setTextContent(strings.get(i));
-
-			parent.insertBefore(newElement, node.getElement());
-
-			addedElements.add(newElement);
-
-		}
-
-		DebugUtils.jsdlDebugOutput("after preprocessing node: " + node.getName(),
-				node.getTemplate().getTemplateDocument());
-	}
-
-	@Override
-	protected void resetTemplateNode() {
-
-		DebugUtils.jsdlDebugOutput("before resetting node: " + node.getName(), node
-				.getTemplate().getTemplateDocument());
-
-		// remove elements from previous run
-		for (Element element : addedElements) {
-			try {
-				oldParent.removeChild(element);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		DebugUtils.jsdlDebugOutput("after resetting node: " + node.getName(), node
-				.getTemplate().getTemplateDocument());
 
 	}
 
-	protected static ArrayList<String> parseString(String string) throws ParseException {
+	protected static ArrayList<String> parseString(String string)
+			throws ParseException {
 		ArrayList<String> strings = new ArrayList<String>();
 
 		boolean lastCharacterIsWhitespace = false;
 		boolean inbetweenQuotationMarks = false;
 		StringBuffer part = new StringBuffer();
-		
-		if ( string == null || "".equals(string) ) 
+
+		if (string == null || "".equals(string))
 			return strings;
-		
+
 		for (char character : string.toCharArray()) {
 			if (Character.isWhitespace(character)) {
 				if (!lastCharacterIsWhitespace && !inbetweenQuotationMarks) {
@@ -107,8 +48,8 @@ public class MultipleInputString extends TemplatePreProcessor {
 					part.append(character);
 				} else {
 					lastCharacterIsWhitespace = true;
-//					strings.add(part.toString());
-//					part = new StringBuffer();
+					// strings.add(part.toString());
+					// part = new StringBuffer();
 					continue;
 				}
 			} else {
@@ -130,29 +71,92 @@ public class MultipleInputString extends TemplatePreProcessor {
 			}
 
 		}
-		if ( inbetweenQuotationMarks ) {
-			throw new ParseException("No end quotations marks.", string.length()-1);
+		if (inbetweenQuotationMarks) {
+			throw new ParseException("No end quotations marks.", string
+					.length() - 1);
 		} else {
-			if ( part.length() > 0 ) 
+			if (part.length() > 0)
 				strings.add(part.toString());
 		}
 		return strings;
 	}
-	
-	public static void main(String[] args) {
-		
+
+	ArrayList<Element> addedElements = new ArrayList<Element>();
+
+	Element originalElement = null;
+
+	Element oldParent = null;
+
+	public MultipleInputString(TemplateNode templateNode) {
+		super(templateNode);
+		if (originalElement == null) {
+			originalElement = (Element) node.getElement().cloneNode(true);
+		}
+	}
+
+	@Override
+	public void process() throws TemplatePreProcessorException {
+
+		DebugUtils.jsdlDebugOutput("before preprocessing node: "
+				+ node.getName(), node.getTemplate().getTemplateDocument());
+
+		if (node.getValue() == null || "".equals(node.getValue())) {
+			// maybe delete the element?
+			return;
+		}
+
 		ArrayList<String> strings = null;
 		try {
-			strings = parseString("cat  hallo \"what is  up\" fellow \" traveller?\"  ");
+			strings = parseString(node.getValue());
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new TemplatePreProcessorException(
+					"Could not parse input string.", e);
 		}
-		System.out.println("Parsed strings:");
-		for (String string : strings) {
-			System.out.println("String: "+string);
+
+		if (strings == null || strings.size() < 1) {
+			throw new TemplatePreProcessorException(
+					"Not enough input provided to parse arguments.");
 		}
-		
+
+		// the first element stays like it is, only one value is set
+		node.getElement().setTextContent(strings.get(strings.size() - 1));
+
+		Element parent = (Element) (node.getElement().getParentNode());
+		oldParent = parent;
+		// create and insert the cloned elements
+		for (int i = 0; i < strings.size() - 1; i++) {
+			Element newElement = (Element) node.getElement().cloneNode(true);
+
+			newElement.setTextContent(strings.get(i));
+
+			parent.insertBefore(newElement, node.getElement());
+
+			addedElements.add(newElement);
+
+		}
+
+		DebugUtils.jsdlDebugOutput("after preprocessing node: "
+				+ node.getName(), node.getTemplate().getTemplateDocument());
+	}
+
+	@Override
+	protected void resetTemplateNode() {
+
+		DebugUtils.jsdlDebugOutput("before resetting node: " + node.getName(),
+				node.getTemplate().getTemplateDocument());
+
+		// remove elements from previous run
+		for (Element element : addedElements) {
+			try {
+				oldParent.removeChild(element);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		DebugUtils.jsdlDebugOutput("after resetting node: " + node.getName(),
+				node.getTemplate().getTemplateDocument());
+
 	}
 
 }

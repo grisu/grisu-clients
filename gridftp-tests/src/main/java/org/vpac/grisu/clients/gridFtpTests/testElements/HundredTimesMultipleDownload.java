@@ -69,6 +69,22 @@ public class HundredTimesMultipleDownload extends GridFtpTestElement {
 
 	}
 
+	@Override
+	public String getDescription() {
+		return "A very simple multiple download of a small text file. This test downloads the file 100 times from the same filesystem.";
+	}
+
+	// @Override
+	// public LinkedList<GridFtpAction> getGridFtpActions() {
+	//
+	// return actions;
+	// }
+
+	@Override
+	public String getTestName() {
+		return "HundredTimesMultipleDownload";
+	}
+
 	protected LinkedList<List<GridFtpActionItem>> setupGridFtpActionItems() {
 
 		LinkedList<List<GridFtpActionItem>> actionItems = new LinkedList<List<GridFtpActionItem>>();
@@ -105,22 +121,6 @@ public class HundredTimesMultipleDownload extends GridFtpTestElement {
 
 		return actionItems;
 
-	}
-
-	// @Override
-	// public LinkedList<GridFtpAction> getGridFtpActions() {
-	//
-	// return actions;
-	// }
-
-	@Override
-	public String getTestName() {
-		return "HundredTimesMultipleDownload";
-	}
-
-	@Override
-	public String getDescription() {
-		return "A very simple multiple download of a small text file. This test downloads the file 100 times from the same filesystem.";
 	}
 
 }

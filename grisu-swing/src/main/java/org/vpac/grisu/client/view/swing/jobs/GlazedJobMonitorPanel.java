@@ -19,7 +19,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.vpac.grisu.client.control.EnvironmentManager;
@@ -27,8 +26,6 @@ import org.vpac.grisu.client.control.jobs.JobComparator;
 import org.vpac.grisu.client.control.jobs.JobFilterator;
 import org.vpac.grisu.client.control.jobs.JobnameComparator;
 import org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObject;
-import org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl;
-import org.vpac.grisu.client.model.template.JsdlTemplateListener;
 import org.vpac.grisu.client.view.swing.utils.Utils;
 import org.vpac.grisu.control.JobConstants;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
@@ -50,15 +47,38 @@ import com.jgoodies.forms.layout.RowSpec;
 
 public class GlazedJobMonitorPanel extends JPanel {
 
+	/**
+	 * WindowBuilder generated method.<br>
+	 * Please don't remove this method or its invocations.<br>
+	 * It used by WindowBuilder to associate the {@link javax.swing.JPopupMenu}
+	 * with parent.
+	 */
+	private static void addPopup(Component component, final JPopupMenu popup) {
+		component.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger())
+					showMenu(e);
+			}
+
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger())
+					showMenu(e);
+			}
+
+			private void showMenu(MouseEvent e) {
+				popup.show(e.getComponent(), e.getX(), e.getY());
+			}
+		});
+	}
 	private JCheckBox updateCompleteListCheckBox;
 	private JMenuItem viewJobDetailsMenuItem;
 	private JMenuItem killAndCleanMenuItem;
 	private JMenuItem killJobMenuItem;
 	private JMenuItem refreshMenuItem;
 	private JPopupMenu popupMenu;
+
 	static final Logger myLogger = Logger.getLogger(GlazedJobMonitorPanel.class
 			.getName());
-
 	private JLabel filterLabel;
 	private JTextField filterField;
 	private JButton refreshButton;
@@ -66,11 +86,10 @@ public class GlazedJobMonitorPanel extends JPanel {
 	private JTable table;
 	private JScrollPane scrollPane;
 	private EventTableModel<GrisuJobMonitoringObject> jobModel = null;
+
 	private EventSelectionModel<GrisuJobMonitoringObject> selectionModel = null;
 
 	private EnvironmentManager em = null;
-	
-	private boolean firstRunFinished = false;
 
 	// /**
 	// * Create the panel
@@ -81,6 +100,8 @@ public class GlazedJobMonitorPanel extends JPanel {
 	// //
 	// }
 
+	private boolean firstRunFinished = false;
+
 	public GlazedJobMonitorPanel(final EnvironmentManager em) {
 		super();
 		init(em);
@@ -90,150 +111,163 @@ public class GlazedJobMonitorPanel extends JPanel {
 		updateWholeJobTable();
 	}
 
-	public void updateSelectedJobs() {
+	private void cleanJobs() {
 
-		new Thread() {
-			public void run() {
-				setPanelBusy(true);
-				try {
-					for (int row : getTable().getSelectedRows()) {
-						final GrisuJobMonitoringObject job = jobModel
-						.getElementAt(row);
-						updateJob(job);
-						jobModel.fireTableRowsUpdated(row, row);
-					}
-
-				} finally {
-					setPanelBusy(false);
-				}
-			}
-		}.start();
-
-	}
-
-	private void updateJob(final GrisuJobMonitoringObject job) {
-		if (job.getStatusAsInt() < JobConstants.FINISHED_EITHER_WAY) {
-
-			final Map<String, String> tempMap;
-
-			try {
-				tempMap = em.getServiceInterface().getJob(
-						job.getName()).propertiesAsMap();
-			} catch (NoSuchJobException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return;
-			}
-
-//			Runnable doFillDetails = new Runnable() {
-//				public void run() {
-					job.fillJobDetails(tempMap);
-//				}
-//			};
-
-//			SwingUtilities.invokeLater(doFillDetails);
+		StringBuffer message = new StringBuffer();
+		message.append("You are about to kill and clean these jobs:\n\n");
+		for (GrisuJobMonitoringObject job : selectionModel.getSelected()) {
+			message.append(job.getName() + "\n");
 		}
-	}
+		message
+				.append("\n\nAll data that was produced by these jobs will\nbe deleted. Do you really want to do that?");
+		int answer = JOptionPane.showConfirmDialog(this, message.toString(),
+				"Kill Jobs", JOptionPane.YES_NO_OPTION);
 
-	public void updateWholeJobTable() {
+		if (answer != JOptionPane.YES_OPTION) {
+			return;
+		}
 
 		new Thread() {
 			public void run() {
 
 				setPanelBusy(true);
+
 				try {
-					// for (final GrisuJobMonitoringObject job :
-					// em.getGlazedJobManagement()
-					// .getAllJobs(false)) {
-					for (int i = 0; i < jobModel.getRowCount(); i++) {
-
-						final GrisuJobMonitoringObject job = jobModel
-								.getElementAt(i);
-
-						updateJob(job);
-
-						jobModel.fireTableRowsUpdated(i, i);
-					}
-
-					// jobModel.fireTableDataChanged();
-					if ( ! firstRunFinished ) {
-						// sort table according to submissionTime
-						
-					}
-					
-					firstRunFinished = true;
+					em.getJobManager().cleanJobs(selectionModel.getSelected());
+				} catch (Throwable e) {
+					e.printStackTrace();
+					setPanelBusy(false);
+					Utils.showErrorMessage(em, GlazedJobMonitorPanel.this,
+							"unspecifiedJobCleanError", null);
 				} finally {
 					setPanelBusy(false);
 				}
+
 			}
-
 		}.start();
-
 	}
 
-	public void init(EnvironmentManager em) {
-		setLayout(new FormLayout(
-			new ColumnSpec[] {
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("default:grow(1.0)"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC},
-			new RowSpec[] {
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.PREF_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("default:grow(1.0)"),
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.PREF_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC}));
-		this.em = em;
+	/**
+	 * @return
+	 */
+	protected JButton getDeleteButton() {
+		if (deleteButton == null) {
+			deleteButton = new JButton();
+			deleteButton.addActionListener(new ActionListener() {
+				public void actionPerformed(final ActionEvent e) {
 
-		add(getScrollPane(), new CellConstraints(2, 4, 5, 1, CellConstraints.FILL, CellConstraints.FILL));
-		add(getDeleteButton(), new CellConstraints(2, 6, CellConstraints.LEFT,
-				CellConstraints.CENTER));
-		add(getRefreshButton(), new CellConstraints(6, 6,
-				CellConstraints.RIGHT, CellConstraints.DEFAULT));
-		add(getFilterField(), new CellConstraints(4, 2, 3, 1,
-				CellConstraints.FILL, CellConstraints.CENTER));
-		add(getFilterLabel(), new CellConstraints(2, 2, CellConstraints.RIGHT,
-				CellConstraints.CENTER));
+					myLogger.debug("Delete button pressed.");
 
-		String[] propertyNames = new String[] { "name", "status",
-				"submissionTime", "submissionHost", "fqan" };
-		String[] columnLabels = new String[] { "Jobname", "Status",
-				"Submission Time", "Submission Host", "VO" };
+					cleanJobs();
+				}
+			});
+			deleteButton.setText("Kill & clean");
+		}
+		return deleteButton;
+	}
 
-		TableFormat<GrisuJobMonitoringObject> tf = GlazedLists.tableFormat(
-				GrisuJobMonitoringObject.class, propertyNames, columnLabels);
-		SortedList<GrisuJobMonitoringObject> sortedJobList = new SortedList<GrisuJobMonitoringObject>(
-				em.getJobManager().getAllJobs(false),
-//				new JobComparator());
-				new JobnameComparator());
-		// jobModel = new
-		// EventTableModel<GrisuJobMonitoringObject>(em.getGlazedJobManagement().getAllJobs(),
-		// tf);
-		// add filtering to the table
-		FilterList<GrisuJobMonitoringObject> textFilteredIssues = new FilterList<GrisuJobMonitoringObject>(
-				sortedJobList, new TextComponentMatcherEditor(getFilterField(),
-						new JobFilterator()));
+	/**
+	 * @return
+	 */
+	protected JTextField getFilterField() {
+		if (filterField == null) {
+			filterField = new JTextField();
+		}
+		return filterField;
+	}
 
-		jobModel = new EventTableModel<GrisuJobMonitoringObject>(
-				textFilteredIssues, tf);
-		selectionModel = new EventSelectionModel<GrisuJobMonitoringObject>(
-				textFilteredIssues);
+	/**
+	 * @return
+	 */
+	protected JLabel getFilterLabel() {
+		if (filterLabel == null) {
+			filterLabel = new JLabel();
+			filterLabel.setText("Filter:");
+		}
+		return filterLabel;
+	}
 
-		getTable().setModel(jobModel);
-		getTable().setSelectionModel(selectionModel);
+	/**
+	 * @return
+	 */
+	protected JMenuItem getKillAndCleanMenuItem() {
+		if (killAndCleanMenuItem == null) {
+			killAndCleanMenuItem = new JMenuItem();
+			killAndCleanMenuItem.addActionListener(new ActionListener() {
+				public void actionPerformed(final ActionEvent e) {
+					cleanJobs();
+				}
+			});
+			killAndCleanMenuItem.setText("Kill & clean job(s)");
+		}
+		return killAndCleanMenuItem;
+	}
 
-		// add sorting to the table
-		TableComparatorChooser tableSorter = new TableComparatorChooser(
-				getTable(), sortedJobList, false);
-		tableSorter.getComparatorsForColumn(2).clear();
-		tableSorter.getComparatorsForColumn(2).add(new JobComparator());
+	/**
+	 * @return
+	 */
+	protected JMenuItem getKillJobMenuItem() {
+		if (killJobMenuItem == null) {
+			killJobMenuItem = new JMenuItem();
+			killJobMenuItem.addActionListener(new ActionListener() {
+				public void actionPerformed(final ActionEvent e) {
+					killJobs();
+				}
+			});
+			killJobMenuItem.setText("Kill job(s)");
+		}
+		return killJobMenuItem;
+	}
 
+	/**
+	 * @return
+	 */
+	protected JPopupMenu getPopupMenu() {
+		if (popupMenu == null) {
+			popupMenu = new JPopupMenu();
+			popupMenu.add(getViewJobDetailsMenuItem());
+			popupMenu.add(getRefreshMenuItem());
+			popupMenu.add(getKillJobMenuItem());
+			popupMenu.add(getKillAndCleanMenuItem());
+		}
+		return popupMenu;
+	}
+
+	/**
+	 * @return
+	 */
+	protected JButton getRefreshButton() {
+		if (refreshButton == null) {
+			refreshButton = new JButton();
+
+			refreshButton.addActionListener(new ActionListener() {
+				public void actionPerformed(final ActionEvent e) {
+
+					myLogger.debug("Refresh button pressed.");
+
+					refreshJobs(getUpdateCompleteListCheckBox().isSelected());
+
+				}
+			});
+			refreshButton.setText("Refresh all");
+		}
+		return refreshButton;
+	}
+
+	/**
+	 * @return
+	 */
+	protected JMenuItem getRefreshMenuItem() {
+		if (refreshMenuItem == null) {
+			refreshMenuItem = new JMenuItem();
+			refreshMenuItem.addActionListener(new ActionListener() {
+				public void actionPerformed(final ActionEvent e) {
+					updateSelectedJobs();
+				}
+			});
+			refreshMenuItem.setText("Refresh");
+		}
+		return refreshMenuItem;
 	}
 
 	/**
@@ -269,135 +303,96 @@ public class GlazedJobMonitorPanel extends JPanel {
 	/**
 	 * @return
 	 */
-	protected JButton getDeleteButton() {
-		if (deleteButton == null) {
-			deleteButton = new JButton();
-			deleteButton.addActionListener(new ActionListener() {
+	protected JCheckBox getUpdateCompleteListCheckBox() {
+		if (updateCompleteListCheckBox == null) {
+			updateCompleteListCheckBox = new JCheckBox();
+			updateCompleteListCheckBox
+					.setHorizontalTextPosition(SwingConstants.LEADING);
+			updateCompleteListCheckBox
+					.setText("Rebuild Joblist (takes longer)");
+			updateCompleteListCheckBox
+					.setToolTipText("<html>If this is checked, Grisu deletes and rebuilds the whole <br>"
+							+ "internal list of jobs. This might be useful if you use another client to submit jobs.<br>"
+							+ "It makes sure that every one of your jobs will be displayed here,<br>"
+							+ "but in most cases it takes considerably longer.</html>");
+		}
+		return updateCompleteListCheckBox;
+	}
+
+	/**
+	 * @return
+	 */
+	protected JMenuItem getViewJobDetailsMenuItem() {
+		if (viewJobDetailsMenuItem == null) {
+			viewJobDetailsMenuItem = new JMenuItem();
+			viewJobDetailsMenuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(final ActionEvent e) {
-
-					myLogger.debug("Delete button pressed.");
-
-					cleanJobs();
+					showJobDetails();
 				}
 			});
-			deleteButton.setText("Kill & clean");
+			viewJobDetailsMenuItem.setText("View job details");
 		}
-		return deleteButton;
+		return viewJobDetailsMenuItem;
 	}
 
-	/**
-	 * @return
-	 */
-	protected JButton getRefreshButton() {
-		if (refreshButton == null) {
-			refreshButton = new JButton();
+	public void init(EnvironmentManager em) {
+		setLayout(new FormLayout(new ColumnSpec[] {
+				FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
+				FormFactory.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("default:grow(1.0)"),
+				FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
+				FormFactory.RELATED_GAP_COLSPEC }, new RowSpec[] {
+				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.PREF_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("default:grow(1.0)"),
+				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.PREF_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC }));
+		this.em = em;
 
-			refreshButton.addActionListener(new ActionListener() {
-				public void actionPerformed(final ActionEvent e) {
+		add(getScrollPane(), new CellConstraints(2, 4, 5, 1,
+				CellConstraints.FILL, CellConstraints.FILL));
+		add(getDeleteButton(), new CellConstraints(2, 6, CellConstraints.LEFT,
+				CellConstraints.CENTER));
+		add(getRefreshButton(), new CellConstraints(6, 6,
+				CellConstraints.RIGHT, CellConstraints.DEFAULT));
+		add(getFilterField(), new CellConstraints(4, 2, 3, 1,
+				CellConstraints.FILL, CellConstraints.CENTER));
+		add(getFilterLabel(), new CellConstraints(2, 2, CellConstraints.RIGHT,
+				CellConstraints.CENTER));
 
-					myLogger.debug("Refresh button pressed.");
+		String[] propertyNames = new String[] { "name", "status",
+				"submissionTime", "submissionHost", "fqan" };
+		String[] columnLabels = new String[] { "Jobname", "Status",
+				"Submission Time", "Submission Host", "VO" };
 
-					refreshJobs(getUpdateCompleteListCheckBox().isSelected());
+		TableFormat<GrisuJobMonitoringObject> tf = GlazedLists.tableFormat(
+				GrisuJobMonitoringObject.class, propertyNames, columnLabels);
+		SortedList<GrisuJobMonitoringObject> sortedJobList = new SortedList<GrisuJobMonitoringObject>(
+				em.getJobManager().getAllJobs(false),
+				// new JobComparator());
+				new JobnameComparator());
+		// jobModel = new
+		// EventTableModel<GrisuJobMonitoringObject>(em.getGlazedJobManagement().getAllJobs(),
+		// tf);
+		// add filtering to the table
+		FilterList<GrisuJobMonitoringObject> textFilteredIssues = new FilterList<GrisuJobMonitoringObject>(
+				sortedJobList, new TextComponentMatcherEditor(getFilterField(),
+						new JobFilterator()));
 
-				}
-			});
-			refreshButton.setText("Refresh all");
-		}
-		return refreshButton;
-	}
+		jobModel = new EventTableModel<GrisuJobMonitoringObject>(
+				textFilteredIssues, tf);
+		selectionModel = new EventSelectionModel<GrisuJobMonitoringObject>(
+				textFilteredIssues);
 
-	/**
-	 * @return
-	 */
-	protected JTextField getFilterField() {
-		if (filterField == null) {
-			filterField = new JTextField();
-		}
-		return filterField;
-	}
+		getTable().setModel(jobModel);
+		getTable().setSelectionModel(selectionModel);
 
-	/**
-	 * @return
-	 */
-	protected JLabel getFilterLabel() {
-		if (filterLabel == null) {
-			filterLabel = new JLabel();
-			filterLabel.setText("Filter:");
-		}
-		return filterLabel;
-	}
+		// add sorting to the table
+		TableComparatorChooser tableSorter = new TableComparatorChooser(
+				getTable(), sortedJobList, false);
+		tableSorter.getComparatorsForColumn(2).clear();
+		tableSorter.getComparatorsForColumn(2).add(new JobComparator());
 
-	private void showJobDetails() {
-
-		new Thread() {
-			public void run() {
-				setPanelBusy(true);
-				try {
-					for (GrisuJobMonitoringObject job : selectionModel
-							.getSelected()) {
-						
-						if ( job.getStatusAsInt(true) > JobConstants.READY_TO_SUBMIT ) {
-						DefaultJobDetailDialog jdp = new DefaultJobDetailDialog(
-								em);
-
-						jdp.setJob(job);
-
-						jdp.setVisible(true);
-						} else {
-							Utils.showErrorMessage(em, GlazedJobMonitorPanel.this,
-									"jobNotSubmittedYet", null);
-							System.out.println("Error Message closed.");
-							setPanelBusy(false);
-						}
-					}
-				} catch (Exception e) {
-					myLogger.error(e);
-					Utils.showErrorMessage(em, GlazedJobMonitorPanel.this,
-							"couldNotFindJobDirecotory", e);
-					setPanelBusy(false);
-					System.out.println("Error Message closed.");
-				} finally {
-					setPanelBusy(false);
-				}
-			}
-
-		}.start();
-	}
-
-	private void cleanJobs() {
-
-		StringBuffer message = new StringBuffer();
-		message.append("You are about to kill and clean these jobs:\n\n");
-		for (GrisuJobMonitoringObject job : selectionModel.getSelected()) {
-			message.append(job.getName() + "\n");
-		}
-		message
-				.append("\n\nAll data that was produced by these jobs will\nbe deleted. Do you really want to do that?");
-		int answer = JOptionPane.showConfirmDialog(this, message.toString(),
-				"Kill Jobs", JOptionPane.YES_NO_OPTION);
-
-		if (answer != JOptionPane.YES_OPTION) {
-			return;
-		}
-
-		new Thread() {
-			public void run() {
-
-				setPanelBusy(true);
-
-				try {
-					em.getJobManager().cleanJobs(
-							selectionModel.getSelected());
-				} catch (Throwable e) {
-					e.printStackTrace();
-					setPanelBusy(false);
-					Utils.showErrorMessage(em, GlazedJobMonitorPanel.this, "unspecifiedJobCleanError", null);
-				} finally {
-					setPanelBusy(false);
-				}
-
-			}
-		}.start();
 	}
 
 	private void killJobs() {
@@ -421,14 +416,46 @@ public class GlazedJobMonitorPanel extends JPanel {
 				setPanelBusy(true);
 
 				try {
-					em.getJobManager().killJobs(
-							selectionModel.getSelected());
+					em.getJobManager().killJobs(selectionModel.getSelected());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} finally {
 					setPanelBusy(false);
 				}
+
+			}
+		}.start();
+
+	}
+
+	public void refreshJobs(final boolean forceServerRefresh) {
+
+		new Thread() {
+			public void run() {
+
+				// setPanelBusy(true);
+				// try {
+
+				if (forceServerRefresh) {
+					// refresh all jobs
+					em.getJobManager().refreshAllJobs(true);
+					updateWholeJobTable();
+				} else {
+
+					updateWholeJobTable();
+					// if (selectionModel.getSelected().size() == 0
+					// || refreshAll) {
+					// em.getGlazedJobManagement().refreshAllJobs(false);
+					// } else {
+					// em.getGlazedJobManagement().refreshJobs(
+					// selectionModel.getSelected());
+					// }
+				}
+
+				// } finally {
+				// setPanelBusy(false);
+				// }
 
 			}
 		}.start();
@@ -465,158 +492,123 @@ public class GlazedJobMonitorPanel extends JPanel {
 
 	}
 
-	public void refreshJobs(final boolean forceServerRefresh) {
+	private void showJobDetails() {
 
 		new Thread() {
 			public void run() {
+				setPanelBusy(true);
+				try {
+					for (GrisuJobMonitoringObject job : selectionModel
+							.getSelected()) {
 
-//				setPanelBusy(true);
-//				try {
+						if (job.getStatusAsInt(true) > JobConstants.READY_TO_SUBMIT) {
+							DefaultJobDetailDialog jdp = new DefaultJobDetailDialog(
+									em);
 
-					if (forceServerRefresh) {
-						// refresh all jobs
-						em.getJobManager().refreshAllJobs(true);
-						updateWholeJobTable();
-					} else {
+							jdp.setJob(job);
 
-						updateWholeJobTable();
-						// if (selectionModel.getSelected().size() == 0
-						// || refreshAll) {
-						// em.getGlazedJobManagement().refreshAllJobs(false);
-						// } else {
-						// em.getGlazedJobManagement().refreshJobs(
-						// selectionModel.getSelected());
-						// }
+							jdp.setVisible(true);
+						} else {
+							Utils.showErrorMessage(em,
+									GlazedJobMonitorPanel.this,
+									"jobNotSubmittedYet", null);
+							System.out.println("Error Message closed.");
+							setPanelBusy(false);
+						}
+					}
+				} catch (Exception e) {
+					myLogger.error(e);
+					Utils.showErrorMessage(em, GlazedJobMonitorPanel.this,
+							"couldNotFindJobDirecotory", e);
+					setPanelBusy(false);
+					System.out.println("Error Message closed.");
+				} finally {
+					setPanelBusy(false);
+				}
+			}
+
+		}.start();
+	}
+
+	private void updateJob(final GrisuJobMonitoringObject job) {
+		if (job.getStatusAsInt() < JobConstants.FINISHED_EITHER_WAY) {
+
+			final Map<String, String> tempMap;
+
+			try {
+				tempMap = em.getServiceInterface().getJob(job.getName())
+						.propertiesAsMap();
+			} catch (NoSuchJobException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return;
+			}
+
+			// Runnable doFillDetails = new Runnable() {
+			// public void run() {
+			job.fillJobDetails(tempMap);
+			// }
+			// };
+
+			// SwingUtilities.invokeLater(doFillDetails);
+		}
+	}
+
+	public void updateSelectedJobs() {
+
+		new Thread() {
+			public void run() {
+				setPanelBusy(true);
+				try {
+					for (int row : getTable().getSelectedRows()) {
+						final GrisuJobMonitoringObject job = jobModel
+								.getElementAt(row);
+						updateJob(job);
+						jobModel.fireTableRowsUpdated(row, row);
 					}
 
-//				} finally {
-//					setPanelBusy(false);
-//				}
-
+				} finally {
+					setPanelBusy(false);
+				}
 			}
 		}.start();
 
 	}
 
-	/**
-	 * @return
-	 */
-	protected JPopupMenu getPopupMenu() {
-		if (popupMenu == null) {
-			popupMenu = new JPopupMenu();
-			popupMenu.add(getViewJobDetailsMenuItem());
-			popupMenu.add(getRefreshMenuItem());
-			popupMenu.add(getKillJobMenuItem());
-			popupMenu.add(getKillAndCleanMenuItem());
-		}
-		return popupMenu;
-	}
+	public void updateWholeJobTable() {
 
-	/**
-	 * WindowBuilder generated method.<br>
-	 * Please don't remove this method or its invocations.<br>
-	 * It used by WindowBuilder to associate the {@link javax.swing.JPopupMenu}
-	 * with parent.
-	 */
-	private static void addPopup(Component component, final JPopupMenu popup) {
-		component.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger())
-					showMenu(e);
+		new Thread() {
+			public void run() {
+
+				setPanelBusy(true);
+				try {
+					// for (final GrisuJobMonitoringObject job :
+					// em.getGlazedJobManagement()
+					// .getAllJobs(false)) {
+					for (int i = 0; i < jobModel.getRowCount(); i++) {
+
+						final GrisuJobMonitoringObject job = jobModel
+								.getElementAt(i);
+
+						updateJob(job);
+
+						jobModel.fireTableRowsUpdated(i, i);
+					}
+
+					// jobModel.fireTableDataChanged();
+					if (!firstRunFinished) {
+						// sort table according to submissionTime
+
+					}
+
+					firstRunFinished = true;
+				} finally {
+					setPanelBusy(false);
+				}
 			}
 
-			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger())
-					showMenu(e);
-			}
+		}.start();
 
-			private void showMenu(MouseEvent e) {
-				popup.show(e.getComponent(), e.getX(), e.getY());
-			}
-		});
-	}
-
-	/**
-	 * @return
-	 */
-	protected JMenuItem getRefreshMenuItem() {
-		if (refreshMenuItem == null) {
-			refreshMenuItem = new JMenuItem();
-			refreshMenuItem.addActionListener(new ActionListener() {
-				public void actionPerformed(final ActionEvent e) {
-					updateSelectedJobs();
-				}
-			});
-			refreshMenuItem.setText("Refresh");
-		}
-		return refreshMenuItem;
-	}
-
-	/**
-	 * @return
-	 */
-	protected JMenuItem getKillJobMenuItem() {
-		if (killJobMenuItem == null) {
-			killJobMenuItem = new JMenuItem();
-			killJobMenuItem.addActionListener(new ActionListener() {
-				public void actionPerformed(final ActionEvent e) {
-					killJobs();
-				}
-			});
-			killJobMenuItem.setText("Kill job(s)");
-		}
-		return killJobMenuItem;
-	}
-
-	/**
-	 * @return
-	 */
-	protected JMenuItem getKillAndCleanMenuItem() {
-		if (killAndCleanMenuItem == null) {
-			killAndCleanMenuItem = new JMenuItem();
-			killAndCleanMenuItem.addActionListener(new ActionListener() {
-				public void actionPerformed(final ActionEvent e) {
-					cleanJobs();
-				}
-			});
-			killAndCleanMenuItem.setText("Kill & clean job(s)");
-		}
-		return killAndCleanMenuItem;
-	}
-
-	/**
-	 * @return
-	 */
-	protected JMenuItem getViewJobDetailsMenuItem() {
-		if (viewJobDetailsMenuItem == null) {
-			viewJobDetailsMenuItem = new JMenuItem();
-			viewJobDetailsMenuItem.addActionListener(new ActionListener() {
-				public void actionPerformed(final ActionEvent e) {
-					showJobDetails();
-				}
-			});
-			viewJobDetailsMenuItem.setText("View job details");
-		}
-		return viewJobDetailsMenuItem;
-	}
-
-	/**
-	 * @return
-	 */
-	protected JCheckBox getUpdateCompleteListCheckBox() {
-		if (updateCompleteListCheckBox == null) {
-			updateCompleteListCheckBox = new JCheckBox();
-			updateCompleteListCheckBox
-					.setHorizontalTextPosition(SwingConstants.LEADING);
-			updateCompleteListCheckBox
-					.setText("Rebuild Joblist (takes longer)");
-			updateCompleteListCheckBox
-					.setToolTipText("<html>If this is checked, Grisu deletes and rebuilds the whole <br>"
-							+ "internal list of jobs. This might be useful if you use another client to submit jobs.<br>"
-							+ "It makes sure that every one of your jobs will be displayed here,<br>"
-							+ "but in most cases it takes considerably longer.</html>");
-		}
-		return updateCompleteListCheckBox;
 	}
 
 }

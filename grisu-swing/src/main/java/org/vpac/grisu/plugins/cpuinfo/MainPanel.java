@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.plugins.cpuinfo;
 
 import java.net.URI;
@@ -15,15 +13,17 @@ import org.vpac.grisu.plugins.PluginPanel;
 public class MainPanel implements PluginPanel {
 
 	private TextViewerPanel viewerPanel = null;
-	
+
 	public JPanel getJPanel() {
 		return viewerPanel;
 	}
+
 	public void initializePanel(GrisuJobMonitoringObject job) {
 		viewerPanel = new TextViewerPanel();
 		GrisuFileObject stdout = null;
 		try {
-			stdout = job.getJobDirectoryObject().getFileSystemBackend().getFileObject(new URI(job.getStdout()));
+			stdout = job.getJobDirectoryObject().getFileSystemBackend()
+					.getFileObject(new URI(job.getStdout()));
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -34,7 +34,7 @@ public class ExampleInputPanel extends AbstractInputPanel {
 	@Override
 	protected void setupComponent() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

@@ -23,8 +23,8 @@ public class GridBlenderSubmit implements BlenderMode {
 
 		final Cli<BlenderSubmitCommandLineArgs> cli = CliFactory
 				.createCli(BlenderSubmitCommandLineArgs.class);
-		
-		if ( help ) {
+
+		if (help) {
 			System.out.println(cli.getHelpMessage());
 			System.exit(0);
 		}
@@ -37,10 +37,8 @@ public class GridBlenderSubmit implements BlenderMode {
 			System.out.println(cli.getHelpMessage());
 			System.exit(1);
 		}
-		
 
-		
-		if ( ! commandlineArgs.isJobname() ) {
+		if (!commandlineArgs.isJobname()) {
 			System.out.println("Jobname not specified.");
 			System.out.println(cli.getHelpMessage());
 			System.exit(1);
@@ -49,7 +47,7 @@ public class GridBlenderSubmit implements BlenderMode {
 	}
 
 	public void execute() {
-		
+
 		Date start = new Date();
 
 		String fqan = commandlineArgs.getVo();
@@ -68,14 +66,17 @@ public class GridBlenderSubmit implements BlenderMode {
 						System.out.println("Deleting existing multipart job "
 								+ jobname + ". This might take a while...");
 					}
-					
+
 					try {
 						si.kill(jobname, true);
-						
+
 						DtoActionStatus status;
-						while ( ! (status = si.getActionStatus(jobname)).isFinished() ) {
-							double percentage = status.getCurrentElements() * 100 / status.getTotalElements();
-							System.out.println("Deletion "+percentage+"% finished.");
+						while (!(status = si.getActionStatus(jobname))
+								.isFinished()) {
+							double percentage = status.getCurrentElements()
+									* 100 / status.getTotalElements();
+							System.out.println("Deletion " + percentage
+									+ "% finished.");
 							Thread.sleep(3000);
 						}
 					} catch (NoSuchJobException ne) {
@@ -116,15 +117,17 @@ public class GridBlenderSubmit implements BlenderMode {
 		}
 
 		job.setVerbose(commandlineArgs.isVerbose());
-		
-		if ( commandlineArgs.isExclude() ) {
-			job.setLocationsToExclude(commandlineArgs.getExclude().toArray(new String[]{}));
-		} else if ( commandlineArgs.isInclude() ){
-			job.setLocationsToInclude(commandlineArgs.getInclude().toArray(new String[]{}));
+
+		if (commandlineArgs.isExclude()) {
+			job.setLocationsToExclude(commandlineArgs.getExclude().toArray(
+					new String[] {}));
+		} else if (commandlineArgs.isInclude()) {
+			job.setLocationsToInclude(commandlineArgs.getInclude().toArray(
+					new String[] {}));
 		}
 
 		String fluidsFolder = null;
-		if ( commandlineArgs.isFluidsFolder() ) {
+		if (commandlineArgs.isFluidsFolder()) {
 			fluidsFolder = commandlineArgs.getFluidsFolder();
 		}
 		try {
@@ -134,11 +137,11 @@ public class GridBlenderSubmit implements BlenderMode {
 					+ e1.getLocalizedMessage());
 			System.exit(1);
 		}
-		
-		if ( commandlineArgs.isStartFrame() ) {
+
+		if (commandlineArgs.isStartFrame()) {
 			job.setFirstFrame(commandlineArgs.getStartFrame());
 		}
-		if ( commandlineArgs.isEndFrame() ) {
+		if (commandlineArgs.isEndFrame()) {
 			job.setLastFrame(commandlineArgs.getEndFrame());
 		}
 		job.setDefaultWalltimeInSeconds(commandlineArgs.getWalltime() * 60);
@@ -163,14 +166,15 @@ public class GridBlenderSubmit implements BlenderMode {
 					+ e.getLocalizedMessage());
 			System.exit(1);
 		} catch (InterruptedException e) {
-			System.err.println("Job submission interrupted: "+e.getLocalizedMessage());
+			System.err.println("Job submission interrupted: "
+					+ e.getLocalizedMessage());
 			System.exit(1);
 		}
 
-		 System.out.println("Blender job submission finished successfully...");
-		 
-		 System.out.println("Submission start: "+start.toString());
-		 System.out.println("Submission end: "+new Date().toString());
+		System.out.println("Blender job submission finished successfully...");
+
+		System.out.println("Submission start: " + start.toString());
+		System.out.println("Submission end: " + new Date().toString());
 
 	}
 

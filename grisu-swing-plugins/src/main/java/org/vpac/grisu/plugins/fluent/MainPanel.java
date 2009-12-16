@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.plugins.fluent;
 
 import javax.swing.JPanel;
@@ -14,6 +12,7 @@ public class MainPanel implements PluginPanel {
 	public JPanel getJPanel() {
 		return fluentIterationChartPanel;
 	}
+
 	public void initializePanel(GrisuJobMonitoringObject job) {
 		fluentIterationChartPanel = new FluentIterationChartPanel();
 		fluentIterationChartPanel.setFluentJob(job);

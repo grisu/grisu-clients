@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.model.template.nodes;
 
 import java.util.Enumeration;
@@ -33,13 +31,13 @@ public class TemplateNode {
 	public static final String HIDE_DESCRIPTION = "hideDescription";
 	public static final String HISTORY_KEY = "historyKey";
 	public static final String LOCKED_KEY = "locked";
-	
+
 	public static final String DEFAULT_HELP_ATTRIBUTE_NAME = "default";
-	
+
 	private JsdlTemplate template = null;
 
 	private String name = null;
-	
+
 	private Element element = null;
 	private String type = null;
 	private String defaultValue = null;
@@ -47,11 +45,11 @@ public class TemplateNode {
 	private String title = null;
 	private String description = null;
 	private String multiplicity = null;
-	// these are mostly to tell renderers how to render stuff. They shouldn't contain important information.
+	// these are mostly to tell renderers how to render stuff. They shouldn't
+	// contain important information.
 	private Map<String, String> otherProperties = new LinkedHashMap<String, String>();
-	
-	private Map<String, String> infoMap = null;
 
+	private Map<String, String> infoMap = null;
 
 	private String value = null;
 
@@ -62,7 +60,11 @@ public class TemplateNode {
 	private TemplateNodeValueSetter setter = null;
 	private TemplateNodeValidator validator = null;
 	private TemplatePreProcessor preprocessor = null;
-	
+
+	// ---------------------------------------------------------------------------------------
+	// Event stuff (TemplateNode)
+	private Vector<TemplateNodeListener> templateNodeListeners;
+
 	public TemplateNode(JsdlTemplate template, Element element) {
 		this.template = template;
 		this.element = element;
@@ -71,9 +73,9 @@ public class TemplateNode {
 		if (name == null || "".equals(name)) {
 			name = type;
 		}
-//		this.value = element.getAttribute("default");
+		// this.value = element.getAttribute("default");
 		this.title = element.getAttribute("title");
-		if ( this.title == null || "".equals(this.title) )
+		if (this.title == null || "".equals(this.title))
 			this.title = element.getAttribute("name");
 		this.description = element.getAttribute("description");
 		this.multiplicity = element.getAttribute("multiplicity");
@@ -82,271 +84,46 @@ public class TemplateNode {
 		}
 		this.defaultValue = element.getAttribute("defaultValue");
 		this.prefills = element.getAttribute("prefills").split(",");
-		
+
 		String validatorName = element.getAttribute("validator");
-		if ( validatorName != null && ! "".equals(validatorName) ) {
+		if (validatorName != null && !"".equals(validatorName)) {
 			try {
-				this.validator = ValidatorFactory.createValidator(this, validatorName);
+				this.validator = ValidatorFactory.createValidator(this,
+						validatorName);
 			} catch (ValidatorNotCreatedException e) {
-				myLogger.warn(e.getLocalizedMessage()+" Continuing without Validator.");
+				myLogger.warn(e.getLocalizedMessage()
+						+ " Continuing without Validator.");
 			}
 		}
-		
-		String other = element.getAttribute("other");
-		if ( other != null && !"".equals(other) ) {
 
-			for ( String part : other.split(",") ) {
-				if ( part.length() > 0 ) {
-					if ( part.indexOf("=") > 0 ) {
-						otherProperties.put(part.substring(0,part.indexOf("=")), part.substring(part.indexOf("=")+1));
-					} else if ( part.indexOf("=") == -1 ) {
+		String other = element.getAttribute("other");
+		if (other != null && !"".equals(other)) {
+
+			for (String part : other.split(",")) {
+				if (part.length() > 0) {
+					if (part.indexOf("=") > 0) {
+						otherProperties.put(part
+								.substring(0, part.indexOf("=")), part
+								.substring(part.indexOf("=") + 1));
+					} else if (part.indexOf("=") == -1) {
 						otherProperties.put(part, NON_MAP_PARAMETER);
 					}
-					
+
 				}
 			}
-			
-		}
-		
-		preprocessor = TemplateProcessorFactory
-		.createPreprocessor(this);
-			
-	}
-	
-	public void setTemplateNodeValueSetter(TemplateNodeValueSetter setter) {
-		this.setter = setter;
-	}
-	
-	public TemplateNodeValueSetter getTemplateNodeValueSetter() {
-		return this.setter;
-	}
 
-	public void process() throws TemplatePreProcessorException {
-		
-
-
-		// if (!inputIsValid()) {
-		// throw new TemplateProcessingException(
-		// "Input for this node is not valid. Can't proceed.");
-		// }
-
-//		if (	// check whether preprocessor should be used
-//				( "?".equals(multiplicity) && ( this.value != null && ! "".equals(this.value) ) ) || 
-//				"1".equals(this.multiplicity)) {
-			element.setTextContent(value);
-
-
-
-			if (preprocessor == null) {
-				myLogger.debug("No preprocessor for type " + this.getType()
-						+ " found. Doing nothing.");
-			} else {
-				myLogger.debug("Preprocessor found for type " + this.getType()
-						+ ". Starting to preprocess.");
-				try {
-					preprocessor.process();
-				} catch (TemplatePreProcessorException tpe) {
-					fireTemplateNodeEvent("Error processing input: "
-							+ tpe.getLocalizedMessage(),
-							TemplateNodeEvent.TEMPLATE_PROCESSED_INVALID);
-					possibleProcessingException = tpe;
-					throw tpe;
-				}
-				myLogger.debug("Preprocessing successfull.");
-			}
-
-//		} else if ("?".equals(this.multiplicity)) {
-//
-//		} else if ("*".equals(this.multiplicity)) {
-//
-//		} else {
-//			myLogger
-//					.error("Can't determine the multiplicity of this TemplateNode. This has to be an error in the template. Doing nothing.");
-//
-//		}
-//		cleanUpXmlElement();
-			possibleProcessingException = null;
-		fireTemplateNodeEvent(TemplateNodeEvent.DEFAULT_FILLED_MESSAGE,
-				TemplateNodeEvent.TEMPLATE_PROCESSED_VALID);
-	}
-
-//	private void cleanUpXmlElement() {
-//		element.removeAttribute("template");
-//		element.removeAttribute("name");
-//		element.removeAttribute("defaultValue");
-//		element.removeAttribute("description");
-//		element.removeAttribute("multiplicity");
-//		element.removeAttribute("prefills");
-//	}
-	
-	/**
-	 * This returns the exeption if the process method failed.
-	 * @returnthe error or null (if the process didn't fail).
-	 */
-	public Exception getError() {
-		return possibleProcessingException;
-	}
-	
-	public void reset() {
-		
-		fireTemplateNodeEvent(null, TemplateNodeEvent.RESET);
-		if (preprocessor == null) {
-			myLogger.debug("No preprocessor for type " + this.getType()
-					+ " found. No cleanup.");
-		} else {
-			myLogger.debug("Preprocessor found for type " + this.getType()
-					+ ". Starting to cleanup.");
-//			try {
-				preprocessor.reset();
-//			} catch (TemplatePreProcessorException tpe) {
-//				fireTemplateNodeEvent("Error processing input: "
-//						+ tpe.getLocalizedMessage(),
-//						TemplateNodeEvent.TEMPLATE_PROCESSED_INVALID);
-//				throw tpe;
-//			}
-			myLogger.debug("Cleaning up successful.");
-		}
-	}
-
-
-	public boolean isReady() {
-		
-		if ( this.setter == null ) 
-			throw new RuntimeException("No TemplateNodeValueSetter for TemlateNode: "+this.name+". This is most likely a bug in the implementation of the TemplateNode renderer.");
-		
-		this.value = setter.getExternalSetValue();
-
-		myLogger.debug("Got value \""+this.value+"\" for template node: "+getName());
-		// first we check whether user input is required
-		if ("?".equals(this.multiplicity) || "*".equals(this.multiplicity)
-				|| (this.value != null && !"".equals(this.value))) {
-
-			if ( ( "?".equals(this.multiplicity) || "*".equals(this.multiplicity) ) && (this.value == null || "".equals(this.value)) ) {
-				// user did not input anything and input was not required
-				return true;
-			}
-			
-			if ( "1".equals(this.multiplicity) && this.value.startsWith(JobConstants.DUMMY_START_STRING) ){
-				fireTemplateNodeEvent(TemplateNodeEvent.DEFAULT_REQUIRED_INPUT_EMPTY_MESSAGE, TemplateNodeEvent.TEMPLATE_FILLED_INVALID);
-				return false;
-			}
-			
-			// validate input
-			if (validator != null) {
-				try {
-					validator.validate();
-					return true;
-				} catch (TemplateValidateException tve) {
-					fireTemplateNodeEvent(tve.getLocalizedMessage(),
-							TemplateNodeEvent.TEMPLATE_FILLED_INVALID);
-					return false;
-				}
-			} else {
-				// in this case we accept every user input because there was no validator
-				return true;
-			}
-
-		} else {
-			fireTemplateNodeEvent(TemplateNodeEvent.DEFAULT_REQUIRED_INPUT_EMPTY_MESSAGE, TemplateNodeEvent.TEMPLATE_FILLED_INVALID);
-			return false;
 		}
 
-	}
-
-	public String getValue() {
-		return value;
-	}
-
-	public String getName() {
-		return name;
-	}
-	
-	public Map<String, String> getInfoMap() {
-
-		if ( infoMap == null ) {
-			infoMap = JsdlHelpers.getTemplateTagInfoItems(getTemplate().getTemplateDocument(), getName());
-			
-				if ( infoMap == null ) {
-					// so we don't do that everytime
-					infoMap = new HashMap<String, String>();
-				}
-				
-			}
-		return infoMap;
+		preprocessor = TemplateProcessorFactory.createPreprocessor(this);
 
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	// register a listener
+	synchronized public void addTemplateNodeListener(TemplateNodeListener l) {
+		if (templateNodeListeners == null)
+			templateNodeListeners = new Vector();
+		templateNodeListeners.addElement(l);
 	}
-	
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-	
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String[] getPrefills() {
-		return prefills;
-	}
-
-	public void setPrefills(String[] prefills) {
-		this.prefills = prefills;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getMultiplicity() {
-		return multiplicity;
-	}
-
-	public void setMultiplicity(String multiplicity) {
-		this.multiplicity = multiplicity;
-	}
-
-	public JsdlTemplate getTemplate() {
-		return template;
-	}
-
-	public Element getElement() {
-		return element;
-	}
-	
-	public void setElement(Element element) {
-		this.element = element;
-	}
-
-	// public TemplateNodeValidator getValidator() {
-	// return validator;
-	// }
-	//
-	// public boolean inputIsValid() {
-	// return valid;
-	// }
-	//
-	// public void setValid(boolean valid) {
-	// this.valid = valid;
-	// }
-
-	// ---------------------------------------------------------------------------------------
-	// Event stuff (TemplateNode)
-	private Vector<TemplateNodeListener> templateNodeListeners;
 
 	private void fireTemplateNodeEvent(String message, int event_type) {
 		// if we have no mountPointsListeners, do nothing...
@@ -377,11 +154,197 @@ public class TemplateNode {
 		}
 	}
 
-	// register a listener
-	synchronized public void addTemplateNodeListener(TemplateNodeListener l) {
-		if (templateNodeListeners == null)
-			templateNodeListeners = new Vector();
-		templateNodeListeners.addElement(l);
+	// private void cleanUpXmlElement() {
+	// element.removeAttribute("template");
+	// element.removeAttribute("name");
+	// element.removeAttribute("defaultValue");
+	// element.removeAttribute("description");
+	// element.removeAttribute("multiplicity");
+	// element.removeAttribute("prefills");
+	// }
+
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public Element getElement() {
+		return element;
+	}
+
+	/**
+	 * This returns the exeption if the process method failed.
+	 * 
+	 * @returnthe error or null (if the process didn't fail).
+	 */
+	public Exception getError() {
+		return possibleProcessingException;
+	}
+
+	public Map<String, String> getInfoMap() {
+
+		if (infoMap == null) {
+			infoMap = JsdlHelpers.getTemplateTagInfoItems(getTemplate()
+					.getTemplateDocument(), getName());
+
+			if (infoMap == null) {
+				// so we don't do that everytime
+				infoMap = new HashMap<String, String>();
+			}
+
+		}
+		return infoMap;
+
+	}
+
+	public String getMultiplicity() {
+		return multiplicity;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public Map<String, String> getOtherProperties() {
+		return otherProperties;
+	}
+
+	public String getOtherProperty(String property) {
+		return otherProperties.get(property);
+	}
+
+	public String[] getPrefills() {
+		return prefills;
+	}
+
+	public JsdlTemplate getTemplate() {
+		return template;
+	}
+
+	public TemplateNodeValueSetter getTemplateNodeValueSetter() {
+		return this.setter;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public boolean hasProperty(String property) {
+
+		return otherProperties.keySet().contains(property);
+
+	}
+
+	public boolean isReady() {
+
+		if (this.setter == null)
+			throw new RuntimeException(
+					"No TemplateNodeValueSetter for TemlateNode: "
+							+ this.name
+							+ ". This is most likely a bug in the implementation of the TemplateNode renderer.");
+
+		this.value = setter.getExternalSetValue();
+
+		myLogger.debug("Got value \"" + this.value + "\" for template node: "
+				+ getName());
+		// first we check whether user input is required
+		if ("?".equals(this.multiplicity) || "*".equals(this.multiplicity)
+				|| (this.value != null && !"".equals(this.value))) {
+
+			if (("?".equals(this.multiplicity) || "*".equals(this.multiplicity))
+					&& (this.value == null || "".equals(this.value))) {
+				// user did not input anything and input was not required
+				return true;
+			}
+
+			if ("1".equals(this.multiplicity)
+					&& this.value.startsWith(JobConstants.DUMMY_START_STRING)) {
+				fireTemplateNodeEvent(
+						TemplateNodeEvent.DEFAULT_REQUIRED_INPUT_EMPTY_MESSAGE,
+						TemplateNodeEvent.TEMPLATE_FILLED_INVALID);
+				return false;
+			}
+
+			// validate input
+			if (validator != null) {
+				try {
+					validator.validate();
+					return true;
+				} catch (TemplateValidateException tve) {
+					fireTemplateNodeEvent(tve.getLocalizedMessage(),
+							TemplateNodeEvent.TEMPLATE_FILLED_INVALID);
+					return false;
+				}
+			} else {
+				// in this case we accept every user input because there was no
+				// validator
+				return true;
+			}
+
+		} else {
+			fireTemplateNodeEvent(
+					TemplateNodeEvent.DEFAULT_REQUIRED_INPUT_EMPTY_MESSAGE,
+					TemplateNodeEvent.TEMPLATE_FILLED_INVALID);
+			return false;
+		}
+
+	}
+
+	public void process() throws TemplatePreProcessorException {
+
+		// if (!inputIsValid()) {
+		// throw new TemplateProcessingException(
+		// "Input for this node is not valid. Can't proceed.");
+		// }
+
+		// if ( // check whether preprocessor should be used
+		// ( "?".equals(multiplicity) && ( this.value != null && !
+		// "".equals(this.value) ) ) ||
+		// "1".equals(this.multiplicity)) {
+		element.setTextContent(value);
+
+		if (preprocessor == null) {
+			myLogger.debug("No preprocessor for type " + this.getType()
+					+ " found. Doing nothing.");
+		} else {
+			myLogger.debug("Preprocessor found for type " + this.getType()
+					+ ". Starting to preprocess.");
+			try {
+				preprocessor.process();
+			} catch (TemplatePreProcessorException tpe) {
+				fireTemplateNodeEvent("Error processing input: "
+						+ tpe.getLocalizedMessage(),
+						TemplateNodeEvent.TEMPLATE_PROCESSED_INVALID);
+				possibleProcessingException = tpe;
+				throw tpe;
+			}
+			myLogger.debug("Preprocessing successfull.");
+		}
+
+		// } else if ("?".equals(this.multiplicity)) {
+		//
+		// } else if ("*".equals(this.multiplicity)) {
+		//
+		// } else {
+		// myLogger
+		// .error("Can't determine the multiplicity of this TemplateNode. This has to be an error in the template. Doing nothing.");
+		//
+		// }
+		// cleanUpXmlElement();
+		possibleProcessingException = null;
+		fireTemplateNodeEvent(TemplateNodeEvent.DEFAULT_FILLED_MESSAGE,
+				TemplateNodeEvent.TEMPLATE_PROCESSED_VALID);
 	}
 
 	// remove a listener
@@ -392,26 +355,73 @@ public class TemplateNode {
 		templateNodeListeners.removeElement(l);
 	}
 
-	public String getDefaultValue() {
-		return defaultValue;
+	public void reset() {
+
+		fireTemplateNodeEvent(null, TemplateNodeEvent.RESET);
+		if (preprocessor == null) {
+			myLogger.debug("No preprocessor for type " + this.getType()
+					+ " found. No cleanup.");
+		} else {
+			myLogger.debug("Preprocessor found for type " + this.getType()
+					+ ". Starting to cleanup.");
+			// try {
+			preprocessor.reset();
+			// } catch (TemplatePreProcessorException tpe) {
+			// fireTemplateNodeEvent("Error processing input: "
+			// + tpe.getLocalizedMessage(),
+			// TemplateNodeEvent.TEMPLATE_PROCESSED_INVALID);
+			// throw tpe;
+			// }
+			myLogger.debug("Cleaning up successful.");
+		}
 	}
+
+	// public TemplateNodeValidator getValidator() {
+	// return validator;
+	// }
+	//
+	// public boolean inputIsValid() {
+	// return valid;
+	// }
+	//
+	// public void setValid(boolean valid) {
+	// this.valid = valid;
+	// }
 
 	public void setDefaultValue(String defaultValue) {
 		this.defaultValue = defaultValue;
 	}
 
-	public Map<String, String> getOtherProperties() {
-		return otherProperties;
+	public void setDescription(String description) {
+		this.description = description;
 	}
-	
-	public boolean hasProperty(String property) {
-		
-		return otherProperties.keySet().contains(property);
-		
+
+	public void setElement(Element element) {
+		this.element = element;
 	}
-	
-	public String getOtherProperty(String property) {
-		return otherProperties.get(property);
+
+	public void setMultiplicity(String multiplicity) {
+		this.multiplicity = multiplicity;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setPrefills(String[] prefills) {
+		this.prefills = prefills;
+	}
+
+	public void setTemplateNodeValueSetter(TemplateNodeValueSetter setter) {
+		this.setter = setter;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	// public Map<String, String> getJobProperties() {

@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.control.files;
 
 import org.vpac.grisu.model.MountPoint;
@@ -24,7 +22,7 @@ public class MountPointHelpers {
 	public static String getSiteFromMountPointUrl(String rootUrl) {
 
 		final String[] possibleTlds = new String[] { ".com.au", ".com", ".org",
-				".edu.au", ".au", ".ac.nz", ".nz"};
+				".edu.au", ".au", ".ac.nz", ".nz" };
 
 		int index_tld = -1;
 		for (String tld : possibleTlds) {

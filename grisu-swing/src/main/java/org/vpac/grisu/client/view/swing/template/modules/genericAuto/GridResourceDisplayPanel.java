@@ -20,78 +20,52 @@ import com.jgoodies.forms.layout.RowSpec;
 
 public class GridResourceDisplayPanel extends JPanel {
 
-	
 	private JLabel rankingLabel;
 	private JLabel jobslotLabel;
 	private JLabel queueLabel;
 	private JLabel siteLabel;
 	private final GridResource resource;
 	private GridResourceSuggestionPanel parent;
-	
+
 	/**
 	 * Create the panel
 	 */
-	public GridResourceDisplayPanel(GridResourceSuggestionPanel parentpanel, GridResource resource) {
+	public GridResourceDisplayPanel(GridResourceSuggestionPanel parentpanel,
+			GridResource resource) {
 		super();
 		this.parent = parentpanel;
 		this.resource = resource;
 
 		addMouseListener(new MouseAdapter() {
 			public void mouseClicked(final MouseEvent arg0) {
-				GridResourceDisplayPanel.this.parent.setCurrentlySelectedResourcePanel(GridResourceDisplayPanel.this);
+				GridResourceDisplayPanel.this.parent
+						.setCurrentlySelectedResourcePanel(GridResourceDisplayPanel.this);
 			}
 		});
 
 		setPreferredSize(new Dimension(100, 100));
 		setBackground(Color.WHITE);
-		setLayout(new FormLayout(
-			new ColumnSpec[] {
+		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("default:grow(1.0)"),
-				FormFactory.RELATED_GAP_COLSPEC},
-			new RowSpec[] {
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("default"),
-				FormFactory.RELATED_GAP_ROWSPEC}));
+				FormFactory.RELATED_GAP_COLSPEC }, new RowSpec[] {
+				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC, FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC, FormFactory.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("default"), FormFactory.RELATED_GAP_ROWSPEC }));
 		add(getSiteLabel(), new CellConstraints(2, 2));
 		add(getQueueLabel(), new CellConstraints(2, 3));
-		
+
 		//
 		add(getJobslotLabel(), new CellConstraints(2, 5));
 		add(getRankingLabel(), new CellConstraints(2, 7));
 
 		getSiteLabel().setText(resource.getSiteName());
 		getQueueLabel().setText(resource.getQueueName());
-		getJobslotLabel().setText("Free slots: "+resource.getFreeJobSlots());
-		getRankingLabel().setText("Rank: "+resource.getRank());
+		getJobslotLabel().setText("Free slots: " + resource.getFreeJobSlots());
+		getRankingLabel().setText("Rank: " + resource.getRank());
 	}
-	
-	public GridResource getResource() {
-		return resource;
-	}
-	/**
-	 * @return
-	 */
-	protected JLabel getSiteLabel() {
-		if (siteLabel == null) {
-			siteLabel = new JLabel();
-		}
-		return siteLabel;
-	}
-	/**
-	 * @return
-	 */
-	protected JLabel getQueueLabel() {
-		if (queueLabel == null) {
-			queueLabel = new JLabel();
-		}
-		return queueLabel;
-	}
+
 	/**
 	 * @return
 	 */
@@ -101,6 +75,17 @@ public class GridResourceDisplayPanel extends JPanel {
 		}
 		return jobslotLabel;
 	}
+
+	/**
+	 * @return
+	 */
+	protected JLabel getQueueLabel() {
+		if (queueLabel == null) {
+			queueLabel = new JLabel();
+		}
+		return queueLabel;
+	}
+
 	/**
 	 * @return
 	 */
@@ -109,6 +94,20 @@ public class GridResourceDisplayPanel extends JPanel {
 			rankingLabel = new JLabel();
 		}
 		return rankingLabel;
+	}
+
+	public GridResource getResource() {
+		return resource;
+	}
+
+	/**
+	 * @return
+	 */
+	protected JLabel getSiteLabel() {
+		if (siteLabel == null) {
+			siteLabel = new JLabel();
+		}
+		return siteLabel;
 	}
 
 }

@@ -6,15 +6,20 @@ import org.vpac.grisu.client.model.template.JsdlTemplate;
 import org.vpac.grisu.client.model.template.nodes.TemplateNode;
 
 public class GenericAuto extends AbstractModule {
-	
+
 	public static final String VERSION_TEMPLATE_TAG_NAME = "Version";
 	public static final String HOSTNAME_TEMPLATE_TAG_NAME = "HostName";
-	
-	public static final String[] MODULES_USED = new String[]{
-		"Jobname", VERSION_TEMPLATE_TAG_NAME, "Walltime", "CPUs", HOSTNAME_TEMPLATE_TAG_NAME, "MinMem", "EmailAddress" };
-	
+
+	public static final String[] MODULES_USED = new String[] { "Jobname",
+			VERSION_TEMPLATE_TAG_NAME, "Walltime", "CPUs",
+			HOSTNAME_TEMPLATE_TAG_NAME, "MinMem", "EmailAddress" };
+
 	public GenericAuto(JsdlTemplate template) {
 		super(template);
+	}
+
+	public String getModuleName() {
+		return "General-Auto";
 	}
 
 	@Override
@@ -26,10 +31,6 @@ public class GenericAuto extends AbstractModule {
 	public void initializeTemplateNodes(Map<String, TemplateNode> templateNodes) {
 		// TODO Auto-generated method stub
 
-	}
-
-	public String getModuleName() {
-		return "General-Auto";
 	}
 
 	public void process() throws TemplateModuleProcessingException {

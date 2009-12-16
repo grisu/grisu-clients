@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.view.swing.mountpoints_old;
 
 import java.awt.Dimension;
@@ -19,7 +17,8 @@ import org.vpac.grisu.model.MountPoint;
 public class MountPointPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	static final Logger myLogger = Logger.getLogger(MountPointPanel.class.getName());
+	static final Logger myLogger = Logger.getLogger(MountPointPanel.class
+			.getName());
 
 	private MountPoint mountpoint = null;
 
@@ -32,9 +31,9 @@ public class MountPointPanel extends JPanel {
 	private JTextField urlField = null;
 
 	private JTextField mountPointField = null;
-	
-	private EnvironmentManager em  = null;
-	
+
+	private EnvironmentManager em = null;
+
 	/**
 	 * This is the default constructor
 	 */
@@ -43,6 +42,52 @@ public class MountPointPanel extends JPanel {
 		this.em = em;
 		this.mountpoint = mountpoint;
 		initialize();
+	}
+
+	/**
+	 * This method initializes jButton
+	 * 
+	 * @return javax.swing.JButton
+	 */
+	private JButton getJButton() {
+		if (jButton == null) {
+			jButton = new JButton();
+			jButton.setText("Unmount");
+			jButton.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					myLogger.debug("Unmounting: " + mountpoint.getAlias());
+					em.umount(mountpoint);
+					MountPointPanel.this.setVisible(false);
+				}
+			});
+		}
+		return jButton;
+	}
+
+	/**
+	 * This method initializes mountPointField
+	 * 
+	 * @return javax.swing.JTextField
+	 */
+	private JTextField getMountPointField() {
+		if (mountPointField == null) {
+			mountPointField = new JTextField(mountpoint.getAlias());
+			mountPointField.setEditable(false);
+		}
+		return mountPointField;
+	}
+
+	/**
+	 * This method initializes urlField
+	 * 
+	 * @return javax.swing.JTextField
+	 */
+	private JTextField getUrlField() {
+		if (urlField == null) {
+			urlField = new JTextField(mountpoint.getRootUrl());
+			urlField.setEditable(false);
+		}
+		return urlField;
 	}
 
 	/**
@@ -91,50 +136,4 @@ public class MountPointPanel extends JPanel {
 		this.add(getMountPointField(), gridBagConstraints4);
 	}
 
-	/**
-	 * This method initializes jButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getJButton() {
-		if (jButton == null) {
-			jButton = new JButton();
-			jButton.setText("Unmount");
-			jButton.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					myLogger.debug("Unmounting: "+mountpoint.getAlias());
-					em.umount(mountpoint);
-					MountPointPanel.this.setVisible(false);
-				}
-			});
-		}
-		return jButton;
-	}
-
-	/**
-	 * This method initializes urlField	
-	 * 	
-	 * @return javax.swing.JTextField	
-	 */
-	private JTextField getUrlField() {
-		if (urlField == null) {
-			urlField = new JTextField(mountpoint.getRootUrl());
-			urlField.setEditable(false);
-		}
-		return urlField;
-	}
-
-	/**
-	 * This method initializes mountPointField	
-	 * 	
-	 * @return javax.swing.JTextField	
-	 */
-	private JTextField getMountPointField() {
-		if (mountPointField == null) {
-			mountPointField = new JTextField(mountpoint.getAlias());
-			mountPointField.setEditable(false);
-		}
-		return mountPointField;
-	}
-
-}  //  @jve:decl-index=0:visual-constraint="10,10"
+} // @jve:decl-index=0:visual-constraint="10,10"

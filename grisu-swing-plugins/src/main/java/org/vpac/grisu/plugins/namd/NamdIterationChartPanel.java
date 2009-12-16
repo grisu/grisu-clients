@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.plugins.namd;
 
 import java.awt.CardLayout;
@@ -14,20 +12,21 @@ import org.jfree.data.xy.XYSeries;
 import org.vpac.grisu.client.model.jobs.JobStatusEvent;
 import org.vpac.grisu.client.model.jobs.JobStatusListener;
 
-public class NamdIterationChartPanel extends JPanel implements JobStatusListener {
-	
+public class NamdIterationChartPanel extends JPanel implements
+		JobStatusListener {
+
 	private boolean singlePanel = false;
-	
+
 	private NamdJob namdJob = null;
 
 	private JLineChart pressureLineChart;
 	private JLineChart tempLineChart;
 	private JLineChart totalLineChart;
-	
+
 	DefaultTableXYDataset totalDataset = null;
 	DefaultTableXYDataset tempDataset = null;
 	DefaultTableXYDataset pressureDataset = null;
-	
+
 	/**
 	 * Create the panel
 	 */
@@ -39,103 +38,7 @@ public class NamdIterationChartPanel extends JPanel implements JobStatusListener
 		add(getPressureLineChart(), getPressureLineChart().getName());
 		//
 	}
-	
-	public void setNamdJob(NamdJob namdJob) {
-		this.namdJob = namdJob;
-		setTotalSeries(namdJob.getSeries(NamdJob.TOTAL_SERIES));
-		setTempSeries(namdJob.getSeries(NamdJob.TEMP_SERIES));
-		setPressureSeries(namdJob.getSeries(NamdJob.PRESSURE_SERIES));
-		this.namdJob.addJobStatusListener(this);
-	}
 
-	public void setTotalSeries(XYSeries series) {
-		if ( totalDataset == null ) {
-			totalDataset = new DefaultTableXYDataset();
-			getTotalLineChart().setDataset(totalDataset);
-		} else {
-			totalDataset.removeAllSeries();
-		}
-		totalDataset.addSeries(series);
-	}
-	public void setTempSeries(XYSeries series) {
-		if ( tempDataset == null ) {
-			tempDataset = new DefaultTableXYDataset();
-			getTempLineChart().setDataset(tempDataset);
-		} else {
-			tempDataset.removeAllSeries();
-		}
-		tempDataset.addSeries(series);
-	}
-	public void setPressureSeries(XYSeries series) {
-		if ( pressureDataset == null ) {
-			pressureDataset = new DefaultTableXYDataset();
-			getPressureLineChart().setDataset(pressureDataset);
-		} else {
-			pressureDataset.removeAllSeries();
-		}
-		pressureDataset.addSeries(series);
-	}
-	
-	
-	
-	/**
-	 * @return
-	 */
-	protected JLineChart getTotalLineChart() {
-		if (totalLineChart == null) {
-			totalLineChart = new JLineChart();
-			totalLineChart.setName(NamdJob.TOTAL_SERIES);
-			totalLineChart.setTitle("Total energy");
-			totalLineChart.setSubtitle("(kcal/mol)");
-			totalLineChart.setXAxisLabel("Timesteps");
-			totalLineChart.setYAxisAutoRangeIncludesZero(false);
-			totalLineChart.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(final MouseEvent e) {
-					if ( e.getClickCount() == 2 ) {
-						if ( singlePanel ) {
-							getTempLineChart().setVisible(true);
-							getPressureLineChart().setVisible(true);
-							singlePanel = false;
-						} else {
-							getTempLineChart().setVisible(false);
-							getPressureLineChart().setVisible(false);
-							singlePanel = true;
-						}
-					}
-				}
-			});
-		}
-		return totalLineChart;
-	}
-	/**
-	 * @return
-	 */
-	protected JLineChart getTempLineChart() {
-		if (tempLineChart == null) {
-			tempLineChart = new JLineChart();
-			tempLineChart.setName(NamdJob.TEMP_SERIES);
-			tempLineChart.setTitle("Temperature");
-			tempLineChart.setSubtitle("(Kelvin)");
-			tempLineChart.setXAxisLabel("Timesteps");
-			tempLineChart.setYAxisAutoRangeIncludesZero(false);
-			tempLineChart.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(final MouseEvent e) {
-					if ( e.getClickCount() == 2 ) {
-						if ( singlePanel ) {
-							getTotalLineChart().setVisible(true);
-							getPressureLineChart().setVisible(true);
-							singlePanel = false;
-						} else {
-							getTotalLineChart().setVisible(false);
-							getPressureLineChart().setVisible(false);
-							singlePanel = true;
-						}
-					}
-				}
-			});
-		}
-		return tempLineChart;
-	}
 	/**
 	 * @return
 	 */
@@ -149,8 +52,8 @@ public class NamdIterationChartPanel extends JPanel implements JobStatusListener
 			pressureLineChart.setYAxisAutoRangeIncludesZero(false);
 			pressureLineChart.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(final MouseEvent e) {
-					if ( e.getClickCount() == 2 ) {
-						if ( singlePanel ) {
+					if (e.getClickCount() == 2) {
+						if (singlePanel) {
 							getTotalLineChart().setVisible(true);
 							getTempLineChart().setVisible(true);
 							singlePanel = false;
@@ -166,9 +69,64 @@ public class NamdIterationChartPanel extends JPanel implements JobStatusListener
 		return pressureLineChart;
 	}
 
-	public void switchToChart(String name) {
-	    CardLayout cl = (CardLayout)(this.getLayout());
-	    cl.show(this, name);
+	/**
+	 * @return
+	 */
+	protected JLineChart getTempLineChart() {
+		if (tempLineChart == null) {
+			tempLineChart = new JLineChart();
+			tempLineChart.setName(NamdJob.TEMP_SERIES);
+			tempLineChart.setTitle("Temperature");
+			tempLineChart.setSubtitle("(Kelvin)");
+			tempLineChart.setXAxisLabel("Timesteps");
+			tempLineChart.setYAxisAutoRangeIncludesZero(false);
+			tempLineChart.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(final MouseEvent e) {
+					if (e.getClickCount() == 2) {
+						if (singlePanel) {
+							getTotalLineChart().setVisible(true);
+							getPressureLineChart().setVisible(true);
+							singlePanel = false;
+						} else {
+							getTotalLineChart().setVisible(false);
+							getPressureLineChart().setVisible(false);
+							singlePanel = true;
+						}
+					}
+				}
+			});
+		}
+		return tempLineChart;
+	}
+
+	/**
+	 * @return
+	 */
+	protected JLineChart getTotalLineChart() {
+		if (totalLineChart == null) {
+			totalLineChart = new JLineChart();
+			totalLineChart.setName(NamdJob.TOTAL_SERIES);
+			totalLineChart.setTitle("Total energy");
+			totalLineChart.setSubtitle("(kcal/mol)");
+			totalLineChart.setXAxisLabel("Timesteps");
+			totalLineChart.setYAxisAutoRangeIncludesZero(false);
+			totalLineChart.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(final MouseEvent e) {
+					if (e.getClickCount() == 2) {
+						if (singlePanel) {
+							getTempLineChart().setVisible(true);
+							getPressureLineChart().setVisible(true);
+							singlePanel = false;
+						} else {
+							getTempLineChart().setVisible(false);
+							getPressureLineChart().setVisible(false);
+							singlePanel = true;
+						}
+					}
+				}
+			});
+		}
+		return totalLineChart;
 	}
 
 	public void jobStatusChanged(JobStatusEvent event) {
@@ -176,7 +134,50 @@ public class NamdIterationChartPanel extends JPanel implements JobStatusListener
 		setTotalSeries(namdJob.getSeries(NamdJob.TOTAL_SERIES));
 		setTempSeries(namdJob.getSeries(NamdJob.TEMP_SERIES));
 		setPressureSeries(namdJob.getSeries(NamdJob.PRESSURE_SERIES));
-		
+
+	}
+
+	public void setNamdJob(NamdJob namdJob) {
+		this.namdJob = namdJob;
+		setTotalSeries(namdJob.getSeries(NamdJob.TOTAL_SERIES));
+		setTempSeries(namdJob.getSeries(NamdJob.TEMP_SERIES));
+		setPressureSeries(namdJob.getSeries(NamdJob.PRESSURE_SERIES));
+		this.namdJob.addJobStatusListener(this);
+	}
+
+	public void setPressureSeries(XYSeries series) {
+		if (pressureDataset == null) {
+			pressureDataset = new DefaultTableXYDataset();
+			getPressureLineChart().setDataset(pressureDataset);
+		} else {
+			pressureDataset.removeAllSeries();
+		}
+		pressureDataset.addSeries(series);
+	}
+
+	public void setTempSeries(XYSeries series) {
+		if (tempDataset == null) {
+			tempDataset = new DefaultTableXYDataset();
+			getTempLineChart().setDataset(tempDataset);
+		} else {
+			tempDataset.removeAllSeries();
+		}
+		tempDataset.addSeries(series);
+	}
+
+	public void setTotalSeries(XYSeries series) {
+		if (totalDataset == null) {
+			totalDataset = new DefaultTableXYDataset();
+			getTotalLineChart().setDataset(totalDataset);
+		} else {
+			totalDataset.removeAllSeries();
+		}
+		totalDataset.addSeries(series);
+	}
+
+	public void switchToChart(String name) {
+		CardLayout cl = (CardLayout) (this.getLayout());
+		cl.show(this, name);
 	}
 
 }

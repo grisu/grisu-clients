@@ -4,20 +4,22 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 public class CommandlineHelpers {
-	
-	public static ArrayList<String> extractArgumentsFromCommandline(String string) throws ParseException {
-		
+
+	public static ArrayList<String> extractArgumentsFromCommandline(
+			String string) throws ParseException {
+
 		ArrayList<String> args = parseString(string);
 		args.remove(0);
 		return args;
 	}
-	
+
 	public static String extractExecutable(String string) throws ParseException {
 		ArrayList<String> strings = parseString(string);
 		return strings.get(0);
 	}
-	
-	public static ArrayList<String> parseString(String string) throws ParseException {
+
+	public static ArrayList<String> parseString(String string)
+			throws ParseException {
 		ArrayList<String> strings = new ArrayList<String>();
 
 		boolean lastCharacterIsWhitespace = false;
@@ -35,8 +37,8 @@ public class CommandlineHelpers {
 					part.append(character);
 				} else {
 					lastCharacterIsWhitespace = true;
-//					strings.add(part.toString());
-//					part = new StringBuffer();
+					// strings.add(part.toString());
+					// part = new StringBuffer();
 					continue;
 				}
 			} else {
@@ -58,10 +60,11 @@ public class CommandlineHelpers {
 			}
 
 		}
-		if ( inbetweenQuotationMarks ) {
-			throw new ParseException("No end quotations marks.", string.length()-1);
+		if (inbetweenQuotationMarks) {
+			throw new ParseException("No end quotations marks.", string
+					.length() - 1);
 		} else {
-			if ( part.length() > 0 ) 
+			if (part.length() > 0)
 				strings.add(part.toString());
 		}
 		return strings;

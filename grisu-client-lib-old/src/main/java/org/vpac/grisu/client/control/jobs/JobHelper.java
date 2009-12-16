@@ -61,15 +61,17 @@ public class JobHelper {
 	//		
 	// }
 
-	public static void cleanJobs(String[] jobnames, EnvironmentManager em, int concurrentThreads)
-			throws RemoteFileSystemException, NoSuchJobException {
+	public static void cleanJobs(String[] jobnames, EnvironmentManager em,
+			int concurrentThreads) throws RemoteFileSystemException,
+			NoSuchJobException {
 
 		ExecutorService killJobExecutor = Executors
-		.newFixedThreadPool(concurrentThreads);
-		
+				.newFixedThreadPool(concurrentThreads);
+
 		final JobManager jobmanager = em.getJobManager();
 		final ServiceInterface serviceInterface = em.getServiceInterface();
-		final Set<GrisuFileObject> directoriesToInvalidate = Collections.synchronizedSet(new HashSet<GrisuFileObject>());
+		final Set<GrisuFileObject> directoriesToInvalidate = Collections
+				.synchronizedSet(new HashSet<GrisuFileObject>());
 
 		for (final String jobname : jobnames) {
 
@@ -77,23 +79,23 @@ public class JobHelper {
 				public void run() {
 
 					try {
-					final GrisuJobMonitoringObject job = jobmanager
-							.getJob(jobname);
-					if (job != null) {
-						try {
-							GrisuFileObject root = jobmanager
-									.getJobRootDirectory(job);
-							directoriesToInvalidate.add(root.getParent());
-							if (root != null)
-								root.deleteLocalRepresentation();
-						} catch (Exception e) {
-							myLogger
-									.warn("Couldn't delete cached file/invalidate directory: "
-											+ e.getLocalizedMessage());
+						final GrisuJobMonitoringObject job = jobmanager
+								.getJob(jobname);
+						if (job != null) {
+							try {
+								GrisuFileObject root = jobmanager
+										.getJobRootDirectory(job);
+								directoriesToInvalidate.add(root.getParent());
+								if (root != null)
+									root.deleteLocalRepresentation();
+							} catch (Exception e) {
+								myLogger
+										.warn("Couldn't delete cached file/invalidate directory: "
+												+ e.getLocalizedMessage());
+							}
+							// FileHelpers.deleteDirectory(root.getLocalRepresentation(false));
+							serviceInterface.kill(jobname, true);
 						}
-						// FileHelpers.deleteDirectory(root.getLocalRepresentation(false));
-						serviceInterface.kill(jobname, true);
-					}
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -102,9 +104,9 @@ public class JobHelper {
 			};
 			killJobExecutor.execute(killAndCleanThread);
 		}
-		
+
 		killJobExecutor.shutdown();
-		
+
 		try {
 			killJobExecutor.awaitTermination(3600, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {

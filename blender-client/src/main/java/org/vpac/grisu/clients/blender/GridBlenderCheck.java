@@ -13,19 +13,20 @@ import uk.co.flamingpenguin.jewel.cli.ArgumentValidationException;
 import uk.co.flamingpenguin.jewel.cli.Cli;
 import uk.co.flamingpenguin.jewel.cli.CliFactory;
 
-public class GridBlenderCheck implements BlenderMode, EventTopicSubscriber<BatchJobEvent> {
+public class GridBlenderCheck implements BlenderMode,
+		EventTopicSubscriber<BatchJobEvent> {
 
 	private BlenderCheckCommandLineArgs commandlineArgs = null;
 	private final ServiceInterface si;
-	
+
 	private final String jobname;
 
 	public GridBlenderCheck(String[] args, boolean help) {
-		
+
 		final Cli<BlenderCheckCommandLineArgs> cli = CliFactory
 				.createCli(BlenderCheckCommandLineArgs.class);
-		
-		if ( help ) {
+
+		if (help) {
 			System.out.println(cli.getHelpMessage());
 			System.exit(0);
 		}
@@ -50,9 +51,9 @@ public class GridBlenderCheck implements BlenderMode, EventTopicSubscriber<Batch
 		}
 
 		jobname = commandlineArgs.getJobname();
-		
+
 		EventBus.subscribe(jobname, this);
-		
+
 		if (commandlineArgs.isDownloadResults()) {
 			try {
 				File downloadDir = commandlineArgs.getDownloadResults();
@@ -74,6 +75,31 @@ public class GridBlenderCheck implements BlenderMode, EventTopicSubscriber<Batch
 
 	}
 
+	private void downloadCurrentlyFinishedFiles(
+			BatchJobObject blenderMultiPartJobObject) {
+		File downloadDirectory = commandlineArgs.getDownloadResults();
+
+		String pattern = blenderMultiPartJobObject
+				.getProperty(GrisuBlenderJob.BLENDER_OUTPUTFILENAME_KEY);
+		if (StringUtils.isBlank(pattern)) {
+			System.out
+					.println("Could not determine output filename. Exiting...");
+			System.exit(1);
+		}
+		String[] patterns = new String[] { pattern };
+		try {
+			System.out.println("Downloading output files that match \""
+					+ pattern + "\".\n");
+			blenderMultiPartJobObject.downloadResults(true, downloadDirectory,
+					patterns, false, false);
+			System.out.println("Downloads finished.");
+		} catch (Exception e) {
+			System.out.println("Could not download results: "
+					+ e.getLocalizedMessage());
+			System.exit(1);
+		}
+	}
+
 	public void execute() {
 
 		System.out.println("Retrieving job " + commandlineArgs.getJobname()
@@ -92,13 +118,13 @@ public class GridBlenderCheck implements BlenderMode, EventTopicSubscriber<Batch
 
 		boolean firstTime = true;
 
-		if ( commandlineArgs.isLoopUntilFinished() || firstTime ) {
+		if (commandlineArgs.isLoopUntilFinished() || firstTime) {
 
 			int sleepTime = 60 * 1000;
 			try {
 				sleepTime = commandlineArgs.getLoopUntilFinished() * 60 * 1000;
 			} catch (Exception e) {
-//				e.printStackTrace();
+				// e.printStackTrace();
 				// doesn't matter
 			}
 
@@ -133,11 +159,11 @@ public class GridBlenderCheck implements BlenderMode, EventTopicSubscriber<Batch
 					System.out.println(blenderMultiPartJobObject
 							.getProgress(null));
 				}
-				
+
 				boolean finished = blenderMultiPartJobObject.isFinished(false);
 				boolean cmdln = commandlineArgs.isLoopUntilFinished();
 
-				if ( finished || ! cmdln ) {
+				if (finished || !cmdln) {
 					break;
 				}
 
@@ -164,36 +190,8 @@ public class GridBlenderCheck implements BlenderMode, EventTopicSubscriber<Batch
 
 	}
 
-	private void downloadCurrentlyFinishedFiles(
-			BatchJobObject blenderMultiPartJobObject) {
-		File downloadDirectory = commandlineArgs.getDownloadResults();
-
-		String pattern = blenderMultiPartJobObject
-				.getProperty(GrisuBlenderJob.BLENDER_OUTPUTFILENAME_KEY);
-		if (StringUtils.isBlank(pattern)) {
-			System.out
-					.println("Could not determine output filename. Exiting...");
-			System.exit(1);
-		}
-		String[] patterns = new String[] { pattern };
-		try {
-			System.out.println("Downloading output files that match \""
-					+ pattern + "\".\n");
-			blenderMultiPartJobObject.downloadResults(true, downloadDirectory,
-					patterns, false, false);
-			System.out.println("Downloads finished.");
-		} catch (Exception e) {
-			System.out.println("Could not download results: "
-					+ e.getLocalizedMessage());
-			System.exit(1);
-		}
-	}
-
 	public void onEvent(String arg0, BatchJobEvent arg1) {
 		System.out.println(arg1.getMessage());
 	}
-
-
-
 
 }

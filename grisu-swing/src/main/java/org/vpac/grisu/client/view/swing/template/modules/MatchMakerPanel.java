@@ -21,14 +21,15 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-public class MatchMakerPanel extends AbstractModulePanel implements ValueListener {
-	
+public class MatchMakerPanel extends AbstractModulePanel implements
+		ValueListener {
+
 	private JobName jobName;
 	private JobName jobName_1;
 	private CPUs us;
 	private MemoryInputPanel memoryInputPanel;
 	private Email email;
-	
+
 	private String currentVersion = null;
 	private String currentCpus = null;
 	private String currentMemory = null;
@@ -36,13 +37,12 @@ public class MatchMakerPanel extends AbstractModulePanel implements ValueListene
 	private ApplicationVersion applicationVersion;
 	private WallTime wallTime;
 	private CandidateHost candidateHost;
-	
+
 	public MatchMakerPanel() {
 		setLayout(new FormLayout(new ColumnSpec[] {
 				ColumnSpec.decode("max(179dlu;default):grow"),
 				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("max(97dlu;default):grow"),},
-			new RowSpec[] {
+				ColumnSpec.decode("max(97dlu;default):grow"), }, new RowSpec[] {
 				RowSpec.decode("max(64dlu;default)"),
 				FormFactory.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("max(37dlu;default):grow"),
@@ -53,7 +53,7 @@ public class MatchMakerPanel extends AbstractModulePanel implements ValueListene
 				FormFactory.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("max(72dlu;default):grow"),
 				FormFactory.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("max(73dlu;default):grow"),}));
+				RowSpec.decode("max(73dlu;default):grow"), }));
 		add(getJobName_1(), "1, 1, fill, fill");
 		add(getUs(), "3, 1, 1, 3, fill, fill");
 		getUs().addValueListener(this);
@@ -67,32 +67,25 @@ public class MatchMakerPanel extends AbstractModulePanel implements ValueListene
 		add(getEmail(), "1, 11, 3, 1, fill, fill");
 	}
 
-	@Override
-	protected void initialize() throws ModuleException {
-//		// TODO Auto-generated method stub
-//		// needs to be done before template node is set...
-//		this.template.getTemplateNodes().get(TemplateTagConstants.VERSION_TAG_NAME).setTemplateNodeValueSetter(getApplicationVersion());
-//		this.template.getTemplateNodes().get(TemplateTagConstants.HOSTNAME_TAG_NAME).setTemplateNodeValueSetter(getCandidateHost());
-		
-		try {
-			getCandidateHost().setTemplateNode(this.templateModule.getTemplateNodes().get(TemplateTagConstants.HOSTNAME_TAG_NAME));
-			getJobName_1().setTemplateNode(this.templateModule.getTemplateNodes().get(TemplateTagConstants.JOBNAME_TAG_NAME));
-			getUs().setTemplateNode(this.templateModule.getTemplateNodes().get(TemplateTagConstants.CPUS_TAG_NAME));
-			getEmail().setTemplateNode(this.templateModule.getTemplateNodes().get(TemplateTagConstants.EMAIL_ADDRESS_TAG_NAME));
-			getWallTime().setTemplateNode(this.templateModule.getTemplateNodes().get(TemplateTagConstants.WALLTIME_TAG_NAME));
-			getMemoryInputPanel().setTemplateNode(this.templateModule.getTemplateNodes().get(TemplateTagConstants.MIN_MEM_TAG_NAME));
-			getApplicationVersion().setTemplateNode(this.templateModule.getTemplateNodes().get(TemplateTagConstants.VERSION_TAG_NAME));
-			
-		} catch (TemplateNodePanelException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new ModuleException(this.getTemplateModule(), e);
+	private ApplicationVersion getApplicationVersion() {
+		if (applicationVersion == null) {
+			applicationVersion = new ApplicationVersion();
 		}
-
+		return applicationVersion;
 	}
 
-	public JPanel getPanel() {
-		return this;
+	private CandidateHost getCandidateHost() {
+		if (candidateHost == null) {
+			candidateHost = new CandidateHost();
+		}
+		return candidateHost;
+	}
+
+	private Email getEmail() {
+		if (email == null) {
+			email = new Email();
+		}
+		return email;
 	}
 
 	private JobName getJobName_1() {
@@ -101,64 +94,90 @@ public class MatchMakerPanel extends AbstractModulePanel implements ValueListene
 		}
 		return jobName_1;
 	}
-	private CPUs getUs() {
-		if (us == null) {
-			us = new CPUs();
-		}
-		return us;
-	}
+
 	private MemoryInputPanel getMemoryInputPanel() {
 		if (memoryInputPanel == null) {
 			memoryInputPanel = new MemoryInputPanel();
 		}
 		return memoryInputPanel;
 	}
-	private Email getEmail() {
-		if (email == null) {
-			email = new Email();
-		}
-		return email;
+
+	public JPanel getPanel() {
+		return this;
 	}
 
-	public void setCurrentVersion(String version) {
-		
-		
+	private CPUs getUs() {
+		if (us == null) {
+			us = new CPUs();
+		}
+		return us;
 	}
 
-	public void valueChanged(TemplateNodePanel panel, String newValue) {
-
-		if ( panel instanceof ApplicationVersion ) {
-			this.currentVersion = newValue;
-			getCandidateHost().valueChanged(panel, newValue);
-		
-		} else if ( panel instanceof CPUs ) {
-			this.currentCpus = newValue;
-			getCandidateHost().valueChanged(panel, newValue);
-		} else if ( panel instanceof MemoryInputPanel ) {
-			this.currentMemory = newValue;
-			getCandidateHost().valueChanged(panel, newValue);
-		} else if ( panel instanceof WallTime ) {
-			this.currentWalltime = newValue;
-			getCandidateHost().valueChanged(panel, newValue);
-		}
-		
-	}
-	private ApplicationVersion getApplicationVersion() {
-		if (applicationVersion == null) {
-			applicationVersion = new ApplicationVersion();
-		}
-		return applicationVersion;
-	}
 	private WallTime getWallTime() {
 		if (wallTime == null) {
 			wallTime = new WallTime();
 		}
 		return wallTime;
 	}
-	private CandidateHost getCandidateHost() {
-		if (candidateHost == null) {
-			candidateHost = new CandidateHost();
+
+	@Override
+	protected void initialize() throws ModuleException {
+		// // TODO Auto-generated method stub
+		// // needs to be done before template node is set...
+		// this.template.getTemplateNodes().get(TemplateTagConstants.VERSION_TAG_NAME).setTemplateNodeValueSetter(getApplicationVersion());
+		// this.template.getTemplateNodes().get(TemplateTagConstants.HOSTNAME_TAG_NAME).setTemplateNodeValueSetter(getCandidateHost());
+
+		try {
+			getCandidateHost().setTemplateNode(
+					this.templateModule.getTemplateNodes().get(
+							TemplateTagConstants.HOSTNAME_TAG_NAME));
+			getJobName_1().setTemplateNode(
+					this.templateModule.getTemplateNodes().get(
+							TemplateTagConstants.JOBNAME_TAG_NAME));
+			getUs().setTemplateNode(
+					this.templateModule.getTemplateNodes().get(
+							TemplateTagConstants.CPUS_TAG_NAME));
+			getEmail().setTemplateNode(
+					this.templateModule.getTemplateNodes().get(
+							TemplateTagConstants.EMAIL_ADDRESS_TAG_NAME));
+			getWallTime().setTemplateNode(
+					this.templateModule.getTemplateNodes().get(
+							TemplateTagConstants.WALLTIME_TAG_NAME));
+			getMemoryInputPanel().setTemplateNode(
+					this.templateModule.getTemplateNodes().get(
+							TemplateTagConstants.MIN_MEM_TAG_NAME));
+			getApplicationVersion().setTemplateNode(
+					this.templateModule.getTemplateNodes().get(
+							TemplateTagConstants.VERSION_TAG_NAME));
+
+		} catch (TemplateNodePanelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new ModuleException(this.getTemplateModule(), e);
 		}
-		return candidateHost;
+
+	}
+
+	public void setCurrentVersion(String version) {
+
+	}
+
+	public void valueChanged(TemplateNodePanel panel, String newValue) {
+
+		if (panel instanceof ApplicationVersion) {
+			this.currentVersion = newValue;
+			getCandidateHost().valueChanged(panel, newValue);
+
+		} else if (panel instanceof CPUs) {
+			this.currentCpus = newValue;
+			getCandidateHost().valueChanged(panel, newValue);
+		} else if (panel instanceof MemoryInputPanel) {
+			this.currentMemory = newValue;
+			getCandidateHost().valueChanged(panel, newValue);
+		} else if (panel instanceof WallTime) {
+			this.currentWalltime = newValue;
+			getCandidateHost().valueChanged(panel, newValue);
+		}
+
 	}
 }

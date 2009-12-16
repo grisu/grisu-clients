@@ -11,16 +11,17 @@ public class ConvertToBytes extends ElementPostprocessor {
 
 	@Override
 	public void process(String fqan) throws PostProcessException {
-		
+
 		Integer mb;
 		try {
 			mb = Integer.parseInt(element.getTextContent());
 		} catch (Exception e) {
-			throw new PostProcessException("Could not process specified memory.", e);
+			throw new PostProcessException(
+					"Could not process specified memory.", e);
 		}
-		
+
 		Long bytes = new Long(mb * 1024);
-		
+
 		element.setTextContent(bytes.toString());
 
 	}

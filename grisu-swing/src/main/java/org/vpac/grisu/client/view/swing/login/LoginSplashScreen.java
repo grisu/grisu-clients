@@ -22,12 +22,9 @@ import com.jgoodies.forms.layout.FormLayout;
 
 public class LoginSplashScreen extends JDialog implements StatusListener {
 
-	private JLabel label_1;
-	private JTextField statusTextField;
-	private JLabel label;
-	private JPanel panel;
 	/**
 	 * Launch the application
+	 * 
 	 * @param args
 	 */
 	public static void main(String args[]) {
@@ -43,6 +40,11 @@ public class LoginSplashScreen extends JDialog implements StatusListener {
 			e.printStackTrace();
 		}
 	}
+	private JLabel label_1;
+	private JTextField statusTextField;
+	private JLabel label;
+
+	private JPanel panel;
 
 	/**
 	 * Create the dialog
@@ -53,38 +55,21 @@ public class LoginSplashScreen extends JDialog implements StatusListener {
 		getContentPane().add(getPanel(), BorderLayout.CENTER);
 		//
 	}
-	protected JPanel getPanel() {
-		if (panel == null) {
-			panel = new JPanel();
-			panel.setLayout(new FormLayout(
-				"left:18dlu, default:grow(1.0), left:18dlu",
-				"top:25dlu, default:grow(1.0), top:21dlu, top:22dlu, 33dlu, top:18dlu"));
-			panel.add(getLabel(), new CellConstraints(2, 2, CellConstraints.FILL, CellConstraints.FILL));
-			panel.add(getStatusTextField(), new CellConstraints(2, 5, CellConstraints.FILL, CellConstraints.DEFAULT));
-			panel.add(getLabel_1(), new CellConstraints(2, 4, CellConstraints.FILL, CellConstraints.FILL));
-		}
-		return panel;
-	}
+
 	protected JLabel getLabel() {
 		if (label == null) {
 			label = new JLabel();
 			label.setOpaque(true);
 			label.setBackground(Color.WHITE);
 			label.setHorizontalAlignment(SwingConstants.CENTER);
-			URL picURL = getClass().getResource("/images/ARCS_LogoTag_smaller.jpg");
+			URL picURL = getClass().getResource(
+					"/images/ARCS_LogoTag_smaller.jpg");
 			ImageIcon grisu = new ImageIcon(picURL);
 			label.setIcon(grisu);
 		}
 		return label;
 	}
-	protected JTextField getStatusTextField() {
-		if (statusTextField == null) {
-			statusTextField = new JTextField();
-			statusTextField.setHorizontalAlignment(SwingConstants.CENTER);
-			statusTextField.setEditable(false);
-		}
-		return statusTextField;
-	}
+
 	protected JLabel getLabel_1() {
 		if (label_1 == null) {
 			label_1 = new JLabel();
@@ -96,10 +81,36 @@ public class LoginSplashScreen extends JDialog implements StatusListener {
 		return label_1;
 	}
 
+	protected JPanel getPanel() {
+		if (panel == null) {
+			panel = new JPanel();
+			panel
+					.setLayout(new FormLayout(
+							"left:18dlu, default:grow(1.0), left:18dlu",
+							"top:25dlu, default:grow(1.0), top:21dlu, top:22dlu, 33dlu, top:18dlu"));
+			panel.add(getLabel(), new CellConstraints(2, 2,
+					CellConstraints.FILL, CellConstraints.FILL));
+			panel.add(getStatusTextField(), new CellConstraints(2, 5,
+					CellConstraints.FILL, CellConstraints.DEFAULT));
+			panel.add(getLabel_1(), new CellConstraints(2, 4,
+					CellConstraints.FILL, CellConstraints.FILL));
+		}
+		return panel;
+	}
+
+	protected JTextField getStatusTextField() {
+		if (statusTextField == null) {
+			statusTextField = new JTextField();
+			statusTextField.setHorizontalAlignment(SwingConstants.CENTER);
+			statusTextField.setEditable(false);
+		}
+		return statusTextField;
+	}
+
 	public void setNewStatus(StatusEvent e) {
-		
+
 		getStatusTextField().setText(e.getStatus());
-		
+
 	}
 
 }

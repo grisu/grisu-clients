@@ -43,9 +43,9 @@ public class MultipleInputFiles extends JPanel implements TemplateNodePanel,
 
 	static final Logger myLogger = Logger.getLogger(MultipleInputFiles.class
 			.getName());
-	
-	private static final String NON_DIRECTORY_KEY="non-directory";
-	
+
+	private static final String NON_DIRECTORY_KEY = "non-directory";
+
 	private JTextArea textArea;
 	private JScrollPane scrollPane_1;
 	private JLabel errorLabel;
@@ -68,8 +68,10 @@ public class MultipleInputFiles extends JPanel implements TemplateNodePanel,
 	private String lastDirectoryKey = InputFile.DEFAULT_LAST_DIRECTORY_VALUE;
 
 	private HistoryManager historyManager = null;
-	
+
 	private EnvironmentManager em = null;
+
+	private Vector<ValueListener> valueChangedListeners;
 
 	/**
 	 * Create the panel
@@ -78,23 +80,17 @@ public class MultipleInputFiles extends JPanel implements TemplateNodePanel,
 		super();
 		setPreferredSize(new Dimension(400, 320));
 		setMinimumSize(new Dimension(0, 700));
-		layout = new FormLayout(
-			new ColumnSpec[] {
+		layout = new FormLayout(new ColumnSpec[] {
 				FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-				ColumnSpec.decode("36px"),
-				ColumnSpec.decode("left:15dlu"),
-				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("36px"), ColumnSpec.decode("left:15dlu"),
+				FormFactory.DEFAULT_COLSPEC, FormFactory.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("53dlu:grow(1.0)"),
-				FormFactory.RELATED_GAP_COLSPEC},
-			new RowSpec[] {
-				FormFactory.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("34px"),
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_COLSPEC }, new RowSpec[] {
+				FormFactory.RELATED_GAP_ROWSPEC, RowSpec.decode("34px"),
+				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("145dlu:grow(1.0)"),
-				FormFactory.RELATED_GAP_ROWSPEC});
+				FormFactory.RELATED_GAP_ROWSPEC });
 		setLayout(layout);
 		add(getRequiredLabel(), new CellConstraints(6, 2, 1, 3,
 				CellConstraints.RIGHT, CellConstraints.TOP));
@@ -105,8 +101,257 @@ public class MultipleInputFiles extends JPanel implements TemplateNodePanel,
 		//
 	}
 
+	private void addFilesToSelection(GrisuFileObject[] files) {
+		for (GrisuFileObject file : files) {
+			selectedFilesModel.addElement(file);
+		}
+	}
+
+	// register a listener
+	synchronized public void addValueListener(ValueListener l) {
+		if (valueChangedListeners == null)
+			valueChangedListeners = new Vector<ValueListener>();
+		valueChangedListeners.addElement(l);
+	}
+
+	private void fireSitePanelEvent(String newValue) {
+
+		myLogger.debug("Fire value changed event: new value: " + newValue);
+		// if we have no mountPointsListeners, do nothing...
+		if (valueChangedListeners != null && !valueChangedListeners.isEmpty()) {
+
+			// make a copy of the listener list in case
+			// anyone adds/removes mountPointsListeners
+			Vector<ValueListener> valueChangedTargets;
+			synchronized (this) {
+				valueChangedTargets = (Vector<ValueListener>) valueChangedListeners
+						.clone();
+			}
+
+			// walk through the listener list and
+			// call the gridproxychanged method in each
+			Enumeration<ValueListener> e = valueChangedTargets.elements();
+			while (e.hasMoreElements()) {
+				ValueListener valueChanged_l = (ValueListener) e.nextElement();
+				valueChanged_l.valueChanged(this, newValue);
+			}
+		}
+	}
+
+	/**
+	 * @return
+	 */
+	protected JButton getAddButton() {
+		if (addButton == null) {
+			addButton = new JButton();
+			addButton.addActionListener(new ActionListener() {
+				public void actionPerformed(final ActionEvent e) {
+
+					GrisuFileObject[] selectedFiles = getSiteFileChooserPanel()
+							.getSelectedFiles();
+					addFilesToSelection(selectedFiles);
+
+				}
+			});
+			addButton.setText("->");
+		}
+		return addButton;
+	}
+
+	/**
+	 * @return
+	 */
+	/**
+	 * @return
+	 */
+	protected JPanel getChoosenFilesPanel() {
+		if (choosenFilesPanel == null) {
+			choosenFilesPanel = new JPanel();
+			choosenFilesPanel.setLayout(new FormLayout(new ColumnSpec[] {
+					FormFactory.RELATED_GAP_COLSPEC,
+					new ColumnSpec("56dlu:grow(1.0)"),
+					FormFactory.RELATED_GAP_COLSPEC }, new RowSpec[] {
+					FormFactory.RELATED_GAP_ROWSPEC,
+					new RowSpec("default:grow(1.0)"),
+					FormFactory.RELATED_GAP_ROWSPEC,
+					FormFactory.DEFAULT_ROWSPEC,
+					FormFactory.RELATED_GAP_ROWSPEC }));
+			choosenFilesPanel.add(getRemoveButton(), new CellConstraints(2, 4,
+					CellConstraints.RIGHT, CellConstraints.DEFAULT));
+			choosenFilesPanel.add(getScrollPane(), new CellConstraints(2, 2,
+					CellConstraints.FILL, CellConstraints.FILL));
+		}
+		return choosenFilesPanel;
+	}
+
+	/**
+	 * @return
+	 */
+	protected JLabel getErrorLabel() {
+		if (errorLabel == null) {
+			errorLabel = new JLabel();
+			errorLabel.setVisible(false);
+			errorLabel.setForeground(Color.RED);
+		}
+		return errorLabel;
+	}
+
+	public String getExternalSetValue() {
+
+		if (selectedFilesModel.size() <= 0)
+			return JobConstants.DUMMY_STAGE_FILE;
+
+		StringBuffer result = new StringBuffer();
+		for (int i = 0; i < selectedFilesModel.getSize(); i++) {
+			GrisuFileObject file = (GrisuFileObject) selectedFilesModel.get(i);
+
+			String fileURI = file.getURI().toString();
+			// if (fileURI.startsWith("file:")) {
+			// result.append(fileURI.substring(5) + ";");
+			// } else {
+			result.append(fileURI + ";");
+			// }
+		}
+
+		return result.substring(0, result.length() - 1);
+	}
+
+	/**
+	 * @return
+	 */
+	protected JPanel getFileChooserPanel() {
+		if (fileChooserPanel == null) {
+			fileChooserPanel = new JPanel();
+			fileChooserPanel.setLayout(new FormLayout(new ColumnSpec[] {
+					FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
+					ColumnSpec.decode("313px:grow(1.0)"),
+					FormFactory.RELATED_GAP_COLSPEC }, new RowSpec[] {
+					FormFactory.RELATED_GAP_ROWSPEC,
+					RowSpec.decode("default:grow(1.0)"),
+					FormFactory.RELATED_GAP_ROWSPEC, RowSpec.decode("25px"),
+					FormFactory.RELATED_GAP_ROWSPEC }));
+			fileChooserPanel.add(getAddButton(), new CellConstraints(
+					"2, 4, 1, 1, right, fill"));
+
+		}
+		return fileChooserPanel;
+	}
+
+	/**
+	 * @return
+	 */
+	protected JList getList() {
+		if (list == null) {
+			list = new JList(selectedFilesModel);
+		}
+		return list;
+	}
+
+	/**
+	 * @return
+	 */
+	/**
+	 * @return
+	 */
+	protected JButton getRemoveButton() {
+		if (removeButton == null) {
+			removeButton = new JButton();
+			removeButton.addActionListener(new ActionListener() {
+				public void actionPerformed(final ActionEvent e) {
+
+					Object[] selectedFiles = getList().getSelectedValues();
+					for (Object file : selectedFiles) {
+						selectedFilesModel.removeElement(file);
+					}
+
+				}
+			});
+			removeButton.setText("-");
+		}
+		return removeButton;
+	}
+
+	/**
+	 * @return
+	 */
+	protected JLabel getRequiredLabel() {
+		if (requiredLabel == null) {
+			requiredLabel = new JLabel();
+			requiredLabel.setVerticalTextPosition(SwingConstants.TOP);
+		}
+		return requiredLabel;
+	}
+
+	/**
+	 * @return
+	 */
+	protected JScrollPane getScrollPane() {
+		if (scrollPane == null) {
+			scrollPane = new JScrollPane();
+			scrollPane.setViewportView(getList());
+		}
+		return scrollPane;
+	}
+
+	/**
+	 * @return
+	 */
+	protected JScrollPane getScrollPane_1() {
+		if (scrollPane_1 == null) {
+			scrollPane_1 = new JScrollPane();
+			scrollPane_1.setViewportView(getTextArea());
+		}
+		return scrollPane_1;
+	}
+
+	/**
+	 * @return
+	 */
+	protected SiteFileChooserPanel getSiteFileChooserPanel() {
+		if (siteFileChooserPanel == null) {
+			siteFileChooserPanel = new SiteFileChooserPanel(em);
+			siteFileChooserPanel.addUserInputListener(this);
+		}
+		return siteFileChooserPanel;
+	}
+
+	/**
+	 * @return
+	 */
+	protected JSplitPane getSplitPane() {
+		if (splitPane == null) {
+			splitPane = new JSplitPane();
+			splitPane.setRightComponent(getChoosenFilesPanel());
+			splitPane.setLeftComponent(getFileChooserPanel());
+			// splitPane.setDividerLocation(.8D);
+			Dimension minimumSize = new Dimension(250, 50);
+			splitPane.getLeftComponent().setMinimumSize(minimumSize);
+			splitPane.setResizeWeight(0.0);
+		}
+		return splitPane;
+	}
+
 	public JPanel getTemplateNodePanel() {
 		return this;
+	}
+
+	/**
+	 * @return
+	 */
+	protected JTextArea getTextArea() {
+		if (textArea == null) {
+			textArea = new JTextArea();
+			textArea.setEditable(false);
+		}
+		return textArea;
+	}
+
+	// remove a listener
+	synchronized public void removeValueListener(ValueListener l) {
+		if (valueChangedListeners == null) {
+			valueChangedListeners = new Vector<ValueListener>();
+		}
+		valueChangedListeners.removeElement(l);
 	}
 
 	public void reset() {
@@ -115,13 +360,25 @@ public class MultipleInputFiles extends JPanel implements TemplateNodePanel,
 
 	}
 
+	// event stuff
+	// ========================================================
+
+	public void setExternalSetValue(String value) {
+
+		if (value != null) {
+			selectedFilesModel.removeAllElements();
+			for (String file : value.split(";")) {
+				selectedFilesModel.addElement(file);
+			}
+		}
+	}
+
 	public void setTemplateNode(TemplateNode node)
 			throws TemplateNodePanelException {
 
 		this.em = node.getTemplate().getEnvironmentManager();
-		fileChooserPanel.add(getSiteFileChooserPanel(),
-				new CellConstraints(2, 2, CellConstraints.FILL,
-						CellConstraints.FILL));
+		fileChooserPanel.add(getSiteFileChooserPanel(), new CellConstraints(2,
+				2, CellConstraints.FILL, CellConstraints.FILL));
 		this.templateNode = node;
 		this.templateNode.setTemplateNodeValueSetter(this);
 		this.templateNode.addTemplateNodeListener(this);
@@ -148,17 +405,18 @@ public class MultipleInputFiles extends JPanel implements TemplateNodePanel,
 
 		// change to appropriate directory
 		try {
-			if ( lastDirectoryKey == null || NON_DIRECTORY_KEY.equals(lastDirectoryKey)) {
+			if (lastDirectoryKey == null
+					|| NON_DIRECTORY_KEY.equals(lastDirectoryKey)) {
 				changeToDirectory = System.getProperty("user.home");
 			} else {
-			changeToDirectory = historyManager.getEntries(lastDirectoryKey)
-					.get(0);
+				changeToDirectory = historyManager.getEntries(lastDirectoryKey)
+						.get(0);
 			}
 			URI uri = null;
 			try {
 				uri = new URI(changeToDirectory);
-			
-				if ( ! new File(uri).exists() || ! new File(uri).canRead() ) {
+
+				if (!new File(uri).exists() || !new File(uri).canRead()) {
 					uri = new File(System.getProperty("user.home")).toURI();
 				}
 
@@ -170,18 +428,18 @@ public class MultipleInputFiles extends JPanel implements TemplateNodePanel,
 					.getEnvironmentManager().getFileManager()
 					.getFileObject(uri);
 			getSiteFileChooserPanel().changeCurrentDirectory(dir);
-			
+
 		} catch (Exception e) {
 			// try to change to users home dir again...
 			try {
 				URI uri = null;
 				uri = new File(System.getProperty("user.home")).toURI();
-				
+
 				GrisuFileObject dir = templateNode.getTemplate()
-				.getEnvironmentManager().getFileManager()
-				.getFileObject(uri);
-		getSiteFileChooserPanel().changeCurrentDirectory(dir);
-				
+						.getEnvironmentManager().getFileManager()
+						.getFileObject(uri);
+				getSiteFileChooserPanel().changeCurrentDirectory(dir);
+
 			} catch (Exception e2) {
 				// do nothing in that case
 			}
@@ -222,42 +480,10 @@ public class MultipleInputFiles extends JPanel implements TemplateNodePanel,
 
 	}
 
-	public String getExternalSetValue() {
-
-		if (selectedFilesModel.size() <= 0)
-			return JobConstants.DUMMY_STAGE_FILE;
-
-		StringBuffer result = new StringBuffer();
-		for (int i = 0; i < selectedFilesModel.getSize(); i++) {
-			GrisuFileObject file = (GrisuFileObject) selectedFilesModel
-					.get(i);
-
-			String fileURI = file.getURI().toString();
-//			if (fileURI.startsWith("file:")) {
-//				result.append(fileURI.substring(5) + ";");
-//			} else {
-				result.append(fileURI + ";");
-//			}
-		}
-
-		return result.substring(0, result.length() - 1);
-	}
-	
-	public void setExternalSetValue(String value) {
-
-		if ( value != null ) {
-			selectedFilesModel.removeAllElements();
-			for ( String file : value.split(";") ) {
-				selectedFilesModel.addElement(file);
-			}
-		}
-	}
-
 	public void userInput(FileChooserEvent event) {
 
 		if (FileChooserEvent.SELECTED_FILE == event.getType()) {
-			addFilesToSelection(new GrisuFileObject[] { event
-					.getSelectedFile() });
+			addFilesToSelection(new GrisuFileObject[] { event.getSelectedFile() });
 		} else if (FileChooserEvent.SELECTED_FILES == event.getType()) {
 			addFilesToSelection(event.getSelectedFiles());
 		} else if (FileChooserEvent.CHANGED_FOLDER == event.getType()) {
@@ -273,245 +499,5 @@ public class MultipleInputFiles extends JPanel implements TemplateNodePanel,
 		}
 
 	}
-
-	private void addFilesToSelection(GrisuFileObject[] files) {
-		for (GrisuFileObject file : files) {
-			selectedFilesModel.addElement(file);
-		}
-	}
-
-	/**
-	 * @return
-	 */
-	protected JSplitPane getSplitPane() {
-		if (splitPane == null) {
-			splitPane = new JSplitPane();
-			splitPane.setRightComponent(getChoosenFilesPanel());
-			splitPane.setLeftComponent(getFileChooserPanel());
-			// splitPane.setDividerLocation(.8D);
-			Dimension minimumSize = new Dimension(250, 50);
-			splitPane.getLeftComponent().setMinimumSize(minimumSize);
-			splitPane.setResizeWeight(0.0);
-		}
-		return splitPane;
-	}
-
-	/**
-	 * @return
-	 */
-	/**
-	 * @return
-	 */
-	protected JPanel getChoosenFilesPanel() {
-		if (choosenFilesPanel == null) {
-			choosenFilesPanel = new JPanel();
-			choosenFilesPanel.setLayout(new FormLayout(
-				new ColumnSpec[] {
-					FormFactory.RELATED_GAP_COLSPEC,
-					new ColumnSpec("56dlu:grow(1.0)"),
-					FormFactory.RELATED_GAP_COLSPEC},
-				new RowSpec[] {
-					FormFactory.RELATED_GAP_ROWSPEC,
-					new RowSpec("default:grow(1.0)"),
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC,
-					FormFactory.RELATED_GAP_ROWSPEC}));
-			choosenFilesPanel.add(getRemoveButton(), new CellConstraints(2, 4,
-					CellConstraints.RIGHT, CellConstraints.DEFAULT));
-			choosenFilesPanel.add(getScrollPane(), new CellConstraints(2, 2,
-					CellConstraints.FILL, CellConstraints.FILL));
-		}
-		return choosenFilesPanel;
-	}
-
-	/**
-	 * @return
-	 */
-	/**
-	 * @return
-	 */
-	protected JButton getRemoveButton() {
-		if (removeButton == null) {
-			removeButton = new JButton();
-			removeButton.addActionListener(new ActionListener() {
-				public void actionPerformed(final ActionEvent e) {
-
-					Object[] selectedFiles = getList().getSelectedValues();
-					for (Object file : selectedFiles) {
-						selectedFilesModel.removeElement(file);
-					}
-
-				}
-			});
-			removeButton.setText("-");
-		}
-		return removeButton;
-	}
-
-	/**
-	 * @return
-	 */
-	protected JScrollPane getScrollPane() {
-		if (scrollPane == null) {
-			scrollPane = new JScrollPane();
-			scrollPane.setViewportView(getList());
-		}
-		return scrollPane;
-	}
-
-	/**
-	 * @return
-	 */
-	protected JPanel getFileChooserPanel() {
-		if (fileChooserPanel == null) {
-			fileChooserPanel = new JPanel();
-			fileChooserPanel.setLayout(new FormLayout(
-				new ColumnSpec[] {
-					FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-					ColumnSpec.decode("313px:grow(1.0)"),
-					FormFactory.RELATED_GAP_COLSPEC},
-				new RowSpec[] {
-					FormFactory.RELATED_GAP_ROWSPEC,
-					RowSpec.decode("default:grow(1.0)"),
-					FormFactory.RELATED_GAP_ROWSPEC,
-					RowSpec.decode("25px"),
-					FormFactory.RELATED_GAP_ROWSPEC}));
-			fileChooserPanel.add(getAddButton(), new CellConstraints(
-					"2, 4, 1, 1, right, fill"));
-
-		}
-		return fileChooserPanel;
-	}
-
-	/**
-	 * @return
-	 */
-	protected JButton getAddButton() {
-		if (addButton == null) {
-			addButton = new JButton();
-			addButton.addActionListener(new ActionListener() {
-				public void actionPerformed(final ActionEvent e) {
-
-					GrisuFileObject[] selectedFiles = getSiteFileChooserPanel()
-							.getSelectedFiles();
-					addFilesToSelection(selectedFiles);
-
-				}
-			});
-			addButton.setText("->");
-		}
-		return addButton;
-	}
-
-	/**
-	 * @return
-	 */
-	protected JList getList() {
-		if (list == null) {
-			list = new JList(selectedFilesModel);
-		}
-		return list;
-	}
-
-	/**
-	 * @return
-	 */
-	protected SiteFileChooserPanel getSiteFileChooserPanel() {
-		if (siteFileChooserPanel == null) {
-			siteFileChooserPanel = new SiteFileChooserPanel(em);
-			siteFileChooserPanel.addUserInputListener(this);
-		}
-		return siteFileChooserPanel;
-	}
-
-	/**
-	 * @return
-	 */
-	protected JLabel getRequiredLabel() {
-		if (requiredLabel == null) {
-			requiredLabel = new JLabel();
-			requiredLabel.setVerticalTextPosition(SwingConstants.TOP);
-		}
-		return requiredLabel;
-	}
-
-	/**
-	 * @return
-	 */
-	protected JLabel getErrorLabel() {
-		if (errorLabel == null) {
-			errorLabel = new JLabel();
-			errorLabel.setVisible(false);
-			errorLabel.setForeground(Color.RED);
-		}
-		return errorLabel;
-	}
-
-	/**
-	 * @return
-	 */
-	protected JScrollPane getScrollPane_1() {
-		if (scrollPane_1 == null) {
-			scrollPane_1 = new JScrollPane();
-			scrollPane_1.setViewportView(getTextArea());
-		}
-		return scrollPane_1;
-	}
-
-	/**
-	 * @return
-	 */
-	protected JTextArea getTextArea() {
-		if (textArea == null) {
-			textArea = new JTextArea();
-			textArea.setEditable(false);
-		}
-		return textArea;
-	}
-	// event stuff
-	// ========================================================
-	
-	private Vector<ValueListener> valueChangedListeners;
-
-	private void fireSitePanelEvent(String newValue) {
-		
-		myLogger.debug("Fire value changed event: new value: "+newValue);
-		// if we have no mountPointsListeners, do nothing...
-		if (valueChangedListeners != null && !valueChangedListeners.isEmpty()) {
-
-			// make a copy of the listener list in case
-			// anyone adds/removes mountPointsListeners
-			Vector<ValueListener> valueChangedTargets;
-			synchronized (this) {
-				valueChangedTargets = (Vector<ValueListener>) valueChangedListeners.clone();
-			}
-
-			// walk through the listener list and
-			// call the gridproxychanged method in each
-			Enumeration<ValueListener> e = valueChangedTargets.elements();
-			while (e.hasMoreElements()) {
-				ValueListener valueChanged_l = (ValueListener) e.nextElement();
-				valueChanged_l.valueChanged(this, newValue);
-			}
-		}
-	}
-
-	// register a listener
-	synchronized public void addValueListener(ValueListener l) {
-		if (valueChangedListeners == null)
-			valueChangedListeners = new Vector<ValueListener>();
-		valueChangedListeners.addElement(l);
-	}
-
-	// remove a listener
-	synchronized public void removeValueListener(ValueListener l) {
-		if (valueChangedListeners == null) {
-			valueChangedListeners = new Vector<ValueListener>();
-		}
-		valueChangedListeners.removeElement(l);
-	}
-
-
-
 
 }

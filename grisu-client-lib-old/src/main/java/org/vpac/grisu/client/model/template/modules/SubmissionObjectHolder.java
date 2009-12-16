@@ -5,11 +5,12 @@ import org.vpac.grisu.client.model.SubmissionObject;
 import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
 
 public interface SubmissionObjectHolder {
-	
+
 	public void addSubmissionObjectListener(SubmissionObjectListener l);
-	
+
+	public SubmissionObject getCurrentSubmissionObject()
+			throws JobCreationException;
+
 	public void removeSubmissionObjectListener(SubmissionObjectListener l);
-	
-	public SubmissionObject getCurrentSubmissionObject() throws JobCreationException;
-	
+
 }

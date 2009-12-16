@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.plugins.namd;
 
 import java.awt.Color;
@@ -22,7 +20,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
@@ -47,7 +44,7 @@ public class NamdInfoPanel extends JPanel implements JobStatusListener {
 			.getName());
 
 	private NamdJob namdJob = null;
-	
+
 	private EnvironmentManager em = null;
 
 	private DefaultComboBoxModel lineCharts = new DefaultComboBoxModel();
@@ -66,29 +63,20 @@ public class NamdInfoPanel extends JPanel implements JobStatusListener {
 	 */
 	public NamdInfoPanel() {
 		super();
-		setLayout(new FormLayout(
-			new ColumnSpec[] {
+		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
 				new ColumnSpec("87px:grow(1.0)"),
-				FormFactory.RELATED_GAP_COLSPEC},
-			new RowSpec[] {
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				new RowSpec("top:17dlu"),
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				new RowSpec("20px"),
-				new RowSpec("19dlu"),
-				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_COLSPEC }, new RowSpec[] {
+				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+				new RowSpec("top:17dlu"), FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC, new RowSpec("20px"),
+				new RowSpec("19dlu"), FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC,
 				new RowSpec("default:grow(1.0)"),
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC}));
+				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC }));
 		add(getTimestepsLabel(), new CellConstraints("2, 8, left, fill"));
 		add(getProgressBar(), new CellConstraints("2, 10, 1, 1, fill, fill"));
 		add(getTimestepLabel(), new CellConstraints(2, 11,
@@ -103,74 +91,6 @@ public class NamdInfoPanel extends JPanel implements JobStatusListener {
 		add(getVmdButton(), new CellConstraints(2, 16, CellConstraints.RIGHT,
 				CellConstraints.DEFAULT));
 		//
-	}
-
-	public void setNamdJob(NamdJob job) {
-		this.namdJob = job;
-		this.em = job.getJob().getEnvironmentManager();
-		this.namdJob.addJobStatusListener(this);
-		lineCharts.addElement(NamdJob.TOTAL_SERIES);
-		lineCharts.addElement(NamdJob.TEMP_SERIES);
-		lineCharts.addElement(NamdJob.PRESSURE_SERIES);
-
-		int current = namdJob.getLastIteration();
-		int percent = current / namdJob.getTotalSteps();
-		getProgressBar().setIndeterminate(true);
-		getProgressBar().setMaximum(namdJob.getTotalSteps());
-		getProgressBar().setValue(current);
-		getProgressBar().setIndeterminate(false);
-
-		getTimestepLabel().setText(current + "/" + namdJob.getTotalSteps());
-
-		getEditorPane().setText(createInformationHTML());
-
-	}
-
-	/**
-	 * @return
-	 */
-	protected JLabel getTimestepsLabel() {
-		if (timestepsLabel == null) {
-			timestepsLabel = new JLabel();
-			timestepsLabel.setText("Timesteps:");
-		}
-		return timestepsLabel;
-	}
-
-	/**
-	 * @return
-	 */
-	protected JProgressBar getProgressBar() {
-		if (progressBar == null) {
-			progressBar = new JProgressBar();
-		}
-		return progressBar;
-	}
-
-	/**
-	 * @return
-	 */
-	protected JLabel getTimestepLabel() {
-		if (timestepLabel == null) {
-			timestepLabel = new JLabel();
-			timestepLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		}
-		return timestepLabel;
-	}
-
-	/**
-	 * @return
-	 */
-	/**
-	 * @return
-	 */
-	protected JEditorPane getEditorPane() {
-		if (editorPane == null) {
-			editorPane = new JEditorPane();
-			editorPane.setContentType("text/html");
-			editorPane.setBackground(Color.WHITE);
-		}
-		return editorPane;
 	}
 
 	private String createInformationHTML() {
@@ -199,25 +119,13 @@ public class NamdInfoPanel extends JPanel implements JobStatusListener {
 			info.append("<dt>Memory</dt><dd>" + memory + "</dd>");
 
 			info.append("<b>Estimated time of completion:</b>");
-			info.append("<p>"+namdJob.getEstimatedTimeString()+"</p>");
-		
+			info.append("<p>" + namdJob.getEstimatedTimeString() + "</p>");
+
 		}
-		
 
 		info.append("</body></html>");
 
 		return info.toString();
-	}
-
-	/**
-	 * @return
-	 */
-	protected JLabel getLabel_1() {
-		if (label_1 == null) {
-			label_1 = new JLabel();
-			label_1.setText("Display:");
-		}
-		return label_1;
 	}
 
 	/**
@@ -239,12 +147,48 @@ public class NamdInfoPanel extends JPanel implements JobStatusListener {
 	/**
 	 * @return
 	 */
+	/**
+	 * @return
+	 */
+	protected JEditorPane getEditorPane() {
+		if (editorPane == null) {
+			editorPane = new JEditorPane();
+			editorPane.setContentType("text/html");
+			editorPane.setBackground(Color.WHITE);
+		}
+		return editorPane;
+	}
+
+	/**
+	 * @return
+	 */
+	protected JLabel getLabel_1() {
+		if (label_1 == null) {
+			label_1 = new JLabel();
+			label_1.setText("Display:");
+		}
+		return label_1;
+	}
+
+	/**
+	 * @return
+	 */
 	protected JLabel getLabel_2() {
 		if (label_2 == null) {
 			label_2 = new JLabel();
 			label_2.setText("Information:");
 		}
 		return label_2;
+	}
+
+	/**
+	 * @return
+	 */
+	protected JProgressBar getProgressBar() {
+		if (progressBar == null) {
+			progressBar = new JProgressBar();
+		}
+		return progressBar;
 	}
 
 	/**
@@ -263,22 +207,26 @@ public class NamdInfoPanel extends JPanel implements JobStatusListener {
 		return refreshButton;
 	}
 
-	public void jobStatusChanged(JobStatusEvent event) {
-
-		if (event.getEventType() == JobStatusEvent.NO_CHANGE) {
-			// do nothing
-			myLogger.debug("No change for namdJob: "
-					+ namdJob.getJob().getName());
-		} else {
-			int current = namdJob.getLastIteration();
-			int percent = current / namdJob.getNumsteps();
-			getProgressBar().setValue(current);
-
-			getTimestepLabel().setText(current + "/" + namdJob.getTotalSteps());
-
-			getEditorPane().setText(createInformationHTML());
+	/**
+	 * @return
+	 */
+	protected JLabel getTimestepLabel() {
+		if (timestepLabel == null) {
+			timestepLabel = new JLabel();
+			timestepLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		}
+		return timestepLabel;
+	}
 
+	/**
+	 * @return
+	 */
+	protected JLabel getTimestepsLabel() {
+		if (timestepsLabel == null) {
+			timestepsLabel = new JLabel();
+			timestepsLabel.setText("Timesteps:");
+		}
+		return timestepsLabel;
 	}
 
 	/**
@@ -316,7 +264,7 @@ public class NamdInfoPanel extends JPanel implements JobStatusListener {
 									"applicationCouldNotBeFound", null);
 							return;
 						}
-						
+
 						vmdPath = apd.getPath();
 
 					}
@@ -347,104 +295,105 @@ public class NamdInfoPanel extends JPanel implements JobStatusListener {
 							continue;
 						}
 					}
-					final String dcdArgument = dcdFile.getLocalRepresentation(true)
-							.getAbsolutePath();
-					final String dcdFileName = dcdFile.getLocalRepresentation(false).getName();
-					final String psfArgument = psfFile.getLocalRepresentation(true)
-							.getAbsolutePath();
-					final String psfFileName = psfFile.getLocalRepresentation(false).getName();
+					final String dcdArgument = dcdFile.getLocalRepresentation(
+							true).getAbsolutePath();
+					final String dcdFileName = dcdFile.getLocalRepresentation(
+							false).getName();
+					final String psfArgument = psfFile.getLocalRepresentation(
+							true).getAbsolutePath();
+					final String psfFileName = psfFile.getLocalRepresentation(
+							false).getName();
 
-					final File workingDir = psfFile.getLocalRepresentation(false).getParentFile();
-					
+					final File workingDir = psfFile.getLocalRepresentation(
+							false).getParentFile();
+
 					final String vmdPathForThread = vmdPath;
-					
-//					SwingUtilities.invokeLater(
-//					new Thread() {
-//						public void run() {
-//							myLogger.debug("Starting vmd like: \"" + vmdPathForThread
-//									+ "\" -dcd \"" + dcdArgument + "\" -psf \""
-//									+ psfArgument);
-							myLogger.debug("Starting vmd like: "+vmdPathForThread + psfFileName + "-dcd" + dcdFileName +". Using: "+workingDir.toString()+" as working directory.");
-							try {
-//								List<String> args = new LinkedList<String>();
-//								args.add(vmdPathForThread);
-//								args.add("-dcd");
-//								args.add("\"" + dcdArgument + "\"");
-//								args.add("-psf");
-//								args.add("\"" + psfArgument + "\"");
-//								Process process = new ProcessBuilder(vmdPathForThread, 
-//										"-dcd", "\"" + dcdArgument + "\"", "-psf", "\"" + psfArgument + "\"").start();
-								
-								
-								ProcessBuilder processBuilder = new ProcessBuilder(vmdPathForThread,
-										psfFileName, "-dcd", dcdFileName);
-								
-								processBuilder.directory(workingDir);
-								processBuilder.redirectErrorStream(true);
-								
-								final Process p = processBuilder.start();
-								
-						           // Spawn thread to read output of spawned program
-					            new Thread() {
 
-					            public void run()
-					                {
-					                // hook into output from spawned program
-					                final InputStream is = p.getInputStream();
-					                final InputStreamReader isr = new InputStreamReader( is );
-					                final BufferedReader br = new BufferedReader( isr, 100/* buffsize in chars */ );
-					                String line;
-					                try
-					                    {
-					                    try
-					                        {
-					                        // C/C++ can write this with putc
-					                        while ( ( line = br.readLine() ) != null )
-					                            {
-					                            System.out.println( line );
+					// SwingUtilities.invokeLater(
+					// new Thread() {
+					// public void run() {
+					// myLogger.debug("Starting vmd like: \"" + vmdPathForThread
+					// + "\" -dcd \"" + dcdArgument + "\" -psf \""
+					// + psfArgument);
+					myLogger.debug("Starting vmd like: " + vmdPathForThread
+							+ psfFileName + "-dcd" + dcdFileName + ". Using: "
+							+ workingDir.toString() + " as working directory.");
+					try {
+						// List<String> args = new LinkedList<String>();
+						// args.add(vmdPathForThread);
+						// args.add("-dcd");
+						// args.add("\"" + dcdArgument + "\"");
+						// args.add("-psf");
+						// args.add("\"" + psfArgument + "\"");
+						// Process process = new
+						// ProcessBuilder(vmdPathForThread,
+						// "-dcd", "\"" + dcdArgument + "\"", "-psf", "\"" +
+						// psfArgument + "\"").start();
 
-					                            }
-					                        }
-					                    catch ( EOFException e )
-					                        {
-					                        }
-					                    br.close();
-					                    }
-					                catch ( IOException e )
-					                    {
-					                    System.err.println( "problem reading spawn output" + e.getMessage() );
-//					                    System.exit( 1 );
-					                    }
-					                // returning from run kills the thread.
-					                }
-					            }.start();
+						ProcessBuilder processBuilder = new ProcessBuilder(
+								vmdPathForThread, psfFileName, "-dcd",
+								dcdFileName);
 
-								
-//								Runtime.getRuntime().exec(
-//										new String[] {vmdPathForThread,
-////												"-psf",
-//												psfArgument,
-//												"-dcd",
-//												dcdArgument});
+						processBuilder.directory(workingDir);
+						processBuilder.redirectErrorStream(true);
+
+						final Process p = processBuilder.start();
+
+						// Spawn thread to read output of spawned program
+						new Thread() {
+
+							public void run() {
+								// hook into output from spawned program
+								final InputStream is = p.getInputStream();
+								final InputStreamReader isr = new InputStreamReader(
+										is);
+								final BufferedReader br = new BufferedReader(
+										isr, 100/* buffsize in chars */);
+								String line;
 								try {
-									ClientPropertiesManager
-											.getClientConfiguration()
-											.setProperty("vmdPath", vmdPathForThread);
-									ClientPropertiesManager
-											.getClientConfiguration().save();
-								} catch (ConfigurationException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-						}
-					});
+									try {
+										// C/C++ can write this with putc
+										while ((line = br.readLine()) != null) {
+											System.out.println(line);
 
-//				}
-//			});
+										}
+									} catch (EOFException e) {
+									}
+									br.close();
+								} catch (IOException e) {
+									System.err
+											.println("problem reading spawn output"
+													+ e.getMessage());
+									// System.exit( 1 );
+								}
+								// returning from run kills the thread.
+							}
+						}.start();
+
+						// Runtime.getRuntime().exec(
+						// new String[] {vmdPathForThread,
+						// // "-psf",
+						// psfArgument,
+						// "-dcd",
+						// dcdArgument});
+						try {
+							ClientPropertiesManager.getClientConfiguration()
+									.setProperty("vmdPath", vmdPathForThread);
+							ClientPropertiesManager.getClientConfiguration()
+									.save();
+						} catch (ConfigurationException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			});
+
+			// }
+			// });
 			vmdButton.setText("VMD");
 		}
 		return vmdButton;
@@ -452,5 +401,44 @@ public class NamdInfoPanel extends JPanel implements JobStatusListener {
 	/**
 	 * @return
 	 */
+
+	public void jobStatusChanged(JobStatusEvent event) {
+
+		if (event.getEventType() == JobStatusEvent.NO_CHANGE) {
+			// do nothing
+			myLogger.debug("No change for namdJob: "
+					+ namdJob.getJob().getName());
+		} else {
+			int current = namdJob.getLastIteration();
+			int percent = current / namdJob.getNumsteps();
+			getProgressBar().setValue(current);
+
+			getTimestepLabel().setText(current + "/" + namdJob.getTotalSteps());
+
+			getEditorPane().setText(createInformationHTML());
+		}
+
+	}
+
+	public void setNamdJob(NamdJob job) {
+		this.namdJob = job;
+		this.em = job.getJob().getEnvironmentManager();
+		this.namdJob.addJobStatusListener(this);
+		lineCharts.addElement(NamdJob.TOTAL_SERIES);
+		lineCharts.addElement(NamdJob.TEMP_SERIES);
+		lineCharts.addElement(NamdJob.PRESSURE_SERIES);
+
+		int current = namdJob.getLastIteration();
+		int percent = current / namdJob.getTotalSteps();
+		getProgressBar().setIndeterminate(true);
+		getProgressBar().setMaximum(namdJob.getTotalSteps());
+		getProgressBar().setValue(current);
+		getProgressBar().setIndeterminate(false);
+
+		getTimestepLabel().setText(current + "/" + namdJob.getTotalSteps());
+
+		getEditorPane().setText(createInformationHTML());
+
+	}
 
 }

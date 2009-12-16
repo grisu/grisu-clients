@@ -11,18 +11,20 @@ import org.apache.log4j.Logger;
 import org.vpac.grisu.client.model.files.GrisuFileObject;
 import org.vpac.grisu.utils.FileHelpers;
 
-public class TextViewerPanel extends PreviewPanelInsert{
-	
+public class TextViewerPanel extends PreviewPanelInsert {
+
 	private JScrollPane scrollPane;
 	private JEditorPane textContentPane;
-	static final Logger myLogger = Logger.getLogger(TextViewerPanel.class.getName());
+	static final Logger myLogger = Logger.getLogger(TextViewerPanel.class
+			.getName());
 
-	private final String[] extensions = new String[]{"txt", "dat", "log", "xml", "o\\d+", "e\\d+"};
-	private final String[] mimeTypes = new String[]{};
-	
+	private final String[] extensions = new String[] { "txt", "dat", "log",
+			"xml", "o\\d+", "e\\d+" };
+	private final String[] mimeTypes = new String[] {};
+
 	private File file = null;
 	private String text = null;
-	
+
 	/**
 	 * Create the panel
 	 */
@@ -41,27 +43,14 @@ public class TextViewerPanel extends PreviewPanelInsert{
 		return mimeTypes;
 	}
 
-	public void setDataToPreview(byte[] data) {
-		// TODO Auto-generated method stub
-		myLogger.error("This is not supported yet.");
+	protected JScrollPane getScrollPane() {
+		if (scrollPane == null) {
+			scrollPane = new JScrollPane();
+			scrollPane.setViewportView(getTextContentPane());
+		}
+		return scrollPane;
 	}
 
-	public void setFileToPreview(GrisuFileObject file) {
-		
-		this.file = file.getLocalRepresentation(true);
-		if ( file != null ) {
-			this.text = FileHelpers.readFromFile(this.file);
-			getTextContentPane().setText(this.text);
-		} else {
-			getTextContentPane().setText("Can't display content/No content to display.");
-		}
-	}
-	
-	public void refresh(GrisuFileObject file) {
-		
-		setFileToPreview(file);
-	}
-	
 	protected JEditorPane getTextContentPane() {
 		if (textContentPane == null) {
 			textContentPane = new JEditorPane();
@@ -71,12 +60,27 @@ public class TextViewerPanel extends PreviewPanelInsert{
 		}
 		return textContentPane;
 	}
-	protected JScrollPane getScrollPane() {
-		if (scrollPane == null) {
-			scrollPane = new JScrollPane();
-			scrollPane.setViewportView(getTextContentPane());
+
+	public void refresh(GrisuFileObject file) {
+
+		setFileToPreview(file);
+	}
+
+	public void setDataToPreview(byte[] data) {
+		// TODO Auto-generated method stub
+		myLogger.error("This is not supported yet.");
+	}
+
+	public void setFileToPreview(GrisuFileObject file) {
+
+		this.file = file.getLocalRepresentation(true);
+		if (file != null) {
+			this.text = FileHelpers.readFromFile(this.file);
+			getTextContentPane().setText(this.text);
+		} else {
+			getTextContentPane().setText(
+					"Can't display content/No content to display.");
 		}
-		return scrollPane;
 	}
 
 }

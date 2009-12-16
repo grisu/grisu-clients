@@ -1,10 +1,7 @@
-
-
 package org.vpac.grisu.client.model.jobs;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,11 +28,9 @@ import au.org.arcs.jcommons.constants.Constants;
  * 
  */
 public class GrisuJobMonitoringObjectImpl implements GrisuJobMonitoringObject {
-	
-	static final Logger myLogger = Logger.getLogger(GrisuJobMonitoringObjectImpl.class
-			.getName());
-	
-	
+
+	static final Logger myLogger = Logger
+			.getLogger(GrisuJobMonitoringObjectImpl.class.getName());
 
 	public static final String NOT_AVAILABLE_STRING = "n/a";
 
@@ -75,8 +70,9 @@ public class GrisuJobMonitoringObjectImpl implements GrisuJobMonitoringObject {
 	public void fillJobDetails() {
 
 		try {
-			myLogger.debug("Filling job details for job: "+this.name);
-			this.jobProperties = serviceInterface.getJob(this.name).propertiesAsMap();
+			myLogger.debug("Filling job details for job: " + this.name);
+			this.jobProperties = serviceInterface.getJob(this.name)
+					.propertiesAsMap();
 		} catch (NoSuchJobException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -97,7 +93,8 @@ public class GrisuJobMonitoringObjectImpl implements GrisuJobMonitoringObject {
 		otherProperties.remove(Constants.APPLICATIONNAME_KEY);
 
 		try {
-			walltime = new Integer(jobProperties.get(Constants.WALLTIME_IN_MINUTES_KEY)).toString();
+			walltime = new Integer(jobProperties
+					.get(Constants.WALLTIME_IN_MINUTES_KEY)).toString();
 		} catch (NumberFormatException e) {
 			// does not matter
 		}
@@ -106,7 +103,8 @@ public class GrisuJobMonitoringObjectImpl implements GrisuJobMonitoringObject {
 		otherProperties.remove(Constants.WALLTIME_IN_MINUTES_KEY);
 
 		try {
-			cpus = new Integer(jobProperties.get(Constants.NO_CPUS_KEY)).toString();
+			cpus = new Integer(jobProperties.get(Constants.NO_CPUS_KEY))
+					.toString();
 		} catch (NumberFormatException e) {
 			// does not matter
 		}
@@ -180,7 +178,132 @@ public class GrisuJobMonitoringObjectImpl implements GrisuJobMonitoringObject {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getServiceInterface()
+	 * @seeorg.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#
+	 * getApplicationType()
+	 */
+	public String getApplicationType() {
+
+		if (applicationType == null || NOT_AVAILABLE_STRING.equals(name))
+			fillJobDetails();
+
+		return applicationType;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getCpus()
+	 */
+	public String getCpus() {
+
+		if (cpus == null || NOT_AVAILABLE_STRING.equals(name))
+			fillJobDetails();
+
+		return cpus;
+	}
+
+	public EnvironmentManager getEnvironmentManager() {
+		return em;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getFqan()
+	 */
+	public String getFqan() {
+
+		if (fqan == null || NOT_AVAILABLE_STRING.equals(name))
+			fillJobDetails();
+
+		return fqan;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getJobDirectory
+	 * ()
+	 */
+	public String getJobDirectory() {
+
+		if (jobDirectory == null || NOT_AVAILABLE_STRING.equals(jobDirectory))
+			fillJobDetails();
+
+		return jobDirectory;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#
+	 * getJobDirectoryObject()
+	 */
+	public GrisuFileObject getJobDirectoryObject() {
+		if (jobDirectoryObject == null) {
+			try {
+
+				jobDirectoryObject = em.getFileManager().getFileObject(
+						new URI(getJobDirectory()));
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return jobDirectoryObject;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#
+	 * getJobProperties()
+	 */
+	public Map<String, String> getJobProperties() {
+
+		if (jobProperties == null) {
+			fillJobDetails();
+		}
+
+		return jobProperties;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getName()
+	 */
+	public String getName() {
+
+		if (name == null || NOT_AVAILABLE_STRING.equals(name))
+			fillJobDetails();
+
+		return name;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#
+	 * getOtherProperties()
+	 */
+	public Map<String, String> getOtherProperties() {
+
+		if (otherProperties == null)
+			fillJobDetails();
+
+		return otherProperties;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#
+	 * getServiceInterface()
 	 */
 	public ServiceInterface getServiceInterface() {
 		return serviceInterface;
@@ -189,151 +312,17 @@ public class GrisuJobMonitoringObjectImpl implements GrisuJobMonitoringObject {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getJobProperties()
-	 */
-	public Map<String, String> getJobProperties() {
-		
-		if ( jobProperties == null ) {
-				fillJobDetails();
-		}
-		
-		return jobProperties;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getName()
-	 */
-	public String getName() {
-			
-		if ( name == null || NOT_AVAILABLE_STRING.equals(name) ) 
-			fillJobDetails();
-		
-		return name;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getApplicationType()
-	 */
-	public String getApplicationType() {
-		
-		if ( applicationType == null || NOT_AVAILABLE_STRING.equals(name) ) 
-			fillJobDetails();
-		
-		return applicationType;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getWalltime()
-	 */
-	public String getWalltime() {
-		
-		if ( walltime == null || NOT_AVAILABLE_STRING.equals(name) ) 
-			fillJobDetails();
-		
-		return walltime;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getCpus()
-	 */
-	public String getCpus() {
-		
-		if ( cpus == null || NOT_AVAILABLE_STRING.equals(name) ) 
-			fillJobDetails();
-		
-		return cpus;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getSubmissionHost()
-	 */
-	public String getSubmissionHost() {
-		
-		if ( submissionHost == null || NOT_AVAILABLE_STRING.equals(name) ) 
-			fillJobDetails();
-		
-		return submissionHost;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getSubmissionQueue()
-	 */
-	public String getSubmissionQueue() {
-		
-		if ( submissionQueue == null || NOT_AVAILABLE_STRING.equals(name) ) 
-			fillJobDetails();
-		
-		return submissionQueue;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getSubmissionTime()
-	 */
-	public String getSubmissionTime() {
-		
-		if ( submissionTime == null || NOT_AVAILABLE_STRING.equals(name) )
-			fillJobDetails();
-		
-		Date date = null;
-		try {
-			
-			date = new Date(Long.parseLong(submissionTime));
-			
-		} catch (Exception e) {
-			myLogger.warn("Job seems to be in old time format. Trying other method of parsing it...");
-			try {
-				date = new SimpleDateFormat().parse(submissionTime);
-			} catch (ParseException e1) {
-				myLogger.error("Could not parse submission time. Returning the String without conversion.");
-				return submissionTime;
-			}
-		}
-		
-		JobManager.inputDateFormat.setTimeZone(TimeZone.getDefault());
-		
-		return JobManager.inputDateFormat.format(date);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getFqan()
-	 */
-	public String getFqan() {
-		
-		if ( fqan == null || NOT_AVAILABLE_STRING.equals(name) ) 
-			fillJobDetails();
-			
-		return fqan;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getStatus()
+	 * @see
+	 * org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getStatus()
 	 */
 	public String getStatus() {
-		
+
 		return getStatus(false);
 	}
-	
+
 	public String getStatus(boolean forceRefresh) {
 
-		if (preventStatusUpdate && ! forceRefresh) {
+		if (preventStatusUpdate && !forceRefresh) {
 			return JobConstants.LOADING_STRING;
 		}
 
@@ -364,72 +353,105 @@ public class GrisuJobMonitoringObjectImpl implements GrisuJobMonitoringObject {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getJobDirectory()
-	 */
-	public String getJobDirectory() {
-		
-		if ( jobDirectory == null || NOT_AVAILABLE_STRING.equals(jobDirectory) ) 
-			fillJobDetails();
-		
-		return jobDirectory;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getStdout()
-	 */
-	public String getStdout() {
-		
-		if ( stdout == null || NOT_AVAILABLE_STRING.equals(name) ) 
-			fillJobDetails();
-		
-		return stdout;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getStderr()
+	 * @see
+	 * org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getStderr()
 	 */
 	public String getStderr() {
-		
-		if ( stderr == null || NOT_AVAILABLE_STRING.equals(name) ) 
+
+		if (stderr == null || NOT_AVAILABLE_STRING.equals(name))
 			fillJobDetails();
-		
+
 		return stderr;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getOtherProperties()
+	 * @see
+	 * org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getStdout()
 	 */
-	public Map<String, String> getOtherProperties() {
-		
-		if ( otherProperties == null ) 
+	public String getStdout() {
+
+		if (stdout == null || NOT_AVAILABLE_STRING.equals(name))
 			fillJobDetails();
-		
-		return otherProperties;
+
+		return stdout;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getJobDirectoryObject()
+	 * @seeorg.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#
+	 * getSubmissionHost()
 	 */
-	public GrisuFileObject getJobDirectoryObject() {
-		if (jobDirectoryObject == null) {
-			try {
+	public String getSubmissionHost() {
 
-				jobDirectoryObject = em.getFileManager().getFileObject(
-						new URI(getJobDirectory()));
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if (submissionHost == null || NOT_AVAILABLE_STRING.equals(name))
+			fillJobDetails();
+
+		return submissionHost;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#
+	 * getSubmissionQueue()
+	 */
+	public String getSubmissionQueue() {
+
+		if (submissionQueue == null || NOT_AVAILABLE_STRING.equals(name))
+			fillJobDetails();
+
+		return submissionQueue;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#
+	 * getSubmissionTime()
+	 */
+	public String getSubmissionTime() {
+
+		if (submissionTime == null || NOT_AVAILABLE_STRING.equals(name))
+			fillJobDetails();
+
+		Date date = null;
+		try {
+
+			date = new Date(Long.parseLong(submissionTime));
+
+		} catch (Exception e) {
+			myLogger
+					.warn("Job seems to be in old time format. Trying other method of parsing it...");
+			try {
+				date = new SimpleDateFormat().parse(submissionTime);
+			} catch (ParseException e1) {
+				myLogger
+						.error("Could not parse submission time. Returning the String without conversion.");
+				return submissionTime;
 			}
 		}
-		return jobDirectoryObject;
+
+		JobManager.inputDateFormat.setTimeZone(TimeZone.getDefault());
+
+		return JobManager.inputDateFormat.format(date);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.vpac.grisu.client.model.jobs.GrisuJobMonitoringObjectImpl#getWalltime
+	 * ()
+	 */
+	public String getWalltime() {
+
+		if (walltime == null || NOT_AVAILABLE_STRING.equals(name))
+			fillJobDetails();
+
+		return walltime;
 	}
 
 	public void kill() throws NoSuchJobException, BatchJobException {
@@ -447,10 +469,6 @@ public class GrisuJobMonitoringObjectImpl implements GrisuJobMonitoringObject {
 
 		em.getJobManager().cleanJob(this);
 
-	}
-
-	public EnvironmentManager getEnvironmentManager() {
-		return em;
 	}
 
 }

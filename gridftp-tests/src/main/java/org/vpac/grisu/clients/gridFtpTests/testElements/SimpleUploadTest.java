@@ -48,6 +48,22 @@ public class SimpleUploadTest extends GridFtpTestElement {
 
 	}
 
+	@Override
+	public String getDescription() {
+		return "A very simple upload, download and subsequent remote deletion of a small text file.";
+	}
+
+	// @Override
+	// public LinkedList<GridFtpAction> getGridFtpActions() {
+	//
+	// return actions;
+	// }
+
+	@Override
+	public String getTestName() {
+		return "SimpleUploadTest";
+	}
+
 	protected LinkedList<List<GridFtpActionItem>> setupGridFtpActionItems() {
 
 		LinkedList<List<GridFtpActionItem>> actionItems = new LinkedList<List<GridFtpActionItem>>();
@@ -70,7 +86,8 @@ public class SimpleUploadTest extends GridFtpTestElement {
 		for (MountPoint mp : mountpoints) {
 			GridFtpActionItem item = new GridFtpActionItem(mp.getAlias(),
 					action, mp.getRootUrl() + "/" + targetFileName,
-					targetDownloadFolder+File.separator+UUID.randomUUID().toString());
+					targetDownloadFolder + File.separator
+							+ UUID.randomUUID().toString());
 			list.add(item);
 		}
 		actionItems.add(list);
@@ -89,22 +106,5 @@ public class SimpleUploadTest extends GridFtpTestElement {
 		return actionItems;
 
 	}
-
-	// @Override
-	// public LinkedList<GridFtpAction> getGridFtpActions() {
-	//
-	// return actions;
-	// }
-
-	@Override
-	public String getTestName() {
-		return "SimpleUploadTest";
-	}
-
-	@Override
-	public String getDescription() {
-		return "A very simple upload, download and subsequent remote deletion of a small text file.";
-	}
-
 
 }

@@ -1,35 +1,31 @@
-
-
 package org.vpac.grisu.client.control.status;
 
 import java.util.Enumeration;
 import java.util.Vector;
 
 public class ApplicationStatusManager {
-	
+
 	private static ApplicationStatusManager defaultManager = null;
-	
+
 	public synchronized static ApplicationStatusManager getDefaultManager() {
-		if ( defaultManager == null ) {
+		if (defaultManager == null) {
 			defaultManager = new ApplicationStatusManager();
-		} 
+		}
 		return defaultManager;
 	}
-	
+
 	private String currentStatus = null;
-	
-	public String getCurrentStatus() {
-		return currentStatus;
-	}
-	
-	public void setCurrentStatus(String currentStatus) {
-		this.currentStatus = currentStatus;
-		fireMountPointsEvent(this.currentStatus);
-	}
-	
+
 	// ---------------------------------------------------------------------------------------
 	// Event stuff (MountPoints)
 	private Vector<StatusListener> statusListeners;
+
+	// register a listener
+	synchronized public void addStatusListener(StatusListener l) {
+		if (statusListeners == null)
+			statusListeners = new Vector();
+		statusListeners.addElement(l);
+	}
 
 	private void fireMountPointsEvent(String newStatus) {
 		// if we have no mountPointsListeners, do nothing...
@@ -58,11 +54,8 @@ public class ApplicationStatusManager {
 		}
 	}
 
-	// register a listener
-	synchronized public void addStatusListener(StatusListener l) {
-		if (statusListeners == null)
-			statusListeners = new Vector();
-		statusListeners.addElement(l);
+	public String getCurrentStatus() {
+		return currentStatus;
 	}
 
 	// remove a listener
@@ -72,5 +65,10 @@ public class ApplicationStatusManager {
 		}
 		statusListeners.removeElement(l);
 	}
-	
+
+	public void setCurrentStatus(String currentStatus) {
+		this.currentStatus = currentStatus;
+		fireMountPointsEvent(this.currentStatus);
+	}
+
 }

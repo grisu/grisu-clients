@@ -24,68 +24,9 @@ public class GridExternalTestInfoImpl implements GridTestInfo {
 
 	public static final String TESTPROPERTIES_FILENAME = "grisu-test.properties";
 
-	private final String testname;
-	private final String description;
-	private final boolean useMds;
-	private final String applicationName;
-	private final String versionName;
-//	private final Map<String, Set<String>> subLocsPerVersions = new TreeMap<String, Set<String>>();
-	private final File testDir;
-	private final File jsdlFile;
-	private final List<String> inputFiles;
-	private final String[] fqans;
-
-	/* (non-Javadoc)
-	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getTestDir()
-	 */
-	public File getTestBaseDir() {
-		return testDir;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getJsdlFile()
-	 */
-	public File getJsdlFile() {
-		return jsdlFile;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getInputFiles()
-	 */
-	public List<String> getInputFiles() {
-		return inputFiles;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getOutputFiles()
-	 */
-	public List<String> getOutputFiles() {
-		return outputFiles;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getCommand()
-	 */
-	public String getCommand() {
-		return command;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getJsdlDoc()
-	 */
-	public Document getJsdlDoc() {
-		return jsdlDoc;
-	}
-
-	private final List<String> outputFiles;
-	private final String command;
-	private final Document jsdlDoc;
-
-	private final GridTestController controller;
-
 	public static final List<GridTestInfo> generateGridTestInfos(
 			GridTestController controller, String[] testnames, String[] fqans) {
-		
+
 		List<GridTestInfo> result = new LinkedList<GridTestInfo>();
 		File baseDir = controller.getGridTestDirectory();
 
@@ -98,8 +39,10 @@ public class GridExternalTestInfoImpl implements GridTestInfo {
 
 			if (child.exists() && child.isDirectory()
 					&& !child.getName().startsWith(".")) {
-				GridExternalTestInfoImpl info = new GridExternalTestInfoImpl(child, controller, fqans);
-				if ( testnames.length == 0 || Arrays.binarySearch(testnames, info.getTestname()) >= 0 ) {
+				GridExternalTestInfoImpl info = new GridExternalTestInfoImpl(
+						child, controller, fqans);
+				if (testnames.length == 0
+						|| Arrays.binarySearch(testnames, info.getTestname()) >= 0) {
 					result.add(info);
 				}
 			}
@@ -108,55 +51,29 @@ public class GridExternalTestInfoImpl implements GridTestInfo {
 
 		return result;
 	}
+	private final String testname;
+	private final String description;
+	private final boolean useMds;
+	private final String applicationName;
+	private final String versionName;
+	// private final Map<String, Set<String>> subLocsPerVersions = new
+	// TreeMap<String, Set<String>>();
+	private final File testDir;
+	private final File jsdlFile;
+	private final List<String> inputFiles;
 
-	/* (non-Javadoc)
-	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#generateAllGridTestElements()
-	 */
-	public final List<GridTestElement> generateAllGridTestElements()
-			throws MdsInformationException {
+	private final String[] fqans;
 
-		List<GridTestElement> results = new LinkedList<GridTestElement>();
+	private final List<String> outputFiles;
 
-		ApplicationInformation appInfo = GrisuRegistryManager.getDefault(controller.getServiceInterface()).getApplicationInformation(applicationName);
-		
-		for ( String fqan : fqans ) {
-			
-			if ( useMds ) {
-				if ( StringUtils.isNotBlank(versionName) && ! Constants.NO_VERSION_INDICATOR_STRING.equals(versionName) ) {
-					// means only one version
-					Set<String> subLocs = appInfo.getAvailableSubmissionLocationsForVersionAndFqan(versionName, fqan);
-					for ( String subLoc : subLocs ) {
-						for ( int i=0; i<controller.getSameSubmissionLocation(); i++ ) {
-							results.add(createGridTestElement(versionName, subLoc, fqan));
-						}
-					}
-				} else {
-					// means all versions
-					Set<String> versions = appInfo.getAllAvailableVersionsForFqan(fqan);
-					for ( String version : versions ) {
-						Set<String> subLocs = appInfo.getAvailableSubmissionLocationsForVersionAndFqan(version, fqan);
-						for ( String subLoc : subLocs ) {
-							for ( int i=0; i<controller.getSameSubmissionLocation(); i++ ) {
-								results.add(createGridTestElement(version, subLoc, fqan));
-							}
-						}
-					}
-				}
-			} else {
-				String[] subLocs = GrisuRegistryManager.getDefault(controller.getServiceInterface()).getResourceInformation().getAllAvailableSubmissionLocations(fqan);
-				for ( String subLoc : subLocs ) {
-					for ( int i=0; i<controller.getSameSubmissionLocation(); i++ ) {
-						results.add(createGridTestElement(Constants.NO_VERSION_INDICATOR_STRING, subLoc, fqan));
-					}
-				}
-			}
-			
-		}
+	private final String command;
 
-		return results;
-	}
+	private final Document jsdlDoc;
 
-	public GridExternalTestInfoImpl(File rootfolder, GridTestController controller, String[] fqans) {
+	private final GridTestController controller;
+
+	public GridExternalTestInfoImpl(File rootfolder,
+			GridTestController controller, String[] fqans) {
 
 		this.controller = controller;
 		this.fqans = fqans;
@@ -240,8 +157,7 @@ public class GridExternalTestInfoImpl implements GridTestInfo {
 				inputFiles.add(inputFile);
 			}
 		}
-		String outputFilesString = testProperties
-				.getProperty("outputfiles");
+		String outputFilesString = testProperties.getProperty("outputfiles");
 		outputFiles = new LinkedList<String>();
 		if (StringUtils.isNotBlank(outputFilesString)) {
 			for (String outputFileName : outputFilesString.split(",")) {
@@ -254,61 +170,198 @@ public class GridExternalTestInfoImpl implements GridTestInfo {
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getController()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.vpac.grisu.client.gridTests.GridTestInfo#createGridTestElement(java
+	 * .lang.String, java.lang.String)
 	 */
-	public GridTestController getController() {
-		return this.controller;
-	}
+	public GridTestElement createGridTestElement(String version,
+			String submissionLocation, String fqan)
+			throws MdsInformationException {
 
-	/* (non-Javadoc)
-	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getTestname()
+		GridTestElement el = new ExternalGridTestElement(this, version,
+				submissionLocation, fqan);
+		return el;
+	}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.vpac.grisu.client.gridTests.GridTestInfo#generateAllGridTestElements
+	 * ()
 	 */
-	public String getTestname() {
-		return testname;
-	}
+	public final List<GridTestElement> generateAllGridTestElements()
+			throws MdsInformationException {
 
-	/* (non-Javadoc)
-	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getDescription()
-	 */
-	public String getDescription() {
-		return description;
-	}
+		List<GridTestElement> results = new LinkedList<GridTestElement>();
 
-	/* (non-Javadoc)
-	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#isUseMds()
-	 */
-	public boolean isUseMds() {
-		return useMds;
-	}
+		ApplicationInformation appInfo = GrisuRegistryManager.getDefault(
+				controller.getServiceInterface()).getApplicationInformation(
+				applicationName);
 
-	/* (non-Javadoc)
+		for (String fqan : fqans) {
+
+			if (useMds) {
+				if (StringUtils.isNotBlank(versionName)
+						&& !Constants.NO_VERSION_INDICATOR_STRING
+								.equals(versionName)) {
+					// means only one version
+					Set<String> subLocs = appInfo
+							.getAvailableSubmissionLocationsForVersionAndFqan(
+									versionName, fqan);
+					for (String subLoc : subLocs) {
+						for (int i = 0; i < controller
+								.getSameSubmissionLocation(); i++) {
+							results.add(createGridTestElement(versionName,
+									subLoc, fqan));
+						}
+					}
+				} else {
+					// means all versions
+					Set<String> versions = appInfo
+							.getAllAvailableVersionsForFqan(fqan);
+					for (String version : versions) {
+						Set<String> subLocs = appInfo
+								.getAvailableSubmissionLocationsForVersionAndFqan(
+										version, fqan);
+						for (String subLoc : subLocs) {
+							for (int i = 0; i < controller
+									.getSameSubmissionLocation(); i++) {
+								results.add(createGridTestElement(version,
+										subLoc, fqan));
+							}
+						}
+					}
+				}
+			} else {
+				String[] subLocs = GrisuRegistryManager.getDefault(
+						controller.getServiceInterface())
+						.getResourceInformation()
+						.getAllAvailableSubmissionLocations(fqan);
+				for (String subLoc : subLocs) {
+					for (int i = 0; i < controller.getSameSubmissionLocation(); i++) {
+						results.add(createGridTestElement(
+								Constants.NO_VERSION_INDICATOR_STRING, subLoc,
+								fqan));
+					}
+				}
+			}
+
+		}
+
+		return results;
+	}
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getApplicationName()
 	 */
 	public String getApplicationName() {
 		return applicationName;
 	}
 
-//	/* (non-Javadoc)
-//	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getSubmissionLocationsPerVersion()
-//	 */
-//	public Map<String, Set<String>> getSubmissionLocationsPerVersion() {
-//		return subLocsPerVersions;
-//	}
-
-	/* (non-Javadoc)
-	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#createGridTestElement(java.lang.String, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getCommand()
 	 */
-	public GridTestElement createGridTestElement(String version,
-			String submissionLocation, String fqan) throws MdsInformationException {
+	public String getCommand() {
+		return command;
+	}
 
-		GridTestElement el = new ExternalGridTestElement(this, version,
-				submissionLocation, fqan);
-		return el;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getController()
+	 */
+	public GridTestController getController() {
+		return this.controller;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getDescription()
+	 */
+	public String getDescription() {
+		return description;
 	}
 
 	public String[] getFqans() {
 		return fqans;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getInputFiles()
+	 */
+	public List<String> getInputFiles() {
+		return inputFiles;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getJsdlDoc()
+	 */
+	public Document getJsdlDoc() {
+		return jsdlDoc;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getJsdlFile()
+	 */
+	public File getJsdlFile() {
+		return jsdlFile;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getOutputFiles()
+	 */
+	public List<String> getOutputFiles() {
+		return outputFiles;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getTestDir()
+	 */
+	public File getTestBaseDir() {
+		return testDir;
+	}
+
+	// /* (non-Javadoc)
+	// * @see
+	// org.vpac.grisu.client.gridTests.GridTestInfo#getSubmissionLocationsPerVersion()
+	// */
+	// public Map<String, Set<String>> getSubmissionLocationsPerVersion() {
+	// return subLocsPerVersions;
+	// }
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#getTestname()
+	 */
+	public String getTestname() {
+		return testname;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.vpac.grisu.client.gridTests.GridTestInfo#isUseMds()
+	 */
+	public boolean isUseMds() {
+		return useMds;
 	}
 
 }

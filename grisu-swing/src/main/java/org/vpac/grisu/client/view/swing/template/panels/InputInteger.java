@@ -24,23 +24,57 @@ public class InputInteger extends AbstractInputPanel {
 
 	private String renderMode = null;
 
-	public int getMin() {
-		return min;
-	}
+	private int min = 0;
 
-	public int getMax() {
-		return max;
+	private int max = 100;
+
+	private int defaultvalue = 0;
+
+	private int minorDelta = 0;
+	private int delta = 0;
+	@Override
+	protected void buttonPressed() {
+
+		// we don't need a button
+
+	}
+	@Override
+	protected String genericButtonText() {
+		// we don't need a button
+		return null;
+	}
+	@Override
+	protected ComponentHolder getComponentHolder() {
+
+		if (compHolder == null) {
+			prepareOtherProperties();
+			if (TEXTFIELD_PANEL.equals(renderMode)) {
+				compHolder = new TextFieldHolder(this);
+			} else if (SLIDER_PANEL.equals(renderMode)) {
+				compHolder = new SliderHolder(this, min, max, defaultvalue,
+						delta, minorDelta);
+			} else if (SPINNER_PANEL.equals(renderMode)) {
+				compHolder = new SpinnerHolder(this, min, max, defaultvalue,
+						delta);
+			} else {
+				compHolder = new ComboBoxHolder(this);
+			}
+		}
+		return compHolder;
+
 	}
 
 	public int getDefaultvalue() {
 		return defaultvalue;
 	}
 
-	private int min = 0;
-	private int max = 100;
-	private int defaultvalue = 0;
-	private int minorDelta = 0;
-	private int delta = 0;
+	public int getMax() {
+		return max;
+	}
+
+	public int getMin() {
+		return min;
+	}
 
 	private void prepareOtherProperties() {
 		try {
@@ -66,7 +100,7 @@ public class InputInteger extends AbstractInputPanel {
 			myLogger.warn("Can't parse delta value "
 					+ templateNode.getOtherProperty(MAJOR_TICKS_PROPERTYNAME)
 					+ " as integer. Using default...");
-			if ( SPINNER_PANEL.equals(renderMode) ) {
+			if (SPINNER_PANEL.equals(renderMode)) {
 				delta = 1;
 			}
 		}
@@ -89,26 +123,6 @@ public class InputInteger extends AbstractInputPanel {
 	}
 
 	@Override
-	protected ComponentHolder getComponentHolder() {
-
-		if (compHolder == null) {
-			prepareOtherProperties();
-			if (TEXTFIELD_PANEL.equals(renderMode)) {
-				compHolder = new TextFieldHolder(this);
-			} else if (SLIDER_PANEL.equals(renderMode)) {
-				compHolder = new SliderHolder(this, min, max, defaultvalue,
-						delta, minorDelta);
-			} else if (SPINNER_PANEL.equals(renderMode)) {
-				compHolder = new SpinnerHolder(this, min, max, defaultvalue, delta);
-			} else {
-				compHolder = new ComboBoxHolder(this);
-			}
-		}
-		return compHolder;
-
-	}
-
-	@Override
 	protected void preparePanel() {
 		try {
 			renderMode = this.templateNode.getOtherProperties().get("render");
@@ -119,7 +133,8 @@ public class InputInteger extends AbstractInputPanel {
 
 		if (!COMBOBOX_PANEL.equals(renderMode)
 				&& !TEXTFIELD_PANEL.equals(renderMode)
-				&& !SLIDER_PANEL.equals(renderMode) &&! SPINNER_PANEL.equals(renderMode)) {
+				&& !SLIDER_PANEL.equals(renderMode)
+				&& !SPINNER_PANEL.equals(renderMode)) {
 			myLogger.warn("Render mode: " + renderMode
 					+ " not supported. Using combobox...");
 			renderMode = COMBOBOX_PANEL;
@@ -129,6 +144,32 @@ public class InputInteger extends AbstractInputPanel {
 			renderMode = COMBOBOX_PANEL;
 
 		setStartValue();
+	}
+
+	public void reset() {
+
+		String value = getExternalSetValue();
+
+		if (useLastInput) {
+			if (value != null && !"".equals(value.trim())) {
+				historyManager.addHistoryEntry(
+						this.historyManagerKeyForThisNode
+								+ TemplateNode.LAST_USED_PARAMETER, value,
+						new Date());
+			}
+		}
+		if (useHistory) {
+			if (value != null && !"".equals(value.trim())) {
+				historyManager.addHistoryEntry(
+						this.historyManagerKeyForThisNode, value, new Date());
+			}
+		}
+		if (COMBOBOX_PANEL.equals(renderMode)) {
+			fillComboBox();
+		}
+
+		// setDefaultValue();
+
 	}
 
 	private void setStartValue() {
@@ -163,45 +204,6 @@ public class InputInteger extends AbstractInputPanel {
 	@Override
 	protected void setupComponent() {
 		// nothing to do here
-	}
-
-	public void reset() {
-
-		String value = getExternalSetValue();
-
-		if (useLastInput) {
-			if (value != null && !"".equals(value.trim())) {
-				historyManager.addHistoryEntry(
-						this.historyManagerKeyForThisNode
-								+ TemplateNode.LAST_USED_PARAMETER, value,
-						new Date());
-			}
-		}
-		if (useHistory) {
-			if (value != null && !"".equals(value.trim())) {
-				historyManager.addHistoryEntry(
-						this.historyManagerKeyForThisNode, value, new Date());
-			}
-		}
-		if (COMBOBOX_PANEL.equals(renderMode)) {
-			fillComboBox();
-		}
-
-		// setDefaultValue();
-
-	}
-
-	@Override
-	protected void buttonPressed() {
-
-		// we don't need a button
-
-	}
-
-	@Override
-	protected String genericButtonText() {
-		// we don't need a button
-		return null;
 	}
 
 }

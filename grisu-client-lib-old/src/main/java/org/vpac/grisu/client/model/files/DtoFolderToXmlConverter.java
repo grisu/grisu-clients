@@ -20,45 +20,6 @@ public class DtoFolderToXmlConverter {
 
 	private static DocumentBuilder docBuilder = null;
 
-	public static DocumentBuilder getDocBuilder() {
-
-		if (docBuilder == null) {
-			try {
-				DocumentBuilderFactory docFactory = DocumentBuilderFactory
-						.newInstance();
-				docBuilder = docFactory.newDocumentBuilder();
-			} catch (ParserConfigurationException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-				return null;
-			}
-		}
-		return docBuilder;
-	}
-
-	public static Document convert(final DtoFolder folder, final int recursion_level) {
-
-		Document output = getDocBuilder().newDocument();
-		Element root = output.createElement("Files");
-
-		root.setAttribute("absolutePath", "true");
-
-		root.setAttribute("name", "fs_root");
-
-		output.appendChild(root);
-
-		Element root_element = null;
-
-		root_element = createElement(output, folder);
-
-		buildDirectoryStructure(output, root_element, folder, 1, recursion_level);
-		// }
-		root.appendChild(root_element);
-
-		return output;
-
-	}
-
 	private static void buildDirectoryStructure(final Document output,
 			final Element parentElement, final DtoFolder parent,
 			final int currentRecursion, final int maxRecursion) {
@@ -80,22 +41,47 @@ public class DtoFolderToXmlConverter {
 			return;
 		}
 
-			for (DtoRemoteObject fo : filesAndDirs) {
-				if (fo.isFolder()) {
-					if (currentRecursion < maxRecursion) {
-						Element element = createElement(output, fo);
-						parentElement.appendChild(element);
-						buildDirectoryStructure(output, element, (DtoFolder)fo,
-								currentRecursion + 1, maxRecursion);
-					} else {
-						Element element = createElement(output, fo);
-						parentElement.appendChild(element);
-					}
+		for (DtoRemoteObject fo : filesAndDirs) {
+			if (fo.isFolder()) {
+				if (currentRecursion < maxRecursion) {
+					Element element = createElement(output, fo);
+					parentElement.appendChild(element);
+					buildDirectoryStructure(output, element, (DtoFolder) fo,
+							currentRecursion + 1, maxRecursion);
 				} else {
 					Element element = createElement(output, fo);
 					parentElement.appendChild(element);
 				}
+			} else {
+				Element element = createElement(output, fo);
+				parentElement.appendChild(element);
 			}
+		}
+
+	}
+
+	public static Document convert(final DtoFolder folder,
+			final int recursion_level) {
+
+		Document output = getDocBuilder().newDocument();
+		Element root = output.createElement("Files");
+
+		root.setAttribute("absolutePath", "true");
+
+		root.setAttribute("name", "fs_root");
+
+		output.appendChild(root);
+
+		Element root_element = null;
+
+		root_element = createElement(output, folder);
+
+		buildDirectoryStructure(output, root_element, folder, 1,
+				recursion_level);
+		// }
+		root.appendChild(root_element);
+
+		return output;
 
 	}
 
@@ -119,6 +105,22 @@ public class DtoFolderToXmlConverter {
 		}
 
 		return element;
+	}
+
+	public static DocumentBuilder getDocBuilder() {
+
+		if (docBuilder == null) {
+			try {
+				DocumentBuilderFactory docFactory = DocumentBuilderFactory
+						.newInstance();
+				docBuilder = docFactory.newDocumentBuilder();
+			} catch (ParserConfigurationException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				return null;
+			}
+		}
+		return docBuilder;
 	}
 
 }

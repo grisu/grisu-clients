@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.model.jobs;
 
 import java.util.Map;
@@ -16,14 +14,25 @@ public class GrisuDummyJobMonitoringObject implements GrisuJobMonitoringObject {
 	private String jobname = null;
 	private ServiceInterface serviceInterface = null;
 	private EnvironmentManager em = null;
-	
+
 	private String message = null;
-	
-	public GrisuDummyJobMonitoringObject(String jobname, EnvironmentManager em, String message) {
+
+	public GrisuDummyJobMonitoringObject(String jobname, EnvironmentManager em,
+			String message) {
 		this.jobname = null;
 		this.em = em;
 		this.serviceInterface = em.getServiceInterface();
 		this.message = message;
+	}
+
+	public void fillJobDetails() throws NoSuchJobException {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void fillJobDetails(Map<String, String> jobProperties) {
+		// TODO Auto-generated method stub
+
 	}
 
 	public String getApplicationType() {
@@ -32,6 +41,10 @@ public class GrisuDummyJobMonitoringObject implements GrisuJobMonitoringObject {
 
 	public String getCpus() {
 		return null;
+	}
+
+	public EnvironmentManager getEnvironmentManager() {
+		return em;
 	}
 
 	public String getFqan() {
@@ -65,15 +78,15 @@ public class GrisuDummyJobMonitoringObject implements GrisuJobMonitoringObject {
 	public String getStatus() {
 		return message;
 	}
-	
+
 	public String getStatus(boolean forceRefresh) {
 		return message;
 	}
-	
+
 	public int getStatusAsInt() {
 		return JobConstants.UNDEFINED;
 	}
-	
+
 	public int getStatusAsInt(boolean forceRefresh) {
 		return JobConstants.UNDEFINED;
 	}
@@ -104,28 +117,13 @@ public class GrisuDummyJobMonitoringObject implements GrisuJobMonitoringObject {
 
 	public void kill() throws NoSuchJobException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	public void killAndClean() throws RemoteFileSystemException, NoSuchJobException {
+	public void killAndClean() throws RemoteFileSystemException,
+			NoSuchJobException {
 		// TODO Auto-generated method stub
-		
+
 	}
-
-	public EnvironmentManager getEnvironmentManager() {
-		return em;
-	}
-
-	public void fillJobDetails() throws NoSuchJobException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void fillJobDetails(Map<String, String> jobProperties) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
 
 }

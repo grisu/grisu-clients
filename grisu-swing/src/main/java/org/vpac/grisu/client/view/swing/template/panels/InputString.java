@@ -2,12 +2,10 @@ package org.vpac.grisu.client.view.swing.template.panels;
 
 import java.util.Date;
 
-import org.vpac.grisu.client.view.swing.files.FileChooserEvent;
-
 public class InputString extends AbstractInputPanel {
 
 	protected String renderMode = null;
-	
+
 	/**
 	 * Create the panel
 	 */
@@ -29,7 +27,7 @@ public class InputString extends AbstractInputPanel {
 
 	@Override
 	protected ComponentHolder getComponentHolder() {
-		
+
 		if (TEXTFIELD_PANEL.equals(renderMode)) {
 			return new TextFieldHolder(this);
 		} else {
@@ -54,8 +52,8 @@ public class InputString extends AbstractInputPanel {
 		String value = getExternalSetValue();
 
 		if (useHistory)
-			historyManager.addHistoryEntry(this.historyManagerKeyForThisNode, value,
-					new Date());
+			historyManager.addHistoryEntry(this.historyManagerKeyForThisNode,
+					value, new Date());
 
 		if (COMBOBOX_PANEL.equals(renderMode)) {
 			fillComboBox();

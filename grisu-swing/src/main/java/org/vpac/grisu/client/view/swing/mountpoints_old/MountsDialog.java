@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.view.swing.mountpoints_old;
 
 import java.awt.BorderLayout;
@@ -24,14 +22,14 @@ import org.vpac.grisu.client.control.utils.MountPointsListener;
 import org.vpac.grisu.client.view.swing.utils.Utils;
 import org.vpac.grisu.model.MountPoint;
 
-public class MountsDialog extends JDialog implements MountPointsListener{
-	
+public class MountsDialog extends JDialog implements MountPointsListener {
+
 	static final Logger myLogger = Logger.getLogger(MountsDialog.class
 			.getName());
 
 	private static final long serialVersionUID = 1L;
 
-	private JPanel jContentPane = null;  //  @jve:decl-index=0:visual-constraint="-661,-211"
+	private JPanel jContentPane = null; // @jve:decl-index=0:visual-constraint="-661,-211"
 
 	private JScrollPane jScrollPane = null;
 
@@ -44,9 +42,8 @@ public class MountsDialog extends JDialog implements MountPointsListener{
 	private JButton addMountPointButton = null;
 
 	private JLabel jLabel = null;
-	
+
 	private EnvironmentManager em = null;
-	
 
 	/**
 	 * @param owner
@@ -59,14 +56,57 @@ public class MountsDialog extends JDialog implements MountPointsListener{
 	}
 
 	/**
-	 * This method initializes this
+	 * This method initializes addMountPointButton
 	 * 
-	 * @return void
+	 * @return javax.swing.JButton
 	 */
-	private void initialize() {
-		this.setLayout(new BorderLayout());
-		this.setSize(529, 215);
-		this.setContentPane(getJContentPane());
+	private JButton getAddMountPointButton() {
+		if (addMountPointButton == null) {
+			addMountPointButton = new JButton();
+			addMountPointButton.setText("Add mountpoint");
+			addMountPointButton
+					.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(java.awt.event.ActionEvent e) {
+
+							final AddMountPointDialog mpdialog = new AddMountPointDialog(
+									null, em.getServiceInterface()
+											.getAllSites().asArray());
+							mpdialog.setVisible(true);
+							int option = mpdialog.getUserOption();
+
+							if (option == AddMountPointDialog.ADD_MOUNTPOINT_OPTION) {
+								try {
+									if (mpdialog.isAdvancedAddMountPoint()) {
+										em.mount(mpdialog.getURL(), mpdialog
+												.getMountPoint(), mpdialog
+												.getAutoHomeDirectory());
+									} else {
+										new Thread(new Runnable() {
+											public void run() {
+												MountsDialog.this
+														.setCursor(Cursor
+																.getPredefinedCursor(Cursor.WAIT_CURSOR));
+												String site = mpdialog
+														.getSite();
+												// em.setUpHomeDirectories(new
+												// String[]{site});
+												MountsDialog.this
+														.setCursor(Cursor
+																.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+											}
+										}).start();
+									}
+								} catch (Exception e1) {
+									Utils.showErrorMessage(em,
+											MountsDialog.this, "couldNotMount",
+											e1);
+
+								}
+							}
+						}
+					});
+		}
+		return addMountPointButton;
 	}
 
 	/**
@@ -85,41 +125,9 @@ public class MountsDialog extends JDialog implements MountPointsListener{
 	}
 
 	/**
-	 * This method initializes jScrollPane	
-	 * 	
-	 * @return javax.swing.JScrollPane	
-	 */
-	private JScrollPane getJScrollPane() {
-		if (jScrollPane == null) {
-			jScrollPane = new JScrollPane();
-			jScrollPane.setPreferredSize(new Dimension(120, 50));
-			jScrollPane.setViewportView(getMountPointsPanel());
-		}
-		return jScrollPane;
-	}
-
-	/**
-	 * This method initializes mountPointsPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
-	 */
-	private JPanel getMountPointsPanel() {
-		if (mountPointsPanel == null) {
-			mountPointsPanel = new JPanel();
-			mountPointsPanel.setLayout(new BoxLayout(mountPointsPanel, BoxLayout.PAGE_AXIS));
-			MountPoint[] mps = em.getServiceInterface().df().getMountpoints().toArray(new MountPoint[]{});
-			
-			for ( MountPoint mp : mps ) {
-				mountPointsPanel.add(new MountPointPanel(em, mp));
-			}
-		}
-		return mountPointsPanel;
-	}
-
-	/**
-	 * This method initializes jPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
+	 * This method initializes jPanel
+	 * 
+	 * @return javax.swing.JPanel
 	 */
 	private JPanel getJPanel() {
 		if (jPanel == null) {
@@ -153,85 +161,84 @@ public class MountsDialog extends JDialog implements MountPointsListener{
 	}
 
 	/**
-	 * This method initializes addMountPointButton	
-	 * 	
-	 * @return javax.swing.JButton	
+	 * This method initializes jScrollPane
+	 * 
+	 * @return javax.swing.JScrollPane
 	 */
-	private JButton getAddMountPointButton() {
-		if (addMountPointButton == null) {
-			addMountPointButton = new JButton();
-			addMountPointButton.setText("Add mountpoint");
-			addMountPointButton.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					
-					final AddMountPointDialog mpdialog = new AddMountPointDialog(null, em.getServiceInterface().getAllSites().asArray());
-					mpdialog.setVisible(true);
-					int option = mpdialog.getUserOption();
-					
-					if (option == AddMountPointDialog.ADD_MOUNTPOINT_OPTION) {
-						try {
-							if ( mpdialog.isAdvancedAddMountPoint() ) {
-								em.mount(mpdialog.getURL(), mpdialog.getMountPoint(), mpdialog.getAutoHomeDirectory());
-							} else { 
-								new Thread(new Runnable() {
-									public void run() {
-										MountsDialog.this.setCursor(Cursor
-												.getPredefinedCursor(Cursor.WAIT_CURSOR));
-										String site = mpdialog.getSite();
-//										em.setUpHomeDirectories(new String[]{site});
-										MountsDialog.this.setCursor(Cursor
-												.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-									}
-								}).start();
-							}
-						} catch (Exception e1) {
-							Utils.showErrorMessage(em, MountsDialog.this, "couldNotMount", e1);
-
-						}
-					}
-				}
-			});
+	private JScrollPane getJScrollPane() {
+		if (jScrollPane == null) {
+			jScrollPane = new JScrollPane();
+			jScrollPane.setPreferredSize(new Dimension(120, 50));
+			jScrollPane.setViewportView(getMountPointsPanel());
 		}
-		return addMountPointButton;
+		return jScrollPane;
 	}
 
-//	protected void refreshMountPoints() {
-//		
-//		mountPointsPanel.removeAll();
-//		mountPointsModel.removeAllElements();
-//		EnvironmentManager.getMountPoints(serviceInterface);
-//		MountPoint[] mps = serviceInterface.df();
-//		
-//		for ( MountPoint mp : mps) {
-//			mountPointsPanel.add(new MountPointPanel(mp, serviceInterface));
-//			mountPointsModel.addElement(mp.getMountpoint());
-//		}
-//
-////		this.getJContentPane().revalidate();
-//		
-//	}
+	/**
+	 * This method initializes mountPointsPanel
+	 * 
+	 * @return javax.swing.JPanel
+	 */
+	private JPanel getMountPointsPanel() {
+		if (mountPointsPanel == null) {
+			mountPointsPanel = new JPanel();
+			mountPointsPanel.setLayout(new BoxLayout(mountPointsPanel,
+					BoxLayout.PAGE_AXIS));
+			MountPoint[] mps = em.getServiceInterface().df().getMountpoints()
+					.toArray(new MountPoint[] {});
+
+			for (MountPoint mp : mps) {
+				mountPointsPanel.add(new MountPointPanel(em, mp));
+			}
+		}
+		return mountPointsPanel;
+	}
+
+	/**
+	 * This method initializes this
+	 * 
+	 * @return void
+	 */
+	private void initialize() {
+		this.setLayout(new BorderLayout());
+		this.setSize(529, 215);
+		this.setContentPane(getJContentPane());
+	}
+
+	// protected void refreshMountPoints() {
+	//		
+	// mountPointsPanel.removeAll();
+	// mountPointsModel.removeAllElements();
+	// EnvironmentManager.getMountPoints(serviceInterface);
+	// MountPoint[] mps = serviceInterface.df();
+	//		
+	// for ( MountPoint mp : mps) {
+	// mountPointsPanel.add(new MountPointPanel(mp, serviceInterface));
+	// mountPointsModel.addElement(mp.getMountpoint());
+	// }
+	//
+	// // this.getJContentPane().revalidate();
+	//		
+	// }
 
 	public void mountPointsChanged(MountPointEvent mpe) {
-		
-		if ( mpe.getEventType() == MountPointEvent.MOUNTPOINTS_REFRESHED ) {
+
+		if (mpe.getEventType() == MountPointEvent.MOUNTPOINTS_REFRESHED) {
 			getMountPointsPanel().removeAll();
-			
-			for ( MountPoint mp : mpe.getMountPoints() ) {
+
+			for (MountPoint mp : mpe.getMountPoints()) {
 				getMountPointsPanel().add(new MountPointPanel(em, mp));
 			}
-			
-		} else if ( mpe.getEventType() == MountPointEvent.MOUNTPOINT_REMOVED ) {
+
+		} else if (mpe.getEventType() == MountPointEvent.MOUNTPOINT_REMOVED) {
 			// Nothing to do in that case
-			
-		} else if ( mpe.getEventType() == MountPointEvent.MOUNTPOINT_ADDED ) {
-			getMountPointsPanel().add(new MountPointPanel(em, mpe.getMountPoint()));
+
+		} else if (mpe.getEventType() == MountPointEvent.MOUNTPOINT_ADDED) {
+			getMountPointsPanel().add(
+					new MountPointPanel(em, mpe.getMountPoint()));
 		}
 		getMountPointsPanel().revalidate();
-			
-		
+
 	}
-	
-	
 
-
-}  //  @jve:decl-index=0:visual-constraint="10,10"
+} // @jve:decl-index=0:visual-constraint="10,10"

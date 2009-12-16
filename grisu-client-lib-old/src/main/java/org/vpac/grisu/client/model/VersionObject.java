@@ -7,18 +7,18 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.vpac.grisu.client.control.exceptions.SubmissionLocationException;
-import org.vpac.grisu.control.JobConstants;
 
 import au.org.arcs.jcommons.constants.Constants;
 
-public class VersionObject implements Comparable<VersionObject>, SubmissionObject {
+public class VersionObject implements Comparable<VersionObject>,
+		SubmissionObject {
 
 	private String version = null;
 	private ApplicationObject application = null;
 
 	private String[] submissionLocationStrings = null;
 	Set<SubmissionLocation> submissionLocations = null;
-	
+
 	private SubmissionLocation currentSubmissionLocation = null;
 
 	private Map<String, Map<String, String>> applicationDetails = new TreeMap<String, Map<String, String>>();
@@ -29,27 +29,17 @@ public class VersionObject implements Comparable<VersionObject>, SubmissionObjec
 		this.version = version;
 	}
 
-	public String toString() {
-		return version;
-	}
+	public int compareTo(VersionObject o) {
 
-	public String getCurrentVersion() {
-		return version;
-	}
-	
-	public String getCurrentApplicationName() {
-		return application.getCurrentApplicationName();
-	}
-
-	private ApplicationObject getApplication() {
-		return application;
+		return this.getCurrentVersion().compareTo(o.getCurrentVersion());
 	}
 
 	public boolean equals(Object otherObject) {
 		if (otherObject instanceof VersionObject) {
 			VersionObject other = (VersionObject) otherObject;
 			if (this.getApplication().equals(other.getApplication())
-					&& this.getCurrentVersion().equals(other.getCurrentVersion())) {
+					&& this.getCurrentVersion().equals(
+							other.getCurrentVersion())) {
 				return true;
 			} else {
 				return false;
@@ -59,13 +49,40 @@ public class VersionObject implements Comparable<VersionObject>, SubmissionObjec
 		}
 	}
 
-	public int hashCode() {
-		return version.hashCode() + application.getCurrentApplicationName().hashCode();
+	public Set<SubmissionLocation> getAllSubmissionLocations() {
+
+		if (submissionLocations == null) {
+
+			submissionLocations = new TreeSet<SubmissionLocation>();
+
+			for (String sublocation : getSubmissionLocationStrings()) {
+				SubmissionLocation temp = application.getEnvironmentManager()
+						.getSubmissionLocation(sublocation);
+				if (temp != null) {
+					submissionLocations.add(temp);
+				}
+			}
+		}
+		return submissionLocations;
 	}
 
-	public int compareTo(VersionObject o) {
+	private ApplicationObject getApplication() {
+		return application;
+	}
 
-		return this.getCurrentVersion().compareTo(o.getCurrentVersion());
+	public Map<String, String> getCurrentApplicationDetails() {
+		return getApplication().getCurrentApplicationDetails();
+	}
+
+	public String getCurrentApplicationName() {
+		return application.getCurrentApplicationName();
+	}
+
+	public String[] getCurrentExecutables() {
+
+		return application.getDetails(this.currentSubmissionLocation, version)
+				.get(Constants.MDS_EXECUTABLES_KEY).split(",");
+
 	}
 
 	// public Set<SubmissionLocation> getActualAvailableSubmissionLocations() {
@@ -83,29 +100,21 @@ public class VersionObject implements Comparable<VersionObject>, SubmissionObjec
 	//		
 	// }
 
-	public String[] getSubmissionLocationStrings() {
-		if (submissionLocationStrings == null) {
-			submissionLocationStrings = application.getServiceInterface()
-					.getSubmissionLocationsForApplicationAndVersion(
-							application.getCurrentApplicationName(), version).asSubmissionLocationStrings();
-		}
-		return submissionLocationStrings;
+	public String[] getCurrentModules() {
+		return application.getDetails(this.currentSubmissionLocation, version)
+				.get(Constants.MDS_MODULES_KEY).split(",");
 	}
 
-	public Set<SubmissionLocation> getAllSubmissionLocations() {
+	public SubmissionLocation getCurrentSubmissionLocation() {
+		return this.currentSubmissionLocation;
+	}
 
-		if (submissionLocations == null) {
+	public String getCurrentVersion() {
+		return version;
+	}
 
-			submissionLocations = new TreeSet<SubmissionLocation>();
-
-			for (String sublocation : getSubmissionLocationStrings()) {
-				SubmissionLocation temp = application.getEnvironmentManager().getSubmissionLocation(sublocation);
-				if ( temp != null ) {
-					submissionLocations.add(temp);
-				}
-			}
-		}
-		return submissionLocations;
+	public int getPreferredExecutableType() {
+		return getApplication().getPreferredExecutableType();
 	}
 
 	public Set<String> getSitesWhereThisVersionIsAvailable() {
@@ -119,94 +128,103 @@ public class VersionObject implements Comparable<VersionObject>, SubmissionObjec
 		return result;
 
 	}
-	
+
+	// public String[] getExecutables(String site) {
+	//
+	// Map<String, String> details = applicationDetails.get(site);
+	// if (details == null) {
+	// details =
+	// application.getServiceInterface().getApplicationDetailsForVersionAndSite(
+	// application.getCurrentApplicationName(), version,
+	// site).getDetailsAsMap();
+	// applicationDetails.put(site, details);
+	// }
+	//
+	// return details.get("Executables").split(",");
+	// }
+	//
+	// public String[] getModules(String site) {
+	//
+	// Map<String, String> details = applicationDetails.get(site);
+	// if (details == null) {
+	// details =
+	// application.getServiceInterface().getApplicationDetailsForVersionAndSite(
+	// application.getCurrentApplicationName(), version,
+	// site).getDetailsAsMap();
+	// applicationDetails.put(site, details);
+	// }
+	//
+	// if ( details.get("Module") == null || details.get("Module").length() == 0
+	// ) {
+	// return new String[]{};
+	// }
+	//			
+	// return details.get("Module").split(",");
+	// }
+
 	public Set<String> getSitesWhereThisVersionIsAvailable(String fqan) {
-		
+
 		Set<String> temp = getSitesWhereThisVersionIsAvailable();
-		String[] availSites = application.getEnvironmentManager().getAllOfTheUsersSites(fqan);
-		
+		String[] availSites = application.getEnvironmentManager()
+				.getAllOfTheUsersSites(fqan);
+
 		Set<String> result = new TreeSet<String>();
-		for ( String site : temp ) {
-			if ( Arrays.binarySearch(availSites, site) >= 0 ) {
+		for (String site : temp) {
+			if (Arrays.binarySearch(availSites, site) >= 0) {
 				result.add(site);
 			}
 		}
 		return result;
 	}
-	
+
 	public Set<SubmissionLocation> getSubmissionLocationsForSite(String site) {
-		
+
 		Set<SubmissionLocation> locations = new TreeSet<SubmissionLocation>();
-		
-		for ( SubmissionLocation sublocation : getAllSubmissionLocations() ) {
-			if ( site.equals(sublocation.getSite()) ) {
+
+		for (SubmissionLocation sublocation : getAllSubmissionLocations()) {
+			if (site.equals(sublocation.getSite())) {
 				locations.add(sublocation);
 			}
 		}
 		return locations;
 	}
 
-//	public String[] getExecutables(String site) {
-//
-//		Map<String, String> details = applicationDetails.get(site);
-//		if (details == null) {
-//			details = application.getServiceInterface().getApplicationDetailsForVersionAndSite(
-//					application.getCurrentApplicationName(), version, site).getDetailsAsMap();
-//			applicationDetails.put(site, details);
-//		}
-//
-//		return details.get("Executables").split(",");
-//	}
-//
-//	public String[] getModules(String site) {
-//
-//		Map<String, String> details = applicationDetails.get(site);
-//		if (details == null) {
-//			details = application.getServiceInterface().getApplicationDetailsForVersionAndSite(
-//					application.getCurrentApplicationName(), version, site).getDetailsAsMap();
-//			applicationDetails.put(site, details);
-//		}
-//
-//		if ( details.get("Module") == null || details.get("Module").length() == 0 ) {
-//			return new String[]{};
-//		}
-//			
-//		return details.get("Module").split(",");
-//	}
-
-	public String[] getCurrentExecutables() {
-		
-		return application.getDetails(this.currentSubmissionLocation, version).get(Constants.MDS_EXECUTABLES_KEY).split(",");
-		
+	public String[] getSubmissionLocationStrings() {
+		if (submissionLocationStrings == null) {
+			submissionLocationStrings = application.getServiceInterface()
+					.getSubmissionLocationsForApplicationAndVersion(
+							application.getCurrentApplicationName(), version)
+					.asSubmissionLocationStrings();
+		}
+		return submissionLocationStrings;
 	}
 
-	public void setCurrentSubmissionLocation (SubmissionLocation currentSubmissionLocation) throws SubmissionLocationException {
-		
-		if ( getAllSubmissionLocations().contains(currentSubmissionLocation) ) {
+	public int hashCode() {
+		return version.hashCode()
+				+ application.getCurrentApplicationName().hashCode();
+	}
+
+	public void setCurrentSubmissionLocation(
+			SubmissionLocation currentSubmissionLocation)
+			throws SubmissionLocationException {
+
+		if (getAllSubmissionLocations().contains(currentSubmissionLocation)) {
 			this.currentSubmissionLocation = currentSubmissionLocation;
 		} else {
-			throw new SubmissionLocationException("Version object \""+version+" for application \""+application.getCurrentApplicationName()+" is not supported at submission location: "+currentSubmissionLocation);
+			throw new SubmissionLocationException("Version object \"" + version
+					+ " for application \""
+					+ application.getCurrentApplicationName()
+					+ " is not supported at submission location: "
+					+ currentSubmissionLocation);
 		}
-	}
-	
-	public SubmissionLocation getCurrentSubmissionLocation() {
-		return this.currentSubmissionLocation;
-	}
-	
-	public String[] getCurrentModules() {
-		return application.getDetails(this.currentSubmissionLocation, version).get(Constants.MDS_MODULES_KEY).split(",");
-	}
-
-	public int getPreferredExecutableType() {
-		return getApplication().getPreferredExecutableType();
 	}
 
 	public void setPreferredExecutableType(int type) {
 		getApplication().setPreferredExecutableType(type);
 	}
 
-	public Map<String, String> getCurrentApplicationDetails() {
-		return getApplication().getCurrentApplicationDetails();
+	public String toString() {
+		return version;
 	}
 
 }

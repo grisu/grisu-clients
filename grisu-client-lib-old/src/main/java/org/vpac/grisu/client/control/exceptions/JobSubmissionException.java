@@ -1,10 +1,8 @@
-
-
 package org.vpac.grisu.client.control.exceptions;
 
 public class JobSubmissionException extends Exception {
-	
-	private Exception parentException = null; 
+
+	private Exception parentException = null;
 	private String string1 = null;
 	private String string2 = null;
 
@@ -13,7 +11,7 @@ public class JobSubmissionException extends Exception {
 		string1 = message;
 		parentException = e;
 	}
-	
+
 	public JobSubmissionException(String message1, String message2, Exception e) {
 		super(message1);
 		string1 = message1;

@@ -4,13 +4,13 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JDialog;
-import org.vpac.grisu.client.view.swing.fileTransfers.FileTransferDetailsPanel;
 
-public class FileTransferDetailsDialog extends JDialog implements FileTransferDetailsPanelHolder {
+public class FileTransferDetailsDialog extends JDialog implements
+		FileTransferDetailsPanelHolder {
 
-	private FileTransferDetailsPanel fileTransferDetailsPanel;
 	/**
 	 * Launch the application
+	 * 
 	 * @param args
 	 */
 	public static void main(String args[]) {
@@ -27,6 +27,8 @@ public class FileTransferDetailsDialog extends JDialog implements FileTransferDe
 		}
 	}
 
+	private FileTransferDetailsPanel fileTransferDetailsPanel;
+
 	/**
 	 * Create the dialog
 	 */
@@ -36,6 +38,7 @@ public class FileTransferDetailsDialog extends JDialog implements FileTransferDe
 		getContentPane().add(getFileTransferDetailsPanel());
 		//
 	}
+
 	/**
 	 * @return
 	 */

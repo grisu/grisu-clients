@@ -13,9 +13,6 @@ import org.vpac.grisu.frontend.control.login.LoginManager;
 
 public class GrisuBlenderApp {
 
-	private JXFrame frame;
-	private ServiceInterface si;
-
 	/**
 	 * Launch the application.
 	 * 
@@ -43,6 +40,9 @@ public class GrisuBlenderApp {
 			}
 		});
 	}
+	private JXFrame frame;
+
+	private ServiceInterface si;
 
 	/**
 	 * Create the application.
@@ -61,8 +61,6 @@ public class GrisuBlenderApp {
 		frame.setBounds(100, 100, 567, 526);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
-
-
 
 		BlenderJobCreationPanel blenderJobCreationPanel = new BlenderJobCreationPanel(
 				si);

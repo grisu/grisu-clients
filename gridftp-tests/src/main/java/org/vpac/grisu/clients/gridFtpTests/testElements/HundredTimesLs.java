@@ -20,8 +20,8 @@ public class HundredTimesLs extends GridFtpTestElement {
 	private final String sourceFile;
 	private final String targetFolder;
 
-	public HundredTimesLs(GridFtpTestController controller,
-			Set<MountPoint> mps) throws TestSetupException {
+	public HundredTimesLs(GridFtpTestController controller, Set<MountPoint> mps)
+			throws TestSetupException {
 
 		super(controller, mps);
 
@@ -69,6 +69,22 @@ public class HundredTimesLs extends GridFtpTestElement {
 
 	}
 
+	@Override
+	public String getDescription() {
+		return "A simple job to do an \"ls\" command 100 times on the same filesystem.";
+	}
+
+	// @Override
+	// public LinkedList<GridFtpAction> getGridFtpActions() {
+	//
+	// return actions;
+	// }
+
+	@Override
+	public String getTestName() {
+		return "HundredTimesMultipleLs";
+	}
+
 	protected LinkedList<List<GridFtpActionItem>> setupGridFtpActionItems() {
 
 		LinkedList<List<GridFtpActionItem>> actionItems = new LinkedList<List<GridFtpActionItem>>();
@@ -81,8 +97,7 @@ public class HundredTimesLs extends GridFtpTestElement {
 
 			for (int i = 0; i < 100; i++) {
 				GridFtpActionItem item = new GridFtpActionItem(mp.getAlias()
-						+ i, action, mp.getRootUrl(),
-						null);
+						+ i, action, mp.getRootUrl(), null);
 				list.add(item);
 			}
 
@@ -107,24 +122,4 @@ public class HundredTimesLs extends GridFtpTestElement {
 
 	}
 
-	// @Override
-	// public LinkedList<GridFtpAction> getGridFtpActions() {
-	//
-	// return actions;
-	// }
-
-	@Override
-	public String getTestName() {
-		return "HundredTimesMultipleLs";
-	}
-
-	@Override
-	public String getDescription() {
-		return "A simple job to do an \"ls\" command 100 times on the same filesystem.";
-	}
-
 }
-
-
-
-

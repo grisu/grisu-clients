@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.view.swing.login;
 
 import java.net.InetAddress;
@@ -22,7 +20,8 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-public class LoginPanel extends JPanel implements LoginPanelsHolder, HttpProxyPanelListener{
+public class LoginPanel extends JPanel implements LoginPanelsHolder,
+		HttpProxyPanelListener {
 
 	private NewGrisuSlcsLoginPanel grisuSlcsLoginPanel;
 	private MyProxyLoginPanel myProxyLoginPanel;
@@ -30,12 +29,13 @@ public class LoginPanel extends JPanel implements LoginPanelsHolder, HttpProxyPa
 	private ServiceInterfaceUrlsPanel serviceInterfaceUrlsPanel;
 	private CertificateLoginPanel certificateLoginPanel;
 	private boolean cancelOption = false;
-	
-	 private JTabbedPane tabbedPane = null;
-	
+
+	private JTabbedPane tabbedPane = null;
+
 	private ServiceInterface serviceInterface = null;
-	
+
 	private LoginInterface loginInterface = null;
+
 	/**
 	 * Create the panel
 	 */
@@ -44,116 +44,40 @@ public class LoginPanel extends JPanel implements LoginPanelsHolder, HttpProxyPa
 		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC,},
-			new RowSpec[] {
-				FormFactory.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("132dlu"),
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("133dlu"),
-				RowSpec.decode("top:7dlu"),}));
+				FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
+				FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
+				FormFactory.RELATED_GAP_ROWSPEC, RowSpec.decode("132dlu"),
+				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC, RowSpec.decode("133dlu"),
+				RowSpec.decode("top:7dlu"), }));
 
-		 tabbedPane = new JTabbedPane();
+		tabbedPane = new JTabbedPane();
 
-		add(tabbedPane, new CellConstraints(2, 2, 3, 1, CellConstraints.DEFAULT, CellConstraints.FILL));
-		
-		tabbedPane.addTab("Shibboleth login", null, getGrisuSlcsLoginPanel(), null);
+		add(tabbedPane, new CellConstraints(2, 2, 3, 1,
+				CellConstraints.DEFAULT, CellConstraints.FILL));
 
-		if ( ProxyLightLibraryManager.prerequisitesForProxyCreationAvailable() ) {
-			tabbedPane.addTab("Standard login", null, getCertificateLoginPanel(), null);
+		tabbedPane.addTab("Shibboleth login", null, getGrisuSlcsLoginPanel(),
+				null);
+
+		if (ProxyLightLibraryManager.prerequisitesForProxyCreationAvailable()) {
+			tabbedPane.addTab("Standard login", null,
+					getCertificateLoginPanel(), null);
 		}
 		tabbedPane.addTab("MyProxy login", null, getMyProxyLoginPanel(), null);
-		
 
 		add(getServiceInterfaceUrlsPanel(), new CellConstraints(2, 4, 3, 1));
-		add(getHttpProxyPanel(), new CellConstraints(2, 6, 3, 1, CellConstraints.DEFAULT, CellConstraints.TOP));
+		add(getHttpProxyPanel(), new CellConstraints(2, 6, 3, 1,
+				CellConstraints.DEFAULT, CellConstraints.TOP));
 
 		getHttpProxyPanel().addHttpProxyPanelListener(this);
-		
-		if ( tabbedPane.getTabCount() > 1 ) {
+
+		if (tabbedPane.getTabCount() > 1) {
 			int index = ClientPropertiesManager.getLastSelectedTab();
-			if ( index <= tabbedPane.getTabCount()-1 ) {
+			if (index <= tabbedPane.getTabCount() - 1) {
 				tabbedPane.setSelectedIndex(index);
 			}
 		}
-		
-	}
-	
-	public int getSelectedLoginPanel() {
-		return tabbedPane.getSelectedIndex();
-	}
-	
-	public void setSelectedLoginPanel(int index) {
-		tabbedPane.setSelectedIndex(index);
-	}
 
-	public void setLoginInterface(LoginInterface li) {
-		this.loginInterface = li;
-	}
-	
-	public LoginParams getLoginParams() {
-		
-		String serviceInterfaceUrl = getServiceInterfaceUrlsPanel().getServiceInterfaceUrl();
-		String myProxyUsername = null;
-		char[] myProxyPassphrase = null;
-		String httpProxy = getHttpProxyPanel().getProxyServer();
-		int httpProxyPort = getHttpProxyPanel().getProxyPort();
-		String httpProxyUsername = getHttpProxyPanel().getProxyUsername();
-		char[] httpProxyPassphrase = getHttpProxyPanel().getProxyPassword();
-		
-		String myProxyServer = MyProxyServerParams.getMyProxyServer();
-		int myProxyPort = MyProxyServerParams.getMyProxyPort();
-		
-		try {
-			// this is needed because of a possible round-robin myproxy server
-			myProxyServer = InetAddress.getByName(myProxyServer).getHostAddress();
-		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		
-		LoginParams params = new LoginParams(serviceInterfaceUrl, myProxyUsername, myProxyPassphrase, myProxyServer, new Integer(myProxyPort).toString(), httpProxy, httpProxyPort, httpProxyUsername, httpProxyPassphrase);
-		
-		return params;
-	}
-	
-	protected CertificateLoginPanel getCertificateLoginPanel() {
-		if (certificateLoginPanel == null) {
-			certificateLoginPanel = new CertificateLoginPanel();
-			certificateLoginPanel.setParamsHolder(this);
-		}
-		return certificateLoginPanel;
-	}
-	protected ServiceInterfaceUrlsPanel getServiceInterfaceUrlsPanel() {
-		if (serviceInterfaceUrlsPanel == null) {
-			serviceInterfaceUrlsPanel = new ServiceInterfaceUrlsPanel();
-		}
-		return serviceInterfaceUrlsPanel;
-	}
-	protected HttpProxyPanel getHttpProxyPanel() {
-		if (httpProxyPanel == null) {
-			httpProxyPanel = new HttpProxyPanel();
-		}
-		return httpProxyPanel;
-	}
-	protected MyProxyLoginPanel getMyProxyLoginPanel() {
-		if (myProxyLoginPanel == null) {
-			myProxyLoginPanel = new MyProxyLoginPanel();
-			myProxyLoginPanel.setParamsHolder(this);
-		}
-		return myProxyLoginPanel;
-	}
-
-	public ServiceInterface getServiceInterface() {
-		return serviceInterface;
-	}
-
-	public void setServiceInterface(ServiceInterface serviceInterface) {
-		this.serviceInterface = serviceInterface;
 	}
 
 	public void cancelled() {
@@ -162,16 +86,14 @@ public class LoginPanel extends JPanel implements LoginPanelsHolder, HttpProxyPa
 		this.loginInterface.setUserCancelledLogin(true);
 	}
 
-	public void loggedIn(ServiceInterface serviceInterface) {
-		this.serviceInterface = serviceInterface;
-		this.cancelOption = false;
-		this.loginInterface.saveCurrentConnectionsSettingsAsDefault();
-		this.loginInterface.setServiceInterface(this.serviceInterface);
+	protected CertificateLoginPanel getCertificateLoginPanel() {
+		if (certificateLoginPanel == null) {
+			certificateLoginPanel = new CertificateLoginPanel();
+			certificateLoginPanel.setParamsHolder(this);
+		}
+		return certificateLoginPanel;
 	}
 
-	public boolean isCancelOption() {
-		return cancelOption;
-	}
 	/**
 	 * @return
 	 */
@@ -183,10 +105,94 @@ public class LoginPanel extends JPanel implements LoginPanelsHolder, HttpProxyPa
 		return grisuSlcsLoginPanel;
 	}
 
+	protected HttpProxyPanel getHttpProxyPanel() {
+		if (httpProxyPanel == null) {
+			httpProxyPanel = new HttpProxyPanel();
+		}
+		return httpProxyPanel;
+	}
+
+	public LoginParams getLoginParams() {
+
+		String serviceInterfaceUrl = getServiceInterfaceUrlsPanel()
+				.getServiceInterfaceUrl();
+		String myProxyUsername = null;
+		char[] myProxyPassphrase = null;
+		String httpProxy = getHttpProxyPanel().getProxyServer();
+		int httpProxyPort = getHttpProxyPanel().getProxyPort();
+		String httpProxyUsername = getHttpProxyPanel().getProxyUsername();
+		char[] httpProxyPassphrase = getHttpProxyPanel().getProxyPassword();
+
+		String myProxyServer = MyProxyServerParams.getMyProxyServer();
+		int myProxyPort = MyProxyServerParams.getMyProxyPort();
+
+		try {
+			// this is needed because of a possible round-robin myproxy server
+			myProxyServer = InetAddress.getByName(myProxyServer)
+					.getHostAddress();
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		LoginParams params = new LoginParams(serviceInterfaceUrl,
+				myProxyUsername, myProxyPassphrase, myProxyServer, new Integer(
+						myProxyPort).toString(), httpProxy, httpProxyPort,
+				httpProxyUsername, httpProxyPassphrase);
+
+		return params;
+	}
+
+	protected MyProxyLoginPanel getMyProxyLoginPanel() {
+		if (myProxyLoginPanel == null) {
+			myProxyLoginPanel = new MyProxyLoginPanel();
+			myProxyLoginPanel.setParamsHolder(this);
+		}
+		return myProxyLoginPanel;
+	}
+
+	public int getSelectedLoginPanel() {
+		return tabbedPane.getSelectedIndex();
+	}
+
+	public ServiceInterface getServiceInterface() {
+		return serviceInterface;
+	}
+
+	protected ServiceInterfaceUrlsPanel getServiceInterfaceUrlsPanel() {
+		if (serviceInterfaceUrlsPanel == null) {
+			serviceInterfaceUrlsPanel = new ServiceInterfaceUrlsPanel();
+		}
+		return serviceInterfaceUrlsPanel;
+	}
+
 	public void httpProxyValueChanged() {
-		
-//		getGrisuSlcsLoginPanel().getSlcsLoginPanel().disableLoginButtonUntilIDPRefreshButtonIsPressed();
-		
+
+		// getGrisuSlcsLoginPanel().getSlcsLoginPanel().disableLoginButtonUntilIDPRefreshButtonIsPressed();
+
+	}
+
+	public boolean isCancelOption() {
+		return cancelOption;
+	}
+
+	public void loggedIn(ServiceInterface serviceInterface) {
+		this.serviceInterface = serviceInterface;
+		this.cancelOption = false;
+		this.loginInterface.saveCurrentConnectionsSettingsAsDefault();
+		this.loginInterface.setServiceInterface(this.serviceInterface);
+	}
+
+	public void setLoginInterface(LoginInterface li) {
+		this.loginInterface = li;
+	}
+
+	public void setSelectedLoginPanel(int index) {
+		tabbedPane.setSelectedIndex(index);
+	}
+
+	public void setServiceInterface(ServiceInterface serviceInterface) {
+		this.serviceInterface = serviceInterface;
 	}
 
 }

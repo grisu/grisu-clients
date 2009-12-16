@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.model.template;
 
 public class JsdlTemplateException extends Exception {

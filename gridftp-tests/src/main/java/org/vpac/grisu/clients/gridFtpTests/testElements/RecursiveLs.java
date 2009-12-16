@@ -5,9 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-
 import org.vpac.grisu.clients.gridFtpTests.GridFtpAction;
 import org.vpac.grisu.clients.gridFtpTests.GridFtpActionItem;
 import org.vpac.grisu.clients.gridFtpTests.GridFtpTestController;
@@ -20,8 +17,8 @@ public class RecursiveLs extends GridFtpTestElement {
 	private final String sourceFile;
 	private final String targetFolder;
 
-	public RecursiveLs(GridFtpTestController controller,
-			Set<MountPoint> mps) throws TestSetupException {
+	public RecursiveLs(GridFtpTestController controller, Set<MountPoint> mps)
+			throws TestSetupException {
 
 		super(controller, mps);
 
@@ -54,23 +51,38 @@ public class RecursiveLs extends GridFtpTestElement {
 					+ ".");
 		}
 
+	}
 
+	@Override
+	public String getDescription() {
+		return "A simple job to do an \"ls\" command 100 times on the same filesystem.";
+	}
+
+	// @Override
+	// public LinkedList<GridFtpAction> getGridFtpActions() {
+	//
+	// return actions;
+	// }
+
+	@Override
+	public String getTestName() {
+		return "HundredTimesMultipleLs";
 	}
 
 	protected LinkedList<List<GridFtpActionItem>> setupGridFtpActionItems() {
 
 		LinkedList<List<GridFtpActionItem>> actionItems = new LinkedList<List<GridFtpActionItem>>();
 
-		GridFtpAction action = new GridFtpAction(GridFtpAction.Action.recursiveLs,
-				"multiRecursiveLs", controller);
+		GridFtpAction action = new GridFtpAction(
+				GridFtpAction.Action.recursiveLs, "multiRecursiveLs",
+				controller);
 		List<GridFtpActionItem> list = new LinkedList<GridFtpActionItem>();
 		// upload file
 		for (MountPoint mp : mountpoints) {
 
-			GridFtpActionItem item = new GridFtpActionItem(mp.getAlias()
-				, action, mp.getRootUrl(),
-						null);
-				list.add(item);
+			GridFtpActionItem item = new GridFtpActionItem(mp.getAlias(),
+					action, mp.getRootUrl(), null);
+			list.add(item);
 
 		}
 		actionItems.add(list);
@@ -93,24 +105,4 @@ public class RecursiveLs extends GridFtpTestElement {
 
 	}
 
-	// @Override
-	// public LinkedList<GridFtpAction> getGridFtpActions() {
-	//
-	// return actions;
-	// }
-
-	@Override
-	public String getTestName() {
-		return "HundredTimesMultipleLs";
-	}
-
-	@Override
-	public String getDescription() {
-		return "A simple job to do an \"ls\" command 100 times on the same filesystem.";
-	}
-
 }
-
-
-
-

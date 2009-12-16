@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.plugins.fluent;
 
 import java.io.File;
@@ -25,8 +23,20 @@ public class FluentJob {
 		lastIteration = parse(lastIteration);
 	}
 
-	public void refresh() {
-		lastIteration = parse(lastIteration + 1);
+	public XYSeries getContinuity() {
+		return continuity;
+	}
+
+	public XYSeries getXVelocity() {
+		return xVelocity;
+	}
+
+	public XYSeries getYVelocity() {
+		return yVelocity;
+	}
+
+	public XYSeries getZVelocity() {
+		return zVelocity;
 	}
 
 	private int parse(int firstIteration) {
@@ -57,25 +67,25 @@ public class FluentJob {
 						continuity.add(new XYDataItem(iteration, contin));
 					} catch (Exception e) {
 						// do nothing
-//						e.printStackTrace();
+						// e.printStackTrace();
 					}
 					try {
 						xVelocity.add(new XYDataItem(iteration, xVelo));
 					} catch (Exception e) {
 						// do nothing
-//						e.printStackTrace();
+						// e.printStackTrace();
 					}
 					try {
 						yVelocity.add(new XYDataItem(iteration, yVelo));
 					} catch (Exception e) {
 						// do nothing
-//						e.printStackTrace();
+						// e.printStackTrace();
 					}
 					try {
 						zVelocity.add(new XYDataItem(iteration, zVelo));
 					} catch (Exception e) {
 						// do nothing
-//						e.printStackTrace();
+						// e.printStackTrace();
 					}
 
 				} catch (NumberFormatException e) {
@@ -90,20 +100,8 @@ public class FluentJob {
 
 	}
 
-	public XYSeries getContinuity() {
-		return continuity;
-	}
-
-	public XYSeries getXVelocity() {
-		return xVelocity;
-	}
-
-	public XYSeries getYVelocity() {
-		return yVelocity;
-	}
-
-	public XYSeries getZVelocity() {
-		return zVelocity;
+	public void refresh() {
+		lastIteration = parse(lastIteration + 1);
 	}
 
 }

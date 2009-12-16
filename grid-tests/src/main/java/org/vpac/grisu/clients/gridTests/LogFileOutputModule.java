@@ -5,20 +5,18 @@ import java.io.FileWriter;
 
 import org.vpac.grisu.clients.gridTests.testElements.GridTestElement;
 
-
 public class LogFileOutputModule implements OutputModule {
 
 	private String output;
-	
+
 	public LogFileOutputModule(String output) {
 		this.output = output;
 	}
-	
+
 	public void writeTestElement(GridTestElement element) {
 
 		StringBuffer outputString = new StringBuffer();
 
-		
 		outputString.append(OutputModuleHelpers.createStringReport(element));
 
 		try {

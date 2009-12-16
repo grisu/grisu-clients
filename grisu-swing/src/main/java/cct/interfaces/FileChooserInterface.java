@@ -1,17 +1,17 @@
 package cct.interfaces;
 
 public interface FileChooserInterface {
-	
-	   String getDirectory();
 
-	   String[] getDirectories();
+	String[] getDirectories();
 
-	   String getFile();
+	String getDirectory();
 
-	   String[] getFiles();
+	String getFile();
 
-	   String pwd();
+	String[] getFiles();
 
-	   void setFileChooserVisible(boolean enable) throws Exception ;
+	String pwd();
+
+	void setFileChooserVisible(boolean enable) throws Exception;
 
 }

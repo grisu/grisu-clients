@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.view.swing.mountpoints_old;
 
 import java.awt.Cursor;
@@ -43,37 +41,43 @@ public class SiteWizardPanel extends JPanel {
 	}
 
 	/**
-	 * This method initializes this
+	 * This method initializes jButton
 	 * 
-	 * @return void
+	 * @return javax.swing.JButton
 	 */
-	private void initialize() {
-		GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
-		gridBagConstraints11.gridx = 1;
-		gridBagConstraints11.insets = new Insets(0, 0, 10, 9);
-		gridBagConstraints11.anchor = GridBagConstraints.EAST;
-		gridBagConstraints11.gridy = 2;
-		GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
-		gridBagConstraints1.fill = GridBagConstraints.BOTH;
-		gridBagConstraints1.gridy = 0;
-		gridBagConstraints1.weightx = 1.0;
-		gridBagConstraints1.weighty = 1.0;
-		gridBagConstraints1.insets = new Insets(10, 10, 0, 10);
-		gridBagConstraints1.gridwidth = 2;
-		gridBagConstraints1.gridx = 0;
-		GridBagConstraints gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.fill = GridBagConstraints.BOTH;
-		gridBagConstraints.gridy = 1;
-		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.weighty = 1.0;
-		gridBagConstraints.insets = new Insets(10, 10, 10, 10);
-		gridBagConstraints.gridwidth = 2;
-		gridBagConstraints.gridx = 0;
-		this.setSize(300, 377);
-		this.setLayout(new GridBagLayout());
-		this.add(getJList(), gridBagConstraints);
-		this.add(getJTextPane(), gridBagConstraints1);
-		this.add(getJButton(), gridBagConstraints11);
+	private JButton getJButton() {
+		if (jButton == null) {
+			jButton = new JButton();
+			jButton.setText("Ok");
+			jButton.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+
+					new Thread(new Runnable() {
+						public void run() {
+							parent_dialog.setVisible(false);
+							getJButton().setEnabled(false);
+							getJList().setEnabled(false);
+							Object[] sites = getJList().getSelectedValues();
+							String[] sites_array = new String[sites.length];
+							for (int i = 0; i < sites.length; i++) {
+								sites_array[i] = (String) sites[i];
+							}
+							SiteWizardPanel.this.setCursor(Cursor
+									.getPredefinedCursor(Cursor.WAIT_CURSOR));
+							// em.setUpHomeDirectories(sites_array);
+
+							SiteWizardPanel.this
+									.setCursor(Cursor
+											.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+							getJButton().setEnabled(true);
+							getJList().setEnabled(true);
+							parent_dialog.dispose();
+						}
+					}).start();
+				}
+			});
+		}
+		return jButton;
 	}
 
 	/**
@@ -107,43 +111,37 @@ public class SiteWizardPanel extends JPanel {
 	}
 
 	/**
-	 * This method initializes jButton
+	 * This method initializes this
 	 * 
-	 * @return javax.swing.JButton
+	 * @return void
 	 */
-	private JButton getJButton() {
-		if (jButton == null) {
-			jButton = new JButton();
-			jButton.setText("Ok");
-			jButton.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-
-					new Thread(new Runnable() {
-						public void run() {
-							parent_dialog.setVisible(false);
-							getJButton().setEnabled(false);
-							getJList().setEnabled(false);
-							Object[] sites = getJList().getSelectedValues();
-							String[] sites_array = new String[sites.length];
-							for ( int i=0; i<sites.length; i++ ) {
-								sites_array[i] = (String) sites[i];
-							}
-							SiteWizardPanel.this.setCursor(Cursor
-									.getPredefinedCursor(Cursor.WAIT_CURSOR));
-//							em.setUpHomeDirectories(sites_array);
-
-							SiteWizardPanel.this
-									.setCursor(Cursor
-											.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-							getJButton().setEnabled(true);
-							getJList().setEnabled(true);
-							parent_dialog.dispose();
-						}
-					}).start();
-				}
-			});
-		}
-		return jButton;
+	private void initialize() {
+		GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
+		gridBagConstraints11.gridx = 1;
+		gridBagConstraints11.insets = new Insets(0, 0, 10, 9);
+		gridBagConstraints11.anchor = GridBagConstraints.EAST;
+		gridBagConstraints11.gridy = 2;
+		GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
+		gridBagConstraints1.fill = GridBagConstraints.BOTH;
+		gridBagConstraints1.gridy = 0;
+		gridBagConstraints1.weightx = 1.0;
+		gridBagConstraints1.weighty = 1.0;
+		gridBagConstraints1.insets = new Insets(10, 10, 0, 10);
+		gridBagConstraints1.gridwidth = 2;
+		gridBagConstraints1.gridx = 0;
+		GridBagConstraints gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.fill = GridBagConstraints.BOTH;
+		gridBagConstraints.gridy = 1;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.insets = new Insets(10, 10, 10, 10);
+		gridBagConstraints.gridwidth = 2;
+		gridBagConstraints.gridx = 0;
+		this.setSize(300, 377);
+		this.setLayout(new GridBagLayout());
+		this.add(getJList(), gridBagConstraints);
+		this.add(getJTextPane(), gridBagConstraints1);
+		this.add(getJButton(), gridBagConstraints11);
 	}
 
 } // @jve:decl-index=0:visual-constraint="10,10"

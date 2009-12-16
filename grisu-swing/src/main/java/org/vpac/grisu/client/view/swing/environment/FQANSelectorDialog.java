@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.view.swing.environment;
 
 import java.awt.BorderLayout;
@@ -14,24 +12,24 @@ import org.vpac.grisu.client.control.status.StatusListener;
 
 /**
  * Pops up a dialog which asks for the new "default" VO. Use it like:
+ * 
  * <pre>
-		FQANSelectorDialog dialog = new FQANSelectorDialog();
-  		dialog.setEnvironmentManager(EnvironmentManager.getDefaultManager());
-		dialog.setVisible(true);
-	</pre>
- * It will automatically change the default VO in the {@link EnvironmentManager} using {@link EnvironmentManager#setDefaultFqan(String)}.
+ * FQANSelectorDialog dialog = new FQANSelectorDialog();
+ * dialog.setEnvironmentManager(EnvironmentManager.getDefaultManager());
+ * dialog.setVisible(true);
+ * </pre>
+ * 
+ * It will automatically change the default VO in the {@link EnvironmentManager}
+ * using {@link EnvironmentManager#setDefaultFqan(String)}.
+ * 
  * @author Markus Binsteiner
- *
+ * 
  */
 public class FQANSelectorDialog extends JDialog implements StatusListener {
 
-	private FQANSelectorPanel selectorPanel;
-	private EnvironmentManager em = null;
-	
-	private String selectedFqan = null;
-	
 	/**
 	 * Launch the application
+	 * 
 	 * @param args
 	 */
 	public static void main(String args[]) {
@@ -47,6 +45,11 @@ public class FQANSelectorDialog extends JDialog implements StatusListener {
 			e.printStackTrace();
 		}
 	}
+	private FQANSelectorPanel selectorPanel;
+
+	private EnvironmentManager em = null;
+
+	private String selectedFqan = null;
 
 	/**
 	 * Create the dialog
@@ -57,6 +60,7 @@ public class FQANSelectorDialog extends JDialog implements StatusListener {
 		getContentPane().add(getSelectorPanel(), BorderLayout.CENTER);
 		//
 	}
+
 	/**
 	 * @return
 	 */
@@ -72,10 +76,10 @@ public class FQANSelectorDialog extends JDialog implements StatusListener {
 		this.em = em;
 		selectorPanel.setEnvironmentManager(em);
 	}
-	
+
 	public void setNewStatus(StatusEvent e) {
-		
-		if ( e.getStatus().equals(FQANSelectorPanel.OK_ACTION) ) {
+
+		if (e.getStatus().equals(FQANSelectorPanel.OK_ACTION)) {
 			selectedFqan = getSelectorPanel().getSelectedFqan();
 			em.setDefaultFqan(selectedFqan);
 			this.setVisible(false);
@@ -84,7 +88,7 @@ public class FQANSelectorDialog extends JDialog implements StatusListener {
 			selectedFqan = null;
 			this.setVisible(false);
 		}
-		
+
 	}
 
 }

@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.plugins.underworld;
 
 import java.io.File;
@@ -48,36 +46,36 @@ public class UnderworldJob {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		frequentOutput.getLocalRepresentation(true);
 
-	}
-
-	public GrisuJobMonitoringObject getJob() {
-		return job;
-	}
-
-	public GrisuFileObject getFrequentOutput() {
-		return frequentOutput;
-	}
-
-	public int getTimesteps_total() {
-		return timesteps_total;
 	}
 
 	public int getCurrent_timestep() {
 		return current_timestep;
 	}
 
-	public void refresh() {
-		parse();
+	public Map<String, ArrayList<Double>> getData() {
+		return data;
+	}
+
+	public GrisuFileObject getFrequentOutput() {
+		return frequentOutput;
+	}
+
+	public GrisuJobMonitoringObject getJob() {
+		return job;
 	}
 
 	public ArrayList<String> getRowNames() {
-		if ( rows == null || rows.size() == 0 ) {
+		if (rows == null || rows.size() == 0) {
 			parse();
 		}
 		return rows;
+	}
+
+	public int getTimesteps_total() {
+		return timesteps_total;
 	}
 
 	private void parse() {
@@ -93,18 +91,18 @@ public class UnderworldJob {
 			return;
 		}
 
-		if ( rows != null && rows.size() > 0 ) {
-			for ( String name : data.keySet() ) {
+		if (rows != null && rows.size() > 0) {
+			for (String name : data.keySet()) {
 				data.put(name, new ArrayList<Double>());
 			}
 		}
-		
+
 		for (Object lineObject : lines) {
 
 			String line = (String) lineObject;
 			String[] parts = line.trim().split("\\s++");
 
-			if (rows.size() == 0) { 
+			if (rows.size() == 0) {
 				System.out.println();
 				if (line.startsWith("#")) {
 					line = line.replaceAll("CPU Time", "CPUTime");
@@ -128,7 +126,6 @@ public class UnderworldJob {
 				continue;
 			}
 
-			
 			for (int i = 0; i < parts.length; i++) {
 
 				if ("Timestep".equals(rows.get(i))) {
@@ -142,8 +139,8 @@ public class UnderworldJob {
 		}
 	}
 
-	public Map<String, ArrayList<Double>> getData() {
-		return data;
+	public void refresh() {
+		parse();
 	}
 
 }

@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.plugins.underworld;
 
 import javax.swing.JPanel;
@@ -14,6 +12,7 @@ public class MainPanel implements PluginPanel {
 	public JPanel getJPanel() {
 		return underworldChartPanel;
 	}
+
 	public void initializePanel(GrisuJobMonitoringObject job) {
 		underworldChartPanel = new UnderworldChartPanel();
 		underworldChartPanel.setUnderworldJob(job);

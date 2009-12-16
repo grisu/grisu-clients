@@ -20,9 +20,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
 
 import org.apache.log4j.Logger;
@@ -37,9 +35,10 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
 abstract class AbstractInputPanel extends JPanel implements TemplateNodePanel {
-	
-	static final Logger myLogger = Logger.getLogger(AbstractInputPanel.class.getName());
-	
+
+	static final Logger myLogger = Logger.getLogger(AbstractInputPanel.class
+			.getName());
+
 	private JTextArea textArea;
 	private JScrollPane scrollPane;
 	public static final String COMBOBOX_PANEL = "combobox";
@@ -51,20 +50,22 @@ abstract class AbstractInputPanel extends JPanel implements TemplateNodePanel {
 	private JLabel errorLabel;
 
 	protected ComponentHolder holder = null;
-	
+
 	protected boolean useHistory = false;
 	protected boolean useLastInput = false;
 	protected boolean locked = false;
-	
+
 	FormLayout layout = null;
 
 	protected HistoryManager historyManager = null;
 	String historyManagerKeyForThisNode = null;
 
 	protected TemplateNode templateNode = null;
-	
+
 	int defaultHeight = 120;
 	int heightDelta = 0;
+
+	private Vector<ValueListener> valueChangedListeners;
 
 	/**
 	 * Create the panel
@@ -74,150 +75,45 @@ abstract class AbstractInputPanel extends JPanel implements TemplateNodePanel {
 		layout = new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("44dlu:grow"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("41dlu"),
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
-				FormFactory.RELATED_GAP_COLSPEC,},
-			new RowSpec[] {
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("5dlu"),
-				FormFactory.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("17dlu"),
-				FormFactory.RELATED_GAP_ROWSPEC,});
+				FormFactory.RELATED_GAP_COLSPEC, ColumnSpec.decode("41dlu"),
+				FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
+				FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
+				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC, RowSpec.decode("5dlu"),
+				FormFactory.RELATED_GAP_ROWSPEC, RowSpec.decode("17dlu"),
+				FormFactory.RELATED_GAP_ROWSPEC, });
 		setLayout(layout);
 		add(getErrorLabel(), new CellConstraints(2, 4));
 		add(getRequiredLabel(), new CellConstraints(6, 4));
 		//
 	}
 
-	public void setTemplateNode(TemplateNode node)
-			throws TemplateNodePanelException {
-		
-		this.templateNode = node;
-		this.templateNode.setTemplateNodeValueSetter(this);
-		node.addTemplateNodeListener(this);
-		
-		setBorder(new TitledBorder(null, this.templateNode.getTitle(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
-
-
-		if ("1".equals(this.templateNode.getMultiplicity())) {
-			getRequiredLabel().setText("*");
-		} else {
-			getRequiredLabel().setText("");
-		}
-		
-		String description = this.templateNode.getDescription();
-		if ( ! this.templateNode.hasProperty(TemplateNode.HIDE_DESCRIPTION) && description != null && !"".equals(description) ) {
-			getTextArea().setText(description);
-			add(getScrollPane(), new CellConstraints(2, 2, 5, 1, CellConstraints.FILL, CellConstraints.FILL));
-		} else {
-			// don't know
-			layout.setRowSpec(1, RowSpec.decode("0dlu"));
-			layout.setRowSpec(2, RowSpec.decode("0dlu"));
-			heightDelta = -40;
-		}
-		
-		historyManager = this.templateNode.getTemplate()
-		.getEnvironmentManager().getHistoryManager();
-		
-		historyManagerKeyForThisNode = this.templateNode.getOtherProperty(TemplateNode.HISTORY_KEY);
-		if ( historyManagerKeyForThisNode == null ) {
-			historyManagerKeyForThisNode = this.templateNode.getName();
-		}
-		
-		if ( this.templateNode.getOtherProperties().containsKey(TemplateNode.LAST_USED_PARAMETER) ) {
-			useLastInput = true;
-		} else {
-			useLastInput = false;
-		}
-		
-		if ( this.templateNode.getOtherProperties().containsKey(TemplateNode.LOCKED_KEY) ) {
-			locked = true;
-		} else {
-			locked = false;
-		}
-		
-		if (this.templateNode.getOtherProperties().containsKey(
-				TemplateNode.USE_HISTORY)) {
-			useHistory = true;
-
-
-			String maxString = this.templateNode
-					.getOtherProperty(TemplateNode.USE_HISTORY);
-			
-			
-			if (!TemplateNode.NON_MAP_PARAMETER.equals(maxString)) {
-				int maxValues = Integer.parseInt(maxString);
-				historyManager.setMaxNumberOfEntries(historyManagerKeyForThisNode, maxValues);
-			}
-
-		} else {
-			useHistory = false;
-		}
-		
-		preparePanel();
-		String buttonText = genericButtonText();
-		initialize(getComponentHolder(), genericButtonText());
-		setupComponent();
+	// register a listener
+	synchronized public void addValueListener(ValueListener l) {
+		if (valueChangedListeners == null)
+			valueChangedListeners = new Vector<ValueListener>();
+		valueChangedListeners.addElement(l);
 	}
 
-	abstract protected ComponentHolder getComponentHolder();
-	abstract protected void preparePanel();
-	abstract protected void setupComponent();
-	
 	/**
-	 * Specify the text of the button. If you specify null, no button is rendered.
-	 * @return the button text
-	 */
-	abstract protected String genericButtonText();
-	/**
-	 * This can be an empty method if initialized is called with showButton=false.
+	 * This can be an empty method if initialized is called with
+	 * showButton=false.
 	 */
 	abstract protected void buttonPressed();
 
-	/**
-	 * Call this in your constructor after you sorted out which component to
-	 * render.
-	 * 
-	 * @param showButton
-	 *            whether to render a button or not
-	 */
-	private void initialize(ComponentHolder holder, String buttonText) {
-
-//		Component comp = getInputComponent();
-		this.holder = holder;
-		getInputField().add(holder.getComponent(), BorderLayout.CENTER);
-
-		String heightComponentHolderRow = holder.getRowSpec()+"dlu";
-		layout.setRowSpec(6, RowSpec.decode(heightComponentHolderRow));
-		
-		if ( buttonText != null ) {
-			getGenericButton().setText(buttonText);
-			add(getGenericButton(), new CellConstraints(4, 6, 3, 1, CellConstraints.DEFAULT, CellConstraints.TOP));
-			add(getInputField(), new CellConstraints(2, 6,
-					CellConstraints.FILL, CellConstraints.TOP));
-		} else {
-			add(getInputField(), new CellConstraints(2, 6, 5, 1,
-					CellConstraints.FILL, CellConstraints.TOP));
-		}
-
-	}
-
 	protected JComboBox createJComboBox() {
 
-		setPreferredSize(new Dimension(300, defaultHeight+heightDelta));
+		setPreferredSize(new Dimension(300, defaultHeight + heightDelta));
 
-		if ( this.templateNode == null ) {
+		if (this.templateNode == null) {
 			throw new RuntimeException("AbstractInputPanel not ready yet.");
 		}
 
 		DefaultComboBoxModel comboboxModel = new DefaultComboBoxModel();
 
 		JComboBox combobox = new JComboBox(comboboxModel);
-//		combobox.setRenderer(new MyComboboxListCellRenderer(SwingConstants.TRAILING));
+		// combobox.setRenderer(new
+		// MyComboboxListCellRenderer(SwingConstants.TRAILING));
 		if (locked) {
 			combobox.setEditable(false);
 		} else {
@@ -225,20 +121,21 @@ abstract class AbstractInputPanel extends JPanel implements TemplateNodePanel {
 		}
 
 		// can't use fillComboBox & setdefaultvalue yet
-		
+
 		comboboxModel.removeAllElements();
 		for (String prefill : getPrefills())
 			comboboxModel.addElement(prefill);
 
-		
 		String lastUsedString = null;
 		try {
-			lastUsedString = historyManager.getEntries(historyManagerKeyForThisNode+"_"+TemplateNode.LAST_USED_PARAMETER).get(0);
+			lastUsedString = historyManager.getEntries(
+					historyManagerKeyForThisNode + "_"
+							+ TemplateNode.LAST_USED_PARAMETER).get(0);
 		} catch (Exception e) {
 		}
-		
+
 		String defaultValue = null;
-		if ( lastUsedString != null && ! "".equals(lastUsedString) ) {
+		if (lastUsedString != null && !"".equals(lastUsedString)) {
 			defaultValue = lastUsedString;
 		} else {
 			defaultValue = getDefaultValue();
@@ -252,63 +149,34 @@ abstract class AbstractInputPanel extends JPanel implements TemplateNodePanel {
 
 		return combobox;
 	}
-	
 
-	protected void setDefaultValue() {
-		
-		
-		if ( useLastInput ) {
-			String lastUserInput = holder.getExternalSetValue();
-			if ( lastUserInput != null && !"".equals(lastUserInput)) 
-				historyManager.addHistoryEntry(historyManagerKeyForThisNode+"_"+TemplateNode.LAST_USED_PARAMETER, lastUserInput, new Date(), 1);
-		}
-		
-		
-		String defaultValue = getDefaultValue();
-		if (defaultValue != null) {
-
-			holder.setComponentField(defaultValue);
-		} else {
-			holder.setComponentField(null);
-		}
-	}
-	
-	protected void fillComboBox() {
-		
-		JComboBox combobox = (JComboBox)holder.getComponent();
-		((DefaultComboBoxModel)combobox.getModel()).removeAllElements();
-		for (String prefill : getPrefills())
-			((DefaultComboBoxModel)combobox.getModel()).addElement(prefill);
-		
-	}
-	
-	
 	protected JTextField createJTextField() {
 
 		// the whole panel doesn't need to be that big in this case...
-		setPreferredSize(new Dimension(300, defaultHeight+heightDelta-20));
+		setPreferredSize(new Dimension(300, defaultHeight + heightDelta - 20));
 
-		
-		if ( this.templateNode == null ) {
+		if (this.templateNode == null) {
 			throw new RuntimeException("AbstractInputPanel not ready yet.");
 		}
-		
+
 		JTextField textField = new JTextField();
-		
+
 		if (locked) {
 			textField.setEditable(false);
 		} else {
 			textField.setEditable(true);
 		}
-		
+
 		// can't use setDefaultValueYet
 		String lastUsedString = null;
 		try {
-			lastUsedString = historyManager.getEntries(historyManagerKeyForThisNode+"_"+TemplateNode.LAST_USED_PARAMETER).get(0);
+			lastUsedString = historyManager.getEntries(
+					historyManagerKeyForThisNode + "_"
+							+ TemplateNode.LAST_USED_PARAMETER).get(0);
 		} catch (Exception e) {
 		}
 		String defaultValue = null;
-		if ( lastUsedString != null && ! "".equals(lastUsedString) ) {
+		if (lastUsedString != null && !"".equals(lastUsedString)) {
 			defaultValue = lastUsedString;
 		} else {
 			defaultValue = getDefaultValue();
@@ -322,20 +190,66 @@ abstract class AbstractInputPanel extends JPanel implements TemplateNodePanel {
 		return textField;
 	}
 
+	protected void fillComboBox() {
+
+		JComboBox combobox = (JComboBox) holder.getComponent();
+		((DefaultComboBoxModel) combobox.getModel()).removeAllElements();
+		for (String prefill : getPrefills())
+			((DefaultComboBoxModel) combobox.getModel()).addElement(prefill);
+
+	}
+
+	private void fireSitePanelEvent(String newValue) {
+
+		myLogger.debug("Fire value changed event: new value: " + newValue);
+		// if we have no mountPointsListeners, do nothing...
+		if (valueChangedListeners != null && !valueChangedListeners.isEmpty()) {
+
+			// make a copy of the listener list in case
+			// anyone adds/removes mountPointsListeners
+			Vector<ValueListener> valueChangedTargets;
+			synchronized (this) {
+				valueChangedTargets = (Vector<ValueListener>) valueChangedListeners
+						.clone();
+			}
+
+			// walk through the listener list and
+			// call the gridproxychanged method in each
+			Enumeration<ValueListener> e = valueChangedTargets.elements();
+			while (e.hasMoreElements()) {
+				ValueListener valueChanged_l = (ValueListener) e.nextElement();
+				valueChanged_l.valueChanged(this, newValue);
+			}
+		}
+	}
+
+	/**
+	 * Specify the text of the button. If you specify null, no button is
+	 * rendered.
+	 * 
+	 * @return the button text
+	 */
+	abstract protected String genericButtonText();
+
+	abstract protected ComponentHolder getComponentHolder();
+
 	protected String getDefaultValue() {
-		
-		if ( templateNode.getOtherProperties().containsKey(TemplateNode.LAST_USED_PARAMETER) ) {
+
+		if (templateNode.getOtherProperties().containsKey(
+				TemplateNode.LAST_USED_PARAMETER)) {
 
 			String lastUsedString = null;
 			try {
-				lastUsedString = historyManager.getEntries(historyManagerKeyForThisNode+"_"+TemplateNode.LAST_USED_PARAMETER).get(0);
+				lastUsedString = historyManager.getEntries(
+						historyManagerKeyForThisNode + "_"
+								+ TemplateNode.LAST_USED_PARAMETER).get(0);
 			} catch (Exception e) {
 			}
-			if ( lastUsedString != null && ! "".equals(lastUsedString) ) 
+			if (lastUsedString != null && !"".equals(lastUsedString))
 				return lastUsedString;
-			
+
 		}
-		
+
 		String defaultValue = templateNode.getDefaultValue();
 
 		if (defaultValue != null && !"".equals(defaultValue)) {
@@ -343,42 +257,6 @@ abstract class AbstractInputPanel extends JPanel implements TemplateNodePanel {
 		} else {
 			return null;
 		}
-	}
-
-	protected LinkedList<String> getPrefills() {
-
-		LinkedList<String> prefillStrings = new LinkedList<String>();
-
-		if (useHistory
-				&& historyManager != null
-				&& historyManager.getEntries(historyManagerKeyForThisNode)
-						.size() > 0) {
-			for (String entry : historyManager.getEntries(historyManagerKeyForThisNode)) {
-				prefillStrings.addFirst(entry);
-			}
-		}
-
-		if (templateNode.getPrefills() != null) {
-			for (String prefill : templateNode.getPrefills()) {
-				if (prefill != null && !"".equals(prefill))
-					prefillStrings.add(prefill);
-			}
-		}
-
-		return prefillStrings;
-
-	}
-	
-	public String getExternalSetValue() {
-		return holder.getExternalSetValue();
-	}
-	
-	public void setExternalSetValue(String value) {
-		holder.setComponentField(value);
-	}
-	
-	public JPanel getTemplateNodePanel() {
-		return this;
 	}
 
 	/**
@@ -390,6 +268,10 @@ abstract class AbstractInputPanel extends JPanel implements TemplateNodePanel {
 			errorLabel.setForeground(Color.RED);
 		}
 		return errorLabel;
+	}
+
+	public String getExternalSetValue() {
+		return holder.getExternalSetValue();
 	}
 
 	/**
@@ -411,6 +293,42 @@ abstract class AbstractInputPanel extends JPanel implements TemplateNodePanel {
 	/**
 	 * @return
 	 */
+	protected JPanel getInputField() {
+		if (inputField == null) {
+			inputField = new JPanel();
+			inputField.setLayout(new BorderLayout());
+		}
+		return inputField;
+	}
+
+	protected LinkedList<String> getPrefills() {
+
+		LinkedList<String> prefillStrings = new LinkedList<String>();
+
+		if (useHistory
+				&& historyManager != null
+				&& historyManager.getEntries(historyManagerKeyForThisNode)
+						.size() > 0) {
+			for (String entry : historyManager
+					.getEntries(historyManagerKeyForThisNode)) {
+				prefillStrings.addFirst(entry);
+			}
+		}
+
+		if (templateNode.getPrefills() != null) {
+			for (String prefill : templateNode.getPrefills()) {
+				if (prefill != null && !"".equals(prefill))
+					prefillStrings.add(prefill);
+			}
+		}
+
+		return prefillStrings;
+
+	}
+
+	/**
+	 * @return
+	 */
 	protected JLabel getRequiredLabel() {
 		if (requiredLabel == null) {
 			requiredLabel = new JLabel();
@@ -421,19 +339,186 @@ abstract class AbstractInputPanel extends JPanel implements TemplateNodePanel {
 	/**
 	 * @return
 	 */
-	protected JPanel getInputField() {
-		if (inputField == null) {
-			inputField = new JPanel();
-			inputField.setLayout(new BorderLayout());
+	protected JScrollPane getScrollPane() {
+		if (scrollPane == null) {
+			scrollPane = new JScrollPane();
+			scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+			scrollPane.setBackground(UIManager.getColor("Panel.background"));
+			scrollPane.setViewportView(getTextArea());
 		}
-		return inputField;
+		return scrollPane;
 	}
-	
+
+	public JPanel getTemplateNodePanel() {
+		return this;
+	}
+
+	/**
+	 * @return
+	 */
+	protected JTextArea getTextArea() {
+		if (textArea == null) {
+			textArea = new JTextArea();
+			textArea.setBorder(new EmptyBorder(0, 0, 0, 0));
+			textArea.setOpaque(false);
+			textArea.setMinimumSize(new Dimension(100, 0));
+			textArea.setWrapStyleWord(true);
+			textArea.setBackground(UIManager.getColor("Panel.background"));
+			textArea.setMargin(new Insets(5, 7, 5, 7));
+			textArea.setLineWrap(true);
+			textArea.setEditable(false);
+		}
+		return textArea;
+	}
+
+	/**
+	 * Call this in your constructor after you sorted out which component to
+	 * render.
+	 * 
+	 * @param showButton
+	 *            whether to render a button or not
+	 */
+	private void initialize(ComponentHolder holder, String buttonText) {
+
+		// Component comp = getInputComponent();
+		this.holder = holder;
+		getInputField().add(holder.getComponent(), BorderLayout.CENTER);
+
+		String heightComponentHolderRow = holder.getRowSpec() + "dlu";
+		layout.setRowSpec(6, RowSpec.decode(heightComponentHolderRow));
+
+		if (buttonText != null) {
+			getGenericButton().setText(buttonText);
+			add(getGenericButton(), new CellConstraints(4, 6, 3, 1,
+					CellConstraints.DEFAULT, CellConstraints.TOP));
+			add(getInputField(), new CellConstraints(2, 6,
+					CellConstraints.FILL, CellConstraints.TOP));
+		} else {
+			add(getInputField(), new CellConstraints(2, 6, 5, 1,
+					CellConstraints.FILL, CellConstraints.TOP));
+		}
+
+	}
+
+	abstract protected void preparePanel();
+
+	// remove a listener
+	synchronized public void removeValueListener(ValueListener l) {
+		if (valueChangedListeners == null) {
+			valueChangedListeners = new Vector<ValueListener>();
+		}
+		valueChangedListeners.removeElement(l);
+	}
+
+	protected void setDefaultValue() {
+
+		if (useLastInput) {
+			String lastUserInput = holder.getExternalSetValue();
+			if (lastUserInput != null && !"".equals(lastUserInput))
+				historyManager.addHistoryEntry(historyManagerKeyForThisNode
+						+ "_" + TemplateNode.LAST_USED_PARAMETER,
+						lastUserInput, new Date(), 1);
+		}
+
+		String defaultValue = getDefaultValue();
+		if (defaultValue != null) {
+
+			holder.setComponentField(defaultValue);
+		} else {
+			holder.setComponentField(null);
+		}
+	}
+
+	public void setExternalSetValue(String value) {
+		holder.setComponentField(value);
+	}
+
+	// event stuff
+	// ========================================================
+
+	public void setTemplateNode(TemplateNode node)
+			throws TemplateNodePanelException {
+
+		this.templateNode = node;
+		this.templateNode.setTemplateNodeValueSetter(this);
+		node.addTemplateNodeListener(this);
+
+		setBorder(new TitledBorder(null, this.templateNode.getTitle(),
+				TitledBorder.DEFAULT_JUSTIFICATION,
+				TitledBorder.DEFAULT_POSITION, null, null));
+
+		if ("1".equals(this.templateNode.getMultiplicity())) {
+			getRequiredLabel().setText("*");
+		} else {
+			getRequiredLabel().setText("");
+		}
+
+		String description = this.templateNode.getDescription();
+		if (!this.templateNode.hasProperty(TemplateNode.HIDE_DESCRIPTION)
+				&& description != null && !"".equals(description)) {
+			getTextArea().setText(description);
+			add(getScrollPane(), new CellConstraints(2, 2, 5, 1,
+					CellConstraints.FILL, CellConstraints.FILL));
+		} else {
+			// don't know
+			layout.setRowSpec(1, RowSpec.decode("0dlu"));
+			layout.setRowSpec(2, RowSpec.decode("0dlu"));
+			heightDelta = -40;
+		}
+
+		historyManager = this.templateNode.getTemplate()
+				.getEnvironmentManager().getHistoryManager();
+
+		historyManagerKeyForThisNode = this.templateNode
+				.getOtherProperty(TemplateNode.HISTORY_KEY);
+		if (historyManagerKeyForThisNode == null) {
+			historyManagerKeyForThisNode = this.templateNode.getName();
+		}
+
+		if (this.templateNode.getOtherProperties().containsKey(
+				TemplateNode.LAST_USED_PARAMETER)) {
+			useLastInput = true;
+		} else {
+			useLastInput = false;
+		}
+
+		if (this.templateNode.getOtherProperties().containsKey(
+				TemplateNode.LOCKED_KEY)) {
+			locked = true;
+		} else {
+			locked = false;
+		}
+
+		if (this.templateNode.getOtherProperties().containsKey(
+				TemplateNode.USE_HISTORY)) {
+			useHistory = true;
+
+			String maxString = this.templateNode
+					.getOtherProperty(TemplateNode.USE_HISTORY);
+
+			if (!TemplateNode.NON_MAP_PARAMETER.equals(maxString)) {
+				int maxValues = Integer.parseInt(maxString);
+				historyManager.setMaxNumberOfEntries(
+						historyManagerKeyForThisNode, maxValues);
+			}
+
+		} else {
+			useHistory = false;
+		}
+
+		preparePanel();
+		String buttonText = genericButtonText();
+		initialize(getComponentHolder(), genericButtonText());
+		setupComponent();
+	}
+
+	abstract protected void setupComponent();
+
 	public void templateNodeUpdated(TemplateNodeEvent event) {
 
-			if ( event.getEventType() == TemplateNodeEvent.RESET ) {
-				reset();
-			} else if (event.getEventType() == TemplateNodeEvent.TEMPLATE_PROCESSED_INVALID
+		if (event.getEventType() == TemplateNodeEvent.RESET) {
+			reset();
+		} else if (event.getEventType() == TemplateNodeEvent.TEMPLATE_PROCESSED_INVALID
 				|| event.getEventType() == TemplateNodeEvent.TEMPLATE_FILLED_INVALID) {
 			String message = event.getMessage();
 			if (message == null)
@@ -449,85 +534,12 @@ abstract class AbstractInputPanel extends JPanel implements TemplateNodePanel {
 			errorLabel.setVisible(false);
 			layout.setRowSpec(4, new RowSpec("4dlu"));
 			getRequiredLabel().setForeground(Color.BLACK);
-		} 
+		}
 
 	}
-	/**
-	 * @return
-	 */
-	protected JScrollPane getScrollPane() {
-		if (scrollPane == null) {
-			scrollPane = new JScrollPane();
-			scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
-			scrollPane.setBackground(UIManager.getColor("Panel.background"));
-			scrollPane.setViewportView(getTextArea());
-		}
-		return scrollPane;
-	}
-	/**
-	 * @return
-	 */
-	protected JTextArea getTextArea() {
-		if (textArea == null) {
-			textArea = new JTextArea();
-			textArea.setBorder(new EmptyBorder(0, 0, 0, 0));
-			textArea.setOpaque(false);
-			textArea.setMinimumSize(new Dimension(100, 0));
-			textArea.setWrapStyleWord(true);
-			textArea.setBackground(UIManager.getColor("Panel.background"));
-			textArea.setMargin(new Insets(5,7,5,7));
-			textArea.setLineWrap(true);
-			textArea.setEditable(false);
-		}
-		return textArea;
-	}
-	
+
 	public String toString() {
 		return getName();
 	}
-	
-	// event stuff
-	// ========================================================
-	
-	private Vector<ValueListener> valueChangedListeners;
-
-	private void fireSitePanelEvent(String newValue) {
-		
-		myLogger.debug("Fire value changed event: new value: "+newValue);
-		// if we have no mountPointsListeners, do nothing...
-		if (valueChangedListeners != null && !valueChangedListeners.isEmpty()) {
-
-			// make a copy of the listener list in case
-			// anyone adds/removes mountPointsListeners
-			Vector<ValueListener> valueChangedTargets;
-			synchronized (this) {
-				valueChangedTargets = (Vector<ValueListener>) valueChangedListeners.clone();
-			}
-
-			// walk through the listener list and
-			// call the gridproxychanged method in each
-			Enumeration<ValueListener> e = valueChangedTargets.elements();
-			while (e.hasMoreElements()) {
-				ValueListener valueChanged_l = (ValueListener) e.nextElement();
-				valueChanged_l.valueChanged(this, newValue);
-			}
-		}
-	}
-
-	// register a listener
-	synchronized public void addValueListener(ValueListener l) {
-		if (valueChangedListeners == null)
-			valueChangedListeners = new Vector<ValueListener>();
-		valueChangedListeners.addElement(l);
-	}
-
-	// remove a listener
-	synchronized public void removeValueListener(ValueListener l) {
-		if (valueChangedListeners == null) {
-			valueChangedListeners = new Vector<ValueListener>();
-		}
-		valueChangedListeners.removeElement(l);
-	}
-	
 
 }

@@ -12,32 +12,34 @@ public class FileTransferEvent {
 	private int type = -1;
 	private Exception exception = null;
 	private FileTransfer transfer = null;
-	
-	public FileTransferEvent(FileTransfer transfer, int type) {
-		this.transfer = transfer;
-		this.type = type;
-	}
-	
+
 	/**
 	 * Use this if the transfer failed
-	 * @param e the reason why the transfer failed
+	 * 
+	 * @param e
+	 *            the reason why the transfer failed
 	 */
 	public FileTransferEvent(FileTransfer transfer, Exception e) {
 		this.transfer = transfer;
 		this.type = TRANSFER_FAILED;
 		this.exception = e;
 	}
-	
+
+	public FileTransferEvent(FileTransfer transfer, int type) {
+		this.transfer = transfer;
+		this.type = type;
+	}
+
+	public Exception getReasonFailed() {
+		return exception;
+	}
+
 	public FileTransfer getTransfer() {
 		return transfer;
 	}
-	
+
 	public int getType() {
 		return this.type;
-	}
-	
-	public Exception getReasonFailed() {
-		return exception;
 	}
 
 }

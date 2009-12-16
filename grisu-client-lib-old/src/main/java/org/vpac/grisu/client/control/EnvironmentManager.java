@@ -56,15 +56,8 @@ import au.org.arcs.jcommons.constants.Constants;
  * @author Markus Binsteiner
  * 
  */
-public class EnvironmentManager implements MountPointsListener, UserEnvironmentManager {
-	
-	public String getCurrentFqan() {
-		return getDefaultFqan();
-	}
-
-	public void setCurrentFqan(String currentFqan) {
-		setDefaultFqan(currentFqan);
-	}
+public class EnvironmentManager implements MountPointsListener,
+		UserEnvironmentManager {
 
 	static final Logger myLogger = Logger.getLogger(EnvironmentManager.class
 			.getName());
@@ -75,29 +68,29 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 	public static final String GRISU_HISTORY_FILENAME = "grisu.history";
 
 	public static final int QUEUE_TYPE = 0;
+
 	public static final int FILE_URL_TYPE = 1;
 
 	private Map<String, String> alreadyQueriedHosts = new HashMap<String, String>();
 	private Map<String, String[]> alreadyQueriedQueues = new HashMap<String, String[]>();
+
 	private Map<String, Set<MountPoint>> alreadyQueriedMountPointsPerSubmissionLocation = new TreeMap<String, Set<MountPoint>>();
 	private Map<String, Set<MountPoint>> alreadyQueriedMountPointsPerFqan = new TreeMap<String, Set<MountPoint>>();
-
 	private Map<String, SubmissionLocation> allSubmissionLocations = null;
 	private Map<String, Set<SubmissionLocation>> allAvailableSubmissionLocationsPerFqan = new HashMap<String, Set<SubmissionLocation>>();
+
 	private Map<String, Set<SubmissionLocation>> allAvailableSubmissionLocationsForApplication = new TreeMap<String, Set<SubmissionLocation>>();
 	private Map<String, Set<SubmissionLocation>> allAvailableSubmissionLocationsForApplicationNew = new TreeMap<String, Set<SubmissionLocation>>();
 	private Map<String, Set<SubmissionLocation>> allAvailableSubmissionLocationsForApplicationAndVersion = new TreeMap<String, Set<SubmissionLocation>>();
 	private Map<String, Set<SubmissionLocation>> allAvailableSubmissionLocationsForApplicationAndVersionNew = new TreeMap<String, Set<SubmissionLocation>>();
 	private Map<String, Set<String>> allAvailableVersionsForApplication = new HashMap<String, Set<String>>();
 	private Map<String, String[]> allAvailableVersionsForApplicationPerSubmissionLocation = new HashMap<String, String[]>();
+	private Person user = null;
+	// all fqans of the user
+	private String[] fqans = null;
 
 	// if this is not initialized nothing is gonna be displayed
 	// public static ProgressDisplay progressDisplay = new DummyDisplay();
-
-	private Person user = null;
-
-	// all fqans of the user
-	private String[] fqans = null;
 
 	// all fqans that actually are used (aka have got a mountpoint)
 	private Set<String> allUsedFqans = new TreeSet<String>();
@@ -107,73 +100,41 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 
 	// all mountpoints of the user
 	private MountPoint[] mountPoints = null;
+
 	private SortedSet<String> sites = null;
 
 	// all sites of the grid. This info is not really useful since it doesn't
 	// tell you whether the user has got access to all of them or not...
 	private String[] allGridSites = null;
-
 	// the ServiceInterface to use
 	private ServiceInterface serviceInterface = null;
 
 	// the filesystems (the cached, local version as xml documents)
 	private FileManager fileManager = null;
 
-	// private JobManagementInterface jobManagement = null;
-
 	private JobManager glazedJobManagement = null;
 
 	private TemplateManager templateManager = null;
 
+	// private JobManagementInterface jobManagement = null;
+
 	private HistoryManager historyManager = new DummyHistoryManager();
 
 	private FileTransferManager fileTransferManager = new FileTransferManager();
+
+	// ---------------------------------------------------------------------------------------
+	// Event stuff (MountPoints)
+	private Vector<MountPointsListener> mountPointsListeners;
+
+	// ---------------------------------------------------------------------------------------
+	// Event stuff (Fqan)
+	private Vector<FqanListener> fqanListeners;
 
 	// the "system-wide" serviceInterface
 	// private static ServiceInterface defaultServiceInterface = null;
 
 	// the "system-wide" EnvironmentManager
 	// private static EnvironmentManager defaultManager = null;
-
-	/**
-	 * After a user successfully logs into a grisu web service this
-	 * ServiceInterace has to be set in order to do grid stuff using grisu.
-	 * 
-	 * @param serviceInterface
-	 *            the right ServiceInterface
-	 */
-	// public static void setDefaultServiceInterface(
-	// ServiceInterface serviceInterface) {
-	// defaultServiceInterface = serviceInterface;
-	// }
-	// /**
-	// * Gets the {@link ServiceInterface} that is used in this session.
-	// *
-	// * @return the ServiceInterface
-	// */
-	// public static ServiceInterface getDefaultServiceInterface() {
-	// return defaultServiceInterface;
-	// }
-	public void initializeHistoryManager() {
-
-//		File historyFile = new File(Environment.GRISU_DIRECTORY,
-//				GRISU_HISTORY_FILENAME);
-//		if (!historyFile.exists()) {
-//			try {
-//				historyFile.createNewFile();
-//
-//			} catch (IOException e) {
-//				// well
-//			}
-//		}
-//		if (!historyFile.exists()) {
-//			setHistoryManager(new DummyHistoryManager());
-//		} else {
-//			setHistoryManager(new SimpleHistoryManager(historyFile));
-//		}
-		
-		setHistoryManager(GrisuRegistryManager.getDefault(serviceInterface).getHistoryManager());
-	}
 
 	/**
 	 * The EnvironmentManager that is used in this session
@@ -257,45 +218,51 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 
 	}
 
-	public Person getUser() {
-		if (user == null) {
-			String dn = null;
-			String realname = null;
-			try {
-				realname = ClientPropertiesManager.getClientConfiguration()
-						.getString(Person.REALNAME_KEY);
-			} catch (ConfigurationException e2) {
-				// doesn't matter
-				myLogger.warn("Could not read config file: "
-						+ e2.getLocalizedMessage());
-			}
-			if (realname == null || "".equals(realname)) {
-				dn = getServiceInterface().getDN();
-				int indexcn = dn.toLowerCase().indexOf("cn=");
+	// register a listener
+	synchronized public void addFqanListener(FqanListener l) {
+		if (fqanListeners == null)
+			fqanListeners = new Vector();
+		fqanListeners.addElement(l);
+	}
 
-				if (indexcn == -1) {
-					realname = dn.replace("/", "_").replace("=", "_");
-				} else {
-					realname = dn.substring(indexcn + 3);
-				}
-			}
-			try {
-				user = new Person(ClientPropertiesManager
-						.getClientConfiguration(), realname);
-			} catch (Exception e) {
-				try {
-					user = new Person("Anonymous");
-				} catch (PersonException e1) {
-					// this should never happen
-					e1.printStackTrace();
-				}
-			}
-			user.setRole(Person.USER_ROLE);
-			if (user.getDn() == null) {
-				user.setDn(getServiceInterface().getDN());
-			}
+	// register a listener
+	synchronized public void addMountPointListener(MountPointsListener l) {
+		if (mountPointsListeners == null)
+			mountPointsListeners = new Vector();
+		mountPointsListeners.addElement(l);
+	}
+
+	private void buildInfoCache() {
+		if (sites == null) {
+			myLogger.debug("Building info cache.");
+			getAllOfTheUsersSites();
+
+			getAllAvailableSubmissionLocationsForFqan(getDefaultFqan());
+
+			// for (String fqan : getAllUsedFqans()) {
+			// getAllAvailableSubmissionLocationsForFqan(fqan);
+			// }
 		}
-		return user;
+	}
+
+	/**
+	 * builds submission location cache in the background
+	 */
+	public void buildInfoCacheInBackground() {
+
+		myLogger
+				.debug("Starting to build submissionLocation cache in background.");
+		new Thread() {
+			public void run() {
+				buildInfoCache();
+			}
+		}.start();
+
+	}
+
+	public String calculateUniqueJobname(String name) {
+		throw new RuntimeException("Not implemented for this class.");
+
 	}
 
 	/**
@@ -315,56 +282,6 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Unmounts the specified {@link MountPoint}.
-	 * 
-	 * @param mp
-	 *            the mountpoint
-	 */
-	public synchronized void umount(MountPoint mp) {
-		serviceInterface.umount(mp.getAlias());
-
-		fireMountPointsEvent(MountPointEvent.MOUNTPOINT_REMOVED,
-				new MountPoint[] { mp });
-	}
-
-	/**
-	 * Mounts the specified url to an easy-to-read name (called mountpoint).
-	 * 
-	 * @param url
-	 *            the url (e.g.: gsiftp://ngdata.vpac.org/home/san04/markus)
-	 * @param mountPoint
-	 *            (e.g.: /home.vpac.no_vo)
-	 * @param useHomeDirectoryOnThisFileSystemIfPossible
-	 *            if true the web service tries to automatically determine the
-	 *            users home directory on this filesystem and use it as url
-	 * @throws RemoteFileSystemException
-	 *             if the remote filesystem can't be accessed
-	 */
-	public synchronized void mount(String url, String mountPoint,
-			boolean useHomeDirectoryOnThisFileSystemIfPossible)
-			throws RemoteFileSystemException {
-
-		MountPoint mp = serviceInterface.mountWithoutFqan(url, mountPoint,
-				useHomeDirectoryOnThisFileSystemIfPossible);
-
-		fireMountPointsEvent(MountPointEvent.MOUNTPOINT_ADDED,
-				new MountPoint[] { mp });
-	}
-
-	public synchronized void mount(String url, String mountPoint, String fqan,
-			boolean useHomeDirectoryOnThisFileSystemIfPossible)
-			throws RemoteFileSystemException {
-		if (Constants.NON_VO_FQAN.equals(fqan)) {
-			fqan = null;
-		}
-		MountPoint mp = serviceInterface.mount(url, mountPoint, fqan,
-				useHomeDirectoryOnThisFileSystemIfPossible);
-
-		fireMountPointsEvent(MountPointEvent.MOUNTPOINT_ADDED,
-				new MountPoint[] { mp });
 	}
 
 	// /**
@@ -472,125 +389,262 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 	// getMountPoints());
 	// }
 
-	/**
-	 * Get all the users' mountpoints.
-	 * 
-	 * @return all mountpoints
-	 */
-	public synchronized MountPoint[] getMountPoints() {
-		if (mountPoints == null) {
-			mountPoints = serviceInterface.df().getMountpoints().toArray(new MountPoint[]{});
+	private void fireFqanEvent(int event_type, String[] fqans) {
+		// if we have no mountPointsListeners, do nothing...
+		if (fqanListeners != null && !fqanListeners.isEmpty()) {
+			// create the event object to send
+			FqanEvent event = null;
+			if (event_type == FqanEvent.FQANS_REFRESHED)
+				event = new FqanEvent(this, fqans);
+			else
+				event = new FqanEvent(this, event_type, fqans[0]);
+
+			// make a copy of the listener list in case
+			// anyone adds/removes mountPointsListeners
+			Vector fqantargets;
+			synchronized (this) {
+				fqantargets = (Vector) fqanListeners.clone();
+			}
+
+			// walk through the listener list and
+			// call the gridproxychanged method in each
+			Enumeration e = fqantargets.elements();
+			while (e.hasMoreElements()) {
+				FqanListener fqan_l = (FqanListener) e.nextElement();
+				myLogger.debug("Firing fqan event to: "
+						+ fqan_l.getClass().toString());
+				Date start = new Date();
+				fqan_l.fqansChanged(event);
+				Date end = new Date();
+				myLogger.debug("[BENCHMARK] Firing fqan event to "
+						+ fqan_l.getClass().toString() + " duration: "
+						+ (end.getTime() - start.getTime()));
+			}
 		}
-		return mountPoints;
 	}
 
-	/**
-	 * Gets all the mountpoints for this particular VO
-	 * 
-	 * @param fqan
-	 *            the fqan
-	 * @return the mountpoints
-	 */
-	public Set<MountPoint> getMountPoints(String fqan) {
+	private void fireMountPointsEvent(int event_type, MountPoint[] mp) {
 
-		if (fqan == null) {
-			fqan = Constants.NON_VO_FQAN;
-		}
+		// if we have no mountPointsListeners, do nothing...
+		if (mountPointsListeners != null && !mountPointsListeners.isEmpty()) {
+			// create the event object to send
+			MountPointEvent event = null;
+			if (event_type == MountPointEvent.MOUNTPOINTS_REFRESHED)
+				event = new MountPointEvent(this, mp, serviceInterface);
+			else
+				event = new MountPointEvent(this, event_type, mp[0],
+						serviceInterface);
 
-		synchronized (fqan) {
+			// firstly call the mountpointschanged method of this class to be
+			// sure we
+			// have all the information right when another listener asks for it
+			try {
+				mountPointsChanged(event);
+			} catch (RemoteFileSystemException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
 
-			if (alreadyQueriedMountPointsPerFqan.get(fqan) == null) {
+			// make a copy of the listener list in case
+			// anyone adds/removes mountPointsListeners
+			Vector targets;
+			synchronized (this) {
+				targets = (Vector) mountPointsListeners.clone();
+			}
 
-				Set<MountPoint> mps = new HashSet<MountPoint>();
-				for (MountPoint mp : getMountPoints()) {
-					if (mp.getFqan() == null
-							|| mp.getFqan().equals(Constants.NON_VO_FQAN)) {
-						if (fqan == null
-								|| fqan.equals(Constants.NON_VO_FQAN)) {
-							mps.add(mp);
-							continue;
-						} else {
-							continue;
-						}
-					} else {
-						if (mp.getFqan().equals(fqan)) {
-							mps.add(mp);
-							continue;
-						}
-					}
+			// walk through the listener list and
+			// call the gridproxychanged method in each
+			Enumeration e = targets.elements();
+			while (e.hasMoreElements()) {
+				MountPointsListener l = (MountPointsListener) e.nextElement();
+				try {
+					l.mountPointsChanged(event);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
-				alreadyQueriedMountPointsPerFqan.put(fqan, mps);
 			}
-			return alreadyQueriedMountPointsPerFqan.get(fqan);
 		}
+	}
+
+	public String[] getAllAvailableFqans() {
+		return getFqans();
+	}
+
+	public SortedSet<String> getAllAvailableSites() {
+
+		return getAllOfTheUsersSites();
+	}
+
+	public Set<String> getAllAvailableSubmissionLocations() {
+		return new HashSet(getAllSubmissionLocations().values());
 	}
 
 	/**
-	 * Returns all of the users sites that are accessible with this fqan
+	 * Returns all submissionlocations that are available for the user for this
+	 * application.
 	 * 
-	 * @param fqan
-	 *            the fqan
-	 * @return the sites
+	 * @param applicationName
+	 *            the application
+	 * @return all submissionLocations for all fqans
+	 * @deprecated don't use that anymore
 	 */
-	public String[] getAllOfTheUsersSites(String fqan) {
+	public Set<SubmissionLocation> getAllAvailableSubmissionLocationsForApplication(
+			String applicationName) {
 
-		Set<String> allSitesTemp = new TreeSet<String>();
-		for (MountPoint mp : getMountPoints(fqan)) {
-			String site = lookupSite(FILE_URL_TYPE, mp.getRootUrl());
-			if (site == null) {
-				myLogger.warn("Can't find site for url: " + mp.getRootUrl()
-						+ ". Not adding it.");
-			} else {
-				allSitesTemp.add(site);
-			}
-		}
-
-		String[] result = allSitesTemp.toArray(new String[] {});
-		StringBuffer temp = new StringBuffer();
-		for (String resultPart : result) {
-			temp.append(resultPart + " ");
-		}
-		myLogger.debug("Found these user sites for " + fqan + ": "
-				+ temp.toString());
-		return result;
-
-	}
-
-	public synchronized SortedSet<String> getAllOfTheUsersSites() {
-
-		if (sites == null) {
-			myLogger.debug("Benchmarking getting of all of the users sites: ");
-			StringBuffer temp = new StringBuffer();
+		if (allAvailableSubmissionLocationsForApplication.get(applicationName) == null) {
+			myLogger
+					.debug("Getting all available submission locations for application: "
+							+ applicationName);
 			Date start = new Date();
-			SortedSet<String> allSitesTemp = new TreeSet<String>();
-			for (MountPoint mp : getMountPoints()) {
-				String site = lookupSite(FILE_URL_TYPE, mp.getRootUrl());
-				if (site == null) {
-					myLogger.warn("Can't find site for url: " + mp.getRootUrl()
-							+ ". Not adding it.");
-				} else {
-					allSitesTemp.add(site);
-					temp.append(site + " ");
-					String fqan = mp.getFqan();
-					if (fqan == null) {
-						fqan = Constants.NON_VO_FQAN;
-					}
-					allUsedFqans.add(fqan);
+			Set<SubmissionLocation> result = new HashSet<SubmissionLocation>();
+			String[] subLocs = serviceInterface
+					.getSubmissionLocationsForApplication(applicationName)
+					.asSubmissionLocationStrings();
+			for (String subLoc : subLocs) {
+				SubmissionLocation tempLoc = getSubmissionLocation(subLoc);
+
+				if (getAllSubmissionLocations().values().contains(tempLoc)) {
+					// if (tempLoc.getStagingFileSystems() != null
+					// && tempLoc.getStagingFileSystems().length > 0) {
+					result.add(tempLoc);
 				}
 			}
-			sites = allSitesTemp;
 			Date end = new Date();
-			myLogger.debug("Found these user sites: " + temp.toString());
-			myLogger.debug("[BENCHMARK] Getting all of the users sites time: "
+			myLogger.debug("[BENCHMARK] Getting all submission locations for "
+					+ applicationName + " duration: "
 					+ (end.getTime() - start.getTime()));
+			allAvailableSubmissionLocationsForApplication.put(applicationName,
+					result);
 		}
-		return sites;
-
+		return allAvailableSubmissionLocationsForApplication
+				.get(applicationName);
 	}
 
-	public Set<String> getAllUsedFqans() {
-		getAllOfTheUsersSites();
-		return allUsedFqans;
+	/**
+	 * Returns all submissionlocations that are available for the user for this
+	 * application.
+	 * 
+	 * @param applicationName
+	 *            the application
+	 * @return all submissionLocations for all fqans
+	 */
+	public Set<SubmissionLocation> getAllAvailableSubmissionLocationsForApplication(
+			String applicationName, String fqan) {
+
+		if (allAvailableSubmissionLocationsForApplicationNew.get(fqan + "_"
+				+ applicationName) == null) {
+			myLogger
+					.debug("Getting all available submission locations for application: "
+							+ applicationName);
+			Date start = new Date();
+			Set<SubmissionLocation> result = new TreeSet<SubmissionLocation>();
+			String[] subLocs = serviceInterface
+					.getSubmissionLocationsForApplication(applicationName)
+					.asSubmissionLocationStrings();
+			for (String subLoc : subLocs) {
+				SubmissionLocation tempLoc = getSubmissionLocation(subLoc);
+
+				if (getAllAvailableSubmissionLocationsForFqan(fqan).contains(
+						tempLoc)) {
+					// if (tempLoc.getStagingFileSystems() != null
+					// && tempLoc.getStagingFileSystems().length > 0) {
+					result.add(tempLoc);
+				}
+			}
+			Date end = new Date();
+			myLogger.debug("[BENCHMARK] Getting all submission locations for "
+					+ applicationName + " duration: "
+					+ (end.getTime() - start.getTime()));
+			allAvailableSubmissionLocationsForApplicationNew.put(fqan + "_"
+					+ applicationName, result);
+		}
+		return allAvailableSubmissionLocationsForApplicationNew.get(fqan + "_"
+				+ applicationName);
+	}
+
+	/**
+	 * @param applicationName
+	 * @param version
+	 * @return
+	 * @deprecated don't use that anymore, doesn't take into acount default fqan
+	 */
+	public Set<SubmissionLocation> getAllAvailableSubmissionLocationsForApplicationAndVersion(
+			String applicationName, String version) {
+
+		if (allAvailableSubmissionLocationsForApplicationAndVersion
+				.get(applicationName + "_" + version) == null) {
+			myLogger
+					.debug("Getting all available submission locations for application "
+							+ applicationName + " and version " + version);
+
+			Date start = new Date();
+
+			String[] subLocs = serviceInterface
+					.getSubmissionLocationsForApplicationAndVersion(
+							applicationName, version)
+					.asSubmissionLocationStrings();
+			Set<SubmissionLocation> result = new HashSet<SubmissionLocation>();
+
+			for (String subLoc : subLocs) {
+				SubmissionLocation tempLoc = getSubmissionLocation(subLoc);
+
+				if (getAllSubmissionLocations().values().contains(tempLoc)) {
+					// if (tempLoc.getStagingFileSystems() != null
+					// && tempLoc.getStagingFileSystems().length > 0) {
+					result.add(tempLoc);
+				}
+			}
+			Date end = new Date();
+			myLogger.debug("[BENCHMARK] Getting all submission locations for "
+					+ applicationName + " duration: "
+					+ (end.getTime() - start.getTime()));
+			allAvailableSubmissionLocationsForApplicationAndVersion.put(
+					applicationName + "_" + version, result);
+
+		}
+
+		return allAvailableSubmissionLocationsForApplicationAndVersion
+				.get(applicationName + "_" + version);
+	}
+
+	public Set<SubmissionLocation> getAllAvailableSubmissionLocationsForApplicationAndVersion(
+			String appname, String version, String fqan) {
+
+		if (allAvailableSubmissionLocationsForApplicationAndVersionNew.get(fqan
+				+ "_" + appname + "_" + version) == null) {
+			myLogger
+					.debug("Getting all available submission locations for application "
+							+ appname + " and version " + version);
+
+			Date start = new Date();
+
+			String[] subLocs = serviceInterface
+					.getSubmissionLocationsForApplicationAndVersion(appname,
+							version).asSubmissionLocationStrings();
+			Set<SubmissionLocation> result = new TreeSet<SubmissionLocation>();
+
+			for (String subLoc : subLocs) {
+				SubmissionLocation tempLoc = getSubmissionLocation(subLoc);
+
+				if (getAllAvailableSubmissionLocationsForFqan(fqan).contains(
+						tempLoc)) {
+					// if (tempLoc.getStagingFileSystems() != null
+					// && tempLoc.getStagingFileSystems().length > 0) {
+					result.add(tempLoc);
+				}
+			}
+			Date end = new Date();
+			myLogger.debug("[BENCHMARK] Getting all submission locations for "
+					+ appname + " duration: "
+					+ (end.getTime() - start.getTime()));
+			allAvailableSubmissionLocationsForApplicationAndVersionNew.put(fqan
+					+ "_" + appname + "_" + version, result);
+
+		}
+
+		return allAvailableSubmissionLocationsForApplicationAndVersionNew
+				.get(fqan + "_" + appname + "_" + version);
 	}
 
 	/**
@@ -621,7 +675,8 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 				Date start = new Date();
 
 				String[] tempSubLocsString = serviceInterface
-						.getAllSubmissionLocationsForFqan(fqan).asSubmissionLocationStrings();
+						.getAllSubmissionLocationsForFqan(fqan)
+						.asSubmissionLocationStrings();
 
 				// SubmissionLocation[] tempSubLocs = new
 				// SubmissionLocation[tempSubLocsString.length];
@@ -686,6 +741,117 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 	}
 
 	/**
+	 * Returns all available versions for the application on sites the user has
+	 * access to
+	 * 
+	 * @param applicationName
+	 *            the name of the application
+	 * @param fqan
+	 *            the fqan you want to use to submit the job
+	 * @return all version strings
+	 */
+	public Set<String> getAllAvailableVersionsForApplication(
+			String applicationName, String fqan) {
+
+		if (allAvailableVersionsForApplication
+				.get(applicationName + "_" + fqan) == null) {
+
+			myLogger.debug("Getting all available versions for application "
+					+ applicationName);
+
+			Date start = new Date();
+			Set<String> result = new TreeSet<String>();
+			for (SubmissionLocation subLoc : getAllAvailableSubmissionLocationsForFqan(fqan)) {
+				result.addAll(serviceInterface
+						.getVersionsOfApplicationOnSubmissionLocation(
+								applicationName, subLoc.getLocation())
+						.getStringList());
+			}
+			Date end = new Date();
+			myLogger.debug("[BENCHMARK] Getting all version locations for "
+					+ applicationName + " duration: "
+					+ (end.getTime() - start.getTime()));
+			allAvailableVersionsForApplication.put(
+					applicationName + "_" + fqan, result);
+		}
+		return allAvailableVersionsForApplication.get(applicationName + "_"
+				+ fqan);
+	}
+
+	public synchronized SortedSet<String> getAllOfTheUsersSites() {
+
+		if (sites == null) {
+			myLogger.debug("Benchmarking getting of all of the users sites: ");
+			StringBuffer temp = new StringBuffer();
+			Date start = new Date();
+			SortedSet<String> allSitesTemp = new TreeSet<String>();
+			for (MountPoint mp : getMountPoints()) {
+				String site = lookupSite(FILE_URL_TYPE, mp.getRootUrl());
+				if (site == null) {
+					myLogger.warn("Can't find site for url: " + mp.getRootUrl()
+							+ ". Not adding it.");
+				} else {
+					allSitesTemp.add(site);
+					temp.append(site + " ");
+					String fqan = mp.getFqan();
+					if (fqan == null) {
+						fqan = Constants.NON_VO_FQAN;
+					}
+					allUsedFqans.add(fqan);
+				}
+			}
+			sites = allSitesTemp;
+			Date end = new Date();
+			myLogger.debug("Found these user sites: " + temp.toString());
+			myLogger.debug("[BENCHMARK] Getting all of the users sites time: "
+					+ (end.getTime() - start.getTime()));
+		}
+		return sites;
+
+	}
+
+	/**
+	 * Returns all of the users sites that are accessible with this fqan
+	 * 
+	 * @param fqan
+	 *            the fqan
+	 * @return the sites
+	 */
+	public String[] getAllOfTheUsersSites(String fqan) {
+
+		Set<String> allSitesTemp = new TreeSet<String>();
+		for (MountPoint mp : getMountPoints(fqan)) {
+			String site = lookupSite(FILE_URL_TYPE, mp.getRootUrl());
+			if (site == null) {
+				myLogger.warn("Can't find site for url: " + mp.getRootUrl()
+						+ ". Not adding it.");
+			} else {
+				allSitesTemp.add(site);
+			}
+		}
+
+		String[] result = allSitesTemp.toArray(new String[] {});
+		StringBuffer temp = new StringBuffer();
+		for (String resultPart : result) {
+			temp.append(resultPart + " ");
+		}
+		myLogger.debug("Found these user sites for " + fqan + ": "
+				+ temp.toString());
+		return result;
+
+	}
+
+	/**
+	 * Returns all sites of the grid. This info is not really usefull because it
+	 * doesn't tell you whether the user has got access to all of them or not...
+	 * 
+	 * @return all Sites gridwise
+	 */
+	public String[] getAllSitesOfTheGrid() {
+		return getServiceInterface().getAllSites().asArray();
+	}
+
+	/**
 	 * Returns all submissionLocations that are available for the user with any
 	 * one of his VO.
 	 * 
@@ -718,435 +884,48 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 		}
 		return allSubmissionLocations;
 	}
-	
-	
-	public String[] getAllVersionsForApplicationAtSubmissionLocation(String application, SubmissionLocation subLoc, String fqan) {
-		
-		if ( allAvailableVersionsForApplicationPerSubmissionLocation.get(fqan+"_"+subLoc.getLocation()+"_"+application) == null ) {
-			
-			String [] allVersions = getServiceInterface().getVersionsOfApplicationOnSubmissionLocation(application, subLoc.getLocation()).asArray();
-			
-			allAvailableVersionsForApplicationPerSubmissionLocation.put(fqan+"_"+subLoc.getLocation()+"_"+application, allVersions);
-		}
-		return allAvailableVersionsForApplicationPerSubmissionLocation.get(fqan+"_"+subLoc.getLocation()+"_"+application);
 
-		
+	public Set<String> getAllUsedFqans() {
+		getAllOfTheUsersSites();
+		return allUsedFqans;
 	}
 
-	/**
-	 * Returns all available versions for the application on sites the user has
-	 * access to
-	 * 
-	 * @param applicationName
-	 *            the name of the application
-	 * @param fqan the fqan you want to use to submit the job
-	 * @return all version strings
-	 */
-	public Set<String> getAllAvailableVersionsForApplication(
-			String applicationName, String fqan) {
+	public String[] getAllVersionsForApplicationAtSubmissionLocation(
+			String application, SubmissionLocation subLoc, String fqan) {
 
-		if (allAvailableVersionsForApplication.get(applicationName+"_"+fqan) == null) {
+		if (allAvailableVersionsForApplicationPerSubmissionLocation.get(fqan
+				+ "_" + subLoc.getLocation() + "_" + application) == null) {
 
-			myLogger.debug("Getting all available versions for application "
-					+ applicationName);
+			String[] allVersions = getServiceInterface()
+					.getVersionsOfApplicationOnSubmissionLocation(application,
+							subLoc.getLocation()).asArray();
 
-			Date start = new Date();
-			Set<String> result = new TreeSet<String>();
-			for (SubmissionLocation subLoc : getAllAvailableSubmissionLocationsForFqan(fqan) ) {
-				result
-						.addAll(serviceInterface
-								.getVersionsOfApplicationOnSubmissionLocation(
-										applicationName, subLoc.getLocation()).getStringList());
-			}
-			Date end = new Date();
-			myLogger.debug("[BENCHMARK] Getting all version locations for "
-					+ applicationName + " duration: "
-					+ (end.getTime() - start.getTime()));
-			allAvailableVersionsForApplication.put(applicationName+"_"+fqan, result);
+			allAvailableVersionsForApplicationPerSubmissionLocation.put(fqan
+					+ "_" + subLoc.getLocation() + "_" + application,
+					allVersions);
 		}
-		return allAvailableVersionsForApplication.get(applicationName+"_"+fqan);
-	}
-	
-	public Set<SubmissionLocation> getAllAvailableSubmissionLocationsForApplicationAndVersion(String appname, String version, String fqan) {
-		
-		if (allAvailableSubmissionLocationsForApplicationAndVersionNew
-				.get(fqan+"_"+appname + "_" + version) == null) {
-			myLogger
-					.debug("Getting all available submission locations for application "
-							+ appname + " and version " + version);
+		return allAvailableVersionsForApplicationPerSubmissionLocation.get(fqan
+				+ "_" + subLoc.getLocation() + "_" + application);
 
-			Date start = new Date();
-
-			String[] subLocs = serviceInterface
-					.getSubmissionLocationsForApplicationAndVersion(appname,
-							version).asSubmissionLocationStrings();
-			Set<SubmissionLocation> result = new TreeSet<SubmissionLocation>();
-
-			for (String subLoc : subLocs) {
-				SubmissionLocation tempLoc = getSubmissionLocation(subLoc);
-
-				if (getAllAvailableSubmissionLocationsForFqan(fqan).contains(tempLoc)) {
-					// if (tempLoc.getStagingFileSystems() != null
-					// && tempLoc.getStagingFileSystems().length > 0) {
-					result.add(tempLoc);
-				}
-			}
-			Date end = new Date();
-			myLogger.debug("[BENCHMARK] Getting all submission locations for "
-					+ appname + " duration: "
-					+ (end.getTime() - start.getTime()));
-			allAvailableSubmissionLocationsForApplicationAndVersionNew.put(fqan + "_" +
-					appname + "_" + version, result);
-
-		}
-
-		return allAvailableSubmissionLocationsForApplicationAndVersionNew
-				.get(fqan + "_" + appname + "_" + version);
-	}
-	
-	/**
-	 * Returns all submissionlocations that are available for the user for this
-	 * application.
-	 * 
-	 * @param applicationName
-	 *            the application
-	 * @return all submissionLocations for all fqans
-	 */
-	public Set<SubmissionLocation> getAllAvailableSubmissionLocationsForApplication(
-			String applicationName, String fqan) {
-
-		if (allAvailableSubmissionLocationsForApplicationNew.get(fqan+"_"+applicationName) == null) {
-			myLogger
-					.debug("Getting all available submission locations for application: "
-							+ applicationName);
-			Date start = new Date();
-			Set<SubmissionLocation> result = new TreeSet<SubmissionLocation>();
-			String[] subLocs = serviceInterface
-					.getSubmissionLocationsForApplication(applicationName).asSubmissionLocationStrings();
-			for (String subLoc : subLocs) {
-				SubmissionLocation tempLoc = getSubmissionLocation(subLoc);
-
-				if (getAllAvailableSubmissionLocationsForFqan(fqan).contains(tempLoc)) {
-					// if (tempLoc.getStagingFileSystems() != null
-					// && tempLoc.getStagingFileSystems().length > 0) {
-					result.add(tempLoc);
-				}
-			}
-			Date end = new Date();
-			myLogger.debug("[BENCHMARK] Getting all submission locations for "
-					+ applicationName + " duration: "
-					+ (end.getTime() - start.getTime()));
-			allAvailableSubmissionLocationsForApplicationNew.put(fqan+"_"+applicationName,
-					result);
-		}
-		return allAvailableSubmissionLocationsForApplicationNew
-				.get(fqan+"_"+applicationName);
-	}
-
-	/**
-	 * Returns all submissionlocations that are available for the user for this
-	 * application.
-	 * 
-	 * @param applicationName
-	 *            the application
-	 * @return all submissionLocations for all fqans
-	 * @deprecated don't use that anymore
-	 */
-	public Set<SubmissionLocation> getAllAvailableSubmissionLocationsForApplication(
-			String applicationName) {
-
-		if (allAvailableSubmissionLocationsForApplication.get(applicationName) == null) {
-			myLogger
-					.debug("Getting all available submission locations for application: "
-							+ applicationName);
-			Date start = new Date();
-			Set<SubmissionLocation> result = new HashSet<SubmissionLocation>();
-			String[] subLocs = serviceInterface
-					.getSubmissionLocationsForApplication(applicationName).asSubmissionLocationStrings();
-			for (String subLoc : subLocs) {
-				SubmissionLocation tempLoc = getSubmissionLocation(subLoc);
-
-				if (getAllSubmissionLocations().values().contains(tempLoc)) {
-					// if (tempLoc.getStagingFileSystems() != null
-					// && tempLoc.getStagingFileSystems().length > 0) {
-					result.add(tempLoc);
-				}
-			}
-			Date end = new Date();
-			myLogger.debug("[BENCHMARK] Getting all submission locations for "
-					+ applicationName + " duration: "
-					+ (end.getTime() - start.getTime()));
-			allAvailableSubmissionLocationsForApplication.put(applicationName,
-					result);
-		}
-		return allAvailableSubmissionLocationsForApplication
-				.get(applicationName);
-	}
-
-	/**
-	 * @param applicationName
-	 * @param version
-	 * @return
-	 * @deprecated don't use that anymore, doesn't take into acount default fqan
-	 */
-	public Set<SubmissionLocation> getAllAvailableSubmissionLocationsForApplicationAndVersion(
-			String applicationName, String version) {
-			
-		if (allAvailableSubmissionLocationsForApplicationAndVersion
-				.get(applicationName + "_" + version) == null) {
-			myLogger
-					.debug("Getting all available submission locations for application "
-							+ applicationName + " and version " + version);
-
-			Date start = new Date();
-
-			String[] subLocs = serviceInterface
-					.getSubmissionLocationsForApplicationAndVersion(applicationName,
-							version).asSubmissionLocationStrings();
-			Set<SubmissionLocation> result = new HashSet<SubmissionLocation>();
-
-			for (String subLoc : subLocs) {
-				SubmissionLocation tempLoc = getSubmissionLocation(subLoc);
-
-				if (getAllSubmissionLocations().values().contains(tempLoc)) {
-					// if (tempLoc.getStagingFileSystems() != null
-					// && tempLoc.getStagingFileSystems().length > 0) {
-					result.add(tempLoc);
-				}
-			}
-			Date end = new Date();
-			myLogger.debug("[BENCHMARK] Getting all submission locations for "
-					+ applicationName + " duration: "
-					+ (end.getTime() - start.getTime()));
-			allAvailableSubmissionLocationsForApplicationAndVersion.put(
-					applicationName + "_" + version, result);
-
-		}
-
-		return allAvailableSubmissionLocationsForApplicationAndVersion
-				.get(applicationName + "_" + version);
-	}
-
-	/**
-	 * Returns the {@link SubmissionLocation} object for this submission
-	 * location string
-	 * 
-	 * @param subLoc
-	 *            the submission location string
-	 * @return the object or null if the string is not amoung the currently
-	 *         available submission locations
-	 */
-	public SubmissionLocation getSubmissionLocation(String subLoc) {
-
-		SubmissionLocation result = getAllSubmissionLocations().get(subLoc);
-
-		if (result == null && subLoc.toLowerCase().indexOf("#pbs") >= 0) {
-			String tempLoc = subLoc.substring(0, subLoc.toLowerCase().indexOf(
-					"#pbs"));
-			return getAllSubmissionLocations().get(tempLoc);
-		} else {
-			return result;
-		}
-	}
-
-	public Set<String> getPossibleFqansForSubmissionLocation(
-			SubmissionLocation location) {
-		if (location == null) {
-			return null;
-		}
-		Set<String> fqans = new TreeSet<String>();
-
-		for (String fs : location.getStagingFileSystems()) {
-
-			// TODO fix that workaround
-			int index = fs.indexOf(":");
-			if (index != -1) {
-				fs = fs.substring(0, index - 1);
-			}
-
-			for (MountPoint mp : getMountPoints()) {
-				if (mp.getRootUrl().startsWith(fs)) {
-					String fqan = mp.getFqan();
-					if (fqan == null) {
-						fqan = Constants.NON_VO_FQAN;
-					}
-					myLogger.debug("Adding possible fqan: " + fqan
-							+ " for current submission location.");
-					fqans.add(fqan);
-				}
-			}
-		}
-
-		return fqans;
-	}
-
-	/**
-	 * Returns the all mountpoints in the environment managers list that are
-	 * located on the specified site and are accessable with a voms proxy that
-	 * has the specified fqan.
-	 * 
-	 * 
-	 * @param site
-	 *            the site
-	 * @param fqan
-	 *            the fqan
-	 * @return the mountpoints
-	 */
-	public Set<MountPoint> getMountPointsForSiteAndFqan(String site, String fqan) {
-
-		myLogger.debug("Checking mountpoints for site: " + site);
-		Set<MountPoint> result = new TreeSet<MountPoint>();
-		for (MountPoint mp : getMountPoints()) {
-
-			String mpSite = lookupSite(FILE_URL_TYPE, mp.getRootUrl());
-			if (site.equals(mpSite)) {
-				if (mp.getFqan() == null
-						|| mp.getFqan().equals(Constants.NON_VO_FQAN)) {
-					if (fqan == null || fqan.equals(Constants.NON_VO_FQAN)) {
-						result.add(mp);
-					}
-				} else {
-					if (mp.getFqan().equals(fqan)) {
-						result.add(mp);
-					}
-				}
-			}
-		}
-		return result;
-	}
-
-	public synchronized Set<MountPoint> getMountPointsForSubmissionLocation(
-			String submissionLocation) {
-
-		if (alreadyQueriedMountPointsPerSubmissionLocation
-				.get(submissionLocation) == null) {
-
-			String[] urls = serviceInterface
-					.getStagingFileSystemForSubmissionLocation(submissionLocation).asArray();
-
-			Set<MountPoint> result = new TreeSet<MountPoint>();
-			for (String url : urls) {
-
-				try {
-					URI uri = new URI(url);
-					String host = uri.getHost();
-					String protocol = uri.getScheme();
-
-					for (MountPoint mp : getMountPoints()) {
-
-						if (mp.getRootUrl().indexOf(host) != -1
-								&& mp.getRootUrl().indexOf(protocol) != -1) {
-							result.add(mp);
-						}
-
-					}
-				} catch (URISyntaxException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					return null;
-				}
-			}
-
-			alreadyQueriedMountPointsPerSubmissionLocation.put(
-					submissionLocation, result);
-		}
-		return alreadyQueriedMountPointsPerSubmissionLocation
-				.get(submissionLocation);
-	}
-
-	public Set<MountPoint> getMountPointsForSubmissionLocationAndFqan(
-			String submissionLocation, String fqan) {
-
-		String[] urls = serviceInterface
-				.getStagingFileSystemForSubmissionLocation(submissionLocation).asArray();
-
-		Set<MountPoint> result = new TreeSet<MountPoint>();
-
-		for (String url : urls) {
-
-			try {
-				URI uri = new URI(url);
-				String host = uri.getHost();
-				String protocol = uri.getScheme();
-
-				for (MountPoint mp : getMountPoints(fqan)) {
-
-					if (mp.getRootUrl().indexOf(host) != -1
-							&& mp.getRootUrl().indexOf(protocol) != -1) {
-						result.add(mp);
-					}
-
-				}
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return null;
-			}
-		}
-
-		return result;
-
-	}
-
-	/**
-	 * Checks whether any of the users' mountpoints contain the specified file.
-	 * 
-	 * @param file
-	 *            the file
-	 * @return the mountpoint or null if the file is not on any of the
-	 *         mountpoints
-	 */
-	public MountPoint getResponsibleMountpointForFile(String url) {
-
-		URI uri = null;
-		try {
-			// just to get rid of a possible port number
-			uri = new URI(url);
-			String path = uri.getPath();
-			String protocol = uri.getScheme();
-			String host = uri.getHost();
-			String newUrl = protocol + "://" + host + path;
-			url = newUrl;
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		if (url.startsWith("/")) {
-			// mounted file
-			for (MountPoint mountpoint : getMountPoints()) {
-				if (mountpoint.isResponsibleForUserSpaceFile(url)) {
-					return mountpoint;
-				}
-			}
-			return null;
-		} else {
-			// mounted file
-			for (MountPoint mountpoint : getMountPoints()) {
-				if (mountpoint.isResponsibleForAbsoluteFile(url)) {
-					return mountpoint;
-				}
-			}
-			return null;
-		}
-	}
-
-	/**
-	 * Get all the users' fqans
-	 * 
-	 * @return the fqans
-	 */
-	public synchronized String[] getFqans() {
-		if (fqans == null) {
-			fqans = serviceInterface.getFqans().asArray();
-			fireFqanEvent(FqanEvent.FQANS_REFRESHED, fqans);
-		}
-		return fqans;
 	}
 
 	// just for now
 	public String[] getAvailableFqans() {
 		return getAllUsedFqans().toArray(new String[] {});
+	}
+
+	public DtoBatchJob getBatchJob(String jobname, boolean refreshBatchJob)
+			throws NoSuchJobException {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public SortedSet<DtoBatchJob> getBatchJobs(String application,
+			boolean refresh) {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public Map<String, String> getBookmarks() {
+		throw new RuntimeException("Not implemented for this class.");
 	}
 
 	// /**
@@ -1195,6 +974,47 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 	// return result;
 	// }
 
+	public List<FileSystemItem> getBookmarksFilesystems() {
+		throw new RuntimeException("Not implemented for this class.");
+
+	}
+
+	public SortedSet<String> getCurrentBatchJobnames() {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public SortedSet<String> getCurrentBatchJobnames(String application,
+			boolean refresh) {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public String getCurrentFqan() {
+		return getDefaultFqan();
+	}
+
+	public SortedSet<String> getCurrentJobnames() {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public SortedSet<String> getCurrentJobnames(String application,
+			boolean refresh) {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	/**
+	 * Returns the currently selected/active fqan
+	 * 
+	 * @return the active fqan
+	 */
+	public String getDefaultFqan() {
+		// if (defaultFqan == null) {
+		// defaultFqan = ClientPropertiesManager.getLastUsedFqan();
+		//			
+		// setDefaultFqan(defaultFqan);
+		// }
+		return defaultFqan;
+	}
+
 	/**
 	 * This tries to figure out what the default site of the user is. To set
 	 * start directories and such..
@@ -1219,68 +1039,473 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 		return site;
 	}
 
-	/**
-	 * Returns the currently selected/active fqan
-	 * 
-	 * @return the active fqan
-	 */
-	public String getDefaultFqan() {
-		// if (defaultFqan == null) {
-		// defaultFqan = ClientPropertiesManager.getLastUsedFqan();
-		//			
-		// setDefaultFqan(defaultFqan);
-		// }
-		return defaultFqan;
+	public FileManager getFileManager() {
+		return fileManager;
+	}
+
+	public FileSystemItem getFileSystemForUrl(String url) {
+		throw new RuntimeException("Not implemented for this class.");
+
+	}
+
+	public List<FileSystemItem> getFileSystems() {
+
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public FileTransferManager getFileTransferManager() {
+		return fileTransferManager;
 	}
 
 	/**
-	 * Sets the currently selected/active fqan. Only allows the setting of
-	 * available fqans (which means that there has to be a file share for this
-	 * VO).
+	 * Get all the users' fqans
 	 * 
-	 * @param defaultFqan
-	 *            the active fqan
+	 * @return the fqans
 	 */
-	public synchronized void setDefaultFqan(String defaultFqan) {
-
-		if (defaultFqan == null) {
-			defaultFqan = Constants.NON_VO_FQAN;
+	public synchronized String[] getFqans() {
+		if (fqans == null) {
+			fqans = serviceInterface.getFqans().asArray();
+			fireFqanEvent(FqanEvent.FQANS_REFRESHED, fqans);
 		}
-		Set<String> allFqansNew = getAllUsedFqans();
+		return fqans;
+	}
 
-		if (allFqansNew == null || allFqansNew.size() == 0) {
-			defaultFqan = Constants.NON_VO_FQAN;
-			return;
+	public HistoryManager getHistoryManager() {
+		return historyManager;
+	}
+
+	public JobManager getJobManager() {
+		return glazedJobManagement;
+	}
+
+	public List<FileSystemItem> getLocalFileSystems() {
+		throw new RuntimeException("Not implemented for this class.");
+
+	}
+
+	// public JobManagementInterface getJobManagement() {
+	// return jobManagement;
+	// }
+
+	public MountPoint getMountPointForAlias(String url) {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	// public void setJobManagement(JobManagementInterface jobManagement) {
+	// this.jobManagement = jobManagement;
+	// }
+
+	// public static void setDefaultManager(EnvironmentManager defaultManager) {
+	// EnvironmentManager.defaultManager = defaultManager;
+	// }
+
+	public MountPoint getMountPointForUrl(String url) {
+		return getResponsibleMountpointForFile(url);
+	}
+
+	/**
+	 * Get all the users' mountpoints.
+	 * 
+	 * @return all mountpoints
+	 */
+	public synchronized MountPoint[] getMountPoints() {
+		if (mountPoints == null) {
+			mountPoints = serviceInterface.df().getMountpoints().toArray(
+					new MountPoint[] {});
+		}
+		return mountPoints;
+	}
+
+	/**
+	 * Gets all the mountpoints for this particular VO
+	 * 
+	 * @param fqan
+	 *            the fqan
+	 * @return the mountpoints
+	 */
+	public Set<MountPoint> getMountPoints(String fqan) {
+
+		if (fqan == null) {
+			fqan = Constants.NON_VO_FQAN;
 		}
 
-		if (!allFqansNew.contains(defaultFqan)) {
-			String newFqan;
-			try {
-				newFqan = allFqansNew.iterator().next();
-			} catch (NoSuchElementException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return;
+		synchronized (fqan) {
+
+			if (alreadyQueriedMountPointsPerFqan.get(fqan) == null) {
+
+				Set<MountPoint> mps = new HashSet<MountPoint>();
+				for (MountPoint mp : getMountPoints()) {
+					if (mp.getFqan() == null
+							|| mp.getFqan().equals(Constants.NON_VO_FQAN)) {
+						if (fqan == null || fqan.equals(Constants.NON_VO_FQAN)) {
+							mps.add(mp);
+							continue;
+						} else {
+							continue;
+						}
+					} else {
+						if (mp.getFqan().equals(fqan)) {
+							mps.add(mp);
+							continue;
+						}
+					}
+				}
+				alreadyQueriedMountPointsPerFqan.put(fqan, mps);
 			}
-			this.defaultFqan = newFqan;
-		} else {
-			this.defaultFqan = defaultFqan;
+			return alreadyQueriedMountPointsPerFqan.get(fqan);
 		}
-		ClientPropertiesManager.saveLastUsedFqan(this.defaultFqan);
-		fireFqanEvent(FqanEvent.DEFAULT_FQAN_CHANGED,
-				new String[] { defaultFqan });
 	}
 
-	public String[] lookupStagingFileSystemsForSubmissionLocation(
+	public SortedSet<MountPoint> getMountPointsForSite(String site) {
+
+		throw new RuntimeException("Not implemented for this class.");
+
+	}
+
+	/**
+	 * Returns the all mountpoints in the environment managers list that are
+	 * located on the specified site and are accessable with a voms proxy that
+	 * has the specified fqan.
+	 * 
+	 * 
+	 * @param site
+	 *            the site
+	 * @param fqan
+	 *            the fqan
+	 * @return the mountpoints
+	 */
+	public Set<MountPoint> getMountPointsForSiteAndFqan(String site, String fqan) {
+
+		myLogger.debug("Checking mountpoints for site: " + site);
+		Set<MountPoint> result = new TreeSet<MountPoint>();
+		for (MountPoint mp : getMountPoints()) {
+
+			String mpSite = lookupSite(FILE_URL_TYPE, mp.getRootUrl());
+			if (site.equals(mpSite)) {
+				if (mp.getFqan() == null
+						|| mp.getFqan().equals(Constants.NON_VO_FQAN)) {
+					if (fqan == null || fqan.equals(Constants.NON_VO_FQAN)) {
+						result.add(mp);
+					}
+				} else {
+					if (mp.getFqan().equals(fqan)) {
+						result.add(mp);
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	public synchronized Set<MountPoint> getMountPointsForSubmissionLocation(
 			String submissionLocation) {
 
-		String[] fs = alreadyQueriedQueues.get(submissionLocation);
-		if (fs == null || "".equals(submissionLocation)) {
-			fs = serviceInterface
-					.getStagingFileSystemForSubmissionLocation(submissionLocation).asArray();
-			alreadyQueriedQueues.put(submissionLocation, fs);
+		if (alreadyQueriedMountPointsPerSubmissionLocation
+				.get(submissionLocation) == null) {
+
+			String[] urls = serviceInterface
+					.getStagingFileSystemForSubmissionLocation(
+							submissionLocation).asArray();
+
+			Set<MountPoint> result = new TreeSet<MountPoint>();
+			for (String url : urls) {
+
+				try {
+					URI uri = new URI(url);
+					String host = uri.getHost();
+					String protocol = uri.getScheme();
+
+					for (MountPoint mp : getMountPoints()) {
+
+						if (mp.getRootUrl().indexOf(host) != -1
+								&& mp.getRootUrl().indexOf(protocol) != -1) {
+							result.add(mp);
+						}
+
+					}
+				} catch (URISyntaxException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return null;
+				}
+			}
+
+			alreadyQueriedMountPointsPerSubmissionLocation.put(
+					submissionLocation, result);
 		}
-		return fs;
+		return alreadyQueriedMountPointsPerSubmissionLocation
+				.get(submissionLocation);
+	}
+
+	public Set<MountPoint> getMountPointsForSubmissionLocationAndFqan(
+			String submissionLocation, String fqan) {
+
+		String[] urls = serviceInterface
+				.getStagingFileSystemForSubmissionLocation(submissionLocation)
+				.asArray();
+
+		Set<MountPoint> result = new TreeSet<MountPoint>();
+
+		for (String url : urls) {
+
+			try {
+				URI uri = new URI(url);
+				String host = uri.getHost();
+				String protocol = uri.getScheme();
+
+				for (MountPoint mp : getMountPoints(fqan)) {
+
+					if (mp.getRootUrl().indexOf(host) != -1
+							&& mp.getRootUrl().indexOf(protocol) != -1) {
+						result.add(mp);
+					}
+
+				}
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
+			}
+		}
+
+		return result;
+
+	}
+
+	public Set<String> getPossibleFqansForSubmissionLocation(
+			SubmissionLocation location) {
+		if (location == null) {
+			return null;
+		}
+		Set<String> fqans = new TreeSet<String>();
+
+		for (String fs : location.getStagingFileSystems()) {
+
+			// TODO fix that workaround
+			int index = fs.indexOf(":");
+			if (index != -1) {
+				fs = fs.substring(0, index - 1);
+			}
+
+			for (MountPoint mp : getMountPoints()) {
+				if (mp.getRootUrl().startsWith(fs)) {
+					String fqan = mp.getFqan();
+					if (fqan == null) {
+						fqan = Constants.NON_VO_FQAN;
+					}
+					myLogger.debug("Adding possible fqan: " + fqan
+							+ " for current submission location.");
+					fqans.add(fqan);
+				}
+			}
+		}
+
+		return fqans;
+	}
+
+	public String getProperty(String key) {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public MountPoint getRecommendedMountPoint(String submissionLocation,
+			String fqan) {
+
+		Set<MountPoint> mps = getMountPointsForSubmissionLocationAndFqan(
+				submissionLocation, fqan);
+		if (mps.size() > 0) {
+			return mps.iterator().next();
+		} else {
+			return null;
+		}
+	}
+
+	public List<FileSystemItem> getRemoteSites() {
+		throw new RuntimeException("Not implemented for this class.");
+
+	}
+
+	/**
+	 * Checks whether any of the users' mountpoints contain the specified file.
+	 * 
+	 * @param file
+	 *            the file
+	 * @return the mountpoint or null if the file is not on any of the
+	 *         mountpoints
+	 */
+	public MountPoint getResponsibleMountpointForFile(String url) {
+
+		URI uri = null;
+		try {
+			// just to get rid of a possible port number
+			uri = new URI(url);
+			String path = uri.getPath();
+			String protocol = uri.getScheme();
+			String host = uri.getHost();
+			String newUrl = protocol + "://" + host + path;
+			url = newUrl;
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (url.startsWith("/")) {
+			// mounted file
+			for (MountPoint mountpoint : getMountPoints()) {
+				if (mountpoint.isResponsibleForUserSpaceFile(url)) {
+					return mountpoint;
+				}
+			}
+			return null;
+		} else {
+			// mounted file
+			for (MountPoint mountpoint : getMountPoints()) {
+				if (mountpoint.isResponsibleForAbsoluteFile(url)) {
+					return mountpoint;
+				}
+			}
+			return null;
+		}
+	}
+
+	// these are not really important
+
+	public ServiceInterface getServiceInterface() {
+		return serviceInterface;
+	}
+
+	/**
+	 * Returns the {@link SubmissionLocation} object for this submission
+	 * location string
+	 * 
+	 * @param subLoc
+	 *            the submission location string
+	 * @return the object or null if the string is not amoung the currently
+	 *         available submission locations
+	 */
+	public SubmissionLocation getSubmissionLocation(String subLoc) {
+
+		SubmissionLocation result = getAllSubmissionLocations().get(subLoc);
+
+		if (result == null && subLoc.toLowerCase().indexOf("#pbs") >= 0) {
+			String tempLoc = subLoc.substring(0, subLoc.toLowerCase().indexOf(
+					"#pbs"));
+			return getAllSubmissionLocations().get(tempLoc);
+		} else {
+			return result;
+		}
+	}
+
+	public TemplateManager getTemplateManager() {
+		return templateManager;
+	}
+
+	public Person getUser() {
+		if (user == null) {
+			String dn = null;
+			String realname = null;
+			try {
+				realname = ClientPropertiesManager.getClientConfiguration()
+						.getString(Person.REALNAME_KEY);
+			} catch (ConfigurationException e2) {
+				// doesn't matter
+				myLogger.warn("Could not read config file: "
+						+ e2.getLocalizedMessage());
+			}
+			if (realname == null || "".equals(realname)) {
+				dn = getServiceInterface().getDN();
+				int indexcn = dn.toLowerCase().indexOf("cn=");
+
+				if (indexcn == -1) {
+					realname = dn.replace("/", "_").replace("=", "_");
+				} else {
+					realname = dn.substring(indexcn + 3);
+				}
+			}
+			try {
+				user = new Person(ClientPropertiesManager
+						.getClientConfiguration(), realname);
+			} catch (Exception e) {
+				try {
+					user = new Person("Anonymous");
+				} catch (PersonException e1) {
+					// this should never happen
+					e1.printStackTrace();
+				}
+			}
+			user.setRole(Person.USER_ROLE);
+			if (user.getDn() == null) {
+				user.setDn(getServiceInterface().getDN());
+			}
+		}
+		return user;
+	}
+
+	/**
+	 * After a user successfully logs into a grisu web service this
+	 * ServiceInterace has to be set in order to do grid stuff using grisu.
+	 * 
+	 * @param serviceInterface
+	 *            the right ServiceInterface
+	 */
+	// public static void setDefaultServiceInterface(
+	// ServiceInterface serviceInterface) {
+	// defaultServiceInterface = serviceInterface;
+	// }
+	// /**
+	// * Gets the {@link ServiceInterface} that is used in this session.
+	// *
+	// * @return the ServiceInterface
+	// */
+	// public static ServiceInterface getDefaultServiceInterface() {
+	// return defaultServiceInterface;
+	// }
+	public void initializeHistoryManager() {
+
+		// File historyFile = new File(Environment.GRISU_DIRECTORY,
+		// GRISU_HISTORY_FILENAME);
+		// if (!historyFile.exists()) {
+		// try {
+		// historyFile.createNewFile();
+		//
+		// } catch (IOException e) {
+		// // well
+		// }
+		// }
+		// if (!historyFile.exists()) {
+		// setHistoryManager(new DummyHistoryManager());
+		// } else {
+		// setHistoryManager(new SimpleHistoryManager(historyFile));
+		// }
+
+		setHistoryManager(GrisuRegistryManager.getDefault(serviceInterface)
+				.getHistoryManager());
+	}
+
+	private synchronized void invalidateMountPointCaches()
+			throws RemoteFileSystemException {
+		mountPoints = null;
+		sites = null;
+		allUsedFqans = new TreeSet<String>();
+		allSubmissionLocations = null;
+		alreadyQueriedMountPointsPerSubmissionLocation = new HashMap<String, Set<MountPoint>>();
+		alreadyQueriedMountPointsPerFqan = new HashMap<String, Set<MountPoint>>();
+		allAvailableSubmissionLocationsPerFqan = new HashMap<String, Set<SubmissionLocation>>();
+		allAvailableSubmissionLocationsForApplication = new HashMap<String, Set<SubmissionLocation>>();
+		allAvailableSubmissionLocationsForApplicationNew = new HashMap<String, Set<SubmissionLocation>>();
+		allAvailableSubmissionLocationsForApplicationAndVersion = new HashMap<String, Set<SubmissionLocation>>();
+		allAvailableSubmissionLocationsForApplicationAndVersionNew = new HashMap<String, Set<SubmissionLocation>>();
+		allAvailableVersionsForApplication = new HashMap<String, Set<String>>();
+		allAvailableVersionsForApplicationPerSubmissionLocation = new HashMap<String, String[]>();
+		buildInfoCache();
+	}
+
+	public boolean isMountPointAlias(String string) {
+		throw new RuntimeException("Not implemented for this class.");
+
+	}
+
+	public boolean isMountPointRoot(String rootUrl) {
+		throw new RuntimeException("Not implemented for this class.");
 	}
 
 	public Map<String, String> lookupAllSites() {
@@ -1325,227 +1550,66 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 			}
 		}
 
-			if (alreadyQueriedHosts.get(hostname) == null) {
-				String site = getServiceInterface().getSite(hostname);
+		if (alreadyQueriedHosts.get(hostname) == null) {
+			String site = getServiceInterface().getSite(hostname);
 
-				if (site != null) {
-					alreadyQueriedHosts.put(hostname, site);
-				}
-				return site;
-			} else {
-				return alreadyQueriedHosts.get(hostname);
+			if (site != null) {
+				alreadyQueriedHosts.put(hostname, site);
 			}
-
-	}
-
-	// ---------------------------------------------------------------------------------------
-	// Event stuff (MountPoints)
-	private Vector<MountPointsListener> mountPointsListeners;
-
-	private void fireMountPointsEvent(int event_type, MountPoint[] mp) {
-
-		// if we have no mountPointsListeners, do nothing...
-		if (mountPointsListeners != null && !mountPointsListeners.isEmpty()) {
-			// create the event object to send
-			MountPointEvent event = null;
-			if (event_type == MountPointEvent.MOUNTPOINTS_REFRESHED)
-				event = new MountPointEvent(this, mp, serviceInterface);
-			else
-				event = new MountPointEvent(this, event_type, mp[0],
-						serviceInterface);
-
-			// firstly call the mountpointschanged method of this class to be
-			// sure we
-			// have all the information right when another listener asks for it
-			try {
-				mountPointsChanged(event);
-			} catch (RemoteFileSystemException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			}
-
-			// make a copy of the listener list in case
-			// anyone adds/removes mountPointsListeners
-			Vector targets;
-			synchronized (this) {
-				targets = (Vector) mountPointsListeners.clone();
-			}
-
-			// walk through the listener list and
-			// call the gridproxychanged method in each
-			Enumeration e = targets.elements();
-			while (e.hasMoreElements()) {
-				MountPointsListener l = (MountPointsListener) e.nextElement();
-				try {
-					l.mountPointsChanged(event);
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
+			return site;
+		} else {
+			return alreadyQueriedHosts.get(hostname);
 		}
+
 	}
 
-	// register a listener
-	synchronized public void addMountPointListener(MountPointsListener l) {
-		if (mountPointsListeners == null)
-			mountPointsListeners = new Vector();
-		mountPointsListeners.addElement(l);
-	}
+	public String[] lookupStagingFileSystemsForSubmissionLocation(
+			String submissionLocation) {
 
-	// remove a listener
-	synchronized public void removeMountPointListener(MountPointsListener l) {
-		if (mountPointsListeners == null) {
-			mountPointsListeners = new Vector<MountPointsListener>();
+		String[] fs = alreadyQueriedQueues.get(submissionLocation);
+		if (fs == null || "".equals(submissionLocation)) {
+			fs = serviceInterface.getStagingFileSystemForSubmissionLocation(
+					submissionLocation).asArray();
+			alreadyQueriedQueues.put(submissionLocation, fs);
 		}
-		mountPointsListeners.removeElement(l);
-	}
-
-	// ---------------------------------------------------------------------------------------
-	// Event stuff (Fqan)
-	private Vector<FqanListener> fqanListeners;
-
-	private void fireFqanEvent(int event_type, String[] fqans) {
-		// if we have no mountPointsListeners, do nothing...
-		if (fqanListeners != null && !fqanListeners.isEmpty()) {
-			// create the event object to send
-			FqanEvent event = null;
-			if (event_type == FqanEvent.FQANS_REFRESHED)
-				event = new FqanEvent(this, fqans);
-			else
-				event = new FqanEvent(this, event_type, fqans[0]);
-
-			// make a copy of the listener list in case
-			// anyone adds/removes mountPointsListeners
-			Vector fqantargets;
-			synchronized (this) {
-				fqantargets = (Vector) fqanListeners.clone();
-			}
-
-			// walk through the listener list and
-			// call the gridproxychanged method in each
-			Enumeration e = fqantargets.elements();
-			while (e.hasMoreElements()) {
-				FqanListener fqan_l = (FqanListener) e.nextElement();
-				myLogger.debug("Firing fqan event to: "
-						+ fqan_l.getClass().toString());
-				Date start = new Date();
-				fqan_l.fqansChanged(event);
-				Date end = new Date();
-				myLogger.debug("[BENCHMARK] Firing fqan event to "
-						+ fqan_l.getClass().toString() + " duration: "
-						+ (end.getTime() - start.getTime()));
-			}
-		}
-	}
-
-	// register a listener
-	synchronized public void addFqanListener(FqanListener l) {
-		if (fqanListeners == null)
-			fqanListeners = new Vector();
-		fqanListeners.addElement(l);
-	}
-
-	// remove a listener
-	synchronized public void removeFqanListener(FqanListener l) {
-		if (fqanListeners == null) {
-			fqanListeners = new Vector<FqanListener>();
-		}
-		fqanListeners.removeElement(l);
-	}
-
-	public FileManager getFileManager() {
-		return fileManager;
-	}
-
-	public FileTransferManager getFileTransferManager() {
-		return fileTransferManager;
-	}
-
-	// public JobManagementInterface getJobManagement() {
-	// return jobManagement;
-	// }
-
-	public void setFileManager(FileManager fileManager) {
-		this.fileManager = fileManager;
-	}
-
-	// public void setJobManagement(JobManagementInterface jobManagement) {
-	// this.jobManagement = jobManagement;
-	// }
-
-	// public static void setDefaultManager(EnvironmentManager defaultManager) {
-	// EnvironmentManager.defaultManager = defaultManager;
-	// }
-
-	public TemplateManager getTemplateManager() {
-		return templateManager;
-	}
-
-	public void setTemplateManager(TemplateManager templateManager) {
-		this.templateManager = templateManager;
-	}
-
-	public ServiceInterface getServiceInterface() {
-		return serviceInterface;
-	}
-
-	public void setServiceInterface(ServiceInterface serviceInterface) {
-		this.serviceInterface = serviceInterface;
-	}
-
-	public HistoryManager getHistoryManager() {
-		return historyManager;
-	}
-
-	public void setHistoryManager(HistoryManager historyManager) {
-		this.historyManager = historyManager;
+		return fs;
 	}
 
 	/**
-	 * builds submission location cache in the background
+	 * Mounts the specified url to an easy-to-read name (called mountpoint).
+	 * 
+	 * @param url
+	 *            the url (e.g.: gsiftp://ngdata.vpac.org/home/san04/markus)
+	 * @param mountPoint
+	 *            (e.g.: /home.vpac.no_vo)
+	 * @param useHomeDirectoryOnThisFileSystemIfPossible
+	 *            if true the web service tries to automatically determine the
+	 *            users home directory on this filesystem and use it as url
+	 * @throws RemoteFileSystemException
+	 *             if the remote filesystem can't be accessed
 	 */
-	public void buildInfoCacheInBackground() {
-
-		myLogger
-				.debug("Starting to build submissionLocation cache in background.");
-		new Thread() {
-			public void run() {
-				buildInfoCache();
-			}
-		}.start();
-
-	}
-
-	private void buildInfoCache() {
-		if (sites == null) {
-			myLogger.debug("Building info cache.");
-			getAllOfTheUsersSites();
-
-			getAllAvailableSubmissionLocationsForFqan(getDefaultFqan());
-
-			// for (String fqan : getAllUsedFqans()) {
-			// getAllAvailableSubmissionLocationsForFqan(fqan);
-			// }
-		}
-	}
-
-	private synchronized void invalidateMountPointCaches()
+	public synchronized void mount(String url, String mountPoint,
+			boolean useHomeDirectoryOnThisFileSystemIfPossible)
 			throws RemoteFileSystemException {
-		mountPoints = null;
-		sites = null;
-		allUsedFqans = new TreeSet<String>();
-		allSubmissionLocations = null;
-		alreadyQueriedMountPointsPerSubmissionLocation = new HashMap<String, Set<MountPoint>>();
-		alreadyQueriedMountPointsPerFqan = new HashMap<String, Set<MountPoint>>();
-		allAvailableSubmissionLocationsPerFqan = new HashMap<String, Set<SubmissionLocation>>();
-		allAvailableSubmissionLocationsForApplication = new HashMap<String, Set<SubmissionLocation>>();
-		allAvailableSubmissionLocationsForApplicationNew = new HashMap<String, Set<SubmissionLocation>>();
-		allAvailableSubmissionLocationsForApplicationAndVersion = new HashMap<String, Set<SubmissionLocation>>();
-		allAvailableSubmissionLocationsForApplicationAndVersionNew = new HashMap<String, Set<SubmissionLocation>>();
-		allAvailableVersionsForApplication = new HashMap<String, Set<String>>();
-		allAvailableVersionsForApplicationPerSubmissionLocation = new HashMap<String, String[]>();
-		buildInfoCache();
+
+		MountPoint mp = serviceInterface.mountWithoutFqan(url, mountPoint,
+				useHomeDirectoryOnThisFileSystemIfPossible);
+
+		fireMountPointsEvent(MountPointEvent.MOUNTPOINT_ADDED,
+				new MountPoint[] { mp });
+	}
+
+	public synchronized void mount(String url, String mountPoint, String fqan,
+			boolean useHomeDirectoryOnThisFileSystemIfPossible)
+			throws RemoteFileSystemException {
+		if (Constants.NON_VO_FQAN.equals(fqan)) {
+			fqan = null;
+		}
+		MountPoint mp = serviceInterface.mount(url, mountPoint, fqan,
+				useHomeDirectoryOnThisFileSystemIfPossible);
+
+		fireMountPointsEvent(MountPointEvent.MOUNTPOINT_ADDED,
+				new MountPoint[] { mp });
 	}
 
 	public synchronized void mountPointsChanged(MountPointEvent mpe)
@@ -1556,148 +1620,104 @@ public class EnvironmentManager implements MountPointsListener, UserEnvironmentM
 		setDefaultFqan(oldFqan);
 	}
 
-	public JobManager getJobManager() {
-		return glazedJobManagement;
+	// remove a listener
+	synchronized public void removeFqanListener(FqanListener l) {
+		if (fqanListeners == null) {
+			fqanListeners = new Vector<FqanListener>();
+		}
+		fqanListeners.removeElement(l);
+	}
+
+	// remove a listener
+	synchronized public void removeMountPointListener(MountPointsListener l) {
+		if (mountPointsListeners == null) {
+			mountPointsListeners = new Vector<MountPointsListener>();
+		}
+		mountPointsListeners.removeElement(l);
+	}
+
+	public void setBookmark(String alias, String url) {
+		throw new RuntimeException("Not implemented for this class.");
+
+	}
+
+	public void setCurrentFqan(String currentFqan) {
+		setDefaultFqan(currentFqan);
+	}
+
+	/**
+	 * Sets the currently selected/active fqan. Only allows the setting of
+	 * available fqans (which means that there has to be a file share for this
+	 * VO).
+	 * 
+	 * @param defaultFqan
+	 *            the active fqan
+	 */
+	public synchronized void setDefaultFqan(String defaultFqan) {
+
+		if (defaultFqan == null) {
+			defaultFqan = Constants.NON_VO_FQAN;
+		}
+		Set<String> allFqansNew = getAllUsedFqans();
+
+		if (allFqansNew == null || allFqansNew.size() == 0) {
+			defaultFqan = Constants.NON_VO_FQAN;
+			return;
+		}
+
+		if (!allFqansNew.contains(defaultFqan)) {
+			String newFqan;
+			try {
+				newFqan = allFqansNew.iterator().next();
+			} catch (NoSuchElementException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return;
+			}
+			this.defaultFqan = newFqan;
+		} else {
+			this.defaultFqan = defaultFqan;
+		}
+		ClientPropertiesManager.saveLastUsedFqan(this.defaultFqan);
+		fireFqanEvent(FqanEvent.DEFAULT_FQAN_CHANGED,
+				new String[] { defaultFqan });
+	}
+
+	public void setFileManager(FileManager fileManager) {
+		this.fileManager = fileManager;
+	}
+
+	public void setHistoryManager(HistoryManager historyManager) {
+		this.historyManager = historyManager;
 	}
 
 	public void setJobManager(JobManager glazedJobManagement) {
 		this.glazedJobManagement = glazedJobManagement;
 	}
 
-	// these are not really important
-
-	/**
-	 * Returns all sites of the grid. This info is not really usefull because it
-	 * doesn't tell you whether the user has got access to all of them or not...
-	 * 
-	 * @return all Sites gridwise
-	 */
-	public String[] getAllSitesOfTheGrid() {
-		return getServiceInterface().getAllSites().asArray();
-	}
-
-	public String[] getAllAvailableFqans() {
-		return getFqans();
-	}
-
-	public SortedSet<String> getAllAvailableSites() {
-
-		return getAllOfTheUsersSites();
-	}
-
-	public Set<String> getAllAvailableSubmissionLocations() {
-		return new HashSet(getAllSubmissionLocations().values());
-	}
-
-	public MountPoint getMountPointForUrl(String url) {
-		return getResponsibleMountpointForFile(url);
-	}
-
-	public MountPoint getRecommendedMountPoint(String submissionLocation,
-			String fqan) {
-		
-		Set<MountPoint> mps = getMountPointsForSubmissionLocationAndFqan(submissionLocation, fqan);
-		if ( mps.size() > 0 ) {
-			return mps.iterator().next();
-		} else {
-			return null;
-		}
-	}
-
-	public SortedSet<MountPoint> getMountPointsForSite(String site) {
-
-		throw new RuntimeException("Not implemented for this class.");
-		
-	}
-
-	public boolean isMountPointAlias(String string) {
-		throw new RuntimeException("Not implemented for this class.");
-
-	}
-
-	public MountPoint getMountPointForAlias(String url) {
-		throw new RuntimeException("Not implemented for this class.");
-	}
-
-	public boolean isMountPointRoot(String rootUrl) {
-		throw new RuntimeException("Not implemented for this class.");
-	}
-
-	public String getProperty(String key) {
-		throw new RuntimeException("Not implemented for this class.");
-	}
-
 	public void setProperty(String key, String value) {
 		throw new RuntimeException("Not implemented for this class.");
 	}
 
-	public Map<String, String> getBookmarks() {
-		throw new RuntimeException("Not implemented for this class.");
+	public void setServiceInterface(ServiceInterface serviceInterface) {
+		this.serviceInterface = serviceInterface;
 	}
 
-	public List<FileSystemItem> getBookmarksFilesystems() {
-		throw new RuntimeException("Not implemented for this class.");
-
+	public void setTemplateManager(TemplateManager templateManager) {
+		this.templateManager = templateManager;
 	}
 
-	public FileSystemItem getFileSystemForUrl(String url) {
-		throw new RuntimeException("Not implemented for this class.");
+	/**
+	 * Unmounts the specified {@link MountPoint}.
+	 * 
+	 * @param mp
+	 *            the mountpoint
+	 */
+	public synchronized void umount(MountPoint mp) {
+		serviceInterface.umount(mp.getAlias());
 
+		fireMountPointsEvent(MountPointEvent.MOUNTPOINT_REMOVED,
+				new MountPoint[] { mp });
 	}
-
-	public List<FileSystemItem> getFileSystems() {
-
-		throw new RuntimeException("Not implemented for this class.");
-	}
-
-	public List<FileSystemItem> getLocalFileSystems() {
-		throw new RuntimeException("Not implemented for this class.");
-
-	}
-
-	public List<FileSystemItem> getRemoteSites() {
-		throw new RuntimeException("Not implemented for this class.");
-
-	}
-
-	public void setBookmark(String alias, String url) {
-		throw new RuntimeException("Not implemented for this class.");
-		
-	}
-
-	public String calculateUniqueJobname(String name) {
-		throw new RuntimeException("Not implemented for this class.");
-
-	}
-
-	public SortedSet<String> getCurrentBatchJobnames() {
-		throw new RuntimeException("Not implemented for this class.");
-	}
-
-	public SortedSet<String> getCurrentJobnames() {
-		throw new RuntimeException("Not implemented for this class.");
-	}
-
-	public DtoBatchJob getBatchJob(String jobname, boolean refreshBatchJob)
-			throws NoSuchJobException {
-		throw new RuntimeException("Not implemented for this class.");
-	}
-
-	public SortedSet<DtoBatchJob> getBatchJobs(String application,
-			boolean refresh) {
-		throw new RuntimeException("Not implemented for this class.");
-	}
-
-	public SortedSet<String> getCurrentBatchJobnames(String application,
-			boolean refresh) {
-		throw new RuntimeException("Not implemented for this class.");
-	}
-
-	public SortedSet<String> getCurrentJobnames(String application,
-			boolean refresh) {
-		throw new RuntimeException("Not implemented for this class.");
-	}
-
-
 
 }

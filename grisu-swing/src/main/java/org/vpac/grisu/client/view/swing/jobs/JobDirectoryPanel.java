@@ -24,46 +24,24 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
 public class JobDirectoryPanel extends JPanel {
-	
+
 	private JButton externalButton;
 	private JButton viewButton;
 	private JButton downloadButton;
 	private GrisuJobMonitoringObject job = null;
-	
+
 	private String rememberedDirectory = null;
-	
+
 	private EnvironmentManager em = null;
 
 	private JobFileChooser jobFileChooser;
-	
+
 	// for wbbuilder pro -- don't use
 	public JobDirectoryPanel() {
 		super();
 		initialize();
 	}
-	
-	private void initialize() {
-		setLayout(new FormLayout(
-				new ColumnSpec[] {
-					FormFactory.RELATED_GAP_COLSPEC,
-					new ColumnSpec("22px:grow(1.0)"),
-					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.DEFAULT_COLSPEC,
-					FormFactory.RELATED_GAP_COLSPEC,
-					FormFactory.DEFAULT_COLSPEC,
-					FormFactory.RELATED_GAP_COLSPEC},
-				new RowSpec[] {
-					new RowSpec("375px"),
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC,
-					FormFactory.RELATED_GAP_ROWSPEC}));
-			add(getJobFileChooser(), new CellConstraints("2, 1, 5, 1, fill, fill"));
-			add(getDownloadButton(), new CellConstraints(6, 3));
-			add(getViewButton(), new CellConstraints(4, 3, CellConstraints.RIGHT, CellConstraints.DEFAULT));
-			add(getExternalButton(), new CellConstraints(2, 3, CellConstraints.LEFT, CellConstraints.DEFAULT));
-			//
-	}
-	
+
 	/**
 	 * Create the panel
 	 */
@@ -72,23 +50,7 @@ public class JobDirectoryPanel extends JPanel {
 		this.em = em;
 		initialize();
 	}
-	protected JobFileChooser getJobFileChooser() {
-		if (jobFileChooser == null) {
-			jobFileChooser = new JobFileChooser(em);
-		}
-		return jobFileChooser;
-	}
-	
-	public void setJob(GrisuJobMonitoringObject job) {
-		this.job = job;
-		try {
-			getJobFileChooser().setJob(job);
-		} catch (FileSystemException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
+
 	protected JButton getDownloadButton() {
 		if (downloadButton == null) {
 			downloadButton = new JButton();
@@ -97,23 +59,22 @@ public class JobDirectoryPanel extends JPanel {
 					new Thread(new Runnable() {
 						public void run() {
 
-							JobDirectoryPanel.this
-									.setCursor(Cursor
-											.getPredefinedCursor(Cursor.WAIT_CURSOR));
-							
+							JobDirectoryPanel.this.setCursor(Cursor
+									.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
 							getDownloadButton().setEnabled(false);
 							getViewButton().setEnabled(false);
 							GrisuFileObject[] selectedFiles = null;
 
-							selectedFiles = getJobFileChooser().getSelectedFiles();
-
+							selectedFiles = getJobFileChooser()
+									.getSelectedFiles();
 
 							if (selectedFiles.length < 1) {
 								getDownloadButton().setEnabled(true);
 								getViewButton().setEnabled(true);
 								JobDirectoryPanel.this
-								.setCursor(Cursor
-									.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+										.setCursor(Cursor
+												.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 								return;
 							}
 
@@ -121,10 +82,9 @@ public class JobDirectoryPanel extends JPanel {
 								rememberedDirectory = System
 										.getProperty("user.home");
 
-							JFileChooser chooser = new JFileChooser(
-									new File(rememberedDirectory));
-							chooser
-									.setDialogType(JFileChooser.SAVE_DIALOG);
+							JFileChooser chooser = new JFileChooser(new File(
+									rememberedDirectory));
+							chooser.setDialogType(JFileChooser.SAVE_DIALOG);
 							chooser
 									.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 							int returnVal = chooser
@@ -139,26 +99,42 @@ public class JobDirectoryPanel extends JPanel {
 								return;
 							}
 
-							
 							try {
-								String currentFolder = getJobFileChooser().getCurrentDirectory().getURI().toString();
-//								if ( currentFolder.startsWith("/") ) {
-//									String currentFolder_temp = EnvironmentManager.getDefaultManager().convertToAbsoluteUrl(currentFolder);
-//									if ( currentFolder == null ) {
-//										throw new RemoteFileSystemException("Can't find file under any of the mountpoints: "+currentFolder_temp);
-//									}
-//									currentFolder = currentFolder_temp;
-//								}
+								String currentFolder = getJobFileChooser()
+										.getCurrentDirectory().getURI()
+										.toString();
+								// if ( currentFolder.startsWith("/") ) {
+								// String currentFolder_temp =
+								// EnvironmentManager.getDefaultManager().convertToAbsoluteUrl(currentFolder);
+								// if ( currentFolder == null ) {
+								// throw new
+								// RemoteFileSystemException("Can't find file under any of the mountpoints: "+currentFolder_temp);
+								// }
+								// currentFolder = currentFolder_temp;
+								// }
 
-								em.getFileTransferManager().addDownload(selectedFiles, em.getFileManager().getFileObject(chooser.getSelectedFile().toURI()),
-										currentFolder, FileManagerTransferHelpers.OVERWRITE_EVERYTHING, true);
-//								FileManagerTransferHelpers.download(
-//										job.getServiceInterface(), chooser
-//												.getSelectedFile(),
-//										currentFolder,
-//										selectedFiles, FileManagerTransferHelpers.OVERWRITE_EVERYTHING, true);
+								em
+										.getFileTransferManager()
+										.addDownload(
+												selectedFiles,
+												em
+														.getFileManager()
+														.getFileObject(
+																chooser
+																		.getSelectedFile()
+																		.toURI()),
+												currentFolder,
+												FileManagerTransferHelpers.OVERWRITE_EVERYTHING,
+												true);
+								// FileManagerTransferHelpers.download(
+								// job.getServiceInterface(), chooser
+								// .getSelectedFile(),
+								// currentFolder,
+								// selectedFiles,
+								// FileManagerTransferHelpers.OVERWRITE_EVERYTHING,
+								// true);
 							} catch (Exception e1) {
-								Utils.showErrorMessage(em, 
+								Utils.showErrorMessage(em,
 										JobDirectoryPanel.this,
 										"failedDownloads", e1);
 							} finally {
@@ -168,7 +144,7 @@ public class JobDirectoryPanel extends JPanel {
 										.setCursor(Cursor
 												.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 							}
-							
+
 							getDownloadButton().setEnabled(true);
 							getViewButton().setEnabled(true);
 
@@ -198,20 +174,7 @@ public class JobDirectoryPanel extends JPanel {
 		}
 		return downloadButton;
 	}
-	protected JButton getViewButton() {
-		if (viewButton == null) {
-			viewButton = new JButton();
-			viewButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					
-					
-					
-				}
-			});
-			viewButton.setText("View");
-		}
-		return viewButton;
-	}
+
 	protected JButton getExternalButton() {
 		if (externalButton == null) {
 			externalButton = new JButton();
@@ -219,6 +182,54 @@ public class JobDirectoryPanel extends JPanel {
 			externalButton.setEnabled(false);
 		}
 		return externalButton;
+	}
+
+	protected JobFileChooser getJobFileChooser() {
+		if (jobFileChooser == null) {
+			jobFileChooser = new JobFileChooser(em);
+		}
+		return jobFileChooser;
+	}
+
+	protected JButton getViewButton() {
+		if (viewButton == null) {
+			viewButton = new JButton();
+			viewButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+
+				}
+			});
+			viewButton.setText("View");
+		}
+		return viewButton;
+	}
+
+	private void initialize() {
+		setLayout(new FormLayout(new ColumnSpec[] {
+				FormFactory.RELATED_GAP_COLSPEC,
+				new ColumnSpec("22px:grow(1.0)"),
+				FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
+				FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
+				FormFactory.RELATED_GAP_COLSPEC }, new RowSpec[] {
+				new RowSpec("375px"), FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC, FormFactory.RELATED_GAP_ROWSPEC }));
+		add(getJobFileChooser(), new CellConstraints("2, 1, 5, 1, fill, fill"));
+		add(getDownloadButton(), new CellConstraints(6, 3));
+		add(getViewButton(), new CellConstraints(4, 3, CellConstraints.RIGHT,
+				CellConstraints.DEFAULT));
+		add(getExternalButton(), new CellConstraints(2, 3,
+				CellConstraints.LEFT, CellConstraints.DEFAULT));
+		//
+	}
+
+	public void setJob(GrisuJobMonitoringObject job) {
+		this.job = job;
+		try {
+			getJobFileChooser().setJob(job);
+		} catch (FileSystemException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

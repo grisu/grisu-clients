@@ -16,10 +16,9 @@ import com.jgoodies.forms.layout.RowSpec;
 
 public class ErrorDialog extends JDialog {
 
-	private JScrollPane scrollPane;
-	private JPanel panel;
 	/**
 	 * Launch the application
+	 * 
 	 * @param args
 	 */
 	public static void main(String args[]) {
@@ -35,6 +34,9 @@ public class ErrorDialog extends JDialog {
 			e.printStackTrace();
 		}
 	}
+	private JScrollPane scrollPane;
+
+	private JPanel panel;
 
 	/**
 	 * Create the dialog
@@ -45,29 +47,30 @@ public class ErrorDialog extends JDialog {
 		getContentPane().add(getPanel(), BorderLayout.CENTER);
 		//
 	}
+
 	/**
 	 * @return
 	 */
 	protected JPanel getPanel() {
 		if (panel == null) {
 			panel = new JPanel();
-			panel.setLayout(new FormLayout(
-				new ColumnSpec[] {
+			panel.setLayout(new FormLayout(new ColumnSpec[] {
 					FormFactory.RELATED_GAP_COLSPEC,
 					ColumnSpec.decode("default:grow(1.0)"),
 					FormFactory.RELATED_GAP_COLSPEC,
 					FormFactory.DEFAULT_COLSPEC,
-					FormFactory.RELATED_GAP_COLSPEC},
-				new RowSpec[] {
+					FormFactory.RELATED_GAP_COLSPEC }, new RowSpec[] {
 					RowSpec.decode("4dlu"),
 					RowSpec.decode("default:grow(1.0)"),
 					FormFactory.RELATED_GAP_ROWSPEC,
 					FormFactory.DEFAULT_ROWSPEC,
-					FormFactory.RELATED_GAP_ROWSPEC}));
-			panel.add(getScrollPane(), new CellConstraints(2, 2, 3, 1, CellConstraints.FILL, CellConstraints.FILL));
+					FormFactory.RELATED_GAP_ROWSPEC }));
+			panel.add(getScrollPane(), new CellConstraints(2, 2, 3, 1,
+					CellConstraints.FILL, CellConstraints.FILL));
 		}
 		return panel;
 	}
+
 	/**
 	 * @return
 	 */

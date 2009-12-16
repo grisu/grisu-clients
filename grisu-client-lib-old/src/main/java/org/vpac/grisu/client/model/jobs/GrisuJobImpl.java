@@ -9,15 +9,16 @@ import org.vpac.grisu.utils.SeveralXMLHelpers;
 import org.w3c.dom.Document;
 
 public class GrisuJobImpl {
-	
+
 	JsdlTemplate template = null;
 	EnvironmentManager em = null;
-	
+
 	public GrisuJobImpl(EnvironmentManager em) {
 		this.em = em;
 		File baseTemplateFile = null;
 		try {
-			baseTemplateFile = new File(this.getClass().getClassLoader().getResource("baseTemplate.xml").toURI());
+			baseTemplateFile = new File(this.getClass().getClassLoader()
+					.getResource("baseTemplate.xml").toURI());
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -1,21 +1,17 @@
-
-
 package org.vpac.grisu.client.view.swing.preview;
 
-import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JDialog;
 
 import org.vpac.grisu.client.model.files.GrisuFileObject;
-import org.vpac.grisu.client.view.swing.preview.TextViewerPanel;
 
 public class TextPreviewDialog extends JDialog {
 
-	private TextViewerPanel textViewerPanel;
 	/**
 	 * Launch the application
+	 * 
 	 * @param args
 	 */
 	public static void main(String args[]) {
@@ -32,6 +28,8 @@ public class TextPreviewDialog extends JDialog {
 		}
 	}
 
+	private TextViewerPanel textViewerPanel;
+
 	/**
 	 * Create the dialog
 	 */
@@ -41,12 +39,7 @@ public class TextPreviewDialog extends JDialog {
 		getContentPane().add(getTextViewerPanel());
 		//
 	}
-	
-	public void setFile(GrisuFileObject file) {
-		
-		getTextViewerPanel().setFileToPreview(file);
-		
-	}
+
 	/**
 	 * @return
 	 */
@@ -55,6 +48,12 @@ public class TextPreviewDialog extends JDialog {
 			textViewerPanel = new TextViewerPanel();
 		}
 		return textViewerPanel;
+	}
+
+	public void setFile(GrisuFileObject file) {
+
+		getTextViewerPanel().setFileToPreview(file);
+
 	}
 
 }

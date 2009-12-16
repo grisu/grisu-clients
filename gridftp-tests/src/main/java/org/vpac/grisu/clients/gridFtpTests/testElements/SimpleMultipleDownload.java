@@ -69,6 +69,22 @@ public class SimpleMultipleDownload extends GridFtpTestElement {
 
 	}
 
+	@Override
+	public String getDescription() {
+		return "A very simple multiple download of a small text file. This test downloads as many times from the same filesystem as there are concurrent threads in this testrun.";
+	}
+
+	// @Override
+	// public LinkedList<GridFtpAction> getGridFtpActions() {
+	//
+	// return actions;
+	// }
+
+	@Override
+	public String getTestName() {
+		return "SimpleMultipleDownload";
+	}
+
 	protected LinkedList<List<GridFtpActionItem>> setupGridFtpActionItems() {
 
 		LinkedList<List<GridFtpActionItem>> actionItems = new LinkedList<List<GridFtpActionItem>>();
@@ -105,22 +121,6 @@ public class SimpleMultipleDownload extends GridFtpTestElement {
 
 		return actionItems;
 
-	}
-
-	// @Override
-	// public LinkedList<GridFtpAction> getGridFtpActions() {
-	//
-	// return actions;
-	// }
-
-	@Override
-	public String getTestName() {
-		return "SimpleMultipleDownload";
-	}
-
-	@Override
-	public String getDescription() {
-		return "A very simple multiple download of a small text file. This test downloads as many times from the same filesystem as there are concurrent threads in this testrun.";
 	}
 
 }

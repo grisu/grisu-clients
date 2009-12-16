@@ -14,6 +14,7 @@ public class TemplateErrorPanel extends JPanel {
 
 	private JScrollPane scrollPane;
 	private JTextArea textArea;
+
 	/**
 	 * Create the panel
 	 */
@@ -23,6 +24,18 @@ public class TemplateErrorPanel extends JPanel {
 		add(getScrollPane(), BorderLayout.CENTER);
 		//
 	}
+
+	/**
+	 * @return
+	 */
+	protected JScrollPane getScrollPane() {
+		if (scrollPane == null) {
+			scrollPane = new JScrollPane();
+			scrollPane.setViewportView(getTextArea());
+		}
+		return scrollPane;
+	}
+
 	/**
 	 * @return
 	 */
@@ -37,26 +50,15 @@ public class TemplateErrorPanel extends JPanel {
 		return textArea;
 	}
 
-	
 	public void setErrorMessage(String errorMessage, Exception e) {
-		
+
 		StringBuffer temp = new StringBuffer(errorMessage);
 		temp.append("\n\n");
-		for ( String line : Utils.fromException(e) ) {
-			temp.append(line+"\n");
+		for (String line : Utils.fromException(e)) {
+			temp.append(line + "\n");
 		}
 		getTextArea().setText(temp.toString());
-		
-	}
-	/**
-	 * @return
-	 */
-	protected JScrollPane getScrollPane() {
-		if (scrollPane == null) {
-			scrollPane = new JScrollPane();
-			scrollPane.setViewportView(getTextArea());
-		}
-		return scrollPane;
+
 	}
 
 }

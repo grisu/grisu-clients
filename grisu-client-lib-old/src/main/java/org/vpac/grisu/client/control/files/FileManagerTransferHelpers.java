@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.control.files;
 
 import java.io.File;
@@ -25,11 +23,10 @@ import org.vpac.grisu.model.dto.DtoStringList;
 import org.vpac.grisu.utils.FileHelpers;
 
 /**
- * Some static helper methods to do file transfers and
- * downloads.
+ * Some static helper methods to do file transfers and downloads.
  * 
  * @author Markus Binsteiner
- *
+ * 
  */
 public class FileManagerTransferHelpers {
 
@@ -43,169 +40,28 @@ public class FileManagerTransferHelpers {
 	// if this is not initialized it will do nothing
 	public static ProgressDisplay progressDisplay = new DummyDisplay();
 
-	/**
-	 * A convenience method that determines whether the source files and the target
-	 * directory are local or remote and then calls the appropriate copy methods.
-	 * 
-	 * For now I wouldn't really recommend to set "displayProgress" to true since it
-	 * isn't tested very well. If you do, you have to initialize the progressDisplay first
-	 * with something like this:
-	 * 
-	 * <code>FileManagerTransferHelpers.progressDisplay = new SwingProgressDisplay(application.getJFrame());</code>
-	 * Otherwise you won't see anything. You can implement your own progress viewer with implementing
-	 * {@link ProgressDisplay
-	 * 
-	 * @param serviceInterface the serviceInterface
-	 * @param sourceFiles an array of source files
-	 * @param targetDirectory the target directory
-	 * @param displayProgress whether to display a jdialog that shows the progress or not. 
-	 * @throws InformationError if the filesystem of one of the files can't be looked up
-	 * @throws FileSystemException 
-	 */
-	public static void transferFiles(ServiceInterface serviceInterface,
-			GrisuFileObject[] sourceFiles, GrisuFileObject targetDirectory,
-			boolean displayProgress) throws FileSystemException, InformationError {
+private static File calculateParentFolderAndCreateItIfNotExistsAlready(
+		String remoteFile, String source_folder, File target_folder)
+		throws IOException {
 
-		try {
+	File target_parent_folder = target_folder;
 
-			if (displayProgress)
-				progressDisplay.start(sourceFiles.length + 1, "Transfering "
-						+ sourceFiles.length + " files...");
-
-			int progress = 0;
-			// TODO improve that so all files are transfered at once
-			for (GrisuFileObject sourceFile : sourceFiles) {
-
-				if (displayProgress) {
-					progress++;
-					progressDisplay.setProgress(progress, "Transfering file: "
-							+ sourceFile.getName());
-				}
-				myLogger.debug("Copying: " + sourceFile.getURI().toString()
-						+ " to: " + targetDirectory.getURI().toString());
-
-				if (FileConstants.LOCAL_NAME.equals(sourceFile
-						.getFileSystemBackend().getSite())
-						&& FileConstants.LOCAL_NAME.equals(targetDirectory
-								.getFileSystemBackend().getSite())) {
-					transferFileFromLocalToLocal(sourceFile, targetDirectory);
-				} else if (FileConstants.LOCAL_NAME.equals(sourceFile
-						.getFileSystemBackend().getSite())
-						&& !FileConstants.LOCAL_NAME.equals(targetDirectory
-								.getFileSystemBackend().getSite())) {
-					transferFileFromLocalToRemote(serviceInterface, sourceFile,
-							targetDirectory);
-				} else if (!FileConstants.LOCAL_NAME.equals(sourceFile
-						.getFileSystemBackend().getSite())
-						&& !FileConstants.LOCAL_NAME.equals(targetDirectory
-								.getFileSystemBackend().getSite())) {
-					transferFileFromRemoteToRemote(serviceInterface,
-							sourceFile, targetDirectory);
-				} else if (!FileConstants.LOCAL_NAME.equals(sourceFile
-						.getFileSystemBackend().getSite())
-						&& FileConstants.LOCAL_NAME.equals(targetDirectory
-								.getFileSystemBackend().getSite())) {
-					transferFileFromRemoteToLocal(serviceInterface, sourceFile,
-							targetDirectory);
-				}
-			}
-
-		} finally {
-			if (displayProgress)
-				progressDisplay.close();
-		}
-		targetDirectory.refresh();
-
+	String relativePath = remoteFile.substring(source_folder.length() + 1);
+	if (relativePath.indexOf("/") != -1) {
+		// means subfolder
+		String relativeParentFolderPath = relativePath.substring(0,
+				relativePath.lastIndexOf("/"));
+		target_parent_folder = new File(target_folder,
+				relativeParentFolderPath);
 	}
-
-	private static void transferFileFromLocalToLocal(
-			GrisuFileObject sourceFile, GrisuFileObject targetDirectory) {
-
-		File localSourceFile = new File(sourceFile.getURI());
-		File localTargetDirectory = new File(targetDirectory.getURI());
-
-		if (!localTargetDirectory.isDirectory()) {
-			throw new FileSystemException("Local target is not a directory: "
-					+ localTargetDirectory.toString());
-		}
-
-		FileHelpers.copyFileIntoDirectory(new File[] { new File(sourceFile
-				.getURI()) }, new File(targetDirectory.getURI()));
-
+	target_parent_folder.mkdirs();
+	if (!target_parent_folder.exists()) {
+		myLogger.error("Could not create folder: " + target_parent_folder);
+		throw new IOException("Could not create folder: "
+				+ target_parent_folder);
 	}
-
-	private static void transferFileFromRemoteToRemote(
-			ServiceInterface serviceInterface, GrisuFileObject sourceFile,
-			GrisuFileObject targetDirectory) throws FileSystemException {
-		try {
-			serviceInterface.cp(DtoStringList.fromSingleString(sourceFile.getURI().toString()), targetDirectory
-					.getURI().toString()
-					+ "/" + sourceFile.getName(), false, true);
-		} catch (Exception e) {
-			throw new FileSystemException("Could not copy file: "
-					+ sourceFile.getURI().toString() + " to: "
-					+ targetDirectory.getURI().toString());
-		}
-	}
-
-	private static void transferFileFromRemoteToLocal(
-			ServiceInterface serviceInterface, GrisuFileObject sourceFile,
-			GrisuFileObject targetDirectory) throws FileSystemException {
-		try {
-			GrisuFileObject parent = sourceFile.getParent();
-			download(serviceInterface, new File(targetDirectory.getURI()),
-					parent.getURI().toString(),
-					new GrisuFileObject[] { sourceFile }, DONT_OVERWRITE,
-					false);
-		} catch (FailedDownloadsException e) {
-			e.printStackTrace();
-			throw new FileSystemException("Could not download file: "
-					+ sourceFile.getURI().toString());
-		}
-	}
-
-	private static void transferFileFromLocalToRemote(
-			ServiceInterface serviceInterface, GrisuFileObject sourceFile,
-			GrisuFileObject targetDirectory) throws FileSystemException {
-
-		if (sourceFile.getType() == FileConstants.TYPE_FOLDER) {
-
-			GrisuFileObject[] children = sourceFile.getFileSystemBackend()
-					.getChildren(sourceFile, false);
-			for (GrisuFileObject child : children) {
-				URI newFolder = null;
-				try {
-					newFolder = new URI(targetDirectory.getURI().toString()
-							+ "/" + sourceFile.getName());
-					serviceInterface.mkdir(newFolder.toString());
-					targetDirectory.refresh();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				transferFileFromLocalToRemote(serviceInterface, child,
-						targetDirectory.getFileSystemBackend().getFileObject(
-								newFolder));
-			}
-
-		} else {
-
-			DataSource source = new FileDataSource(
-					new File(sourceFile.getURI()));
-			String filename = sourceFile.getName();
-			try {
-
-				serviceInterface.upload(new DataHandler(source), targetDirectory.getURI()
-						.toString()
-						+ "/" + filename);
-			} catch (Exception e1) {
-				e1.printStackTrace();
-				throw new FileSystemException("Could not upload file \""
-						+ sourceFile.getName() + "\": "
-						+ e1.getLocalizedMessage());
-			}
-		}
-	}
+	return target_parent_folder;
+}
 
 	/**
 	 * Downloads a bunch of files into a folder on the local harddrive.
@@ -241,8 +97,8 @@ public class FileManagerTransferHelpers {
 		for (GrisuFileObject remoteFile : source_files) {
 			String[] childs = null;
 			try {
-				childs = serviceInterface.getChildrenFileNames(remoteFile.getURI()
-						.toString(), false).asArray();
+				childs = serviceInterface.getChildrenFileNames(
+						remoteFile.getURI().toString(), false).asArray();
 			} catch (Exception e) {
 				failed_downloads.put(remoteFile.getURI().toString(), e);
 				break;
@@ -400,6 +256,38 @@ public class FileManagerTransferHelpers {
 		}
 	}
 
+	private static void downloadAndOverwrite(ServiceInterface serviceInterface,
+			String remoteFile, String source_folder, File target_folder)
+			throws Exception {
+
+		DataSource source = null;
+		long lastModified = -1;
+		try {
+			lastModified = serviceInterface.lastModified(remoteFile);
+			source = serviceInterface.download(remoteFile).getDataSource();
+		} catch (Exception e) {
+			e.printStackTrace();
+			myLogger.error("Could not download file: " + remoteFile);
+			throw e;
+		}
+
+		String filename = remoteFile.substring(remoteFile.lastIndexOf("/") + 1);
+
+		File target_parent_folder = calculateParentFolderAndCreateItIfNotExistsAlready(
+				remoteFile, source_folder, target_folder);
+
+		try {
+			File newFile = new File(target_parent_folder, filename);
+			FileHelpers.saveToDisk(source, newFile);
+			newFile.setLastModified(lastModified);
+		} catch (IOException e) {
+			myLogger.error("Could not save file: "
+					+ remoteFile.lastIndexOf("/") + 1);
+			throw e;
+		}
+
+	}
+
 	private static void downloadOnlyNewerFiles(
 			ServiceInterface serviceInterface, String remoteFile,
 			String source_folder, File target_folder) throws Exception {
@@ -447,61 +335,6 @@ public class FileManagerTransferHelpers {
 
 	}
 
-	private static File calculateParentFolderAndCreateItIfNotExistsAlready(
-			String remoteFile, String source_folder, File target_folder)
-			throws IOException {
-
-		File target_parent_folder = target_folder;
-
-		String relativePath = remoteFile.substring(source_folder.length() + 1);
-		if (relativePath.indexOf("/") != -1) {
-			// means subfolder
-			String relativeParentFolderPath = relativePath.substring(0,
-					relativePath.lastIndexOf("/"));
-			target_parent_folder = new File(target_folder,
-					relativeParentFolderPath);
-		}
-		target_parent_folder.mkdirs();
-		if (!target_parent_folder.exists()) {
-			myLogger.error("Could not create folder: " + target_parent_folder);
-			throw new IOException("Could not create folder: "
-					+ target_parent_folder);
-		}
-		return target_parent_folder;
-	}
-
-	private static void downloadAndOverwrite(ServiceInterface serviceInterface,
-			String remoteFile, String source_folder, File target_folder)
-			throws Exception {
-
-		DataSource source = null;
-		long lastModified = -1;
-		try {
-			lastModified = serviceInterface.lastModified(remoteFile);
-			source = serviceInterface.download(remoteFile).getDataSource();
-		} catch (Exception e) {
-			e.printStackTrace();
-			myLogger.error("Could not download file: " + remoteFile);
-			throw e;
-		}
-
-		String filename = remoteFile.substring(remoteFile.lastIndexOf("/") + 1);
-
-		File target_parent_folder = calculateParentFolderAndCreateItIfNotExistsAlready(
-				remoteFile, source_folder, target_folder);
-
-		try {
-			File newFile = new File(target_parent_folder, filename);
-			FileHelpers.saveToDisk(source, newFile);
-			newFile.setLastModified(lastModified);
-		} catch (IOException e) {
-			myLogger.error("Could not save file: "
-					+ remoteFile.lastIndexOf("/") + 1);
-			throw e;
-		}
-
-	}
-
 	private static void downloadOnlyNonexistantFiles(
 			ServiceInterface serviceInterface, String remoteFile,
 			String source_folder, File target_folder) throws Exception {
@@ -531,5 +364,168 @@ public class FileManagerTransferHelpers {
 			}
 		}
 	}
+
+	private static void transferFileFromLocalToLocal(
+			GrisuFileObject sourceFile, GrisuFileObject targetDirectory) {
+
+		File localSourceFile = new File(sourceFile.getURI());
+		File localTargetDirectory = new File(targetDirectory.getURI());
+
+		if (!localTargetDirectory.isDirectory()) {
+			throw new FileSystemException("Local target is not a directory: "
+					+ localTargetDirectory.toString());
+		}
+
+		FileHelpers.copyFileIntoDirectory(new File[] { new File(sourceFile
+				.getURI()) }, new File(targetDirectory.getURI()));
+
+	}
+
+	private static void transferFileFromLocalToRemote(
+			ServiceInterface serviceInterface, GrisuFileObject sourceFile,
+			GrisuFileObject targetDirectory) throws FileSystemException {
+
+		if (sourceFile.getType() == FileConstants.TYPE_FOLDER) {
+
+			GrisuFileObject[] children = sourceFile.getFileSystemBackend()
+					.getChildren(sourceFile, false);
+			for (GrisuFileObject child : children) {
+				URI newFolder = null;
+				try {
+					newFolder = new URI(targetDirectory.getURI().toString()
+							+ "/" + sourceFile.getName());
+					serviceInterface.mkdir(newFolder.toString());
+					targetDirectory.refresh();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				transferFileFromLocalToRemote(serviceInterface, child,
+						targetDirectory.getFileSystemBackend().getFileObject(
+								newFolder));
+			}
+
+		} else {
+
+			DataSource source = new FileDataSource(
+					new File(sourceFile.getURI()));
+			String filename = sourceFile.getName();
+			try {
+
+				serviceInterface.upload(new DataHandler(source),
+						targetDirectory.getURI().toString() + "/" + filename);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+				throw new FileSystemException("Could not upload file \""
+						+ sourceFile.getName() + "\": "
+						+ e1.getLocalizedMessage());
+			}
+		}
+	}
+
+	private static void transferFileFromRemoteToLocal(
+			ServiceInterface serviceInterface, GrisuFileObject sourceFile,
+			GrisuFileObject targetDirectory) throws FileSystemException {
+		try {
+			GrisuFileObject parent = sourceFile.getParent();
+			download(serviceInterface, new File(targetDirectory.getURI()),
+					parent.getURI().toString(),
+					new GrisuFileObject[] { sourceFile }, DONT_OVERWRITE, false);
+		} catch (FailedDownloadsException e) {
+			e.printStackTrace();
+			throw new FileSystemException("Could not download file: "
+					+ sourceFile.getURI().toString());
+		}
+	}
+
+	private static void transferFileFromRemoteToRemote(
+			ServiceInterface serviceInterface, GrisuFileObject sourceFile,
+			GrisuFileObject targetDirectory) throws FileSystemException {
+		try {
+			serviceInterface.cp(DtoStringList.fromSingleString(sourceFile
+					.getURI().toString()), targetDirectory.getURI().toString()
+					+ "/" + sourceFile.getName(), false, true);
+		} catch (Exception e) {
+			throw new FileSystemException("Could not copy file: "
+					+ sourceFile.getURI().toString() + " to: "
+					+ targetDirectory.getURI().toString());
+		}
+	}
+
+	/**
+		 * A convenience method that determines whether the source files and the target
+		 * directory are local or remote and then calls the appropriate copy methods.
+		 * 
+		 * For now I wouldn't really recommend to set "displayProgress" to true since it
+		 * isn't tested very well. If you do, you have to initialize the progressDisplay first
+		 * with something like this:
+		 * 
+		 * <code>FileManagerTransferHelpers.progressDisplay = new SwingProgressDisplay(application.getJFrame());</code>
+		 * Otherwise you won't see anything. You can implement your own progress viewer with implementing
+		 * {@link ProgressDisplay
+		 * 
+		 * @param serviceInterface the serviceInterface
+		 * @param sourceFiles an array of source files
+		 * @param targetDirectory the target directory
+		 * @param displayProgress whether to display a jdialog that shows the progress or not. 
+		 * @throws InformationError if the filesystem of one of the files can't be looked up
+		 * @throws FileSystemException 
+		 */
+		public static void transferFiles(ServiceInterface serviceInterface,
+				GrisuFileObject[] sourceFiles, GrisuFileObject targetDirectory,
+				boolean displayProgress) throws FileSystemException,
+				InformationError {
+	
+			try {
+	
+				if (displayProgress)
+					progressDisplay.start(sourceFiles.length + 1, "Transfering "
+							+ sourceFiles.length + " files...");
+	
+				int progress = 0;
+				// TODO improve that so all files are transfered at once
+				for (GrisuFileObject sourceFile : sourceFiles) {
+	
+					if (displayProgress) {
+						progress++;
+						progressDisplay.setProgress(progress, "Transfering file: "
+								+ sourceFile.getName());
+					}
+					myLogger.debug("Copying: " + sourceFile.getURI().toString()
+							+ " to: " + targetDirectory.getURI().toString());
+	
+					if (FileConstants.LOCAL_NAME.equals(sourceFile
+							.getFileSystemBackend().getSite())
+							&& FileConstants.LOCAL_NAME.equals(targetDirectory
+									.getFileSystemBackend().getSite())) {
+						transferFileFromLocalToLocal(sourceFile, targetDirectory);
+					} else if (FileConstants.LOCAL_NAME.equals(sourceFile
+							.getFileSystemBackend().getSite())
+							&& !FileConstants.LOCAL_NAME.equals(targetDirectory
+									.getFileSystemBackend().getSite())) {
+						transferFileFromLocalToRemote(serviceInterface, sourceFile,
+								targetDirectory);
+					} else if (!FileConstants.LOCAL_NAME.equals(sourceFile
+							.getFileSystemBackend().getSite())
+							&& !FileConstants.LOCAL_NAME.equals(targetDirectory
+									.getFileSystemBackend().getSite())) {
+						transferFileFromRemoteToRemote(serviceInterface,
+								sourceFile, targetDirectory);
+					} else if (!FileConstants.LOCAL_NAME.equals(sourceFile
+							.getFileSystemBackend().getSite())
+							&& FileConstants.LOCAL_NAME.equals(targetDirectory
+									.getFileSystemBackend().getSite())) {
+						transferFileFromRemoteToLocal(serviceInterface, sourceFile,
+								targetDirectory);
+					}
+				}
+	
+			} finally {
+				if (displayProgress)
+					progressDisplay.close();
+			}
+			targetDirectory.refresh();
+	
+		}
 
 }

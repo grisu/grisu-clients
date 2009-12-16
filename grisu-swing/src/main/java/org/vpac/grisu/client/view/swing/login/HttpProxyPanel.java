@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.view.swing.login;
 
 import java.awt.GridBagConstraints;
@@ -41,13 +39,230 @@ public class HttpProxyPanel extends JPanel implements ItemListener {
 	private JCheckBox advancedCheckBox = null;
 	private JLabel jLabel3 = null;
 	private JPasswordField proxyPasswordField = null;
-	
+
+	// ---------------------------------------------------------------------------------------
+	// Event stuff (MountPoints)
+	private Vector<HttpProxyPanelListener> httpProxyPanelListener;
+
+	private JButton button;
+
 	/**
 	 * This is the default constructor
 	 */
 	public HttpProxyPanel() {
 		super();
 		initialize();
+	}
+
+	// register a listener
+	synchronized public void addHttpProxyPanelListener(HttpProxyPanelListener l) {
+		if (httpProxyPanelListener == null)
+			httpProxyPanelListener = new Vector();
+		httpProxyPanelListener.addElement(l);
+	}
+
+	private void fireHttpProxyValuesChanged() {
+		// if we have no mountPointsListeners, do nothing...
+		if (httpProxyPanelListener != null && !httpProxyPanelListener.isEmpty()) {
+
+			// make a copy of the listener list in case
+			// anyone adds/removes mountPointsListeners
+			Vector targets;
+			synchronized (this) {
+				targets = (Vector) httpProxyPanelListener.clone();
+			}
+
+			// walk through the listener list and
+			// call the gridproxychanged method in each
+			Enumeration e = targets.elements();
+			while (e.hasMoreElements()) {
+				HttpProxyPanelListener l = (HttpProxyPanelListener) e
+						.nextElement();
+				try {
+					l.httpProxyValueChanged();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/**
+	 * This method initializes advancedCheckBox
+	 * 
+	 * @return javax.swing.JCheckBox
+	 */
+	private JCheckBox getAdvancedCheckBox() {
+		if (advancedCheckBox == null) {
+			advancedCheckBox = new JCheckBox();
+			advancedCheckBox.setText("Advanced connection properties");
+			advancedCheckBox.addItemListener(this);
+
+		}
+		return advancedCheckBox;
+	}
+
+	private JButton getButton() {
+		if (button == null) {
+			button = new JButton("Apply");
+			button.setVisible(false);
+			button.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+
+					String host = getProxyServer();
+					int port = getProxyPort();
+
+					if (host != null) {
+						if (StringUtils.isNotBlank(getProxyUsername())) {
+							String username = getProxyUsername();
+							char[] password = getProxyPassword();
+							HttpProxyManager.setHttpProxy(host, port, username,
+									password);
+						} else {
+							HttpProxyManager.setHttpProxy(host, port, null,
+									null);
+						}
+					}
+					fireHttpProxyValuesChanged();
+				}
+			});
+		}
+		return button;
+	}
+
+	/**
+	 * This method initializes portTextField
+	 * 
+	 * @return javax.swing.JTextField
+	 */
+	private JTextField getPortTextField() {
+		if (portTextField == null) {
+			portTextField = new JTextField();
+			// portTextField.addKeyListener(new KeyAdapter() {
+			// public void keyTyped(final KeyEvent e) {
+			// fireHttpProxyValuesChanged();
+			// }
+			// });
+			try {
+				// set proxy server from last time
+				String httpProxyPort = (String) ClientPropertiesManager
+						.getClientConfiguration().getProperty("httpProxyPort");
+				if (httpProxyPort != null && !"".equals(httpProxyPort))
+					portTextField.setText(httpProxyPort);
+			} catch (Exception e) {
+				// not really important
+			}
+		}
+		return portTextField;
+	}
+
+	public char[] getProxyPassword() {
+		if (getAdvancedCheckBox().isSelected()) {
+			return getProxyPasswordField().getPassword();
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * This method initializes proxyPasswordField
+	 * 
+	 * @return javax.swing.JPasswordField
+	 */
+	private JPasswordField getProxyPasswordField() {
+		if (proxyPasswordField == null) {
+			proxyPasswordField = new JPasswordField();
+			proxyPasswordField.addKeyListener(new KeyAdapter() {
+				public void keyTyped(final KeyEvent e) {
+					fireHttpProxyValuesChanged();
+				}
+			});
+		}
+		return proxyPasswordField;
+	}
+
+	public int getProxyPort() {
+		if (getAdvancedCheckBox().isSelected()) {
+			try {
+				int port = new Integer(getPortTextField().getText());
+				return port;
+			} catch (NumberFormatException e) {
+				return -1;
+			}
+		} else {
+			return -1;
+		}
+	}
+
+	public String getProxyServer() {
+		if (getAdvancedCheckBox().isSelected()) {
+			return getServerTextField().getText();
+		} else {
+			return null;
+		}
+	}
+
+	public String getProxyUsername() {
+		if (getAdvancedCheckBox().isSelected()) {
+			return getUsernameTextField().getText();
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * This method initializes serverTextField
+	 * 
+	 * @return javax.swing.JTextField
+	 */
+	private JTextField getServerTextField() {
+		if (serverTextField == null) {
+			serverTextField = new JTextField();
+			serverTextField.addKeyListener(new KeyAdapter() {
+				public void keyTyped(final KeyEvent e) {
+					fireHttpProxyValuesChanged();
+				}
+			});
+			try {
+				// set proxy server from last time
+				String httpProxyServer = (String) ClientPropertiesManager
+						.getClientConfiguration()
+						.getProperty("httpProxyServer");
+				if (httpProxyServer != null && !"".equals(httpProxyServer))
+					serverTextField.setText(httpProxyServer);
+			} catch (Exception e) {
+				// not really important
+			}
+
+		}
+		return serverTextField;
+	}
+	/**
+	 * This method initializes usernameTextField
+	 * 
+	 * @return javax.swing.JTextField
+	 */
+	private JTextField getUsernameTextField() {
+		if (usernameTextField == null) {
+			usernameTextField = new JTextField();
+			usernameTextField.addKeyListener(new KeyAdapter() {
+				public void keyTyped(final KeyEvent e) {
+					fireHttpProxyValuesChanged();
+				}
+			});
+			try {
+				// set proxy server from last time
+				String httpProxyUsername = (String) ClientPropertiesManager
+						.getClientConfiguration().getProperty(
+								"httpProxyUsername");
+				if (httpProxyUsername != null && !"".equals(httpProxyUsername))
+					usernameTextField.setText(httpProxyUsername);
+			} catch (Exception e) {
+				// not really important
+			}
+		}
+		return usernameTextField;
 	}
 
 	/**
@@ -135,11 +350,12 @@ public class HttpProxyPanel extends JPanel implements ItemListener {
 		gbc.gridx = 3;
 		gbc.gridy = 4;
 		add(getButton(), gbc);
-		
+
 		boolean show;
 		try {
-			show = "true".equals(ClientPropertiesManager.getClientConfiguration().getProperty("httpProxy"));
-			if ( show ) {
+			show = "true".equals(ClientPropertiesManager
+					.getClientConfiguration().getProperty("httpProxy"));
+			if (show) {
 				getAdvancedCheckBox().setSelected(true);
 			}
 			showHttpProxy(show);
@@ -155,154 +371,24 @@ public class HttpProxyPanel extends JPanel implements ItemListener {
 		}
 	}
 
-	/**
-	 * This method initializes serverTextField	
-	 * 	
-	 * @return javax.swing.JTextField	
-	 */
-	private JTextField getServerTextField() {
-		if (serverTextField == null) {
-			serverTextField = new JTextField();
-			serverTextField.addKeyListener(new KeyAdapter() {
-				public void keyTyped(final KeyEvent e) {
-					fireHttpProxyValuesChanged();
-				}
-			});
-			try {
-				// set proxy server from last time
-				String httpProxyServer = (String)ClientPropertiesManager.getClientConfiguration().getProperty("httpProxyServer");
-				if ( httpProxyServer != null && !"".equals(httpProxyServer) )
-					serverTextField.setText(httpProxyServer);
-			} catch (Exception e) {
-				// not really important
-			} 
+	public void itemStateChanged(ItemEvent e) {
 
-		}
-		return serverTextField;
+		showHttpProxy(e.getStateChange() == ItemEvent.SELECTED);
+		fireHttpProxyValuesChanged();
 	}
 
-	/**
-	 * This method initializes portTextField	
-	 * 	
-	 * @return javax.swing.JTextField	
-	 */
-	private JTextField getPortTextField() {
-		if (portTextField == null) {
-			portTextField = new JTextField();
-//			portTextField.addKeyListener(new KeyAdapter() {
-//				public void keyTyped(final KeyEvent e) {
-//					fireHttpProxyValuesChanged();
-//				}
-//			});
-			try {
-				// set proxy server from last time
-				String httpProxyPort = (String)ClientPropertiesManager.getClientConfiguration().getProperty("httpProxyPort");
-				if ( httpProxyPort != null && !"".equals(httpProxyPort) )
-					portTextField.setText(httpProxyPort);
-			} catch (Exception e) {
-				// not really important
-			} 
+	// remove a listener
+	synchronized public void removeHttpProxyPanelListener(
+			HttpProxyPanelListener l) {
+		if (httpProxyPanelListener == null) {
+			httpProxyPanelListener = new Vector<HttpProxyPanelListener>();
 		}
-		return portTextField;
+		httpProxyPanelListener.removeElement(l);
 	}
 
-	/**
-	 * This method initializes usernameTextField	
-	 * 	
-	 * @return javax.swing.JTextField	
-	 */
-	private JTextField getUsernameTextField() {
-		if (usernameTextField == null) {
-			usernameTextField = new JTextField();
-			usernameTextField.addKeyListener(new KeyAdapter() {
-				public void keyTyped(final KeyEvent e) {
-					fireHttpProxyValuesChanged();
-				}
-			});
-			try {
-				// set proxy server from last time
-				String httpProxyUsername = (String)ClientPropertiesManager.getClientConfiguration().getProperty("httpProxyUsername");
-				if ( httpProxyUsername != null && !"".equals(httpProxyUsername) )
-					usernameTextField.setText(httpProxyUsername);
-			} catch (Exception e) {
-				// not really important
-			} 
-		}
-		return usernameTextField;
-	}
-
-	/**
-	 * This method initializes advancedCheckBox	
-	 * 	
-	 * @return javax.swing.JCheckBox	
-	 */
-	private JCheckBox getAdvancedCheckBox() {
-		if (advancedCheckBox == null) {
-			advancedCheckBox = new JCheckBox();
-			advancedCheckBox.setText("Advanced connection properties");
-			advancedCheckBox.addItemListener(this);
-
-		}
-		return advancedCheckBox;
-	}
-
-	/**
-	 * This method initializes proxyPasswordField	
-	 * 	
-	 * @return javax.swing.JPasswordField	
-	 */
-	private JPasswordField getProxyPasswordField() {
-		if (proxyPasswordField == null) {
-			proxyPasswordField = new JPasswordField();
-			proxyPasswordField.addKeyListener(new KeyAdapter() {
-				public void keyTyped(final KeyEvent e) {
-					fireHttpProxyValuesChanged();
-				}
-			});
-		}
-		return proxyPasswordField;
-	}
-	
-	public String getProxyServer() {
-		if ( getAdvancedCheckBox().isSelected() ) {
-			return getServerTextField().getText();
-		} else { 
-			return null;
-		}
-	}
-	
-	public int getProxyPort() {
-		if ( getAdvancedCheckBox().isSelected() ) {
-			try {
-				int port = new Integer(getPortTextField().getText());
-				return port;
-			} catch (NumberFormatException e) {
-				return -1;
-			}
-		} else {
-			return -1;
-		}
-	}
-	
-	public String getProxyUsername() {
-		if ( getAdvancedCheckBox().isSelected() ) {
-			return getUsernameTextField().getText();
-		} else {
-			return null;
-		}
-	}
-
-	public char[] getProxyPassword() {
-		if ( getAdvancedCheckBox().isSelected() ) {
-			return getProxyPasswordField().getPassword();
-		} else {
-			return null;
-		}
-	}
-	
 	private void showHttpProxy(boolean show) {
-		
-		if ( show ) {
+
+		if (show) {
 			getProxyPasswordField().setVisible(true);
 			getUsernameTextField().setVisible(true);
 			getServerTextField().setVisible(true);
@@ -323,85 +409,6 @@ public class HttpProxyPanel extends JPanel implements ItemListener {
 			jLabel3.setVisible(false);
 			getButton().setVisible(false);
 		}
-		
-	}
 
-	public void itemStateChanged(ItemEvent e) {
-		
-		showHttpProxy( e.getStateChange() == ItemEvent.SELECTED );
-		fireHttpProxyValuesChanged();
 	}
-	
-	// ---------------------------------------------------------------------------------------
-	// Event stuff (MountPoints)
-	private Vector<HttpProxyPanelListener> httpProxyPanelListener;
-	private JButton button;
-
-	private void fireHttpProxyValuesChanged() {
-		// if we have no mountPointsListeners, do nothing...
-		if (httpProxyPanelListener != null && !httpProxyPanelListener.isEmpty()) {
-
-			// make a copy of the listener list in case
-			// anyone adds/removes mountPointsListeners
-			Vector targets;
-			synchronized (this) {
-				targets = (Vector) httpProxyPanelListener.clone();
-			}
-
-			// walk through the listener list and
-			// call the gridproxychanged method in each
-			Enumeration e = targets.elements();
-			while (e.hasMoreElements()) {
-				HttpProxyPanelListener l = (HttpProxyPanelListener) e.nextElement();
-				try {
-					l.httpProxyValueChanged();
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-		}
-	}
-
-	// register a listener
-	synchronized public void addHttpProxyPanelListener(HttpProxyPanelListener l) {
-		if (httpProxyPanelListener == null)
-			httpProxyPanelListener = new Vector();
-		httpProxyPanelListener.addElement(l);
-	}
-
-	// remove a listener
-	synchronized public void removeHttpProxyPanelListener(HttpProxyPanelListener l) {
-		if (httpProxyPanelListener == null) {
-			httpProxyPanelListener = new Vector<HttpProxyPanelListener>();
-		}
-		httpProxyPanelListener.removeElement(l);
-	}
-	
-	
-	private JButton getButton() {
-		if (button == null) {
-			button = new JButton("Apply");
-			button.setVisible(false);
-			button.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent arg0) {
-					
-					String host = getProxyServer();
-					int port = getProxyPort();
-					
-					if ( host != null ) {
-						if ( StringUtils.isNotBlank(getProxyUsername()) ) {
-							String username = getProxyUsername();
-							char[] password = getProxyPassword();
-							HttpProxyManager.setHttpProxy(host, port, username, password);
-						} else {
-							HttpProxyManager.setHttpProxy(host, port, null, null);
-						}
-					}
-					fireHttpProxyValuesChanged();
-				}
-			});
-		}
-		return button;
-	}
-}  //  @jve:decl-index=0:visual-constraint="10,10"
+} // @jve:decl-index=0:visual-constraint="10,10"

@@ -5,9 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-
 import org.vpac.grisu.clients.gridFtpTests.GridFtpAction;
 import org.vpac.grisu.clients.gridFtpTests.GridFtpActionItem;
 import org.vpac.grisu.clients.gridFtpTests.GridFtpTestController;
@@ -54,35 +51,51 @@ public class HundredTimesRecursiveLs extends GridFtpTestElement {
 					+ ".");
 		}
 
-//		// uploading a sourcefile
-//		DataHandler dh = new DataHandler(new FileDataSource(
-//				new File(sourceFile)));
-//		try {
-//			for (MountPoint mp : mps) {
-//				controller.getServiceInterface().upload(dh,
-//						mp.getRootUrl() + "/simpleTestFile.txt", true);
-//			}
-//		} catch (Exception e) {
-//			throw new TestSetupException("Could not upload source file: "
-//					+ e.getLocalizedMessage());
-//		}
+		// // uploading a sourcefile
+		// DataHandler dh = new DataHandler(new FileDataSource(
+		// new File(sourceFile)));
+		// try {
+		// for (MountPoint mp : mps) {
+		// controller.getServiceInterface().upload(dh,
+		// mp.getRootUrl() + "/simpleTestFile.txt", true);
+		// }
+		// } catch (Exception e) {
+		// throw new TestSetupException("Could not upload source file: "
+		// + e.getLocalizedMessage());
+		// }
 
+	}
+
+	@Override
+	public String getDescription() {
+		return "A simple job to do an \"ls\" command 100 times on the same filesystem.";
+	}
+
+	// @Override
+	// public LinkedList<GridFtpAction> getGridFtpActions() {
+	//
+	// return actions;
+	// }
+
+	@Override
+	public String getTestName() {
+		return "HundredTimesMultipleLs";
 	}
 
 	protected LinkedList<List<GridFtpActionItem>> setupGridFtpActionItems() {
 
 		LinkedList<List<GridFtpActionItem>> actionItems = new LinkedList<List<GridFtpActionItem>>();
 
-		GridFtpAction action = new GridFtpAction(GridFtpAction.Action.recursiveLs,
-				"multiRecursiveLs", controller);
+		GridFtpAction action = new GridFtpAction(
+				GridFtpAction.Action.recursiveLs, "multiRecursiveLs",
+				controller);
 		List<GridFtpActionItem> list = new LinkedList<GridFtpActionItem>();
 		// upload file
 		for (MountPoint mp : mountpoints) {
 
 			for (int i = 0; i < 100; i++) {
 				GridFtpActionItem item = new GridFtpActionItem(mp.getAlias()
-						+ i, action, mp.getRootUrl(),
-						null);
+						+ i, action, mp.getRootUrl(), null);
 				list.add(item);
 			}
 
@@ -107,24 +120,4 @@ public class HundredTimesRecursiveLs extends GridFtpTestElement {
 
 	}
 
-	// @Override
-	// public LinkedList<GridFtpAction> getGridFtpActions() {
-	//
-	// return actions;
-	// }
-
-	@Override
-	public String getTestName() {
-		return "HundredTimesMultipleLs";
-	}
-
-	@Override
-	public String getDescription() {
-		return "A simple job to do an \"ls\" command 100 times on the same filesystem.";
-	}
-
 }
-
-
-
-

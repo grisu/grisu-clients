@@ -4,11 +4,11 @@ import java.util.Date;
 
 import org.vpac.grisu.client.model.template.nodes.TemplateNode;
 
-
 /**
  * Different name so a different preprcessor is used.
+ * 
  * @author Markus Binsteiner
- *
+ * 
  */
 public class CommandLine extends InputString {
 
@@ -19,7 +19,7 @@ public class CommandLine extends InputString {
 		super();
 		//
 	}
-	
+
 	public void reset() {
 		String value = getExternalSetValue();
 
@@ -33,17 +33,17 @@ public class CommandLine extends InputString {
 
 		setDefaultValue();
 	}
-	
+
 	protected void setDefaultValue() {
-		
-		
-		if ( useLastInput ) {
+
+		if (useLastInput) {
 			String lastUserInput = holder.getExternalSetValue();
-			if ( lastUserInput != null && !"".equals(lastUserInput)) 
-				historyManager.addHistoryEntry(historyManagerKeyForThisNode+"_"+TemplateNode.LAST_USED_PARAMETER, lastUserInput, new Date(), 1);
+			if (lastUserInput != null && !"".equals(lastUserInput))
+				historyManager.addHistoryEntry(historyManagerKeyForThisNode
+						+ "_" + TemplateNode.LAST_USED_PARAMETER,
+						lastUserInput, new Date(), 1);
 		}
-		
-		
+
 		String defaultValue = getDefaultValue();
 		if (defaultValue != null) {
 

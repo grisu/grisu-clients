@@ -20,12 +20,47 @@ public class FileManagerDeleteHelpers {
 	// if this is not initialized it will do nothing
 	public static ProgressDisplay progressDisplay = new DummyDisplay();
 
+	public static boolean deleteFile(ServiceInterface serviceInterface,
+			GrisuFileObject file) {
+
+		String site;
+		try {
+			site = file.getFileSystemBackend().getSite();
+		} catch (InformationError e1) {
+			myLogger.error(e1.getLocalizedMessage());
+			return false;
+		}
+
+		if (site.equals(FileConstants.LOCAL_NAME)) {
+			File localFile = new File(file.getURI());
+			if (localFile.exists()) {
+				if (localFile.isDirectory()) {
+					return FileHelpers.deleteDirectory(localFile);
+				} else {
+					return localFile.delete();
+				}
+			} else {
+				return false;
+			}
+		} else {
+			try {
+				serviceInterface.deleteFile(file.getURI().toString());
+				return true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new FileSystemException("Could not delete file: "
+						+ file.getURI().toString());
+			}
+		}
+
+	}
+
 	public static void deleteFiles(ServiceInterface serviceInterface,
 			GrisuFileObject[] files, boolean displayProgress) {
 
 		if (displayProgress)
-			progressDisplay.start(files.length + 1, "Deleting "
-					+ files.length + " files...");
+			progressDisplay.start(files.length + 1, "Deleting " + files.length
+					+ " files...");
 
 		int progress = 0;
 		for (GrisuFileObject file : files) {
@@ -47,43 +82,6 @@ public class FileManagerDeleteHelpers {
 
 		if (displayProgress)
 			progressDisplay.close();
-		
-
-	}
-
-	public static boolean deleteFile(ServiceInterface serviceInterface,
-			GrisuFileObject file) {
-
-		String site;
-		try {
-			site = file.getFileSystemBackend().getSite();
-		} catch (InformationError e1) {
-			myLogger.error(e1.getLocalizedMessage());
-			return false;
-		}
-		
-		if (site.equals(
-				FileConstants.LOCAL_NAME)) {
-			File localFile = new File(file.getURI());
-			if (localFile.exists()) {
-				if (localFile.isDirectory()) {
-					return FileHelpers.deleteDirectory(localFile);
-				} else {
-					return localFile.delete();
-				}
-			} else {
-				return false;
-			}
-		} else {
-			try {
-				serviceInterface.deleteFile(file.getURI().toString());
-				return true;
-			} catch (Exception e) {
-				e.printStackTrace();
-				throw new FileSystemException("Could not delete file: "
-						+ file.getURI().toString());
-			}
-		}
 
 	}
 

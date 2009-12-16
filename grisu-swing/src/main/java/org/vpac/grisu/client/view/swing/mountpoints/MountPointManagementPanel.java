@@ -27,54 +27,84 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-public class MountPointManagementPanel extends JPanel implements MountPointsListener {
+public class MountPointManagementPanel extends JPanel implements
+		MountPointsListener {
 
+	/**
+	 * WindowBuilder generated method.<br>
+	 * Please don't remove this method or its invocations.<br>
+	 * It used by WindowBuilder to associate the {@link javax.swing.JPopupMenu}
+	 * with parent.
+	 */
+	private static void addPopup(Component component, final JPopupMenu popup) {
+		component.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+
+				if (e.isPopupTrigger())
+					showMenu(e);
+			}
+
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger())
+					showMenu(e);
+			}
+
+			private void showMenu(MouseEvent e) {
+				popup.show(e.getComponent(), e.getX(), e.getY());
+			}
+		});
+	}
 	private JMenuItem unmountItem;
 	private JPopupMenu popupMenu;
 	private AddMountPointPanel addMountPointPanel;
 	private JTable table;
-	private JScrollPane scrollPane;
-	
-	
-	private EnvironmentManager em = null;
-	
 
-	
+	private JScrollPane scrollPane;
+
+	private EnvironmentManager em = null;
+
 	private MountPointsTableModel mpModel = null;
-	
+
 	/**
 	 * Create the panel
 	 */
 	public MountPointManagementPanel() {
 		super();
 		setPreferredSize(new Dimension(700, 400));
-		setLayout(new FormLayout(
-			new ColumnSpec[] {
+		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
 				new ColumnSpec("default:grow(1.0)"),
-				FormFactory.RELATED_GAP_COLSPEC},
-			new RowSpec[] {
+				FormFactory.RELATED_GAP_COLSPEC }, new RowSpec[] {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				new RowSpec("default:grow(1.0)"),
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC}));
-		add(getScrollPane(), new CellConstraints(2, 2, CellConstraints.FILL, CellConstraints.FILL));
-		add(getAddMountPointPanel(), new CellConstraints(2, 4, CellConstraints.FILL, CellConstraints.FILL));
+				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC }));
+		add(getScrollPane(), new CellConstraints(2, 2, CellConstraints.FILL,
+				CellConstraints.FILL));
+		add(getAddMountPointPanel(), new CellConstraints(2, 4,
+				CellConstraints.FILL, CellConstraints.FILL));
 		//
 	}
-	
-	public void initialize(EnvironmentManager em) {
-		this.em = em;
-		em.addMountPointListener(this);
-		getAddMountPointPanel().initialize(em);
-		mpModel = new MountPointsTableModel(em);
-		getTable().setModel(mpModel);
 
+	/**
+	 * @return
+	 */
+	protected AddMountPointPanel getAddMountPointPanel() {
+		if (addMountPointPanel == null) {
+			addMountPointPanel = new AddMountPointPanel();
+		}
+		return addMountPointPanel;
 	}
-	
-	private void refresh() {
 
+	/**
+	 * @return
+	 */
+	protected JPopupMenu getPopupMenu() {
+		if (popupMenu == null) {
+			popupMenu = new JPopupMenu();
+			popupMenu.add(getUnmountItem());
+		}
+		return popupMenu;
 	}
 
 	/**
@@ -87,6 +117,7 @@ public class MountPointManagementPanel extends JPanel implements MountPointsList
 		}
 		return scrollPane;
 	}
+
 	/**
 	 * @return
 	 */
@@ -98,24 +129,58 @@ public class MountPointManagementPanel extends JPanel implements MountPointsList
 					int clickedRow = getTable().rowAtPoint(e.getPoint());
 					table.setRowSelectionInterval(clickedRow, clickedRow);
 
-
 				}
 			});
 			addPopup(table, getPopupMenu());
-//			table.setDefaultRenderer(Object.class, new MountPointTableCellRenderer());
-			table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+			// table.setDefaultRenderer(Object.class, new
+			// MountPointTableCellRenderer());
+			table
+					.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		}
 		return table;
 	}
+
 	/**
 	 * @return
 	 */
-	protected AddMountPointPanel getAddMountPointPanel() {
-		if (addMountPointPanel == null) {
-			addMountPointPanel = new AddMountPointPanel();
+	protected JMenuItem getUnmountItem() {
+		if (unmountItem == null) {
+			unmountItem = new JMenuItem();
+			unmountItem.addActionListener(new ActionListener() {
+				public void actionPerformed(final ActionEvent e) {
+
+					int selRow = getTable().getSelectedRow();
+					MountPoint mp = (MountPoint) (getTable().getModel()
+							.getValueAt(selRow, 0));
+
+					if (mp.isAutomaticallyMounted()) {
+						JOptionPane
+								.showMessageDialog(
+										MountPointManagementPanel.this,
+										"Could not remove this file share because\nit was automatically added.",
+										"File share not removable",
+										JOptionPane.ERROR_MESSAGE);
+						return;
+					} else {
+						em.umount(mp);
+						return;
+					}
+				}
+			});
+			unmountItem.setText("Remove");
 		}
-		return addMountPointPanel;
+		return unmountItem;
 	}
+
+	public void initialize(EnvironmentManager em) {
+		this.em = em;
+		em.addMountPointListener(this);
+		getAddMountPointPanel().initialize(em);
+		mpModel = new MountPointsTableModel(em);
+		getTable().setModel(mpModel);
+
+	}
+
 	/**
 	 * @return
 	 */
@@ -127,68 +192,10 @@ public class MountPointManagementPanel extends JPanel implements MountPointsList
 			throws RemoteFileSystemException {
 
 		mpModel.refresh();
-		
 
 	}
-	/**
-	 * @return
-	 */
-	protected JPopupMenu getPopupMenu() {
-		if (popupMenu == null) {
-			popupMenu = new JPopupMenu();
-			popupMenu.add(getUnmountItem());
-		}
-		return popupMenu;
-	}
 
+	private void refresh() {
 
-	/**
-	 * WindowBuilder generated method.<br>
-	 * Please don't remove this method or its invocations.<br>
-	 * It used by WindowBuilder to associate the {@link javax.swing.JPopupMenu} with parent.
-	 */
-	private static void addPopup(Component component, final JPopupMenu popup) {
-		component.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				
-				if (e.isPopupTrigger())
-					showMenu(e);
-			}
-			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger())
-					showMenu(e);
-			}
-			private void showMenu(MouseEvent e) {
-				popup.show(e.getComponent(), e.getX(), e.getY());
-			}
-		});
-	}
-	/**
-	 * @return
-	 */
-	protected JMenuItem getUnmountItem() {
-		if (unmountItem == null) {
-			unmountItem = new JMenuItem();
-			unmountItem.addActionListener(new ActionListener() {
-				public void actionPerformed(final ActionEvent e) {
-
-					int selRow = getTable().getSelectedRow();
-					MountPoint mp = (MountPoint)(getTable().getModel().getValueAt(selRow, 0));
-					
-					if ( mp.isAutomaticallyMounted() ) {
-						JOptionPane.showMessageDialog(MountPointManagementPanel.this,
-							    "Could not remove this file share because\nit was automatically added.",
-							    "File share not removable",
-							    JOptionPane.ERROR_MESSAGE);
-						return;
-					} else {
-						em.umount(mp);
-						return;
-					}
-				}
-			});
-			unmountItem.setText("Remove");
-		}
-		return unmountItem;
 	}
 }

@@ -14,7 +14,6 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import org.vpac.grisu.client.control.EnvironmentManager;
-import org.vpac.grisu.control.JobConstants;
 import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
 
 import au.org.arcs.jcommons.constants.Constants;
@@ -34,50 +33,78 @@ public class AddMountPointPanel extends JPanel {
 	private JTextField textField;
 	private JLabel rootUrlLabel;
 	private JLabel aliasLabel;
-	
+
 	private EnvironmentManager em = null;
 	private DefaultComboBoxModel fqanModel = new DefaultComboBoxModel();
+
 	/**
 	 * Create the panel
 	 */
 	public AddMountPointPanel() {
 		super();
-		setBorder(new TitledBorder(null, "Add mountpoint manually", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
-		setLayout(new FormLayout(
-			new ColumnSpec[] {
-				FormFactory.RELATED_GAP_COLSPEC,
-				FormFactory.DEFAULT_COLSPEC,
+		setBorder(new TitledBorder(null, "Add mountpoint manually",
+				TitledBorder.DEFAULT_JUSTIFICATION,
+				TitledBorder.DEFAULT_POSITION, null, null));
+		setLayout(new FormLayout(new ColumnSpec[] {
+				FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC,
 				FormFactory.RELATED_GAP_COLSPEC,
 				new ColumnSpec("default:grow(1.0)"),
-				FormFactory.RELATED_GAP_COLSPEC},
-			new RowSpec[] {
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				new RowSpec("default"),
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC}));
-		add(getAliasLabel(), new CellConstraints(2, 2, CellConstraints.RIGHT, CellConstraints.DEFAULT));
-		add(getRootUrlLabel(), new CellConstraints(2, 4, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+				FormFactory.RELATED_GAP_COLSPEC }, new RowSpec[] {
+				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC, new RowSpec("default"),
+				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC }));
+		add(getAliasLabel(), new CellConstraints(2, 2, CellConstraints.RIGHT,
+				CellConstraints.DEFAULT));
+		add(getRootUrlLabel(), new CellConstraints(2, 4, CellConstraints.RIGHT,
+				CellConstraints.DEFAULT));
 		add(getTextField(), new CellConstraints(4, 2));
 		add(getTextField_1(), new CellConstraints(4, 4));
-		add(getAddButton(), new CellConstraints(4, 8, CellConstraints.RIGHT, CellConstraints.DEFAULT));
-		add(getVoLabel(), new CellConstraints(2, 6, CellConstraints.RIGHT, CellConstraints.DEFAULT));
-		add(getComboBox(), new CellConstraints(4, 6, CellConstraints.FILL, CellConstraints.DEFAULT));
+		add(getAddButton(), new CellConstraints(4, 8, CellConstraints.RIGHT,
+				CellConstraints.DEFAULT));
+		add(getVoLabel(), new CellConstraints(2, 6, CellConstraints.RIGHT,
+				CellConstraints.DEFAULT));
+		add(getComboBox(), new CellConstraints(4, 6, CellConstraints.FILL,
+				CellConstraints.DEFAULT));
 		//
 	}
-	
-	public void initialize(EnvironmentManager em) {
-		this.em = em;
-		fqanModel.removeAllElements();
-		fqanModel.addElement(Constants.NON_VO_FQAN);
-		for ( String fqan : em.getFqans() ) {
-			fqanModel.addElement(fqan);
+
+	/**
+	 * @return
+	 */
+	protected JButton getAddButton() {
+		if (addButton == null) {
+			addButton = new JButton();
+			addButton.addActionListener(new ActionListener() {
+				public void actionPerformed(final ActionEvent e) {
+
+					String alias = getTextField().getText();
+					URI url = null;
+					try {
+						url = new URI(getTextField_1().getText());
+					} catch (URISyntaxException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						return;
+					}
+					String fqan = (String) getComboBox().getSelectedItem();
+
+					try {
+						em.mount(url.toString(), alias, fqan, false);
+					} catch (RemoteFileSystemException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						return;
+					}
+
+				}
+			});
+			addButton.setText("Add");
 		}
+		return addButton;
 	}
+
 	/**
 	 * @return
 	 */
@@ -88,6 +115,17 @@ public class AddMountPointPanel extends JPanel {
 		}
 		return aliasLabel;
 	}
+
+	/**
+	 * @return
+	 */
+	protected JComboBox getComboBox() {
+		if (comboBox == null) {
+			comboBox = new JComboBox(fqanModel);
+		}
+		return comboBox;
+	}
+
 	/**
 	 * @return
 	 */
@@ -98,6 +136,7 @@ public class AddMountPointPanel extends JPanel {
 		}
 		return rootUrlLabel;
 	}
+
 	/**
 	 * @return
 	 */
@@ -107,6 +146,7 @@ public class AddMountPointPanel extends JPanel {
 		}
 		return textField;
 	}
+
 	/**
 	 * @return
 	 */
@@ -116,40 +156,7 @@ public class AddMountPointPanel extends JPanel {
 		}
 		return textField_1;
 	}
-	/**
-	 * @return
-	 */
-	protected JButton getAddButton() {
-		if (addButton == null) {
-			addButton = new JButton();
-			addButton.addActionListener(new ActionListener() {
-				public void actionPerformed(final ActionEvent e) {
-					
-					String alias = getTextField().getText();
-					URI url = null;
-					try {
-						url = new URI(getTextField_1().getText());
-					} catch (URISyntaxException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-						return;
-					}
-					String fqan = (String)getComboBox().getSelectedItem();
-					
-					try {
-						em.mount(url.toString(), alias, fqan, false);
-					} catch (RemoteFileSystemException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-						return;
-					} 
-					
-				}
-			});
-			addButton.setText("Add");
-		}
-		return addButton;
-	}
+
 	/**
 	 * @return
 	 */
@@ -160,14 +167,14 @@ public class AddMountPointPanel extends JPanel {
 		}
 		return voLabel;
 	}
-	/**
-	 * @return
-	 */
-	protected JComboBox getComboBox() {
-		if (comboBox == null) {
-			comboBox = new JComboBox(fqanModel);
+
+	public void initialize(EnvironmentManager em) {
+		this.em = em;
+		fqanModel.removeAllElements();
+		fqanModel.addElement(Constants.NON_VO_FQAN);
+		for (String fqan : em.getFqans()) {
+			fqanModel.addElement(fqan);
 		}
-		return comboBox;
 	}
 
 }

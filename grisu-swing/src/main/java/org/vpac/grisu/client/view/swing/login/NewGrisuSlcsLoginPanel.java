@@ -67,13 +67,6 @@ public class NewGrisuSlcsLoginPanel extends JPanel implements SlcsListener,
 
 	}
 
-	private ShibLoginPanel getShibLoginPanel_1() {
-		if (shibLoginPanel == null) {
-			shibLoginPanel = new ShibLoginPanel(DEFAULT_SLCS_URL);
-		}
-		return shibLoginPanel;
-	}
-
 	private JButton getButton() {
 		if (button == null) {
 			button = new JButton("Login");
@@ -87,6 +80,13 @@ public class NewGrisuSlcsLoginPanel extends JPanel implements SlcsListener,
 			});
 		}
 		return button;
+	}
+
+	private ShibLoginPanel getShibLoginPanel_1() {
+		if (shibLoginPanel == null) {
+			shibLoginPanel = new ShibLoginPanel(DEFAULT_SLCS_URL);
+		}
+		return shibLoginPanel;
 	}
 
 	private Person getUser() {
@@ -107,6 +107,36 @@ public class NewGrisuSlcsLoginPanel extends JPanel implements SlcsListener,
 		user.setRole(Person.USER_ROLE);
 		user.setNickname(username);
 		return user;
+	}
+
+	private void lockUI(boolean lock) {
+		getButton().setEnabled(!lock);
+		if (lock) {
+			this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		} else {
+			this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		}
+	}
+
+	public void setParamsHolder(LoginPanel loginPanel) {
+
+		this.loginPanelHolder = loginPanel;
+	}
+
+	public void shibLoginComplete(PyInstance arg0) {
+
+	}
+
+	public void shibLoginFailed(Exception arg0) {
+
+		lockUI(false);
+		Utils.showErrorMessage(getUser(), NewGrisuSlcsLoginPanel.this,
+				"loginError", arg0);
+
+	}
+
+	public void shibLoginStarted() {
+		lockUI(true);
 	}
 
 	public void slcsLoginComplete(X509Certificate cert, PrivateKey privateKey) {
@@ -149,7 +179,6 @@ public class NewGrisuSlcsLoginPanel extends JPanel implements SlcsListener,
 					"unknownLoginError", null);
 		}
 
-
 	}
 
 	public void slcsLoginFailed(String message, Exception optionalException) {
@@ -158,39 +187,6 @@ public class NewGrisuSlcsLoginPanel extends JPanel implements SlcsListener,
 		Utils.showErrorMessage(getUser(), NewGrisuSlcsLoginPanel.this,
 				"loginError", optionalException);
 
-	}
-
-	public void setParamsHolder(LoginPanel loginPanel) {
-
-		this.loginPanelHolder = loginPanel;
-	}
-
-	public void shibLoginComplete(PyInstance arg0) {
-
-		
-	}
-
-	public void shibLoginFailed(Exception arg0) {
-
-		lockUI(false);
-		Utils.showErrorMessage(getUser(), NewGrisuSlcsLoginPanel.this,
-				"loginError", arg0);
-		
-		
-
-	}
-
-	public void shibLoginStarted() {
-		lockUI(true);
-	}
-	
-	private void lockUI(boolean lock) {
-		getButton().setEnabled(!lock);	
-		if ( lock ) {
-			this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		} else {
-			this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		}
 	}
 
 }

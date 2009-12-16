@@ -1,5 +1,3 @@
-
-
 package org.vpac.grisu.client.view.swing.login;
 
 import java.awt.BorderLayout;
@@ -15,12 +13,9 @@ import org.vpac.grisu.settings.ClientPropertiesManager;
 
 public class LoginDialog extends JDialog implements LoginInterface {
 
-	private LoginPanel loginPanel = null;
-	private boolean userCancelledLogin = false;
-	private ServiceInterface serviceInterface = null;
-	
 	/**
 	 * Launch the application
+	 * 
 	 * @param args
 	 */
 	public static void main(String args[]) {
@@ -36,6 +31,10 @@ public class LoginDialog extends JDialog implements LoginInterface {
 			e.printStackTrace();
 		}
 	}
+	private LoginPanel loginPanel = null;
+	private boolean userCancelledLogin = false;
+
+	private ServiceInterface serviceInterface = null;
 
 	/**
 	 * Create the dialog
@@ -51,18 +50,43 @@ public class LoginDialog extends JDialog implements LoginInterface {
 		getContentPane().add(loginPanel, BorderLayout.CENTER);
 		//
 	}
-	
-	public void setServiceInterface(ServiceInterface serviceInterface) {
-		this.serviceInterface = serviceInterface;
-		this.setVisible(false);
-	}
-	
+
 	public ServiceInterface getServiceInterface() {
 		return serviceInterface;
 	}
 
-	public boolean userCancelledLogin() {
-		return userCancelledLogin;
+	public void saveCurrentConnectionsSettingsAsDefault() {
+
+		LoginParams params = loginPanel.getLoginParams();
+
+		ClientPropertiesManager.setDefaultServiceInterfaceUrl(params
+				.getServiceInterfaceUrl());
+
+		if (params.getHttpProxy() != null && !"".equals(params.getHttpProxy())) {
+			ClientPropertiesManager.saveDefaultHttpProxy("true");
+			ClientPropertiesManager.saveDefaultHttpProxyServer(params
+					.getHttpProxy());
+		} else {
+			ClientPropertiesManager.saveDefaultHttpProxy("false");
+		}
+
+		if (params.getHttpProxyPort() > 0)
+			ClientPropertiesManager.saveDefaultHttpProxyPort(new Integer(params
+					.getHttpProxyPort()).toString());
+
+		if (params.getHttpProxyUsername() != null
+				&& !"".equals(params.getHttpProxyUsername()))
+			ClientPropertiesManager.saveDefaultHttpProxyUsername(params
+					.getHttpProxyUsername());
+
+		ClientPropertiesManager.saveSelectedTab(loginPanel
+				.getSelectedLoginPanel());
+
+	}
+
+	public void setServiceInterface(ServiceInterface serviceInterface) {
+		this.serviceInterface = serviceInterface;
+		this.setVisible(false);
 	}
 
 	public void setUserCancelledLogin(boolean cancelled) {
@@ -70,28 +94,8 @@ public class LoginDialog extends JDialog implements LoginInterface {
 		this.setVisible(false);
 	}
 
-	public void saveCurrentConnectionsSettingsAsDefault() {
-
-		LoginParams params = loginPanel.getLoginParams();
-
-		ClientPropertiesManager.setDefaultServiceInterfaceUrl(params.getServiceInterfaceUrl());
-		
-		if ( params.getHttpProxy() != null && ! "".equals(params.getHttpProxy()) ) {
-			ClientPropertiesManager.saveDefaultHttpProxy("true");
-			ClientPropertiesManager.saveDefaultHttpProxyServer(params.getHttpProxy());
-		} else {
-			ClientPropertiesManager.saveDefaultHttpProxy("false");
-		}
-		
-		
-		if ( params.getHttpProxyPort() > 0 ) 
-			ClientPropertiesManager.saveDefaultHttpProxyPort(new Integer(params.getHttpProxyPort()).toString());
-			
-		if ( params.getHttpProxyUsername() != null && ! "".equals(params.getHttpProxyUsername()) ) 
-			ClientPropertiesManager.saveDefaultHttpProxyUsername(params.getHttpProxyUsername());
-
-		ClientPropertiesManager.saveSelectedTab(loginPanel.getSelectedLoginPanel());
-		
+	public boolean userCancelledLogin() {
+		return userCancelledLogin;
 	}
 
 }

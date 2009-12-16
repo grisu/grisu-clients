@@ -76,21 +76,188 @@ public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 
 	private String currentVersion;
 	private boolean versionLocked = false;
-	
+
 	private String lastSelectedExactVersion = null;
 
 	private TemplateNode templateNode;
 
-	public ApplicationVersion() {
-		setBorder(new TitledBorder(null, "Version", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-	}
-
 	static final Logger myLogger = Logger.getLogger(ApplicationVersion.class
 			.getName());
 
+	// event stuff
+	private Vector<ValueListener> valueChangedListeners;
+
+	public ApplicationVersion() {
+		setBorder(new TitledBorder(null, "Version", TitledBorder.LEADING,
+				TitledBorder.TOP, null, null));
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+	}
+
+	public void actionPerformed(ActionEvent arg0) {
+		switchMode(arg0.getActionCommand());
+	}
+
+	public void addValueListener(ValueListener l) {
+		if (valueChangedListeners == null)
+			valueChangedListeners = new Vector<ValueListener>();
+		valueChangedListeners.addElement(l);
+	}
+
+	private void fillVersions(String preferedVersion) {
+
+		versionLocked = true;
+		this.currentVersion = null;
+		versionModel.removeAllElements();
+		for (String version : infoObject
+				.getAllAvailableVersionsForFqan(registry
+						.getUserEnvironmentManager().getCurrentFqan())) {
+			versionModel.addElement(version);
+		}
+
+		if (versionModel.getIndexOf(preferedVersion) >= 0) {
+			versionModel.setSelectedItem(preferedVersion);
+		} else {
+			if (versionModel.getSize() > 0) {
+				versionModel.setSelectedItem(versionModel.getElementAt(0));
+			}
+		}
+
+		versionLocked = false;
+
+	}
+
+	private void fireVersionChanged(String newValue) {
+
+		myLogger.debug("Fire value changed event from Version: new value: "
+				+ newValue);
+		// if we have no mountPointsListeners, do nothing...
+		if (valueChangedListeners != null && !valueChangedListeners.isEmpty()) {
+
+			// make a copy of the listener list in case
+			// anyone adds/removes mountPointsListeners
+			Vector<ValueListener> valueChangedTargets;
+			synchronized (this) {
+				valueChangedTargets = (Vector<ValueListener>) valueChangedListeners
+						.clone();
+			}
+
+			// walk through the listener list and
+			// call the gridproxychanged method in each
+			Enumeration<ValueListener> e = valueChangedTargets.elements();
+			while (e.hasMoreElements()) {
+				ValueListener valueChanged_l = (ValueListener) e.nextElement();
+				valueChanged_l.valueChanged(this, newValue);
+			}
+		}
+	}
+
+	public void fqansChanged(FqanEvent event) {
+
+		String currentVersion = (String) versionModel.getSelectedItem();
+		versionModel.removeAllElements();
+
+		fillVersions(currentVersion);
+		fireVersionChanged((String) (versionModel.getSelectedItem()));
+
+	}
+
+	/**
+	 * @return
+	 */
+	protected JRadioButton getAnyRadioButton() {
+		if (anyRadioButton == null) {
+			anyRadioButton = new JRadioButton();
+			anyRadioButton.setText("Any");
+			modeGroup.add(anyRadioButton);
+			anyRadioButton.setActionCommand(ANY_MODE_STRING);
+			anyRadioButton.addActionListener(this);
+		}
+		return anyRadioButton;
+	}
+
+	/**
+	 * @return
+	 */
+	protected JRadioButton getDefaultRadioButton() {
+		if (defaultRadioButton == null) {
+			defaultRadioButton = new JRadioButton();
+			defaultRadioButton.setText("Default");
+			modeGroup.add(defaultRadioButton);
+			defaultRadioButton.setActionCommand(DEFAULT_MODE_STRING);
+			defaultRadioButton.addActionListener(this);
+		}
+		return defaultRadioButton;
+	}
+
+	/**
+	 * @return
+	 */
+	protected JRadioButton getExactRadioButton() {
+		if (exactRadioButton == null) {
+			exactRadioButton = new JRadioButton();
+			exactRadioButton.setText("Exact");
+			modeGroup.add(exactRadioButton);
+			exactRadioButton.setActionCommand(EXACT_MODE_STRING);
+			exactRadioButton.addActionListener(this);
+		}
+		return exactRadioButton;
+	}
+
+	public String getExternalSetValue() {
+		return currentVersion;
+	}
+
 	public JPanel getTemplateNodePanel() {
 		return this;
+	}
+
+	protected JComboBox getVersionComboBox() {
+		if (versionComboBox == null) {
+			versionComboBox = new JComboBox(versionModel);
+			versionComboBox.addItemListener(new ItemListener() {
+				public void itemStateChanged(final ItemEvent e) {
+					if (!versionLocked) {
+						if (e.getStateChange() == ItemEvent.SELECTED) {
+
+							if (currentMode == EXACT_VERSION_MODE) {
+								String temp = (String) (versionModel
+										.getSelectedItem());
+								fireVersionChanged(temp);
+								registry
+										.getHistoryManager()
+										.addHistoryEntry(
+												TemplateTagConstants
+														.getGlobalLastVersionKey(infoObject
+																.getApplicationName()),
+												(String) (versionModel
+														.getSelectedItem()));
+								lastSelectedExactVersion = temp;
+							}
+
+						}
+					}
+				}
+			});
+			versionComboBox.setMaximumSize(new Dimension(300, 24));
+			versionComboBox.setEditable(false);
+		}
+		return versionComboBox;
+	}
+
+	public void removeValueListener(ValueListener l) {
+		if (valueChangedListeners == null) {
+			valueChangedListeners = new Vector<ValueListener>();
+		}
+		valueChangedListeners.removeElement(l);
+	}
+
+	public void reset() {
+	}
+
+	public void setExternalSetValue(String value) {
+		myLogger.warn("Not supported yet.");
+		throw new RuntimeException("Setting value not supported yet.");
+
 	}
 
 	public void setTemplateNode(TemplateNode node)
@@ -215,57 +382,6 @@ public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 
 	}
 
-	private void fillVersions(String preferedVersion) {
-
-		versionLocked = true;
-		this.currentVersion = null;
-		versionModel.removeAllElements();
-		for (String version : infoObject
-				.getAllAvailableVersionsForFqan(registry
-						.getUserEnvironmentManager().getCurrentFqan())) {
-			versionModel.addElement(version);
-		}
-
-		if (versionModel.getIndexOf(preferedVersion) >= 0) {
-			versionModel.setSelectedItem(preferedVersion);
-		} else {
-			if (versionModel.getSize() > 0) {
-				versionModel.setSelectedItem(versionModel.getElementAt(0));
-			}
-		}
-
-		versionLocked = false;
-
-	}
-
-	public void templateNodeUpdated(TemplateNodeEvent event) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public String getExternalSetValue() {
-		return currentVersion;
-	}
-
-	public void reset() {
-	}
-
-	public void setExternalSetValue(String value) {
-		myLogger.warn("Not supported yet.");
-		throw new RuntimeException("Setting value not supported yet.");
-
-	}
-
-	public void fqansChanged(FqanEvent event) {
-
-		String currentVersion = (String)versionModel.getSelectedItem();
-		versionModel.removeAllElements();
-		
-		fillVersions(currentVersion);
-		fireVersionChanged((String)(versionModel.getSelectedItem()));
-		
-	}
-
 	private void switchMode(String mode) {
 
 		if (ANY_MODE_STRING.equals(mode)) {
@@ -296,8 +412,7 @@ public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 		registry.getHistoryManager().addHistoryEntry(
 				TemplateTagConstants.getGlobalLastVersionModeKey(infoObject
 						.getApplicationName()), ANY_MODE_STRING, new Date());
-		
-		
+
 		fireVersionChanged(this.currentVersion);
 
 	}
@@ -308,14 +423,15 @@ public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 		versionModel.removeElement(ANY_MODE_STRING);
 		int index = versionModel.getIndexOf(defaultVersion);
 		String temp = null;
-		if ( ! Constants.NO_VERSION_INDICATOR_STRING.equals(defaultVersion) && index < 0 ) {
+		if (!Constants.NO_VERSION_INDICATOR_STRING.equals(defaultVersion)
+				&& index < 0) {
 			temp = DEFAULT_VERSION_NOT_AVAILABLE_STRING;
 		} else {
 			temp = defaultVersion;
 		}
 		versionModel.setSelectedItem(temp);
 		versionLocked = false;
-		
+
 		getVersionComboBox().setEnabled(false);
 		this.currentMode = DEFAULT_VERSION_MODE;
 		this.currentVersion = temp;
@@ -331,15 +447,17 @@ public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 	}
 
 	private void switchToExactMode() {
-		
+
 		versionLocked = true;
 		versionModel.removeElement(ANY_MODE_STRING);
 		versionModel.removeElement(DEFAULT_VERSION_NOT_AVAILABLE_STRING);
-		if ( DEFAULT_VERSION_NOT_AVAILABLE_STRING.equals(versionModel.getSelectedItem()) || ANY_MODE_STRING.equals(versionModel.getSelectedItem()) ) {
+		if (DEFAULT_VERSION_NOT_AVAILABLE_STRING.equals(versionModel
+				.getSelectedItem())
+				|| ANY_MODE_STRING.equals(versionModel.getSelectedItem())) {
 			versionComboBox.setSelectedIndex(0);
 		}
-		
-		if ( lastSelectedExactVersion != null ) {
+
+		if (lastSelectedExactVersion != null) {
 			versionModel.setSelectedItem(lastSelectedExactVersion);
 		}
 		versionLocked = false;
@@ -355,124 +473,9 @@ public class ApplicationVersion extends JPanel implements TemplateNodePanel,
 		fireVersionChanged(this.currentVersion);
 	}
 
-	protected JComboBox getVersionComboBox() {
-		if (versionComboBox == null) {
-			versionComboBox = new JComboBox(versionModel);
-			versionComboBox.addItemListener(new ItemListener() {
-				public void itemStateChanged(final ItemEvent e) {
-					if (!versionLocked) {
-						if (e.getStateChange() == ItemEvent.SELECTED) {
+	public void templateNodeUpdated(TemplateNodeEvent event) {
+		// TODO Auto-generated method stub
 
-							if (currentMode == EXACT_VERSION_MODE) {
-								String temp = (String) (versionModel
-										.getSelectedItem());
-								fireVersionChanged(temp);
-								registry
-										.getHistoryManager()
-										.addHistoryEntry(
-												TemplateTagConstants
-														.getGlobalLastVersionKey(infoObject
-																.getApplicationName()),
-												(String) (versionModel
-														.getSelectedItem()));
-								lastSelectedExactVersion = temp;
-							}
-
-						}
-					}
-				}
-			});
-			versionComboBox.setMaximumSize(new Dimension(300, 24));
-			versionComboBox.setEditable(false);
-		}
-		return versionComboBox;
-	}
-
-	/**
-	 * @return
-	 */
-	protected JRadioButton getExactRadioButton() {
-		if (exactRadioButton == null) {
-			exactRadioButton = new JRadioButton();
-			exactRadioButton.setText("Exact");
-			modeGroup.add(exactRadioButton);
-			exactRadioButton.setActionCommand(EXACT_MODE_STRING);
-			exactRadioButton.addActionListener(this);
-		}
-		return exactRadioButton;
-	}
-
-	/**
-	 * @return
-	 */
-	protected JRadioButton getDefaultRadioButton() {
-		if (defaultRadioButton == null) {
-			defaultRadioButton = new JRadioButton();
-			defaultRadioButton.setText("Default");
-			modeGroup.add(defaultRadioButton);
-			defaultRadioButton.setActionCommand(DEFAULT_MODE_STRING);
-			defaultRadioButton.addActionListener(this);
-		}
-		return defaultRadioButton;
-	}
-
-	/**
-	 * @return
-	 */
-	protected JRadioButton getAnyRadioButton() {
-		if (anyRadioButton == null) {
-			anyRadioButton = new JRadioButton();
-			anyRadioButton.setText("Any");
-			modeGroup.add(anyRadioButton);
-			anyRadioButton.setActionCommand(ANY_MODE_STRING);
-			anyRadioButton.addActionListener(this);
-		}
-		return anyRadioButton;
-	}
-
-	// event stuff
-	private Vector<ValueListener> valueChangedListeners;
-
-	private void fireVersionChanged(String newValue) {
-
-		myLogger.debug("Fire value changed event from Version: new value: "
-				+ newValue);
-		// if we have no mountPointsListeners, do nothing...
-		if (valueChangedListeners != null && !valueChangedListeners.isEmpty()) {
-
-			// make a copy of the listener list in case
-			// anyone adds/removes mountPointsListeners
-			Vector<ValueListener> valueChangedTargets;
-			synchronized (this) {
-				valueChangedTargets = (Vector<ValueListener>) valueChangedListeners
-						.clone();
-			}
-
-			// walk through the listener list and
-			// call the gridproxychanged method in each
-			Enumeration<ValueListener> e = valueChangedTargets.elements();
-			while (e.hasMoreElements()) {
-				ValueListener valueChanged_l = (ValueListener) e.nextElement();
-				valueChanged_l.valueChanged(this, newValue);
-			}
-		}
-	}
-
-	public void addValueListener(ValueListener l) {
-		if (valueChangedListeners == null)
-			valueChangedListeners = new Vector<ValueListener>();
-		valueChangedListeners.addElement(l);
-	}
-
-	public void removeValueListener(ValueListener l) {
-		if (valueChangedListeners == null) {
-			valueChangedListeners = new Vector<ValueListener>();
-		}
-		valueChangedListeners.removeElement(l);
-	}
-
-	public void actionPerformed(ActionEvent arg0) {
-		switchMode(arg0.getActionCommand());
 	}
 
 }

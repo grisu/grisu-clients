@@ -1,15 +1,20 @@
-
-
 package org.vpac.grisu.client.model.jobs;
 
 import java.util.Enumeration;
 import java.util.Vector;
 
 public abstract class AbstractJob {
-	
+
 	// ---------------------------------------------------------------------------------------
-	// Event stuff 
+	// Event stuff
 	private Vector<JobStatusListener> jobStatusListeners;
+
+	// register a listener
+	synchronized public void addJobStatusListener(JobStatusListener l) {
+		if (jobStatusListeners == null)
+			jobStatusListeners = new Vector();
+		jobStatusListeners.addElement(l);
+	}
 
 	protected void fireJobStatusEvent(int event_type) {
 		// if we have no mountPointsListeners, do nothing...
@@ -39,13 +44,6 @@ public abstract class AbstractJob {
 		}
 	}
 
-	// register a listener
-	synchronized public void addJobStatusListener(JobStatusListener l) {
-		if (jobStatusListeners == null)
-			jobStatusListeners = new Vector();
-		jobStatusListeners.addElement(l);
-	}
-
 	// remove a listener
 	synchronized public void removeJobStatusListener(JobStatusListener l) {
 		if (jobStatusListeners == null) {
@@ -53,6 +51,5 @@ public abstract class AbstractJob {
 		}
 		jobStatusListeners.removeElement(l);
 	}
-	
 
 }

@@ -7,17 +7,17 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 
 public class ClipboardUtils implements ClipboardOwner {
-	
-	final static public ClipboardUtils defaultClipboard = new ClipboardUtils(); 
-	
-	  public void setClipboardContents( String aString ){
-		    StringSelection stringSelection = new StringSelection( aString );
-		    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		    clipboard.setContents( stringSelection, this );
-		  }
+
+	final static public ClipboardUtils defaultClipboard = new ClipboardUtils();
 
 	public void lostOwnership(Clipboard clipboard, Transferable contents) {
 		// nothing to do here
+	}
+
+	public void setClipboardContents(String aString) {
+		StringSelection stringSelection = new StringSelection(aString);
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		clipboard.setContents(stringSelection, this);
 	}
 
 }

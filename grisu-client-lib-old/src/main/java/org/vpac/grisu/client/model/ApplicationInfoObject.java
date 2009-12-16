@@ -64,6 +64,169 @@ public class ApplicationInfoObject implements SubmissionObject, FqanListener,
 		init(initial_mode_temp);
 	}
 
+	private void clearCalculatedStuff() {
+		init(initial_mode);
+	}
+
+	// public Set<String> getCurrentlyAvailableVersions() {
+	// return currentlyAvailableVersions;
+	// }
+
+	public void fqansChanged(FqanEvent event) {
+		clearCalculatedStuff();
+	}
+
+	public synchronized Set<String> getAllAvailableVersions() {
+		return em.getAllAvailableVersionsForApplication(
+				getCurrentApplicationName(), em.getDefaultFqan());
+	}
+
+	public Map<String, String> getCurrentApplicationDetails() {
+
+		String tempCurrentVersion = getCurrentVersion();
+		SubmissionLocation tempCurrentLocation = getCurrentSubmissionLocation();
+
+		if (getCurrentVersion() == null || "".equals(tempCurrentVersion)
+				|| tempCurrentLocation == null) {
+			return null;
+		}
+
+		if (detailsCache.get(tempCurrentVersion + "_"
+				+ tempCurrentLocation.getLocation()) == null) {
+			// lookup executables
+			Map<String, String> tempDetails = em.getServiceInterface()
+					.getApplicationDetailsForVersionAndSubmissionLocation(
+							getCurrentApplicationName(), tempCurrentVersion,
+							tempCurrentLocation.getLocation())
+					.getDetailsAsMap();
+			detailsCache.put(tempCurrentVersion + "_"
+					+ tempCurrentLocation.getLocation(), tempDetails);
+		}
+		return detailsCache.get(tempCurrentVersion + "_"
+				+ tempCurrentLocation.getLocation());
+
+	}
+
+	public String getCurrentApplicationName() {
+		return application;
+	}
+
+	public String[] getCurrentExecutables() {
+		return getCurrentApplicationDetails()
+				.get(Constants.MDS_EXECUTABLES_KEY).split(",");
+	}
+
+	public Set<String> getCurrentlyPossibleSites() {
+
+		Set<String> result = new TreeSet<String>();
+		for (SubmissionLocation subLoc : getCurrentlyPossibleSubmissionLocations()) {
+			result.add(subLoc.getSite());
+		}
+		return result;
+
+	}
+
+	public Set<SubmissionLocation> getCurrentlyPossibleSubmissionLocations() {
+		return currentSubLocs;
+	}
+
+	public Set<SubmissionLocation> getCurrentlyPossibleSubmissionLocationsForSite(
+			String site) {
+		Set<SubmissionLocation> result = new TreeSet<SubmissionLocation>();
+		for (SubmissionLocation subLoc : getCurrentlyPossibleSubmissionLocations()) {
+
+			if (subLoc.getSite().equals(site)) {
+				result.add(subLoc);
+			}
+		}
+		return result;
+	}
+
+	public String[] getCurrentModules() {
+		return getCurrentApplicationDetails().get(Constants.MDS_MODULES_KEY)
+				.split(",");
+	}
+
+	public SubmissionLocation getCurrentSubmissionLocation() {
+
+		if (this.currentSubmissionLocation == null) {
+			if (getCurrentlyPossibleSubmissionLocations() == null
+					|| getCurrentlyPossibleSubmissionLocations().size() == 0) {
+				// throw new NoPossibleSubmissionLocation(this.application,
+				// null, em.getDefaultFqan());
+				return null;
+			}
+			// TODO choose the best option,not just the first one in the list
+			this.currentSubmissionLocation = getCurrentlyPossibleSubmissionLocations()
+					.iterator().next();
+		}
+		return this.currentSubmissionLocation;
+	}
+
+	// submissionObject properties
+
+	public String getCurrentVersion() {
+
+		if (this.mode == DEFAULT_VERSION_MODE
+				|| this.mode == EXACT_VERSION_MODE || this.fixedVersion == null) {
+
+			return this.fixedVersion;
+
+		} else if (this.mode == ANY_VERSION_MODE) {
+
+			SubmissionLocation tempSubLoc = getCurrentSubmissionLocation();
+			if (tempSubLoc == null) {
+				return null;
+			} else {
+				String tempVersion = getRecommendedVersionForSubmissionLocation(
+						tempSubLoc, em.getDefaultFqan());
+				return tempVersion;
+			}
+		} else {
+			throw new RuntimeException("Mode not supported: " + this.mode);
+		}
+
+	}
+
+	public int getPreferredExecutableType() {
+		return preferredExecutableType;
+	}
+
+	public String getRecommendedVersionForSubmissionLocation(
+			SubmissionLocation subLoc, String fqan) {
+
+		String[] allVersions = em
+				.getAllVersionsForApplicationAtSubmissionLocation(
+						getCurrentApplicationName(), subLoc, fqan);
+
+		if (allVersions == null || allVersions.length == 0) {
+			return null;
+		} else {
+			String recommendedVersion = allVersions[0];
+			// TODO here comes the matchmaker
+			return recommendedVersion;
+		}
+	}
+
+	private Set<SubmissionLocation> getSubmissionLocationsForAnyVersion() {
+
+		return em.getAllAvailableSubmissionLocationsForApplication(
+				getCurrentApplicationName(), em.getDefaultFqan());
+	}
+
+	private Set<SubmissionLocation> getSubmissionLocationsForDefaultVersion() {
+
+		return em.getAllAvailableSubmissionLocationsForApplicationAndVersion(
+				getCurrentApplicationName(), DEFAULT_VERSION_STRING, em
+						.getDefaultFqan());
+	}
+
+	private Set<SubmissionLocation> getSubmissionLocationsForExactVersion(
+			String version) {
+		return em.getAllAvailableSubmissionLocationsForApplicationAndVersion(
+				getCurrentApplicationName(), version, em.getDefaultFqan());
+	}
+
 	private void init(int initial_mode_temp) {
 		this.mode = initial_mode;
 
@@ -75,9 +238,21 @@ public class ApplicationInfoObject implements SubmissionObject, FqanListener,
 		}.start();
 	}
 
-	// public Set<String> getCurrentlyAvailableVersions() {
-	// return currentlyAvailableVersions;
-	// }
+	public void mountPointsChanged(MountPointEvent mpe)
+			throws RemoteFileSystemException {
+		clearCalculatedStuff();
+	}
+
+	public void setCurrentSubmissionLocation(SubmissionLocation location)
+			throws SubmissionLocationException {
+
+		if (!getCurrentlyPossibleSubmissionLocations().contains(location)) {
+			throw new SubmissionLocationException(location);
+		} else {
+			this.currentSubmissionLocation = location;
+		}
+
+	}
 
 	/**
 	 * Sets the mode for this info object. Set it to either:
@@ -113,7 +288,7 @@ public class ApplicationInfoObject implements SubmissionObject, FqanListener,
 			setVersion(null);
 			break;
 		case EXACT_VERSION_MODE:
-			if ( version == null ) {
+			if (version == null) {
 				if (this.currentSubmissionLocation != null) {
 					try {
 						this.fixedVersion = em
@@ -155,24 +330,12 @@ public class ApplicationInfoObject implements SubmissionObject, FqanListener,
 		// }
 
 		this.currentSubLocs = tempSubLocs;
-//		this.mode = mode;
+		// this.mode = mode;
 
 	}
 
-	public String getRecommendedVersionForSubmissionLocation(
-			SubmissionLocation subLoc, String fqan) {
-
-		String[] allVersions = em
-				.getAllVersionsForApplicationAtSubmissionLocation(
-						getCurrentApplicationName(), subLoc, fqan);
-
-		if (allVersions == null || allVersions.length == 0) {
-			return null;
-		} else {
-			String recommendedVersion = allVersions[0];
-			// TODO here comes the matchmaker
-			return recommendedVersion;
-		}
+	public void setPreferredExecutableType(int type) {
+		this.preferredExecutableType = type;
 	}
 
 	public void setVersion(String version) {
@@ -181,172 +344,11 @@ public class ApplicationInfoObject implements SubmissionObject, FqanListener,
 
 		if (this.mode == EXACT_VERSION_MODE
 				|| this.mode == DEFAULT_VERSION_MODE) {
-			
+
 			currentSubLocs = getSubmissionLocationsForExactVersion(version);
 		} else if (this.mode == ANY_VERSION_MODE) {
 			fixedVersion = null;
 		}
-	}
-
-	public Set<SubmissionLocation> getCurrentlyPossibleSubmissionLocations() {
-		return currentSubLocs;
-	}
-
-	public Set<String> getCurrentlyPossibleSites() {
-
-		Set<String> result = new TreeSet<String>();
-		for (SubmissionLocation subLoc : getCurrentlyPossibleSubmissionLocations()) {
-			result.add(subLoc.getSite());
-		}
-		return result;
-
-	}
-
-	public Set<SubmissionLocation> getCurrentlyPossibleSubmissionLocationsForSite(
-			String site) {
-		Set<SubmissionLocation> result = new TreeSet<SubmissionLocation>();
-		for (SubmissionLocation subLoc : getCurrentlyPossibleSubmissionLocations()) {
-
-			if (subLoc.getSite().equals(site)) {
-				result.add(subLoc);
-			}
-		}
-		return result;
-	}
-
-	private Set<SubmissionLocation> getSubmissionLocationsForAnyVersion() {
-
-		return em.getAllAvailableSubmissionLocationsForApplication(
-				getCurrentApplicationName(), em.getDefaultFqan());
-	}
-
-	private Set<SubmissionLocation> getSubmissionLocationsForDefaultVersion() {
-
-		return em.getAllAvailableSubmissionLocationsForApplicationAndVersion(
-				getCurrentApplicationName(), DEFAULT_VERSION_STRING, em
-						.getDefaultFqan());
-	}
-
-	private Set<SubmissionLocation> getSubmissionLocationsForExactVersion(
-			String version) {
-		return em.getAllAvailableSubmissionLocationsForApplicationAndVersion(
-				getCurrentApplicationName(), version, em.getDefaultFqan());
-	}
-
-	public synchronized Set<String> getAllAvailableVersions() {
-		return em.getAllAvailableVersionsForApplication(
-				getCurrentApplicationName(), em.getDefaultFqan());
-	}
-
-	// submissionObject properties
-
-	public String getCurrentApplicationName() {
-		return application;
-	}
-
-	public Map<String, String> getCurrentApplicationDetails() {
-
-		String tempCurrentVersion = getCurrentVersion();
-		SubmissionLocation tempCurrentLocation = getCurrentSubmissionLocation();
-
-		if (getCurrentVersion() == null || "".equals(tempCurrentVersion)
-				|| tempCurrentLocation == null) {
-			return null;
-		}
-
-		if (detailsCache.get(tempCurrentVersion + "_"
-				+ tempCurrentLocation.getLocation()) == null) {
-			// lookup executables
-			Map<String, String> tempDetails = em.getServiceInterface()
-					.getApplicationDetailsForVersionAndSubmissionLocation(getCurrentApplicationName(),
-							tempCurrentVersion, tempCurrentLocation.getLocation()).getDetailsAsMap();
-			detailsCache.put(tempCurrentVersion + "_"
-					+ tempCurrentLocation.getLocation(), tempDetails);
-		}
-		return detailsCache.get(tempCurrentVersion + "_"
-				+ tempCurrentLocation.getLocation());
-
-	}
-
-	public String getCurrentVersion() {
-
-		if (this.mode == DEFAULT_VERSION_MODE
-				|| this.mode == EXACT_VERSION_MODE || this.fixedVersion == null) {
-
-			return this.fixedVersion;
-
-		} else if (this.mode == ANY_VERSION_MODE) {
-
-			SubmissionLocation tempSubLoc = getCurrentSubmissionLocation();
-			if (tempSubLoc == null) {
-				return null;
-			} else {
-				String tempVersion = getRecommendedVersionForSubmissionLocation(
-						tempSubLoc, em.getDefaultFqan());
-				return tempVersion;
-			}
-		} else {
-			throw new RuntimeException("Mode not supported: " + this.mode);
-		}
-
-	}
-
-	public String[] getCurrentExecutables() {
-		return getCurrentApplicationDetails().get(
-				Constants.MDS_EXECUTABLES_KEY).split(",");
-	}
-
-	public SubmissionLocation getCurrentSubmissionLocation() {
-
-		if (this.currentSubmissionLocation == null) {
-			if (getCurrentlyPossibleSubmissionLocations() == null
-					|| getCurrentlyPossibleSubmissionLocations().size() == 0) {
-				// throw new NoPossibleSubmissionLocation(this.application,
-				// null, em.getDefaultFqan());
-				return null;
-			}
-			// TODO choose the best option,not just the first one in the list
-			this.currentSubmissionLocation = getCurrentlyPossibleSubmissionLocations()
-					.iterator().next();
-		}
-		return this.currentSubmissionLocation;
-	}
-
-	public String[] getCurrentModules() {
-		return getCurrentApplicationDetails().get(Constants.MDS_MODULES_KEY)
-				.split(",");
-	}
-
-	public int getPreferredExecutableType() {
-		return preferredExecutableType;
-	}
-
-	public void setPreferredExecutableType(int type) {
-		this.preferredExecutableType = type;
-	}
-
-	public void setCurrentSubmissionLocation(SubmissionLocation location)
-			throws SubmissionLocationException {
-
-		if (!getCurrentlyPossibleSubmissionLocations().contains(location)) {
-			throw new SubmissionLocationException(location);
-		} else {
-			this.currentSubmissionLocation = location;
-		}
-
-	}
-
-	public void fqansChanged(FqanEvent event) {
-		clearCalculatedStuff();
-	}
-
-	public void mountPointsChanged(MountPointEvent mpe)
-			throws RemoteFileSystemException {
-		clearCalculatedStuff();
-	}
-
-	private void clearCalculatedStuff() {
-		init(initial_mode);
 	}
 
 }

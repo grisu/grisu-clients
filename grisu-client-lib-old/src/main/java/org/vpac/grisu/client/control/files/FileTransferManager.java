@@ -10,47 +10,58 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 
 public class FileTransferManager implements FileTransferListener {
-	
+
 	static final Logger myLogger = Logger.getLogger(FileTransferManager.class
 			.getName());
-	
+
 	private EventList<FileTransfer> transfers = new BasicEventList<FileTransfer>();
-	
-	public FileTransfer addTransfer(GrisuFileObject[] sources, GrisuFileObject targetDirectory, int overwrite_mode, boolean join) throws FileTransferException {
-		FileTransfer temp = new FileTransfer(sources, targetDirectory, overwrite_mode);
+
+	// ---------------------------------------------------------------------------------------
+	// Event stuff
+	private Vector<FileTransferListener> fileTransferListeners;
+
+	public FileTransfer addDownload(GrisuFileObject[] sources,
+			GrisuFileObject targetDirectory, String sources_folder,
+			int overwrite_mode, boolean join) throws FileTransferException {
+		FileTransfer temp = new FileTransfer(targetDirectory, sources_folder,
+				sources, overwrite_mode);
 		addTransfer(temp, join);
 		return temp;
 	}
-	
-	public FileTransfer addDownload(GrisuFileObject[] sources, GrisuFileObject targetDirectory, String sources_folder, int overwrite_mode, boolean join) throws FileTransferException {
-		FileTransfer temp = new FileTransfer(targetDirectory, sources_folder, sources, overwrite_mode);
-		addTransfer(temp, join);
-		return temp;
+
+	// register a listener
+	synchronized public void addListener(FileTransferListener l) {
+		if (fileTransferListeners == null)
+			fileTransferListeners = new Vector<FileTransferListener>();
+		fileTransferListeners.addElement(l);
 	}
-	
+
 	/**
 	 * Adds the transfer
-	 * @param transfer the transfer
-	 * @throws FileTransferException 
+	 * 
+	 * @param transfer
+	 *            the transfer
+	 * @throws FileTransferException
 	 */
-	public void addTransfer(FileTransfer transfer, boolean join) throws FileTransferException {
+	public void addTransfer(FileTransfer transfer, boolean join)
+			throws FileTransferException {
 		transfers.add(transfer);
 		transfer.addListener(this);
 		transfer.startTransfer(join);
 	}
-	
-	public void fileTransferEventOccured(FileTransferEvent e) {
-		fireFileTransferEvent(e);		
+
+	public FileTransfer addTransfer(GrisuFileObject[] sources,
+			GrisuFileObject targetDirectory, int overwrite_mode, boolean join)
+			throws FileTransferException {
+		FileTransfer temp = new FileTransfer(sources, targetDirectory,
+				overwrite_mode);
+		addTransfer(temp, join);
+		return temp;
 	}
 
-	public EventList getTransferList() {
-		return transfers;
+	public void fileTransferEventOccured(FileTransferEvent e) {
+		fireFileTransferEvent(e);
 	}
-	
-	
-	// ---------------------------------------------------------------------------------------
-	// Event stuff
-	private Vector<FileTransferListener> fileTransferListeners;
 
 	private void fireFileTransferEvent(FileTransferEvent event) {
 		// if we have no mountPointsListeners, do nothing...
@@ -60,10 +71,11 @@ public class FileTransferManager implements FileTransferListener {
 			// anyone adds/removes mountPointsListeners
 			Vector<FileTransferListener> targets;
 			synchronized (this) {
-				targets = (Vector<FileTransferListener>) fileTransferListeners.clone();
+				targets = (Vector<FileTransferListener>) fileTransferListeners
+						.clone();
 			}
 
-			// walk through the listener list 
+			// walk through the listener list
 			Enumeration<FileTransferListener> e = targets.elements();
 			while (e.hasMoreElements()) {
 				FileTransferListener l = (FileTransferListener) e.nextElement();
@@ -77,11 +89,8 @@ public class FileTransferManager implements FileTransferListener {
 		}
 	}
 
-	// register a listener
-	synchronized public void addListener(FileTransferListener l) {
-		if (fileTransferListeners == null)
-			fileTransferListeners = new Vector<FileTransferListener>();
-		fileTransferListeners.addElement(l);
+	public EventList getTransferList() {
+		return transfers;
 	}
 
 	// remove a listener
@@ -91,6 +100,5 @@ public class FileTransferManager implements FileTransferListener {
 		}
 		fileTransferListeners.removeElement(l);
 	}
-	
+
 }
-	

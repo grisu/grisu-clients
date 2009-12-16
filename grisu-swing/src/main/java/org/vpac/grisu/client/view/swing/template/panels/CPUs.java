@@ -29,7 +29,7 @@ import com.jgoodies.forms.layout.RowSpec;
 public class CPUs extends JPanel implements TemplateNodePanel {
 
 	static final Logger myLogger = Logger.getLogger(CPUs.class.getName());
-	
+
 	boolean lockCpuModel = false;
 
 	public static final String FORCE_STRING = "force";
@@ -54,8 +54,10 @@ public class CPUs extends JPanel implements TemplateNodePanel {
 	protected boolean useLastInput = false;
 	protected HistoryManager historyManager = null;
 	private String historyManagerKeyForThisNode = null;
-	
+
 	private String lastParallelValue = "2";
+
+	private Vector<ValueListener> valueChangedListeners;
 
 	/**
 	 * Create the panel
@@ -84,8 +86,36 @@ public class CPUs extends JPanel implements TemplateNodePanel {
 		//
 	}
 
-	public JPanel getTemplateNodePanel() {
-		return this;
+	// register a listener
+	synchronized public void addValueListener(ValueListener l) {
+		if (valueChangedListeners == null)
+			valueChangedListeners = new Vector<ValueListener>();
+		valueChangedListeners.addElement(l);
+	}
+
+	private void fireSitePanelEvent(String newValue) {
+
+		myLogger.debug("Fire value changed event from CPUs: new value: "
+				+ newValue);
+		// if we have no mountPointsListeners, do nothing...
+		if (valueChangedListeners != null && !valueChangedListeners.isEmpty()) {
+
+			// make a copy of the listener list in case
+			// anyone adds/removes mountPointsListeners
+			Vector<ValueListener> valueChangedTargets;
+			synchronized (this) {
+				valueChangedTargets = (Vector<ValueListener>) valueChangedListeners
+						.clone();
+			}
+
+			// walk through the listener list and
+			// call the gridproxychanged method in each
+			Enumeration<ValueListener> e = valueChangedTargets.elements();
+			while (e.hasMoreElements()) {
+				ValueListener valueChanged_l = (ValueListener) e.nextElement();
+				valueChanged_l.valueChanged(this, newValue);
+			}
+		}
 	}
 
 	// public void setTemplateNodeValue() {
@@ -108,13 +138,15 @@ public class CPUs extends JPanel implements TemplateNodePanel {
 			checkBox = new JCheckBox();
 			checkBox.addItemListener(new ItemListener() {
 				public void itemStateChanged(final ItemEvent e) {
-					
-					if ( ! checkBox.isSelected() && ! "1".equals(getComboBox().getSelectedItem()) ) {
+
+					if (!checkBox.isSelected()
+							&& !"1".equals(getComboBox().getSelectedItem())) {
 						setExternalSetValue("1");
-					} else if ( checkBox.isSelected() && "1".equals(getComboBox().getSelectedItem()) ) {
+					} else if (checkBox.isSelected()
+							&& "1".equals(getComboBox().getSelectedItem())) {
 						setExternalSetValue(lastParallelValue);
 					}
-					
+
 				}
 			});
 			checkBox.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -122,14 +154,6 @@ public class CPUs extends JPanel implements TemplateNodePanel {
 			checkBox.setText("Parallel");
 		}
 		return checkBox;
-	}
-
-	public boolean isMultiCPUchecked() {
-		return getCheckBox().isSelected();
-	}
-
-	public int getSelectedNoOfCPUs() {
-		return Integer.parseInt((String) cpuComboBoxModel.getSelectedItem());
 	}
 
 	/**
@@ -141,12 +165,13 @@ public class CPUs extends JPanel implements TemplateNodePanel {
 			comboBox.addItemListener(new ItemListener() {
 				public void itemStateChanged(final ItemEvent e) {
 					if (e.getStateChange() == ItemEvent.SELECTED) {
-						
-						if ( ! lockCpuModel ) {
-							lockCpuModel = true;
-						setExternalSetValue((String)(comboBox.getSelectedItem()));
 
-						fireSitePanelEvent(getExternalSetValue());
+						if (!lockCpuModel) {
+							lockCpuModel = true;
+							setExternalSetValue((String) (comboBox
+									.getSelectedItem()));
+
+							fireSitePanelEvent(getExternalSetValue());
 							lockCpuModel = false;
 						}
 					}
@@ -160,12 +185,103 @@ public class CPUs extends JPanel implements TemplateNodePanel {
 	/**
 	 * @return
 	 */
+	protected JLabel getErrorLabel() {
+		if (errorLabel == null) {
+			errorLabel = new JLabel();
+			errorLabel.setVisible(false);
+			errorLabel.setForeground(Color.RED);
+		}
+		return errorLabel;
+	}
+
+	public String getExternalSetValue() {
+
+		if (getCheckBox().isSelected())
+			return (String) getComboBox().getSelectedItem();
+		else
+			return "1";
+
+	}
+
+	/**
+	 * @return
+	 */
 	protected JLabel getLabel() {
 		if (label == null) {
 			label = new JLabel();
 			label.setText("No. of cpus");
 		}
 		return label;
+	}
+
+	public int getSelectedNoOfCPUs() {
+		return Integer.parseInt((String) cpuComboBoxModel.getSelectedItem());
+	}
+
+	public JPanel getTemplateNodePanel() {
+		return this;
+	}
+
+	public boolean isMultiCPUchecked() {
+		return getCheckBox().isSelected();
+	}
+
+	// remove a listener
+	synchronized public void removeValueListener(ValueListener l) {
+		if (valueChangedListeners == null) {
+			valueChangedListeners = new Vector<ValueListener>();
+		}
+		valueChangedListeners.removeElement(l);
+	}
+
+	// event stuff
+	// ========================================================
+
+	public void reset() {
+
+		historyManager.addHistoryEntry(historyManagerKeyForThisNode,
+				getExternalSetValue(), new Date(), 1);
+	}
+
+	public void setExternalSetValue(String value) {
+
+		if (value == null) {
+			return;
+		}
+
+		if (value.equals("")) {
+			value = "1";
+		}
+
+		if (!value.equals(getComboBox().getSelectedItem())) {
+			getComboBox().setSelectedItem(value);
+		}
+
+		if ("1".equals(value)) {
+			getCheckBox().setSelected(false);
+			getComboBox().setEnabled(true);
+		} else {
+			getCheckBox().setSelected(true);
+			getComboBox().setEnabled(true);
+		}
+
+		if (forceParallel) {
+			getCheckBox().setSelected(true);
+			getCheckBox().setEnabled(false);
+			if (getComboBox().getSelectedItem().equals("1")) {
+				getComboBox().setSelectedItem("2");
+			}
+
+		} else if (forceSingle) {
+			getComboBox().setSelectedItem("1");
+			getComboBox().setEnabled(false);
+			getCheckBox().setSelected(false);
+			getCheckBox().setEnabled(false);
+		}
+
+		if (!"1".equals(value)) {
+			lastParallelValue = value;
+		}
 	}
 
 	public void setTemplateNode(TemplateNode node)
@@ -241,20 +357,7 @@ public class CPUs extends JPanel implements TemplateNodePanel {
 				setExternalSetValue("1");
 			}
 		}
-		fireSitePanelEvent((String) cpuComboBoxModel
-				.getSelectedItem());
-	}
-
-	/**
-	 * @return
-	 */
-	protected JLabel getErrorLabel() {
-		if (errorLabel == null) {
-			errorLabel = new JLabel();
-			errorLabel.setVisible(false);
-			errorLabel.setForeground(Color.RED);
-		}
-		return errorLabel;
+		fireSitePanelEvent((String) cpuComboBoxModel.getSelectedItem());
 	}
 
 	public void templateNodeUpdated(TemplateNodeEvent event) {
@@ -272,108 +375,6 @@ public class CPUs extends JPanel implements TemplateNodePanel {
 			reset();
 		}
 
-	}
-
-	public String getExternalSetValue() {
-
-		if (getCheckBox().isSelected())
-			return (String) getComboBox().getSelectedItem();
-		else
-			return "1";
-
-	}
-	
-	
-
-	public void setExternalSetValue(String value) {
-
-		if ( value == null ) {
-			return;
-		}
-		
-		if ( value.equals("") ) {
-			value = "1";
-		}
-		
-		if ( !value.equals(getComboBox().getSelectedItem()) ) {
-			getComboBox().setSelectedItem(value);
-		}
-		
-		if ("1".equals(value)) {
-			getCheckBox().setSelected(false);
-			getComboBox().setEnabled(true);
-		} else {
-			getCheckBox().setSelected(true);
-			getComboBox().setEnabled(true);
-		}
-
-		if (forceParallel) {
-			getCheckBox().setSelected(true);
-			getCheckBox().setEnabled(false);
-			if (getComboBox().getSelectedItem().equals("1")) {
-				getComboBox().setSelectedItem("2");
-			}
-
-		} else if (forceSingle) {
-			getComboBox().setSelectedItem("1");
-			getComboBox().setEnabled(false);
-			getCheckBox().setSelected(false);
-			getCheckBox().setEnabled(false);
-		}
-		
-		if ( !"1".equals(value) ) {
-			lastParallelValue = value;
-		}
-	}
-
-	public void reset() {
-
-		historyManager.addHistoryEntry(historyManagerKeyForThisNode,
-				getExternalSetValue(), new Date(), 1);
-	}
-
-	// event stuff
-	// ========================================================
-
-	private Vector<ValueListener> valueChangedListeners;
-
-	private void fireSitePanelEvent(String newValue) {
-
-		myLogger.debug("Fire value changed event from CPUs: new value: " + newValue);
-		// if we have no mountPointsListeners, do nothing...
-		if (valueChangedListeners != null && !valueChangedListeners.isEmpty()) {
-
-			// make a copy of the listener list in case
-			// anyone adds/removes mountPointsListeners
-			Vector<ValueListener> valueChangedTargets;
-			synchronized (this) {
-				valueChangedTargets = (Vector<ValueListener>) valueChangedListeners
-						.clone();
-			}
-
-			// walk through the listener list and
-			// call the gridproxychanged method in each
-			Enumeration<ValueListener> e = valueChangedTargets.elements();
-			while (e.hasMoreElements()) {
-				ValueListener valueChanged_l = (ValueListener) e.nextElement();
-				valueChanged_l.valueChanged(this, newValue);
-			}
-		}
-	}
-
-	// register a listener
-	synchronized public void addValueListener(ValueListener l) {
-		if (valueChangedListeners == null)
-			valueChangedListeners = new Vector<ValueListener>();
-		valueChangedListeners.addElement(l);
-	}
-
-	// remove a listener
-	synchronized public void removeValueListener(ValueListener l) {
-		if (valueChangedListeners == null) {
-			valueChangedListeners = new Vector<ValueListener>();
-		}
-		valueChangedListeners.removeElement(l);
 	}
 
 }
