@@ -8,21 +8,22 @@ import javax.swing.SwingConstants;
 
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.frontend.view.swing.jobmonitoring.BatchJobTabbedPane;
+import org.vpac.grisu.frontend.view.swing.login.GrisuSwingClient;
+import org.vpac.grisu.frontend.view.swing.login.LoginPanel;
 
-public class BlenderMainPanel extends JPanel {
+public class BlenderMainPanel extends JPanel implements GrisuSwingClient {
 	private JTabbedPane tabbedPane;
 	private BlenderJobCreationPanel blenderJobCreationPanel;
 	private BatchJobTabbedPane batchJobTabbedPane;
 
-	private final ServiceInterface si;
+	private ServiceInterface si;
+	private LoginPanel lp;
 
 	/**
 	 * Create the panel.
 	 */
-	public BlenderMainPanel(ServiceInterface si) {
-		this.si = si;
-		setLayout(new BorderLayout(0, 0));
-		add(getTabbedPane(), BorderLayout.CENTER);
+	public BlenderMainPanel() {
+		setLayout(new BorderLayout());
 
 	}
 
@@ -48,5 +49,23 @@ public class BlenderMainPanel extends JPanel {
 			tabbedPane.addTab("Monitor", null, getBatchJobTabbedPane(), null);
 		}
 		return tabbedPane;
+	}
+
+	@Override
+	public JPanel getRootPanel() {
+		return this;
+	}
+
+	@Override
+	public void setLoginPanel(LoginPanel lp) {
+		this.lp = lp;
+	}
+
+	@Override
+	public void setServiceInterface(ServiceInterface si) {
+
+		this.si = si;
+		add(getTabbedPane(), BorderLayout.CENTER);
+
 	}
 }

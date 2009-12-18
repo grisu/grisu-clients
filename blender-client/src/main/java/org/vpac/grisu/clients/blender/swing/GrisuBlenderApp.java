@@ -7,9 +7,8 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 
 import org.jdesktop.swingx.JXFrame;
-import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.frontend.control.login.LoginException;
-import org.vpac.grisu.frontend.control.login.LoginManager;
+import org.vpac.grisu.frontend.view.swing.login.LoginPanel;
 
 public class GrisuBlenderApp {
 
@@ -26,13 +25,13 @@ public class GrisuBlenderApp {
 
 		}
 
-		final ServiceInterface si = LoginManager.myProxyLogin("Local", args[0],
-				args[1].toCharArray());
+//		final ServiceInterface si = LoginManager.myProxyLogin("Local", args[0],
+//				args[1].toCharArray());
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					GrisuBlenderApp window = new GrisuBlenderApp(si);
+					GrisuBlenderApp window = new GrisuBlenderApp();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -43,13 +42,10 @@ public class GrisuBlenderApp {
 
 	private JXFrame frame;
 
-	private final ServiceInterface si;
-
 	/**
 	 * Create the application.
 	 */
-	public GrisuBlenderApp(ServiceInterface si) {
-		this.si = si;
+	public GrisuBlenderApp() {
 		initialize();
 	}
 
@@ -63,8 +59,9 @@ public class GrisuBlenderApp {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout());
 
-		BlenderMainPanel mainPanel = new BlenderMainPanel(si);
-		frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
+		BlenderMainPanel mainPanel = new BlenderMainPanel();
+		LoginPanel lp = new LoginPanel(mainPanel);
+		frame.getContentPane().add(lp, BorderLayout.CENTER);
 	}
 
 }

@@ -55,7 +55,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 
 	static final Logger myLogger = Logger.getLogger(GrisuBlenderJob.class
 			.getName());
-	public static final String BLENDER_APP_NAME = "Blender";
+	public static final String BLENDER_APP_NAME = "blender";
 
 	public static final String BLENDER_DEFAULT_VERSION = "2.49a";
 
