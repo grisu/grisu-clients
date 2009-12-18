@@ -72,7 +72,7 @@ public class EnvironmentManager implements MountPointsListener,
 	public static final int FILE_URL_TYPE = 1;
 
 	private Map<String, String> alreadyQueriedHosts = new HashMap<String, String>();
-	private Map<String, String[]> alreadyQueriedQueues = new HashMap<String, String[]>();
+	private final Map<String, String[]> alreadyQueriedQueues = new HashMap<String, String[]>();
 
 	private Map<String, Set<MountPoint>> alreadyQueriedMountPointsPerSubmissionLocation = new TreeMap<String, Set<MountPoint>>();
 	private Map<String, Set<MountPoint>> alreadyQueriedMountPointsPerFqan = new TreeMap<String, Set<MountPoint>>();
@@ -105,7 +105,7 @@ public class EnvironmentManager implements MountPointsListener,
 
 	// all sites of the grid. This info is not really useful since it doesn't
 	// tell you whether the user has got access to all of them or not...
-	private String[] allGridSites = null;
+	private final String[] allGridSites = null;
 	// the ServiceInterface to use
 	private ServiceInterface serviceInterface = null;
 
@@ -120,7 +120,7 @@ public class EnvironmentManager implements MountPointsListener,
 
 	private HistoryManager historyManager = new DummyHistoryManager();
 
-	private FileTransferManager fileTransferManager = new FileTransferManager();
+	private final FileTransferManager fileTransferManager = new FileTransferManager();
 
 	// ---------------------------------------------------------------------------------------
 	// Event stuff (MountPoints)
@@ -220,15 +220,17 @@ public class EnvironmentManager implements MountPointsListener,
 
 	// register a listener
 	synchronized public void addFqanListener(FqanListener l) {
-		if (fqanListeners == null)
+		if (fqanListeners == null) {
 			fqanListeners = new Vector();
+		}
 		fqanListeners.addElement(l);
 	}
 
 	// register a listener
 	synchronized public void addMountPointListener(MountPointsListener l) {
-		if (mountPointsListeners == null)
+		if (mountPointsListeners == null) {
 			mountPointsListeners = new Vector();
+		}
 		mountPointsListeners.addElement(l);
 	}
 
@@ -253,6 +255,7 @@ public class EnvironmentManager implements MountPointsListener,
 		myLogger
 				.debug("Starting to build submissionLocation cache in background.");
 		new Thread() {
+			@Override
 			public void run() {
 				buildInfoCache();
 			}
@@ -394,10 +397,11 @@ public class EnvironmentManager implements MountPointsListener,
 		if (fqanListeners != null && !fqanListeners.isEmpty()) {
 			// create the event object to send
 			FqanEvent event = null;
-			if (event_type == FqanEvent.FQANS_REFRESHED)
+			if (event_type == FqanEvent.FQANS_REFRESHED) {
 				event = new FqanEvent(this, fqans);
-			else
+			} else {
 				event = new FqanEvent(this, event_type, fqans[0]);
+			}
 
 			// make a copy of the listener list in case
 			// anyone adds/removes mountPointsListeners
@@ -429,11 +433,12 @@ public class EnvironmentManager implements MountPointsListener,
 		if (mountPointsListeners != null && !mountPointsListeners.isEmpty()) {
 			// create the event object to send
 			MountPointEvent event = null;
-			if (event_type == MountPointEvent.MOUNTPOINTS_REFRESHED)
+			if (event_type == MountPointEvent.MOUNTPOINTS_REFRESHED) {
 				event = new MountPointEvent(this, mp, serviceInterface);
-			else
+			} else {
 				event = new MountPointEvent(this, event_type, mp[0],
 						serviceInterface);
+			}
 
 			// firstly call the mountpointschanged method of this class to be
 			// sure we
@@ -489,6 +494,7 @@ public class EnvironmentManager implements MountPointsListener,
 	 * @return all submissionLocations for all fqans
 	 * @deprecated don't use that anymore
 	 */
+	@Deprecated
 	public Set<SubmissionLocation> getAllAvailableSubmissionLocationsForApplication(
 			String applicationName) {
 
@@ -569,6 +575,7 @@ public class EnvironmentManager implements MountPointsListener,
 	 * @return
 	 * @deprecated don't use that anymore, doesn't take into acount default fqan
 	 */
+	@Deprecated
 	public Set<SubmissionLocation> getAllAvailableSubmissionLocationsForApplicationAndVersion(
 			String applicationName, String version) {
 
@@ -682,15 +689,14 @@ public class EnvironmentManager implements MountPointsListener,
 				// SubmissionLocation[tempSubLocsString.length];
 				Set<SubmissionLocation> tempSubLocs = new HashSet<SubmissionLocation>();
 
-				for (int i = 0; i < tempSubLocsString.length; i++) {
-					SubmissionLocation tempSubLoc = getSubmissionLocation(tempSubLocsString[i]);
+				for (String element : tempSubLocsString) {
+					SubmissionLocation tempSubLoc = getSubmissionLocation(element);
 					if (tempSubLoc != null) {
 						tempSubLocs.add(tempSubLoc);
 					} else {
 						myLogger
 								.error("Null pointer for submission location string: "
-										+ tempSubLocsString[i]
-										+ ". Not so good.");
+										+ element + ". Not so good.");
 					}
 				}
 				// for ( MountPoint mp : getMountPoints(fqan) ) {
@@ -1520,12 +1526,14 @@ public class EnvironmentManager implements MountPointsListener,
 		if (urlType == QUEUE_TYPE) {
 
 			int startIndex = url.indexOf(":") + 1;
-			if (startIndex == -1)
+			if (startIndex == -1) {
 				startIndex = 0;
+			}
 
 			int endIndex = url.indexOf("#");
-			if (endIndex == -1)
+			if (endIndex == -1) {
 				endIndex = url.length();
+			}
 
 			hostname = url.substring(startIndex, endIndex);
 		} else if (urlType == FILE_URL_TYPE) {
@@ -1636,7 +1644,7 @@ public class EnvironmentManager implements MountPointsListener,
 		mountPointsListeners.removeElement(l);
 	}
 
-	public void setBookmark(String alias, String url) {
+	public FileSystemItem setBookmark(String alias, String url) {
 		throw new RuntimeException("Not implemented for this class.");
 
 	}

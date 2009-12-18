@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
@@ -126,6 +127,7 @@ public class BlenderJobCreationPanel extends JPanel implements
 	public void addMessage(final String message) {
 		SwingUtilities.invokeLater(new Thread() {
 
+			@Override
 			public void run() {
 				getStatusTextArea().append(message);
 				getStatusTextArea().setCaretPosition(
@@ -216,7 +218,7 @@ public class BlenderJobCreationPanel extends JPanel implements
 
 	private JTabbedPane getTabbedPane() {
 		if (tabbedPane == null) {
-			tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+			tabbedPane = new JTabbedPane(SwingConstants.BOTTOM);
 			tabbedPane.addTab("Basic properties", null,
 					getBlenderBasicJobPropertiesPanel(), null);
 			tabbedPane.addTab("Advanced", null,
@@ -229,6 +231,7 @@ public class BlenderJobCreationPanel extends JPanel implements
 
 		SwingUtilities.invokeLater(new Thread() {
 
+			@Override
 			public void run() {
 				if (lock) {
 					Cursor waitCursor = Cursor
@@ -276,6 +279,7 @@ public class BlenderJobCreationPanel extends JPanel implements
 
 		SwingUtilities.invokeLater(new Thread() {
 
+			@Override
 			public void run() {
 				if (cancel) {
 					getBtnSubmit().setText("Cancel");
@@ -305,6 +309,7 @@ public class BlenderJobCreationPanel extends JPanel implements
 	private void submitJob() {
 
 		submissionThread = new Thread() {
+			@Override
 			public void run() {
 
 				getBlenderBasicJobPropertiesPanel().lockUI(true);

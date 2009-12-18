@@ -40,9 +40,10 @@ public class GrisuBlenderApp {
 			}
 		});
 	}
+
 	private JXFrame frame;
 
-	private ServiceInterface si;
+	private final ServiceInterface si;
 
 	/**
 	 * Create the application.
@@ -58,14 +59,12 @@ public class GrisuBlenderApp {
 	private void initialize() {
 
 		frame = new JXFrame();
-		frame.setBounds(100, 100, 567, 526);
+		frame.setBounds(100, 100, 800, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(new BorderLayout(0, 0));
+		frame.getContentPane().setLayout(new BorderLayout());
 
-		BlenderJobCreationPanel blenderJobCreationPanel = new BlenderJobCreationPanel(
-				si);
-		frame.getContentPane()
-				.add(blenderJobCreationPanel, BorderLayout.CENTER);
+		BlenderMainPanel mainPanel = new BlenderMainPanel(si);
+		frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
 	}
 
 }
