@@ -10,6 +10,8 @@ import org.jdesktop.swingx.JXFrame;
 import org.vpac.grisu.frontend.control.login.LoginException;
 import org.vpac.grisu.frontend.view.swing.login.LoginPanel;
 
+import au.org.arcs.auth.shibboleth.Shibboleth;
+
 public class GrisuBlenderApp {
 
 	/**
@@ -19,14 +21,17 @@ public class GrisuBlenderApp {
 	 */
 	public static void main(String[] args) throws LoginException {
 
+		Shibboleth.initDefaultSecurityProvider();
+
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
 
 		}
 
-//		final ServiceInterface si = LoginManager.myProxyLogin("Local", args[0],
-//				args[1].toCharArray());
+		// final ServiceInterface si = LoginManager.myProxyLogin("Local",
+		// args[0],
+		// args[1].toCharArray());
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
