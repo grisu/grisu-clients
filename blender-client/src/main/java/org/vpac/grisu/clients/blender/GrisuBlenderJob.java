@@ -20,6 +20,7 @@ import org.vpac.grisu.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
 import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
+import org.vpac.grisu.frontend.model.events.ActionStatusEvent;
 import org.vpac.grisu.frontend.model.events.BatchJobEvent;
 import org.vpac.grisu.frontend.model.job.BatchJobObject;
 import org.vpac.grisu.frontend.model.job.JobObject;
@@ -27,7 +28,7 @@ import org.vpac.grisu.model.GrisuRegistry;
 import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.settings.Environment;
 
-public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
+public class GrisuBlenderJob implements EventTopicSubscriber {
 
 	public enum RenderFormat {
 
@@ -90,7 +91,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 		}
 
 	}
-	private Map<Integer, Integer> walltimesPerFrame = new HashMap<Integer, Integer>();
+	private final Map<Integer, Integer> walltimesPerFrame = new HashMap<Integer, Integer>();
 	private int noCpus = 1;
 
 	private String version = BLENDER_DEFAULT_VERSION;
@@ -105,7 +106,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 
 	public boolean verbose = false;
 
-	private int UPLOAD_THREADS = 10;
+	private final int UPLOAD_THREADS = 10;
 
 	public GrisuBlenderJob(ServiceInterface serviceInterface,
 			String multiPartJobId) throws BatchJobException, NoSuchJobException {
@@ -348,10 +349,20 @@ public class GrisuBlenderJob implements EventTopicSubscriber<BatchJobEvent> {
 		return version;
 	}
 
-	public void onEvent(String arg0, BatchJobEvent arg1) {
+	@Override
+	public void onEvent(String topic, Object data) {
 
 		if (verbose) {
-			System.out.println(arg1.getMessage());
+
+			if (data instanceof ActionStatusEvent) {
+				ActionStatusEvent e = (ActionStatusEvent) data;
+				System.out.println(e.getPrefix() + " " + e.getPercentFinished()
+						+ "%");
+			} else if (data instanceof BatchJobEvent) {
+
+				BatchJobEvent e = (BatchJobEvent) data;
+				System.out.println(e.getMessage());
+			}
 		}
 
 	}

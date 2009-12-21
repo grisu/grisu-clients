@@ -29,19 +29,19 @@ public class BlenderAdvancedJobPropertiesPanel extends JPanel {
 	private JTextField textField;
 
 	private final BlenderJobCreationPanel parent;
-	private ButtonGroup buttonGroup;
+	private final ButtonGroup buttonGroup;
 
-	private CheckBoxList includeList;
-	private CheckBoxList excludeList;
+	private final CheckBoxList includeList;
+	private final CheckBoxList excludeList;
 
-	private JRadioButton includeRadioButton;
-	private JRadioButton excludeRadioButton;
+	private final JRadioButton includeRadioButton;
+	private final JRadioButton excludeRadioButton;
 
 	final JCheckBox selectSubLocsCheckBox;
 
 	final DefaultListModel includeModel = new DefaultListModel();
 	final DefaultListModel excludeModel = new DefaultListModel();
-	private JSeparator separator;
+	private final JSeparator separator;
 
 	/**
 	 * Create the panel.
@@ -198,6 +198,7 @@ public class BlenderAdvancedJobPropertiesPanel extends JPanel {
 
 		SwingUtilities.invokeLater(new Thread() {
 
+			@Override
 			public void run() {
 				selectSubLocsCheckBox.setEnabled(!lock);
 				getOutputNameTextField().setEnabled(!lock);
@@ -228,7 +229,7 @@ public class BlenderAdvancedJobPropertiesPanel extends JPanel {
 			excludeModel.addElement(subLoc);
 		}
 
-		includeList.selectAll();
+		includeList.selectNone();
 		excludeList.selectNone();
 
 	}
