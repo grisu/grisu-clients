@@ -92,7 +92,7 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 	// private final ServiceInterface si;
 	// private final UserEnvironmentManager em;
 
-	private GrisuBlenderJob job = null;
+	private final GrisuBlenderJob job = null;
 	private final BlenderJobCreationPanel parent;
 	private JSeparator separator;
 	private JSeparator separator_1;
@@ -231,6 +231,7 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 
 					if (result == JFileChooser.APPROVE_OPTION) {
 						new Thread() {
+							@Override
 							public void run() {
 								parent.lockUI(true);
 								ClientPropertiesManager.setProperty(
@@ -286,7 +287,7 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 					int result = fc
 							.showOpenDialog(BlenderBasicJobPropertiesPanel.this
 									.getTopLevelAncestor());
-					if (result == FolderChooser.APPROVE_OPTION) {
+					if (result == JFileChooser.APPROVE_OPTION) {
 
 						File temp = fc.getSelectedFolder();
 						if (temp != null && temp.exists()) {
@@ -505,7 +506,8 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 		if (minutesCombobox == null) {
 			minutesCombobox = new JComboBox();
 			minutesCombobox.setModel(new DefaultComboBoxModel(new String[] {
-					"10", "20", "30", "40", "50" }));
+					"00", "10", "20", "30", "40", "50" }));
+			minutesCombobox.setSelectedItem("20");
 		}
 		return minutesCombobox;
 	}
@@ -597,6 +599,7 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 
 		SwingUtilities.invokeLater(new Thread() {
 
+			@Override
 			public void run() {
 
 				getBlendFileBrowseButton().setEnabled(!lock);
