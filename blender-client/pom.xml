@@ -104,6 +104,7 @@
 	</dependencies>
 
 	<build>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -132,7 +133,7 @@
 									<mainClass>org.vpac.grisu.clients.blender.GrisuBlender</mainClass>
 								</manifest>
 								<manifestEntries>
-									<Class-Path>bcprov.jar bcprov-jdk15-143.jar	local-backend.jar</Class-Path>
+									<Class-Path>bcprov.jar bcprov-jdk15-143.jar local-backend.jar</Class-Path>
 								</manifestEntries>
 							</archive>
 

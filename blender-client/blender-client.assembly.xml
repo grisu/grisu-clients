@@ -13,6 +13,7 @@
 			<outputDirectory>/</outputDirectory>
 			<includes>
 				<include>org.vpac.grisu:blender-client</include>
+				<include>org.vpac.grisu:grisu-core</include>
 			</includes>
 			<excludes>
 				<exclude>junit:junit</exclude>
