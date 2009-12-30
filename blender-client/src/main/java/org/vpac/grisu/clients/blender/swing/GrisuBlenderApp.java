@@ -8,6 +8,7 @@ import javax.swing.UIManager;
 
 import org.jdesktop.swingx.JXFrame;
 import org.vpac.grisu.frontend.control.login.LoginException;
+import org.vpac.grisu.frontend.model.events.ApplicationEventListener;
 import org.vpac.grisu.frontend.view.swing.login.LoginPanel;
 
 import au.org.arcs.auth.shibboleth.Shibboleth;
@@ -22,6 +23,8 @@ public class GrisuBlenderApp {
 	public static void main(String[] args) throws LoginException {
 
 		Shibboleth.initDefaultSecurityProvider();
+		
+		new ApplicationEventListener();
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

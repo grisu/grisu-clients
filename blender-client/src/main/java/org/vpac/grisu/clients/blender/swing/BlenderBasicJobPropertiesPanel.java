@@ -176,21 +176,31 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 		}
 		try {
 			blendFileObject = new BlendFile(dotBlendFile, fluidsFolder);
+
+			getJobNameTextField().setText(parent.setBlendFile(blendFileObject));
+			getSlider().setMinimum(blendFileObject.getStartFrame());
+			getSlider().setMaximum(blendFileObject.getEndFrame());
+			getSlider().setLowValue(blendFileObject.getStartFrame());
+			getSlider().setHighValue(blendFileObject.getEndFrame());
+			getStartLabel().setText("Min: " + blendFileObject.getStartFrame());
+			getEndLabel().setText("Max: " + blendFileObject.getEndFrame());
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+
+			parent.addMessage("Could not parse blendfile: "
+					+ ex.getLocalizedMessage());
+			return;
+
+		} finally {
+
+			getSlider().setEnabled(true);
+			getInfoButton().setEnabled(true);
+
 		}
-
-		getSlider().setEnabled(true);
-		getSlider().setMinimum(blendFileObject.getStartFrame());
-		getSlider().setMaximum(blendFileObject.getEndFrame());
-		getSlider().setLowValue(blendFileObject.getStartFrame());
-		getSlider().setHighValue(blendFileObject.getEndFrame());
-		getStartLabel().setText("Min: " + blendFileObject.getStartFrame());
-		getEndLabel().setText("Max: " + blendFileObject.getEndFrame());
-		getInfoButton().setEnabled(true);
-
-		getJobNameTextField().setText(parent.setBlendFile(blendFileObject));
 	}
 
 	private void enableManualFrameSelection(boolean checked) {
@@ -243,10 +253,15 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 										+ "\n");
 
 								setDotBlendFile(fc.getSelectedFile());
-								parent.addMessage(blendFileObject
-										.getParseMessage());
-								getBlendFileTextField().setText(
-										blendFileObject.getFile().toString());
+
+								if (blendFileObject != null) {
+
+									parent.addMessage(blendFileObject
+											.getParseMessage());
+									getBlendFileTextField().setText(
+											blendFileObject.getFile()
+													.toString());
+								}
 								getChckbxSpecifyFrameRange().setEnabled(true);
 								parent.lockUI(false);
 							}

@@ -33,8 +33,7 @@ public class BlendFile {
 	private StringBuffer parseMessage = null;
 
 	public BlendFile(File blendFile, File fluidsFolder)
-			throws FileNotFoundException {
-
+			throws FileNotFoundException, Exception {
 		this.file = blendFile;
 		this.fluidsFolder = fluidsFolder;
 
@@ -56,9 +55,7 @@ public class BlendFile {
 
 	}
 
-	private void getAllReferencedResources() {
-
-		try {
+	private void getAllReferencedResources() throws Exception {
 
 			parseMessage = new StringBuffer();
 
@@ -94,6 +91,12 @@ public class BlendFile {
 							+ "\n");
 				}
 			}
+			
+			while ((s = stdError.readLine()) != null) {
+
+				System.err.println(s);
+				
+			}
 
 			if (fluidsFolder != null) {
 				fluidsFolderPath = getRelativePathToBLendFile(fluidsFolder);
@@ -123,12 +126,6 @@ public class BlendFile {
 
 			stdInput.close();
 			stdError.close();
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
 
 	}
 

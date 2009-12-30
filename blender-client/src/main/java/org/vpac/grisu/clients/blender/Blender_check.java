@@ -16,7 +16,7 @@ public class Blender_check {
 		char[] password = args[1].toCharArray();
 
 		LoginParams loginParams = new LoginParams(
-		// "http://localhost:8080/xfire-backend/services/grisu",
+				// "http://localhost:8080/xfire-backend/services/grisu",
 				// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
 				// "https://ngportal.vpac.org/grisu-ws/services/grisu",
 				// "https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
@@ -42,7 +42,7 @@ public class Blender_check {
 		}
 
 		System.out
-				.println(blenderJob.getMultiPartJobObject().getProgress(null));
+		.println(blenderJob.getMultiPartJobObject().getProgress());
 
 		// blenderJob.downloadResult();
 

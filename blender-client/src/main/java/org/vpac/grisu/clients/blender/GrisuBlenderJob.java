@@ -405,9 +405,15 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 			fluidFolderFile = registry.getFileManager().getLocalCacheFile(
 					fluidFolder);
 		}
+		try {
 		BlendFile file = new BlendFile(registry.getFileManager()
 				.getLocalCacheFile(blenderFile), fluidFolderFile);
 		setBlenderFile(file);
+		} catch (Exception e) {
+			
+			throw new RuntimeException("Could not parse blend file: "+e.getLocalizedMessage());
+			
+		}
 
 	}
 

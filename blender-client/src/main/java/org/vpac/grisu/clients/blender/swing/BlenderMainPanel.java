@@ -7,7 +7,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 
 import org.vpac.grisu.control.ServiceInterface;
-import org.vpac.grisu.frontend.view.swing.jobmonitoring.BatchJobTabbedPane;
+import org.vpac.grisu.frontend.view.swing.jobmonitoring.batch.BatchJobTabbedPane;
 import org.vpac.grisu.frontend.view.swing.login.GrisuSwingClient;
 import org.vpac.grisu.frontend.view.swing.login.LoginPanel;
 

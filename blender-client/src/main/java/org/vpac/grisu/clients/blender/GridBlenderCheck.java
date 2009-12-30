@@ -14,7 +14,7 @@ import uk.co.flamingpenguin.jewel.cli.Cli;
 import uk.co.flamingpenguin.jewel.cli.CliFactory;
 
 public class GridBlenderCheck implements BlenderMode,
-		EventTopicSubscriber<BatchJobEvent> {
+EventTopicSubscriber<BatchJobEvent> {
 
 	private BlenderCheckCommandLineArgs commandlineArgs = null;
 	private final ServiceInterface si;
@@ -24,7 +24,7 @@ public class GridBlenderCheck implements BlenderMode,
 	public GridBlenderCheck(String[] args, boolean help) {
 
 		final Cli<BlenderCheckCommandLineArgs> cli = CliFactory
-				.createCli(BlenderCheckCommandLineArgs.class);
+		.createCli(BlenderCheckCommandLineArgs.class);
 
 		if (help) {
 			System.out.println(cli.getHelpMessage());
@@ -60,14 +60,14 @@ public class GridBlenderCheck implements BlenderMode,
 				if (downloadDir.exists()) {
 					if (!downloadDir.canWrite()) {
 						System.out
-								.println("Can't write to specified output directory "
-										+ downloadDir.toString() + ".");
+						.println("Can't write to specified output directory "
+								+ downloadDir.toString() + ".");
 						System.exit(1);
 					}
 				}
 			} catch (Exception e) {
 				System.out
-						.println("Could not access specified download directory.");
+				.println("Could not access specified download directory.");
 			}
 		}
 
@@ -80,10 +80,10 @@ public class GridBlenderCheck implements BlenderMode,
 		File downloadDirectory = commandlineArgs.getDownloadResults();
 
 		String pattern = blenderMultiPartJobObject
-				.getProperty(GrisuBlenderJob.BLENDER_OUTPUTFILENAME_KEY);
+		.getProperty(GrisuBlenderJob.BLENDER_OUTPUTFILENAME_KEY);
 		if (StringUtils.isBlank(pattern)) {
 			System.out
-					.println("Could not determine output filename. Exiting...");
+			.println("Could not determine output filename. Exiting...");
 			System.exit(1);
 		}
 		String[] patterns = new String[] { pattern };
@@ -114,7 +114,7 @@ public class GridBlenderCheck implements BlenderMode,
 		}
 
 		BatchJobObject blenderMultiPartJobObject = blenderJob
-				.getMultiPartJobObject();
+		.getMultiPartJobObject();
 
 		boolean firstTime = true;
 
@@ -157,7 +157,7 @@ public class GridBlenderCheck implements BlenderMode,
 
 				if (commandlineArgs.isStatus()) {
 					System.out.println(blenderMultiPartJobObject
-							.getProgress(null));
+							.getProgress());
 				}
 
 				boolean finished = blenderMultiPartJobObject.isFinished(false);
@@ -169,9 +169,9 @@ public class GridBlenderCheck implements BlenderMode,
 
 				if (commandlineArgs.isDownloadResults()) {
 					System.out
-							.println("Downloading already finished frames to: "
-									+ commandlineArgs.getDownloadResults()
-											.toString());
+					.println("Downloading already finished frames to: "
+							+ commandlineArgs.getDownloadResults()
+							.toString());
 					downloadCurrentlyFinishedFiles(blenderMultiPartJobObject);
 				}
 
