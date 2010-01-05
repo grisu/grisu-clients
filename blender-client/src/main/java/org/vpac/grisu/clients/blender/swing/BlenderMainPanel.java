@@ -7,6 +7,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 
 import org.vpac.grisu.control.ServiceInterface;
+import org.vpac.grisu.frontend.view.swing.GrisuNavigationPanel;
 import org.vpac.grisu.frontend.view.swing.jobmonitoring.batch.BatchJobTabbedPane;
 import org.vpac.grisu.frontend.view.swing.login.GrisuSwingClient;
 import org.vpac.grisu.frontend.view.swing.login.LoginPanel;
@@ -18,13 +19,13 @@ public class BlenderMainPanel extends JPanel implements GrisuSwingClient {
 
 	private ServiceInterface si;
 	private LoginPanel lp;
+	private GrisuNavigationPanel grisuNavigationPanel;
 
 	/**
 	 * Create the panel.
 	 */
 	public BlenderMainPanel() {
 		setLayout(new BorderLayout());
-
 	}
 
 	private BatchJobTabbedPane getBatchJobTabbedPane() {
@@ -41,6 +42,13 @@ public class BlenderMainPanel extends JPanel implements GrisuSwingClient {
 		return blenderJobCreationPanel;
 	}
 
+
+
+	@Override
+	public JPanel getRootPanel() {
+		return this;
+	}
+
 	private JTabbedPane getTabbedPane() {
 		if (tabbedPane == null) {
 			tabbedPane = new JTabbedPane(SwingConstants.LEFT);
@@ -52,15 +60,9 @@ public class BlenderMainPanel extends JPanel implements GrisuSwingClient {
 	}
 
 	@Override
-	public JPanel getRootPanel() {
-		return this;
-	}
-
-	@Override
 	public void setLoginPanel(LoginPanel lp) {
 		this.lp = lp;
 	}
-
 	@Override
 	public void setServiceInterface(ServiceInterface si) {
 

@@ -57,13 +57,13 @@ import au.org.arcs.jcommons.constants.Constants;
  * 
  */
 public class EnvironmentManager implements MountPointsListener,
-		UserEnvironmentManager {
+UserEnvironmentManager {
 
 	static final Logger myLogger = Logger.getLogger(EnvironmentManager.class
 			.getName());
 
 	ApplicationStatusManager statusManager = ApplicationStatusManager
-			.getDefaultManager();
+	.getDefaultManager();
 
 	public static final String GRISU_HISTORY_FILENAME = "grisu.history";
 
@@ -197,7 +197,7 @@ public class EnvironmentManager implements MountPointsListener,
 			boolean includeLocalFileSystems) {
 
 		statusManager
-				.setCurrentStatus("Getting all hostnames within the grid to build info cache...");
+		.setCurrentStatus("Getting all hostnames within the grid to build info cache...");
 		alreadyQueriedHosts = serviceInterface.getAllHosts().asMap();
 
 		statusManager.setCurrentStatus("Connecting service interface...");
@@ -253,7 +253,7 @@ public class EnvironmentManager implements MountPointsListener,
 	public void buildInfoCacheInBackground() {
 
 		myLogger
-				.debug("Starting to build submissionLocation cache in background.");
+		.debug("Starting to build submissionLocation cache in background.");
 		new Thread() {
 			@Override
 			public void run() {
@@ -311,9 +311,9 @@ public class EnvironmentManager implements MountPointsListener,
 	// }
 
 	// public void setUpMappedHomeDirectories(String[] sites) {
-	//		
+	//
 	// getAllSubmissionLocations()
-	//		
+	//
 	// }
 
 	// helper method for the above one. it exists mainly to enable the
@@ -337,7 +337,7 @@ public class EnvironmentManager implements MountPointsListener,
 	//
 	// // the following is not necessary anymore because we will use mds
 	// // for that now..
-	//		
+	//
 	// // try to mount every filesystem of every vo.
 	// // while we're at it, let's repopulate the fqans of the gui
 	// int progress = 0;
@@ -394,7 +394,7 @@ public class EnvironmentManager implements MountPointsListener,
 
 	private void fireFqanEvent(int event_type, String[] fqans) {
 		// if we have no mountPointsListeners, do nothing...
-		if (fqanListeners != null && !fqanListeners.isEmpty()) {
+		if ((fqanListeners != null) && !fqanListeners.isEmpty()) {
 			// create the event object to send
 			FqanEvent event = null;
 			if (event_type == FqanEvent.FQANS_REFRESHED) {
@@ -430,7 +430,7 @@ public class EnvironmentManager implements MountPointsListener,
 	private void fireMountPointsEvent(int event_type, MountPoint[] mp) {
 
 		// if we have no mountPointsListeners, do nothing...
-		if (mountPointsListeners != null && !mountPointsListeners.isEmpty()) {
+		if ((mountPointsListeners != null) && !mountPointsListeners.isEmpty()) {
 			// create the event object to send
 			MountPointEvent event = null;
 			if (event_type == MountPointEvent.MOUNTPOINTS_REFRESHED) {
@@ -500,13 +500,13 @@ public class EnvironmentManager implements MountPointsListener,
 
 		if (allAvailableSubmissionLocationsForApplication.get(applicationName) == null) {
 			myLogger
-					.debug("Getting all available submission locations for application: "
-							+ applicationName);
+			.debug("Getting all available submission locations for application: "
+					+ applicationName);
 			Date start = new Date();
 			Set<SubmissionLocation> result = new HashSet<SubmissionLocation>();
 			String[] subLocs = serviceInterface
-					.getSubmissionLocationsForApplication(applicationName)
-					.asSubmissionLocationStrings();
+			.getSubmissionLocationsForApplication(applicationName)
+			.asSubmissionLocationStrings();
 			for (String subLoc : subLocs) {
 				SubmissionLocation tempLoc = getSubmissionLocation(subLoc);
 
@@ -524,7 +524,7 @@ public class EnvironmentManager implements MountPointsListener,
 					result);
 		}
 		return allAvailableSubmissionLocationsForApplication
-				.get(applicationName);
+		.get(applicationName);
 	}
 
 	/**
@@ -541,13 +541,13 @@ public class EnvironmentManager implements MountPointsListener,
 		if (allAvailableSubmissionLocationsForApplicationNew.get(fqan + "_"
 				+ applicationName) == null) {
 			myLogger
-					.debug("Getting all available submission locations for application: "
-							+ applicationName);
+			.debug("Getting all available submission locations for application: "
+					+ applicationName);
 			Date start = new Date();
 			Set<SubmissionLocation> result = new TreeSet<SubmissionLocation>();
 			String[] subLocs = serviceInterface
-					.getSubmissionLocationsForApplication(applicationName)
-					.asSubmissionLocationStrings();
+			.getSubmissionLocationsForApplication(applicationName)
+			.asSubmissionLocationStrings();
 			for (String subLoc : subLocs) {
 				SubmissionLocation tempLoc = getSubmissionLocation(subLoc);
 
@@ -582,14 +582,14 @@ public class EnvironmentManager implements MountPointsListener,
 		if (allAvailableSubmissionLocationsForApplicationAndVersion
 				.get(applicationName + "_" + version) == null) {
 			myLogger
-					.debug("Getting all available submission locations for application "
-							+ applicationName + " and version " + version);
+			.debug("Getting all available submission locations for application "
+					+ applicationName + " and version " + version);
 
 			Date start = new Date();
 
 			String[] subLocs = serviceInterface
-					.getSubmissionLocationsForApplicationAndVersion(
-							applicationName, version)
+			.getSubmissionLocationsForApplicationAndVersion(
+					applicationName, version)
 					.asSubmissionLocationStrings();
 			Set<SubmissionLocation> result = new HashSet<SubmissionLocation>();
 
@@ -612,7 +612,7 @@ public class EnvironmentManager implements MountPointsListener,
 		}
 
 		return allAvailableSubmissionLocationsForApplicationAndVersion
-				.get(applicationName + "_" + version);
+		.get(applicationName + "_" + version);
 	}
 
 	public Set<SubmissionLocation> getAllAvailableSubmissionLocationsForApplicationAndVersion(
@@ -621,14 +621,14 @@ public class EnvironmentManager implements MountPointsListener,
 		if (allAvailableSubmissionLocationsForApplicationAndVersionNew.get(fqan
 				+ "_" + appname + "_" + version) == null) {
 			myLogger
-					.debug("Getting all available submission locations for application "
-							+ appname + " and version " + version);
+			.debug("Getting all available submission locations for application "
+					+ appname + " and version " + version);
 
 			Date start = new Date();
 
 			String[] subLocs = serviceInterface
-					.getSubmissionLocationsForApplicationAndVersion(appname,
-							version).asSubmissionLocationStrings();
+			.getSubmissionLocationsForApplicationAndVersion(appname,
+					version).asSubmissionLocationStrings();
 			Set<SubmissionLocation> result = new TreeSet<SubmissionLocation>();
 
 			for (String subLoc : subLocs) {
@@ -651,7 +651,7 @@ public class EnvironmentManager implements MountPointsListener,
 		}
 
 		return allAvailableSubmissionLocationsForApplicationAndVersionNew
-				.get(fqan + "_" + appname + "_" + version);
+		.get(fqan + "_" + appname + "_" + version);
 	}
 
 	/**
@@ -677,13 +677,13 @@ public class EnvironmentManager implements MountPointsListener,
 
 				// synchronized (fqan) {
 				myLogger
-						.debug("Measuring duration of getting submission locations for fqan: "
-								+ fqan);
+				.debug("Measuring duration of getting submission locations for fqan: "
+						+ fqan);
 				Date start = new Date();
 
 				String[] tempSubLocsString = serviceInterface
-						.getAllSubmissionLocationsForFqan(fqan)
-						.asSubmissionLocationStrings();
+				.getAllSubmissionLocationsForFqan(fqan)
+				.asSubmissionLocationStrings();
 
 				// SubmissionLocation[] tempSubLocs = new
 				// SubmissionLocation[tempSubLocsString.length];
@@ -695,8 +695,8 @@ public class EnvironmentManager implements MountPointsListener,
 						tempSubLocs.add(tempSubLoc);
 					} else {
 						myLogger
-								.error("Null pointer for submission location string: "
-										+ element + ". Not so good.");
+						.error("Null pointer for submission location string: "
+								+ element + ". Not so good.");
 					}
 				}
 				// for ( MountPoint mp : getMountPoints(fqan) ) {
@@ -735,10 +735,10 @@ public class EnvironmentManager implements MountPointsListener,
 				// }
 				Date end = new Date();
 				myLogger
-						.debug("[BENCHMARK] Submission location lookup time for "
-								+ fqan
-								+ ": "
-								+ (end.getTime() - start.getTime()));
+				.debug("[BENCHMARK] Submission location lookup time for "
+						+ fqan
+						+ ": "
+						+ (end.getTime() - start.getTime()));
 				allAvailableSubmissionLocationsPerFqan.put(fqan, tempSubLocs);
 			}
 		}
@@ -771,7 +771,7 @@ public class EnvironmentManager implements MountPointsListener,
 				result.addAll(serviceInterface
 						.getVersionsOfApplicationOnSubmissionLocation(
 								applicationName, subLoc.getLocation())
-						.getStringList());
+								.getStringList());
 			}
 			Date end = new Date();
 			myLogger.debug("[BENCHMARK] Getting all version locations for "
@@ -867,7 +867,7 @@ public class EnvironmentManager implements MountPointsListener,
 
 		if (allSubmissionLocations == null) {
 			myLogger
-					.debug("Getting all submission locations grid wide and caching them.");
+			.debug("Getting all submission locations grid wide and caching them.");
 			Date start = new Date();
 			allSubmissionLocations = new TreeMap<String, SubmissionLocation>();
 
@@ -885,8 +885,8 @@ public class EnvironmentManager implements MountPointsListener,
 			}
 			Date end = new Date();
 			myLogger
-					.debug("[BENCHMARK] Retrieving submission locations duration: "
-							+ (end.getTime() - start.getTime()));
+			.debug("[BENCHMARK] Retrieving submission locations duration: "
+					+ (end.getTime() - start.getTime()));
 		}
 		return allSubmissionLocations;
 	}
@@ -903,8 +903,8 @@ public class EnvironmentManager implements MountPointsListener,
 				+ "_" + subLoc.getLocation() + "_" + application) == null) {
 
 			String[] allVersions = getServiceInterface()
-					.getVersionsOfApplicationOnSubmissionLocation(application,
-							subLoc.getLocation()).asArray();
+			.getVersionsOfApplicationOnSubmissionLocation(application,
+					subLoc.getLocation()).asArray();
 
 			allAvailableVersionsForApplicationPerSubmissionLocation.put(fqan
 					+ "_" + subLoc.getLocation() + "_" + application,
@@ -921,7 +921,7 @@ public class EnvironmentManager implements MountPointsListener,
 	}
 
 	public DtoBatchJob getBatchJob(String jobname, boolean refreshBatchJob)
-			throws NoSuchJobException {
+	throws NoSuchJobException {
 		throw new RuntimeException("Not implemented for this class.");
 	}
 
@@ -985,7 +985,19 @@ public class EnvironmentManager implements MountPointsListener,
 
 	}
 
+	public SortedSet<String> getCurrentApplications(boolean refresh) {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public SortedSet<String> getCurrentApplicationsBatch(boolean refresh) {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
 	public SortedSet<String> getCurrentBatchJobnames() {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
+	public SortedSet<String> getCurrentBatchJobnames(boolean refresh) {
 		throw new RuntimeException("Not implemented for this class.");
 	}
 
@@ -1002,6 +1014,10 @@ public class EnvironmentManager implements MountPointsListener,
 		throw new RuntimeException("Not implemented for this class.");
 	}
 
+	public SortedSet<String> getCurrentJobnames(boolean refresh) {
+		throw new RuntimeException("Not implemented for this class.");
+	}
+
 	public SortedSet<String> getCurrentJobnames(String application,
 			boolean refresh) {
 		throw new RuntimeException("Not implemented for this class.");
@@ -1015,7 +1031,7 @@ public class EnvironmentManager implements MountPointsListener,
 	public String getDefaultFqan() {
 		// if (defaultFqan == null) {
 		// defaultFqan = ClientPropertiesManager.getLastUsedFqan();
-		//			
+		//
 		// setDefaultFqan(defaultFqan);
 		// }
 		return defaultFqan;
@@ -1033,8 +1049,8 @@ public class EnvironmentManager implements MountPointsListener,
 		String site = FileConstants.LOCAL_NAME;
 		try {
 			defaultUrl = (String) ClientPropertiesManager
-					.getClientConfiguration().getProperty(
-							"defaultServiceInterfaceUrl");
+			.getClientConfiguration().getProperty(
+					"defaultServiceInterfaceUrl");
 			URI uri = new URI(defaultUrl);
 			site = "vpac";
 			site = MountPointHelpers.getSiteFromMountPointUrl(uri.getHost());
@@ -1063,6 +1079,10 @@ public class EnvironmentManager implements MountPointsListener,
 		return fileTransferManager;
 	}
 
+	// public JobManagementInterface getJobManagement() {
+	// return jobManagement;
+	// }
+
 	/**
 	 * Get all the users' fqans
 	 * 
@@ -1075,6 +1095,14 @@ public class EnvironmentManager implements MountPointsListener,
 		}
 		return fqans;
 	}
+
+	// public void setJobManagement(JobManagementInterface jobManagement) {
+	// this.jobManagement = jobManagement;
+	// }
+
+	// public static void setDefaultManager(EnvironmentManager defaultManager) {
+	// EnvironmentManager.defaultManager = defaultManager;
+	// }
 
 	public HistoryManager getHistoryManager() {
 		return historyManager;
@@ -1089,21 +1117,9 @@ public class EnvironmentManager implements MountPointsListener,
 
 	}
 
-	// public JobManagementInterface getJobManagement() {
-	// return jobManagement;
-	// }
-
 	public MountPoint getMountPointForAlias(String url) {
 		throw new RuntimeException("Not implemented for this class.");
 	}
-
-	// public void setJobManagement(JobManagementInterface jobManagement) {
-	// this.jobManagement = jobManagement;
-	// }
-
-	// public static void setDefaultManager(EnvironmentManager defaultManager) {
-	// EnvironmentManager.defaultManager = defaultManager;
-	// }
 
 	public MountPoint getMountPointForUrl(String url) {
 		return getResponsibleMountpointForFile(url);
@@ -1141,9 +1157,9 @@ public class EnvironmentManager implements MountPointsListener,
 
 				Set<MountPoint> mps = new HashSet<MountPoint>();
 				for (MountPoint mp : getMountPoints()) {
-					if (mp.getFqan() == null
+					if ((mp.getFqan() == null)
 							|| mp.getFqan().equals(Constants.NON_VO_FQAN)) {
-						if (fqan == null || fqan.equals(Constants.NON_VO_FQAN)) {
+						if ((fqan == null) || fqan.equals(Constants.NON_VO_FQAN)) {
 							mps.add(mp);
 							continue;
 						} else {
@@ -1188,9 +1204,9 @@ public class EnvironmentManager implements MountPointsListener,
 
 			String mpSite = lookupSite(FILE_URL_TYPE, mp.getRootUrl());
 			if (site.equals(mpSite)) {
-				if (mp.getFqan() == null
+				if ((mp.getFqan() == null)
 						|| mp.getFqan().equals(Constants.NON_VO_FQAN)) {
-					if (fqan == null || fqan.equals(Constants.NON_VO_FQAN)) {
+					if ((fqan == null) || fqan.equals(Constants.NON_VO_FQAN)) {
 						result.add(mp);
 					}
 				} else {
@@ -1210,8 +1226,8 @@ public class EnvironmentManager implements MountPointsListener,
 				.get(submissionLocation) == null) {
 
 			String[] urls = serviceInterface
-					.getStagingFileSystemForSubmissionLocation(
-							submissionLocation).asArray();
+			.getStagingFileSystemForSubmissionLocation(
+					submissionLocation).asArray();
 
 			Set<MountPoint> result = new TreeSet<MountPoint>();
 			for (String url : urls) {
@@ -1223,8 +1239,8 @@ public class EnvironmentManager implements MountPointsListener,
 
 					for (MountPoint mp : getMountPoints()) {
 
-						if (mp.getRootUrl().indexOf(host) != -1
-								&& mp.getRootUrl().indexOf(protocol) != -1) {
+						if ((mp.getRootUrl().indexOf(host) != -1)
+								&& (mp.getRootUrl().indexOf(protocol) != -1)) {
 							result.add(mp);
 						}
 
@@ -1240,15 +1256,15 @@ public class EnvironmentManager implements MountPointsListener,
 					submissionLocation, result);
 		}
 		return alreadyQueriedMountPointsPerSubmissionLocation
-				.get(submissionLocation);
+		.get(submissionLocation);
 	}
 
 	public Set<MountPoint> getMountPointsForSubmissionLocationAndFqan(
 			String submissionLocation, String fqan) {
 
 		String[] urls = serviceInterface
-				.getStagingFileSystemForSubmissionLocation(submissionLocation)
-				.asArray();
+		.getStagingFileSystemForSubmissionLocation(submissionLocation)
+		.asArray();
 
 		Set<MountPoint> result = new TreeSet<MountPoint>();
 
@@ -1261,8 +1277,8 @@ public class EnvironmentManager implements MountPointsListener,
 
 				for (MountPoint mp : getMountPoints(fqan)) {
 
-					if (mp.getRootUrl().indexOf(host) != -1
-							&& mp.getRootUrl().indexOf(protocol) != -1) {
+					if ((mp.getRootUrl().indexOf(host) != -1)
+							&& (mp.getRootUrl().indexOf(protocol) != -1)) {
 						result.add(mp);
 					}
 
@@ -1308,6 +1324,8 @@ public class EnvironmentManager implements MountPointsListener,
 
 		return fqans;
 	}
+
+	// these are not really important
 
 	public String getProperty(String key) {
 		throw new RuntimeException("Not implemented for this class.");
@@ -1373,8 +1391,6 @@ public class EnvironmentManager implements MountPointsListener,
 		}
 	}
 
-	// these are not really important
-
 	public ServiceInterface getServiceInterface() {
 		return serviceInterface;
 	}
@@ -1392,9 +1408,9 @@ public class EnvironmentManager implements MountPointsListener,
 
 		SubmissionLocation result = getAllSubmissionLocations().get(subLoc);
 
-		if (result == null && subLoc.toLowerCase().indexOf("#pbs") >= 0) {
+		if ((result == null) && (subLoc.toLowerCase().indexOf("#pbs") >= 0)) {
 			String tempLoc = subLoc.substring(0, subLoc.toLowerCase().indexOf(
-					"#pbs"));
+			"#pbs"));
 			return getAllSubmissionLocations().get(tempLoc);
 		} else {
 			return result;
@@ -1411,13 +1427,13 @@ public class EnvironmentManager implements MountPointsListener,
 			String realname = null;
 			try {
 				realname = ClientPropertiesManager.getClientConfiguration()
-						.getString(Person.REALNAME_KEY);
+				.getString(Person.REALNAME_KEY);
 			} catch (ConfigurationException e2) {
 				// doesn't matter
 				myLogger.warn("Could not read config file: "
 						+ e2.getLocalizedMessage());
 			}
-			if (realname == null || "".equals(realname)) {
+			if ((realname == null) || "".equals(realname)) {
 				dn = getServiceInterface().getDN();
 				int indexcn = dn.toLowerCase().indexOf("cn=");
 
@@ -1488,7 +1504,7 @@ public class EnvironmentManager implements MountPointsListener,
 	}
 
 	private synchronized void invalidateMountPointCaches()
-			throws RemoteFileSystemException {
+	throws RemoteFileSystemException {
 		mountPoints = null;
 		sites = null;
 		allUsedFqans = new TreeSet<String>();
@@ -1575,7 +1591,7 @@ public class EnvironmentManager implements MountPointsListener,
 			String submissionLocation) {
 
 		String[] fs = alreadyQueriedQueues.get(submissionLocation);
-		if (fs == null || "".equals(submissionLocation)) {
+		if ((fs == null) || "".equals(submissionLocation)) {
 			fs = serviceInterface.getStagingFileSystemForSubmissionLocation(
 					submissionLocation).asArray();
 			alreadyQueriedQueues.put(submissionLocation, fs);
@@ -1598,7 +1614,7 @@ public class EnvironmentManager implements MountPointsListener,
 	 */
 	public synchronized void mount(String url, String mountPoint,
 			boolean useHomeDirectoryOnThisFileSystemIfPossible)
-			throws RemoteFileSystemException {
+	throws RemoteFileSystemException {
 
 		MountPoint mp = serviceInterface.mountWithoutFqan(url, mountPoint,
 				useHomeDirectoryOnThisFileSystemIfPossible);
@@ -1609,7 +1625,7 @@ public class EnvironmentManager implements MountPointsListener,
 
 	public synchronized void mount(String url, String mountPoint, String fqan,
 			boolean useHomeDirectoryOnThisFileSystemIfPossible)
-			throws RemoteFileSystemException {
+	throws RemoteFileSystemException {
 		if (Constants.NON_VO_FQAN.equals(fqan)) {
 			fqan = null;
 		}
@@ -1621,7 +1637,7 @@ public class EnvironmentManager implements MountPointsListener,
 	}
 
 	public synchronized void mountPointsChanged(MountPointEvent mpe)
-			throws RemoteFileSystemException {
+	throws RemoteFileSystemException {
 
 		String oldFqan = getDefaultFqan();
 		invalidateMountPointCaches();
@@ -1668,7 +1684,7 @@ public class EnvironmentManager implements MountPointsListener,
 		}
 		Set<String> allFqansNew = getAllUsedFqans();
 
-		if (allFqansNew == null || allFqansNew.size() == 0) {
+		if ((allFqansNew == null) || (allFqansNew.size() == 0)) {
 			defaultFqan = Constants.NON_VO_FQAN;
 			return;
 		}
