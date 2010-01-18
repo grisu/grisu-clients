@@ -15,7 +15,8 @@
 		</repository>
 		<repository>
 			<id>ARCS Snapshots</id>
-			<url>http://code.arcs.org.au/nexus/content/groups/public-snapshots</url>
+			<url>http://code.arcs.org.au/nexus/content/groups/public-snapshots
+			</url>
 		</repository>
 	</repositories>
 
@@ -101,6 +102,12 @@
 			<version>1.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>furbelow</groupId>
+			<artifactId>furbelow</artifactId>
+			<version>1.0</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -130,10 +137,12 @@
 
 								<index>true</index>
 								<manifest>
-									<mainClass>org.vpac.grisu.clients.blender.GrisuBlender</mainClass>
+									<mainClass>org.vpac.grisu.clients.blender.GrisuBlender
+									</mainClass>
 								</manifest>
 								<manifestEntries>
-									<Class-Path>bcprov.jar bcprov-jdk15-143.jar local-backend.jar</Class-Path>
+									<Class-Path>bcprov.jar bcprov-jdk15-143.jar local-backend.jar
+									</Class-Path>
 								</manifestEntries>
 							</archive>
 
