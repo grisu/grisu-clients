@@ -20,12 +20,12 @@ import org.vpac.grisu.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
 import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
-import org.vpac.grisu.frontend.model.events.ActionStatusEvent;
 import org.vpac.grisu.frontend.model.events.BatchJobEvent;
 import org.vpac.grisu.frontend.model.job.BatchJobObject;
 import org.vpac.grisu.frontend.model.job.JobObject;
 import org.vpac.grisu.model.GrisuRegistry;
 import org.vpac.grisu.model.GrisuRegistryManager;
+import org.vpac.grisu.model.status.ActionStatusEvent;
 import org.vpac.grisu.settings.Environment;
 
 public class GrisuBlenderJob implements EventTopicSubscriber {

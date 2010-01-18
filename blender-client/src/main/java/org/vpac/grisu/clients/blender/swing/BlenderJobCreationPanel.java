@@ -24,11 +24,11 @@ import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.BatchJobException;
 import org.vpac.grisu.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
-import org.vpac.grisu.frontend.model.events.ActionStatusEvent;
 import org.vpac.grisu.frontend.model.events.BatchJobEvent;
 import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.model.UserEnvironmentManager;
 import org.vpac.grisu.model.info.ApplicationInformation;
+import org.vpac.grisu.model.status.ActionStatusEvent;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
