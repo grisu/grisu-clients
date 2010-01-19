@@ -37,6 +37,7 @@ import org.vpac.grisu.model.MountPoint;
 import org.vpac.grisu.model.UserEnvironmentManager;
 import org.vpac.grisu.model.dto.DtoBatchJob;
 import org.vpac.grisu.model.files.FileSystemItem;
+import org.vpac.grisu.model.status.StatusObject;
 import org.vpac.grisu.settings.ClientPropertiesManager;
 import org.vpac.helpDesk.model.Person;
 import org.vpac.helpDesk.model.PersonException;
@@ -1050,7 +1051,7 @@ UserEnvironmentManager {
 		try {
 			defaultUrl = (String) ClientPropertiesManager
 			.getClientConfiguration().getProperty(
-					"defaultServiceInterfaceUrl");
+			"defaultServiceInterfaceUrl");
 			URI uri = new URI(defaultUrl);
 			site = "vpac";
 			site = MountPointHelpers.getSiteFromMountPointUrl(uri.getHost());
@@ -1742,6 +1743,11 @@ UserEnvironmentManager {
 
 		fireMountPointsEvent(MountPointEvent.MOUNTPOINT_REMOVED,
 				new MountPoint[] { mp });
+	}
+
+	public StatusObject waitForActionToFinish(String handle)
+	throws InterruptedException {
+		throw new RuntimeException("Not supported.");
 	}
 
 }
