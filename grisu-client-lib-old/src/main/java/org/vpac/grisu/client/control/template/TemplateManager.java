@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.vpac.grisu.client.control.EnvironmentManager;
 import org.vpac.grisu.client.control.ServiceInterfaceFactoryOld;
@@ -50,7 +51,7 @@ public class TemplateManager {
 				new Integer(MyProxyServerParams.getMyProxyPort()).toString());
 
 		ServiceInterface serviceInterface = ServiceInterfaceFactoryOld
-				.createInterface(params);
+		.createInterface(params);
 
 		EnvironmentManager em = new EnvironmentManager(serviceInterface);
 		// EnvironmentManager.setDefaultServiceInterface(serviceInterface);
@@ -80,7 +81,7 @@ public class TemplateManager {
 	}
 
 	private EnvironmentManager em = null;
-	private Map<String, JsdlTemplate> serverTemplates = new TreeMap<String, JsdlTemplate>();
+	private final Map<String, JsdlTemplate> serverTemplates = new TreeMap<String, JsdlTemplate>();
 
 	private Map<String, JsdlTemplate> localTemplates = null;
 
@@ -89,7 +90,7 @@ public class TemplateManager {
 		this.em = em;
 
 		String[] serverTemplateNames = ClientPropertiesManager
-				.getServerTemplates();
+		.getServerTemplates();
 		ArrayList<String> failedTemplates = new ArrayList<String>();
 
 		for (String serverTemplateName : serverTemplateNames) {
@@ -102,8 +103,12 @@ public class TemplateManager {
 			}
 		}
 
-		// localTemplates =
-		// LocalTemplateManagement.getAllTemplatesWithFilenames(em);
+		// check whether to autoload a template based on environment variable
+		String defaultApplication = System.getProperty("grisu.defaultApplication");
+		if ( StringUtils.isNotBlank(defaultApplication) ) {
+			addServerTemplate(defaultApplication);
+		}
+
 	}
 
 	/**
@@ -119,13 +124,13 @@ public class TemplateManager {
 	 *             if the file can't be copied for some reason
 	 */
 	public String addLocalTemplate(File templateFile, boolean overwrite)
-			throws IOException {
+	throws IOException {
 		File newFile = new File(LocalTemplateManagement.TEMPLATE_DIRECTORY,
 				templateFile.getName());
 
 		if (!newFile.toString().endsWith(".xml")) {
 			throw new IOException(
-					"File doesn't end with \".xml\". Won't copy it into local template store...");
+			"File doesn't end with \".xml\". Won't copy it into local template store...");
 		}
 
 		if (newFile.exists() && !overwrite) {
@@ -156,7 +161,7 @@ public class TemplateManager {
 
 		File newTemp = new File(tempDir, templateName + ".xml");
 		int i = 1;
-		while (newTemp == null || newTemp.exists()) {
+		while ((newTemp == null) || newTemp.exists()) {
 			i++;
 			newTemp = new File(tempDir, templateName + "_" + i + ".xml");
 		}
@@ -177,7 +182,7 @@ public class TemplateManager {
 				putIntoServerTemplatesMap(templateName);
 			} catch (NoSuchTemplateException e) {
 				myLogger
-						.error("Could not add server template: " + templateName);
+				.error("Could not add server template: " + templateName);
 			}
 		}
 
@@ -190,7 +195,7 @@ public class TemplateManager {
 	public Map<String, JsdlTemplate> getLocalTemplates() {
 		if (localTemplates == null) {
 			localTemplates = LocalTemplateManagement
-					.getAllTemplatesWithFilenames(em);
+			.getAllTemplatesWithFilenames(em);
 		}
 		return localTemplates;
 	}
@@ -221,7 +226,7 @@ public class TemplateManager {
 	}
 
 	private void putIntoServerTemplatesMap(String templateName)
-			throws NoSuchTemplateException {
+	throws NoSuchTemplateException {
 		Document jsdlDoc = SeveralXMLHelpers.fromString(em
 				.getServiceInterface().getTemplate(templateName));
 		serverTemplates.put(templateName, new JsdlTemplate(em, jsdlDoc));
@@ -233,7 +238,7 @@ public class TemplateManager {
 	}
 
 	public void refreshServerTemplate(String templateName)
-			throws NoSuchTemplateException {
+	throws NoSuchTemplateException {
 		Document jsdlDoc = SeveralXMLHelpers.fromString(em
 				.getServiceInterface().getTemplate(templateName));
 		serverTemplates.put(templateName, new JsdlTemplate(em, jsdlDoc));
@@ -243,7 +248,7 @@ public class TemplateManager {
 
 		File tempToRemove = new File(
 				LocalTemplateManagement.TEMPLATE_DIRECTORY, templateName
-						+ ".xml");
+				+ ".xml");
 
 		tempToRemove.delete();
 

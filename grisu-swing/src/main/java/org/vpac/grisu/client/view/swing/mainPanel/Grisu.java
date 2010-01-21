@@ -28,6 +28,7 @@ import javax.swing.UIManager;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.vpac.grisu.client.control.EnvironmentManager;
@@ -74,7 +75,7 @@ public class Grisu implements WindowListener {
 
 		Shibboleth.initDefaultSecurityProvider();
 
-		if (args.length > 0 && Arrays.binarySearch(args, "--debug") >= 0) {
+		if ((args.length > 0) && (Arrays.binarySearch(args, "--debug") >= 0)) {
 			Level lvl = Level.toLevel("debug");
 			Logger.getRootLogger().setLevel(lvl);
 		}
@@ -104,6 +105,7 @@ public class Grisu implements WindowListener {
 				myLogger.debug("Starting login dialog.");
 				LoginDialog ld = new LoginDialog();
 				ld.addWindowListener(new WindowAdapter() {
+					@Override
 					public void windowClosing(WindowEvent e) {
 						System.exit(0);
 					}
@@ -122,6 +124,7 @@ public class Grisu implements WindowListener {
 				myLogger.debug("Creating splash screen.");
 				final LoginSplashScreen lss = new LoginSplashScreen();
 				lss.addWindowListener(new WindowAdapter() {
+					@Override
 					public void windowClosing(WindowEvent e) {
 						System.exit(0);
 					}
@@ -131,6 +134,7 @@ public class Grisu implements WindowListener {
 				lss.setVisible(true);
 
 				new Thread() {
+					@Override
 					public void run() {
 						myLogger.debug("Creating progress bars.");
 
@@ -150,17 +154,17 @@ public class Grisu implements WindowListener {
 							// defaultRegistry = new
 							// GrisuRegistryImpl(application.serviceInterface);
 							// }
-							//					
+							//
 							// GrisuRegistryManager.setDefault(application.serviceInterface,
 							// defaultRegistry);
 
 							GrisuRegistry temp = GrisuRegistryManager
-									.getDefault(application.serviceInterface);
+							.getDefault(application.serviceInterface);
 							temp.setUserEnvironmentManager(application.em);
 							application.em.initializeHistoryManager();
 							if (application.serviceInterface == null) {
 								myLogger
-										.debug("Could not create/find service interface. Exiting.");
+								.debug("Could not create/find service interface. Exiting.");
 								Utils.showErrorMessage(application.em, null,
 										"startupError", null);
 								System.exit(1);
@@ -194,11 +198,11 @@ public class Grisu implements WindowListener {
 						application.getJFrame().setVisible(true);
 
 						Thread
-								.setDefaultUncaughtExceptionHandler(new GrisuRuntimeExceptionHandler(
-										application.getJFrame()));
+						.setDefaultUncaughtExceptionHandler(new GrisuRuntimeExceptionHandler(
+								application.getJFrame()));
 
 						ApplicationStatusManager.getDefaultManager()
-								.removeStatusListener(lss);
+						.removeStatusListener(lss);
 						myLogger.debug("Removing splash screen.");
 						lss.dispose();
 
@@ -375,7 +379,7 @@ public class Grisu implements WindowListener {
 		if (addLocalTemplateItem == null) {
 			addLocalTemplateItem = new JMenuItem();
 			addLocalTemplateItem
-					.setText("Add template to local template store");
+			.setText("Add template to local template store");
 			addLocalTemplateItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					getSubmissionPanel().addLocalTemplate();
@@ -593,13 +597,14 @@ public class Grisu implements WindowListener {
 			proxyEndTimeMenuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					new Thread() {
+						@Override
 						public void run() {
 							JOptionPane.showMessageDialog(null,
 									"Proxy endtime: "
-											+ new Date(serviceInterface
-													.getCredentialEndTime()),
-									"Proxy endtime",
-									JOptionPane.INFORMATION_MESSAGE);
+									+ new Date(serviceInterface
+											.getCredentialEndTime()),
+											"Proxy endtime",
+											JOptionPane.INFORMATION_MESSAGE);
 						}
 					}.start();
 
@@ -624,40 +629,40 @@ public class Grisu implements WindowListener {
 					new Runnable() {
 						public void run() {
 							HelpDesk[] helpDesks = new HelpDesk[ClientPropertiesManager
-									.getDefaultHelpDesks().length];
+							                                    .getDefaultHelpDesks().length];
 							Configuration config = null;
 							try {
 								try {
 									config = new PropertiesConfiguration(
 											ClientPropertiesManager
-													.getHelpDeskConfig());
+											.getHelpDeskConfig());
 								} catch (ConfigurationException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 									throw new HelpDeskNotAvailableException(
-											"Could not init helpdesks because of misconfiguration.");
+									"Could not init helpdesks because of misconfiguration.");
 								}
 
 								for (int i = 0; i < ClientPropertiesManager
-										.getDefaultHelpDesks().length; i++) {
+								.getDefaultHelpDesks().length; i++) {
 									String helpDeskClass = ClientPropertiesManager
-											.getDefaultHelpDesks()[i];
+									.getDefaultHelpDesks()[i];
 									HelpDesk hd = HelpDeskManager
-											.createHelpDesk(helpDeskClass,
-													config);
+									.createHelpDesk(helpDeskClass,
+											config);
 									if (hd != null) {
 										helpDesks[i] = hd;
 									} else {
 										throw new HelpDeskNotAvailableException(
 												"Could not create helpdesk for class: "
-														+ helpDeskClass);
+												+ helpDeskClass);
 									}
 								}
 							} catch (HelpDeskNotAvailableException hdnae) {
 
 								JOptionPane.showMessageDialog(null,
 										"Could not create help desk dialog:\n"
-												+ hdnae.getLocalizedMessage(),
+										+ hdnae.getLocalizedMessage(),
 										"Connection error",
 										JOptionPane.ERROR_MESSAGE);
 
@@ -683,14 +688,14 @@ public class Grisu implements WindowListener {
 							// "Connection error",
 							// JOptionPane.ERROR_MESSAGE);
 							// }
-							//							
+							//
 							//
 							// Utils.showErrorMessage(em, getJFrame(),
 							// "genericRequest", null);
 							// HelpDesk hd =
 							// HelpDeskManager.createHelpDesk("org.vpac.helpDesk.model.irc.IrcHelpDesk",
 							// config);
-							//							
+							//
 							// try {
 							// hd.initiate(EnvironmentManager.getDefaultManager().getUser());
 							// hd.submitTicket("Grisu",
@@ -722,6 +727,12 @@ public class Grisu implements WindowListener {
 		if (submissionPanel == null) {
 			submissionPanel = new SubmissionPanel(em);
 			submissionPanel.setTemplateManager(em.getTemplateManager());
+
+			String application = System.getProperty("grisu.defaultApplication");
+			if ( StringUtils.isNotBlank(application) ) {
+				submissionPanel.setRemoteApplication(application);
+			}
+
 		}
 		return submissionPanel;
 	}

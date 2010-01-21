@@ -62,18 +62,22 @@ import com.jgoodies.forms.layout.RowSpec;
  * 
  */
 public class SubmissionPanel extends JPanel implements JobCreationInterface,
-		FqanListener {
+FqanListener {
 
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger())
+				if (e.isPopupTrigger()) {
 					showMenu(e);
+				}
 			}
 
+			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger())
+				if (e.isPopupTrigger()) {
 					showMenu(e);
+				}
 			}
 
 			private void showMenu(MouseEvent e) {
@@ -111,11 +115,11 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 
 	private JScrollPane scrollPane;
 	private TemplateManager templateManager = null;
-	private DefaultListModel remoteListModel = new DefaultListModel();
-	private LocalTemplateListModel localListModel = new LocalTemplateListModel();
+	private final DefaultListModel remoteListModel = new DefaultListModel();
+	private final LocalTemplateListModel localListModel = new LocalTemplateListModel();
 	private String currentTemplate = null;
 
-	private Map<String, JobPanel> allJobPanels = new HashMap<String, JobPanel>();
+	private final Map<String, JobPanel> allJobPanels = new HashMap<String, JobPanel>();
 
 	private FormLayout layout = null;
 
@@ -208,18 +212,18 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 
 				File newFile = new File(
 						LocalTemplateManagement.TEMPLATE_DIRECTORY, file
-								.getName());
+						.getName());
 
 				if (newFile.exists()) {
 					int value = JOptionPane
-							.showConfirmDialog(
-									SubmissionPanel.this,
-									"A file with the name: \""
-											+ newFile.getName()
-											+ "\"\n"
-											+ "already exists in the local template store.\n"
-											+ "Do you want to overwrite it?",
-									"File exists", JOptionPane.YES_NO_OPTION);
+					.showConfirmDialog(
+							SubmissionPanel.this,
+							"A file with the name: \""
+							+ newFile.getName()
+							+ "\"\n"
+							+ "already exists in the local template store.\n"
+							+ "Do you want to overwrite it?",
+							"File exists", JOptionPane.YES_NO_OPTION);
 
 					if (value == JOptionPane.NO_OPTION) {
 						return;
@@ -238,8 +242,8 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 			} catch (IOException e1) {
 				JOptionPane.showMessageDialog(SubmissionPanel.this,
 						"Can't copy file " + file.toString()
-								+ " to local template store: "
-								+ e1.getLocalizedMessage(), "File error",
+						+ " to local template store: "
+						+ e1.getLocalizedMessage(), "File error",
 						JOptionPane.ERROR_MESSAGE);
 
 			}
@@ -263,10 +267,10 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 	private void deleteLocalTemplate() {
 		int index = getLocalList().getSelectedIndex();
 		if (index != -1) {
-			String templateName = (String) localListModel.get(getLocalList()
+			String templateName = localListModel.get(getLocalList()
 					.getSelectedIndex());
 			SubmissionPanel.this.templateManager
-					.removeLocalTemplate(templateName);
+			.removeLocalTemplate(templateName);
 			localListModel.removeElement(templateName);
 			calculateLocalTemplateVisibility();
 		}
@@ -301,7 +305,7 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 			});
 			addButtonLocal.setText("+");
 			addButtonLocal
-					.setToolTipText("Add a template file to the local template store.");
+			.setToolTipText("Add a template file to the local template store.");
 		}
 		return addButtonLocal;
 	}
@@ -317,7 +321,7 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 
 					AddApplicationDialog aad = new AddApplicationDialog(null,
 							templateManager.getEnvironmentManager()
-									.getServiceInterface());
+							.getServiceInterface());
 
 					aad.setVisible(true);
 
@@ -396,8 +400,8 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 				public void actionPerformed(final ActionEvent e) {
 
 					String localTemplateName = templateManager
-							.addLocalTemplate((String) getRemoteList()
-									.getSelectedValue());
+					.addLocalTemplate((String) getRemoteList()
+							.getSelectedValue());
 					localListModel.addElement(localTemplateName);
 
 					calculateLocalTemplateVisibility();
@@ -441,16 +445,16 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 				public void actionPerformed(final ActionEvent e) {
 					String templateName = null;
 					try {
-						templateName = (String) localListModel
-								.get(getLocalList().getSelectedIndex());
+						templateName = localListModel
+						.get(getLocalList().getSelectedIndex());
 					} catch (Exception ex) {
 						// nothing selected probably
 						return;
 					}
 					int n = JOptionPane.showConfirmDialog(SubmissionPanel.this,
 							"<html><body>Are you sure you want to delete the<br><b>"
-									+ templateName
-									+ "</b><br>template?</body></html>",
+							+ templateName
+							+ "</b><br>template?</body></html>",
 							"Deleting template", JOptionPane.YES_NO_OPTION);
 
 					if (n == JOptionPane.YES_OPTION) {
@@ -522,6 +526,7 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 			localList = new JList(localListModel);
 			localList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			localList.addMouseListener(new MouseAdapter() {
+				@Override
 				public void mouseClicked(final MouseEvent e) {
 
 					if (SwingUtilities.isRightMouseButton(e)) {
@@ -530,7 +535,7 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 
 						remoteList.clearSelection();
 						String selectedItem = (String) localList
-								.getSelectedValue();
+						.getSelectedValue();
 						myLogger.debug("Right clicked on local Item "
 								+ selectedItem);
 
@@ -544,7 +549,7 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 
 						remoteList.clearSelection();
 						String selectedItem = (String) localList
-								.getSelectedValue();
+						.getSelectedValue();
 						myLogger.debug("Clicked on local Item " + selectedItem);
 
 						try {
@@ -559,8 +564,8 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 							e2.printStackTrace();
 						} finally {
 							SubmissionPanel.this
-									.setCursor(Cursor
-											.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+							.setCursor(Cursor
+									.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 						}
 					}
 				}
@@ -589,22 +594,22 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 		if (refreshLocalTemplateMenuItem == null) {
 			refreshLocalTemplateMenuItem = new JMenuItem();
 			refreshLocalTemplateMenuItem
-					.addActionListener(new ActionListener() {
-						public void actionPerformed(final ActionEvent e) {
-							String templateName = (String) (getLocalList()
-									.getSelectedValue());
+			.addActionListener(new ActionListener() {
+				public void actionPerformed(final ActionEvent e) {
+					String templateName = (String) (getLocalList()
+							.getSelectedValue());
 
-							try {
-								refreshTemplate(
-										TemplateManager.LOCAL_TEMPLATE_LOCATION,
-										templateName);
-							} catch (Exception e1) {
-								Utils.showErrorMessage(em,
-										SubmissionPanel.this,
-										"cantRefreshLocalTemplate", e1);
-							}
-						}
-					});
+					try {
+						refreshTemplate(
+								TemplateManager.LOCAL_TEMPLATE_LOCATION,
+								templateName);
+					} catch (Exception e1) {
+						Utils.showErrorMessage(em,
+								SubmissionPanel.this,
+								"cantRefreshLocalTemplate", e1);
+					}
+				}
+			});
 			refreshLocalTemplateMenuItem.setText("Refresh template");
 		}
 		return refreshLocalTemplateMenuItem;
@@ -661,6 +666,7 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 			remoteList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			remoteList.addMouseListener(new MouseAdapter() {
 
+				@Override
 				public void mouseClicked(final MouseEvent e) {
 
 					if (SwingUtilities.isRightMouseButton(e)) {
@@ -669,7 +675,7 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 
 						localList.clearSelection();
 						String selectedItem = (String) remoteList
-								.getSelectedValue();
+						.getSelectedValue();
 						myLogger.debug("Right clicked on remote Item "
 								+ selectedItem);
 
@@ -683,25 +689,27 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 
 						localList.clearSelection();
 						String selectedItem = (String) remoteList
-								.getSelectedValue();
+						.getSelectedValue();
 						myLogger.debug("Non-right clicked on remote Item "
 								+ selectedItem);
 
-						try {
-							showJobTemplatePanel(
-									TemplateManager.REMOTE_TEMPLATE_LOCATION,
-									selectedItem);
-						} catch (NoSuchTemplateException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (TemplateException e2) {
-							// TODO Auto-generated catch block
-							e2.printStackTrace();
-						} finally {
-							SubmissionPanel.this
-									.setCursor(Cursor
-											.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-						}
+						setRemoteApplication(selectedItem);
+
+						//						try {
+						//							showJobTemplatePanel(
+						//									TemplateManager.REMOTE_TEMPLATE_LOCATION,
+						//									selectedItem);
+						//						} catch (NoSuchTemplateException e1) {
+						//							// TODO Auto-generated catch block
+						//							e1.printStackTrace();
+						//						} catch (TemplateException e2) {
+						//							// TODO Auto-generated catch block
+						//							e2.printStackTrace();
+						//						} finally {
+						//							SubmissionPanel.this
+						//							.setCursor(Cursor
+						//									.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+						//						}
 					}
 
 				}
@@ -734,8 +742,8 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 
 					String templateName = null;
 					try {
-						templateName = (String) localListModel
-								.get(getLocalList().getSelectedIndex());
+						templateName = localListModel
+						.get(getLocalList().getSelectedIndex());
 					} catch (Exception ex) {
 						// nothing selected probably
 						return;
@@ -743,8 +751,8 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 
 					int n = JOptionPane.showConfirmDialog(SubmissionPanel.this,
 							"<html><body>Are you sure you want to delete the<br><b>"
-									+ templateName
-									+ "</b><br>template?</body></html>",
+							+ templateName
+							+ "</b><br>template?</body></html>",
 							"Deleting template", JOptionPane.YES_NO_OPTION);
 
 					if (n == JOptionPane.YES_OPTION) {
@@ -815,7 +823,7 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 	}
 
 	private void refreshTemplate(int templateLocation, String templateName)
-			throws NoSuchTemplateException, TemplateException {
+	throws NoSuchTemplateException, TemplateException {
 
 		// final String old_template = currentTemplate;
 		// currentTemplate = templateLocation + "_" + templateName;
@@ -844,7 +852,7 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 			String selTemplateName = (String) remoteListModel.get(selIndex);
 
 			SubmissionPanel.this.templateManager
-					.removeServerTemplate(selTemplateName);
+			.removeServerTemplate(selTemplateName);
 
 			remoteListModel.remove(selIndex);
 		}
@@ -852,13 +860,44 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 
 	private void setFqanLabelText(String fqan) {
 		String fqan_short = null;
-		if (fqan == null || Constants.NON_VO_FQAN.equals(fqan)) {
+		if ((fqan == null) || Constants.NON_VO_FQAN.equals(fqan)) {
 			fqan_short = Constants.NON_VO_FQAN;
 		} else {
 			fqan_short = fqan.substring(fqan.lastIndexOf("/") + 1);
 		}
 		getCurrentVOField().setText(fqan_short);
 		getCurrentVOField().setToolTipText(fqan);
+	}
+
+	public void setRemoteApplication(String application) {
+
+		SubmissionPanel.this.setCursor(Cursor
+				.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+		localList.clearSelection();
+
+
+		if ( remoteListModel.contains(application) ) {
+
+			getRemoteList().setSelectedValue(application, true);
+
+			try {
+				showJobTemplatePanel(
+						TemplateManager.REMOTE_TEMPLATE_LOCATION,
+						application);
+			} catch (NoSuchTemplateException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (TemplateException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} finally {
+				SubmissionPanel.this
+				.setCursor(Cursor
+						.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+		}
+
 	}
 
 	public void setSubmissionFQAN(String fqan) {
@@ -913,29 +952,30 @@ public class SubmissionPanel extends JPanel implements JobCreationInterface,
 				tempPanel.revalidate();
 				final JobPanel newPanel = tempPanel;
 				new Thread() {
+					@Override
 					public void run() {
 						try {
 							JsdlTemplate tempTemplate = templateManager
-									.getTemplate(templateLocation, templateName);
+							.getTemplate(templateLocation, templateName);
 							if (tempTemplate == null) {
 								myLogger.warn("No template found for name: "
 										+ templateName);
 								currentTemplate = old_template;
 								throw new NoSuchTemplateExceptionClient(
 										"No template found for name: "
-												+ templateName);
+										+ templateName);
 							}
 
 							newPanel.setTemplate(tempTemplate);
 							myLogger
-									.debug("Template set for new templatePanel.");
+							.debug("Template set for new templatePanel.");
 						} catch (Exception e) {
 							e.printStackTrace();
 							myLogger
-									.warn("Could not create panel for template \""
-											+ templateName
-											+ "\": "
-											+ e.getLocalizedMessage());
+							.warn("Could not create panel for template \""
+									+ templateName
+									+ "\": "
+									+ e.getLocalizedMessage());
 							currentTemplate = old_template;
 
 							// Utils.showErrorMessage(em, SubmissionPanel.this,
