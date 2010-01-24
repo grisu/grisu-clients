@@ -24,6 +24,7 @@ import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.BatchJobException;
 import org.vpac.grisu.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
+import org.vpac.grisu.frontend.control.jobMonitoring.RunningJobManager;
 import org.vpac.grisu.frontend.model.events.BatchJobEvent;
 import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.model.UserEnvironmentManager;
@@ -320,7 +321,7 @@ EventTopicSubscriber {
 					try {
 						job = new GrisuBlenderJob(si, currentJobname,
 								blenderBasicJobPropertiesPanel
-								.getSelectedFqan());
+								.getSelectedFqan(), true);
 					} catch (BatchJobException e) {
 						EventBus.unsubscribe(currentJobname, this);
 						addMessage(e.getLocalizedMessage() + "\n");

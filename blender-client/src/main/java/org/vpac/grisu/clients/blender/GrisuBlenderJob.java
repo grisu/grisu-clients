@@ -20,6 +20,7 @@ import org.vpac.grisu.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
 import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
+import org.vpac.grisu.frontend.control.jobMonitoring.RunningJobManager;
 import org.vpac.grisu.frontend.model.events.BatchJobEvent;
 import org.vpac.grisu.frontend.model.job.BatchJobObject;
 import org.vpac.grisu.frontend.model.job.JobObject;
@@ -118,15 +119,25 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 				this.multiJobName, false);
 		EventBus.subscribe(this.multiJobName, this);
 	}
+	
+	public GrisuBlenderJob(ServiceInterface si,
+			String jobname, String fqan) throws BatchJobException {
+		this(si, jobname, fqan, false);
+	}
 
 	public GrisuBlenderJob(ServiceInterface serviceInterface,
-			String multiPartJobId, String fqan) throws BatchJobException {
+			String multiPartJobId, String fqan, boolean useRunningJobManager) throws BatchJobException {
 		this.serviceInterface = serviceInterface;
 		this.registry = GrisuRegistryManager.getDefault(serviceInterface);
 		this.multiJobName = multiPartJobId;
-		this.multiPartJob = new BatchJobObject(serviceInterface,
+		if ( useRunningJobManager ) {
+			this.multiPartJob = RunningJobManager.getDefault(serviceInterface).createBatchJob(this.multiJobName,
+					fqan, BLENDER_APP_NAME, BLENDER_DEFAULT_VERSION);
+		} else {
+			this.multiPartJob = new BatchJobObject(serviceInterface,
 				this.multiJobName, fqan, BLENDER_APP_NAME,
 				BLENDER_DEFAULT_VERSION);
+		}
 		this.multiPartJob.setConcurrentInputFileUploadThreads(UPLOAD_THREADS);
 		EventBus.subscribe(this.multiJobName, this);
 	}
