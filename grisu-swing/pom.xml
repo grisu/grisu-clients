@@ -65,12 +65,6 @@
 			<version>0.3-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.vpac.grisu</groupId>
-			<artifactId>client-side-mds</artifactId>
-			<version>0.3-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
