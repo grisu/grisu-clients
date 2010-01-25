@@ -66,7 +66,7 @@ public class Grisu implements WindowListener {
 
 	public static final String apache2License = "http://www.apache.org/licenses/LICENSE-2.0";
 
-	public static final String GRISU_VERSION = "v0.2";
+	public static final String GRISU_VERSION = "v0.3-SNAPSHOT";
 
 	/**
 	 * Launches this application
