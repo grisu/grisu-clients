@@ -13,7 +13,7 @@
 			<outputDirectory>/</outputDirectory>
 			<includes>
 				<include>org.vpac.grisu:grisu-client-swing</include>
-<!--				<include>org.vpac.grisu:client-side-mds</include>-->
+				<include>org.vpac.grisu:client-side-mds</include>
 			</includes>
 			<excludes>
 				<exclude>junit:junit</exclude>
