@@ -32,8 +32,8 @@ import org.w3c.dom.Document;
 public class LocalTemplateManagement {
 
 	final public static String TEMPLATE_DIRECTORY = Environment
-			.getGrisuDirectory().getPath()
-			+ File.separator + "templates";
+	.getGrisuClientDirectory().getPath()
+	+ File.separator + "templates";
 
 	// final public static String AVAILABLE_TEMPLATES_DIRECTORY =
 	// Environment.GRISU_DIRECTORY+File.separator+"templates_available";
@@ -43,10 +43,10 @@ public class LocalTemplateManagement {
 	// * @return all templates
 	// */
 	// public static Document[] getAllTemplates() {
-	//		
+	//
 	// File[] templates = new File(TEMPLATE_DIRECTORY).listFiles();
 	// Document[] document_templates = new Document[templates.length];
-	//		
+	//
 	// for ( int i=0; i<templates.length; i++ ) {
 	// try {
 	// document_templates[i] = loadJsdlFile(templates[i]);
@@ -56,7 +56,7 @@ public class LocalTemplateManagement {
 	// // do nothing for now
 	// }
 	// }
-	//		
+	//
 	// return document_templates;
 	// }
 
@@ -77,7 +77,7 @@ public class LocalTemplateManagement {
 		if (!tempDir.exists()) {
 			if (!tempDir.mkdirs()) {
 				System.out
-						.println("Could not create directory $HOME/.grisu/templates. Please create it manually and make it writable by the current user.");
+				.println("Could not create directory $HOME/.grisu/templates. Please create it manually and make it writable by the current user.");
 				System.exit(1);
 			}
 		}
@@ -88,7 +88,7 @@ public class LocalTemplateManagement {
 			try {
 				result.put(file.getName().substring(0,
 						file.getName().lastIndexOf(".xml")), new JsdlTemplate(
-						em, loadJsdlFile(file)));
+								em, loadJsdlFile(file)));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				// e.printStackTrace();
@@ -100,7 +100,7 @@ public class LocalTemplateManagement {
 	}
 
 	private static Document loadJsdlFile(File file)
-			throws JsdlTemplateException {
+	throws JsdlTemplateException {
 
 		Document jsdl = null;
 
@@ -112,21 +112,21 @@ public class LocalTemplateManagement {
 		// File("/home/markus/workspace/nw-core/jsdl.xsd");
 
 		DocumentBuilderFactory docBuildFactory = DocumentBuilderFactory
-				.newInstance();
+		.newInstance();
 		docBuildFactory.setNamespaceAware(true);
 		docBuildFactory.setValidating(false);
 
 		docBuildFactory.setAttribute(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA); // use
-																			// LANGUAGE
-																			// here
-																			// instead
-																			// of
-																			// SOURCE
+		// LANGUAGE
+		// here
+		// instead
+		// of
+		// SOURCE
 		// docBuildFactory.setAttribute(JAXP_SCHEMA_SOURCE, schemaFile);
 
 		try {
 			DocumentBuilder documentBuilder = docBuildFactory
-					.newDocumentBuilder();
+			.newDocumentBuilder();
 			jsdl = documentBuilder.parse(file);
 			// JsdlHelpers.validateJSDL(jsdl);
 
@@ -157,7 +157,7 @@ public class LocalTemplateManagement {
 		try {
 			// TODO use static transformer to reduce overhead?
 			Transformer transformer = TransformerFactory.newInstance()
-					.newTransformer();
+			.newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
 			// initialize StreamResult with InputFile object to save to file

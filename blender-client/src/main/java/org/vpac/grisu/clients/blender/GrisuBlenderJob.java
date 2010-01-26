@@ -72,7 +72,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 
 	private static final NumberFormat formatter = new DecimalFormat("0000");
 	public static final File BLENDER_PLUGIN_DIR = new File(Environment
-			.getGrisuDirectory(), "blender");
+			.getClientGrisuDirectory(), "blender");
 	public static final File BLENDER_RESOURCE_PYTHYON_SCRIPT = new File(
 			BLENDER_PLUGIN_DIR, "ListResources.py");
 
@@ -82,7 +82,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 		}
 
 		InputStream in = GrisuBlenderJob.class
-				.getResourceAsStream("/ListResources.py");
+		.getResourceAsStream("/ListResources.py");
 
 		try {
 			IOUtils.copy(in, new FileOutputStream(
@@ -119,7 +119,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 				this.multiJobName, false);
 		EventBus.subscribe(this.multiJobName, this);
 	}
-	
+
 	public GrisuBlenderJob(ServiceInterface si,
 			String jobname, String fqan) throws BatchJobException {
 		this(si, jobname, fqan, false);
@@ -135,8 +135,8 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 					fqan, BLENDER_APP_NAME, BLENDER_DEFAULT_VERSION);
 		} else {
 			this.multiPartJob = new BatchJobObject(serviceInterface,
-				this.multiJobName, fqan, BLENDER_APP_NAME,
-				BLENDER_DEFAULT_VERSION);
+					this.multiJobName, fqan, BLENDER_APP_NAME,
+					BLENDER_DEFAULT_VERSION);
 		}
 		this.multiPartJob.setConcurrentInputFileUploadThreads(UPLOAD_THREADS);
 		EventBus.subscribe(this.multiJobName, this);
@@ -148,21 +148,21 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 	}
 
 	// public SortedSet<GridResource> findBestResources() {
-	//		
+	//
 	// Map<JobSubmissionProperty, String> properties = new
 	// HashMap<JobSubmissionProperty, String>();
-	//		
+	//
 	// properties.put(JobSubmissionProperty.NO_CPUS, new
 	// Integer(noCpus).toString());
 	// properties.put(JobSubmissionProperty.APPLICATIONVERSION, version);
 	// properties.put(JobSubmissionProperty.WALLTIME_IN_MINUTES, new
 	// Integer(multiPartJob.getMaxWalltimeInSeconds()/60).toString());
-	//		
+	//
 	// SortedSet<GridResource> result =
 	// this.userApplicationInfo.getBestSubmissionLocations(properties,
 	// multiPartJob.getFqan());
 	// return result;
-	//		
+	//
 	// }
 
 	private void addJob(int framenumber, String commandline,
@@ -191,7 +191,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 	}
 
 	private void createAndSubmitBlenderJob(boolean waitToFinish)
-			throws JobSubmissionException, InterruptedException {
+	throws JobSubmissionException, InterruptedException {
 
 		multiPartJob.addInputFile(blendFile.getFile().toString(), blendFile
 				.getRelativeBlendFilePath());
@@ -224,7 +224,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 			e.printStackTrace();
 			throw new JobSubmissionException(
 					"Couldn't preapare or create job(s): "
-							+ e.getLocalizedMessage());
+					+ e.getLocalizedMessage());
 		}
 
 		try {
@@ -239,8 +239,8 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 	}
 
 	public void createAndSubmitJobs(boolean waitToFinish)
-			throws JobCreationException, JobSubmissionException,
-			InterruptedException {
+	throws JobCreationException, JobSubmissionException,
+	InterruptedException {
 
 		if (lastFrame < firstFrame) {
 			throw new JobCreationException("Last frame before first frame.");
@@ -267,12 +267,12 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 			framesToCalculatePart = " -f " + startFrame;
 		} else {
 			framesToCalculatePart = " -s " + startFrame + " -e " + endFrame
-					+ " -a";
+			+ " -a";
 		}
 		String result = "blender " + "-b " + multiPartJob.pathToInputFiles()
-				+ blendFile.getRelativeBlendFilePath() + " -F "
-				+ format.toString() + " -o " + outputFileName
-				+ framesToCalculatePart;
+		+ blendFile.getRelativeBlendFilePath() + " -F "
+		+ format.toString() + " -o " + outputFileName
+		+ framesToCalculatePart;
 
 		myLogger.debug("Created commandline: " + result);
 
@@ -290,13 +290,13 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 
 	}
 
-	//	
+	//
 	// public void downloadResult() throws RemoteFileSystemException,
 	// FileTransferException, IOException {
-	//		
+	//
 	// multiPartJob.downloadResults(new File("/home/markus/Desktop/blender"),
 	// new String[]{"cubes"}, false, false);
-	//		
+	//
 	// }
 
 	public BlendFile getBlendFile() {
@@ -343,7 +343,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 	// public Set<String> getInputFiles() {
 	// return inputFiles;
 	// }
-	//	
+	//
 	// public void addInputFile(String inputFile) {
 	// this.inputFiles.add(inputFile);
 	// }
@@ -392,7 +392,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 	}
 
 	public void setBlenderFile(String blenderFile, String fluidFolder)
-			throws FileNotFoundException {
+	throws FileNotFoundException {
 
 		if (StringUtils.isBlank(blenderFile)) {
 			throw new IllegalArgumentException("No blender file specified.");
@@ -405,7 +405,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 			} catch (RemoteFileSystemException e) {
 				throw new IllegalArgumentException(
 						"Could not check whether blender input file: "
-								+ blenderFile + " exists.", e);
+						+ blenderFile + " exists.", e);
 			}
 		}
 
@@ -417,13 +417,13 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 					fluidFolder);
 		}
 		try {
-		BlendFile file = new BlendFile(registry.getFileManager()
-				.getLocalCacheFile(blenderFile), fluidFolderFile);
-		setBlenderFile(file);
+			BlendFile file = new BlendFile(registry.getFileManager()
+					.getLocalCacheFile(blenderFile), fluidFolderFile);
+			setBlenderFile(file);
 		} catch (Exception e) {
-			
+
 			throw new RuntimeException("Could not parse blend file: "+e.getLocalizedMessage());
-			
+
 		}
 
 	}
