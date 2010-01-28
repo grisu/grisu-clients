@@ -72,7 +72,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 
 	private static final NumberFormat formatter = new DecimalFormat("0000");
 	public static final File BLENDER_PLUGIN_DIR = new File(Environment
-			.getClientGrisuDirectory(), "blender");
+			.getGrisuClientDirectory(), "blender");
 	public static final File BLENDER_RESOURCE_PYTHYON_SCRIPT = new File(
 			BLENDER_PLUGIN_DIR, "ListResources.py");
 
