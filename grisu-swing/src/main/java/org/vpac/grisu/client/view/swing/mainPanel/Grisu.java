@@ -97,7 +97,7 @@ public class Grisu implements WindowListener {
 				}
 
 				try {
-					CertificateFiles.copyCACerts();
+					CertificateFiles.copyCACerts(true);
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					// e1.printStackTrace();
