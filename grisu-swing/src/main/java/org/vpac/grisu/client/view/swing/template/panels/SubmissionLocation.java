@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -27,13 +28,12 @@ import org.vpac.grisu.model.MountPoint;
 import org.vpac.grisu.model.info.UserApplicationInformation;
 
 import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
 public class SubmissionLocation extends JPanel implements TemplateNodePanel,
-		ValueListener, FqanListener {
+ValueListener, FqanListener {
 
 	private JComboBox queueComboBox;
 	private JComboBox siteComboBox;
@@ -42,8 +42,8 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 	static final Logger myLogger = Logger.getLogger(SubmissionLocation.class
 			.getName());
 
-	private DefaultComboBoxModel siteModel = new DefaultComboBoxModel();
-	private DefaultComboBoxModel queueModel = new DefaultComboBoxModel();
+	private final DefaultComboBoxModel siteModel = new DefaultComboBoxModel();
+	private final DefaultComboBoxModel queueModel = new DefaultComboBoxModel();
 
 	private TemplateNode templateNode;
 	private String applicationName;
@@ -71,9 +71,10 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 
 	private String currentStagingFilesystem = null;
 
-	private Map<String, String> tempJobProperties = new HashMap<String, String>();
+	private final Map<String, String> tempJobProperties = new HashMap<String, String>();
 
 	private Vector<ValueListener> valueChangedListeners;
+	private JCheckBox checkBox;
 
 	/**
 	 * Create the panel
@@ -81,29 +82,36 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 	public SubmissionLocation() {
 		super();
 		setLayout(new FormLayout(new ColumnSpec[] {
-				FormFactory.RELATED_GAP_COLSPEC, ColumnSpec.decode("36dlu"),
 				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("default:grow(1.0)"),
-				FormFactory.RELATED_GAP_COLSPEC }, new RowSpec[] {
-				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC }));
+				ColumnSpec.decode("36dlu"),
+				FormFactory.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("default:grow"),
+				FormFactory.RELATED_GAP_COLSPEC,},
+				new RowSpec[] {
+				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,}));
 		setBorder(new TitledBorder(null, "Submission location",
 				TitledBorder.DEFAULT_JUSTIFICATION,
 				TitledBorder.DEFAULT_POSITION, null, null));
-		add(getLabel(), new CellConstraints(2, 2, CellConstraints.RIGHT,
-				CellConstraints.DEFAULT));
-		add(getLabel_1(), new CellConstraints(2, 4, CellConstraints.RIGHT,
-				CellConstraints.DEFAULT));
-		add(getSiteComboBox(), new CellConstraints(4, 2));
-		add(getQueueComboBox(), new CellConstraints(4, 4));
+		add(getCheckBox(), "2, 2, 3, 1");
+		add(getLabel(), "2, 4, right, default");
+		add(getLabel_1(), "2, 6, right, default");
+		add(getSiteComboBox(), "4, 4");
+		add(getQueueComboBox(), "4, 6");
 		//
+		enableManualSelect(false);
 	}
 
 	// register a listener
 	synchronized public void addValueListener(ValueListener l) {
-		if (valueChangedListeners == null)
+		if (valueChangedListeners == null) {
 			valueChangedListeners = new Vector<ValueListener>();
+		}
 		valueChangedListeners.addElement(l);
 	}
 
@@ -113,27 +121,34 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 
 	}
 
+	private void enableManualSelect(boolean enable) {
+
+		getSiteComboBox().setEnabled(enable);
+		getQueueComboBox().setEnabled(enable);
+
+	}
+
 	private void fireSubmissionLocationChanged(String newValue) {
 
 		myLogger
-				.debug("Fire value changed event from SubmissionLocation: new value: "
-						+ newValue);
+		.debug("Fire value changed event from SubmissionLocation: new value: "
+				+ newValue);
 		// if we have no mountPointsListeners, do nothing...
-		if (valueChangedListeners != null && !valueChangedListeners.isEmpty()) {
+		if ((valueChangedListeners != null) && !valueChangedListeners.isEmpty()) {
 
 			// make a copy of the listener list in case
 			// anyone adds/removes mountPointsListeners
 			Vector<ValueListener> valueChangedTargets;
 			synchronized (this) {
 				valueChangedTargets = (Vector<ValueListener>) valueChangedListeners
-						.clone();
+				.clone();
 			}
 
 			// walk through the listener list and
 			// call the gridproxychanged method in each
 			Enumeration<ValueListener> e = valueChangedTargets.elements();
 			while (e.hasMoreElements()) {
-				ValueListener valueChanged_l = (ValueListener) e.nextElement();
+				ValueListener valueChanged_l = e.nextElement();
 				valueChanged_l.valueChanged(this, newValue);
 			}
 		}
@@ -144,6 +159,20 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 		// not necessary, because Version will fire an event
 		valueChanged(this, versionPanel.getCurrentValue());
 
+	}
+
+	private JCheckBox getCheckBox() {
+		if (checkBox == null) {
+			checkBox = new JCheckBox("Manually select submission location");
+			checkBox.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent arg0) {
+
+					enableManualSelect(checkBox.isSelected());
+
+				}
+			});
+		}
+		return checkBox;
 	}
 
 	public String getCurrentExecutionFileSystem() {
@@ -160,7 +189,7 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 						.getTemplateNodes().values()) {
 					if (node.getTemplateNodeValueSetter() instanceof ExecutionFileSystem) {
 						executionFileSystemPanel = (ExecutionFileSystem) node
-								.getTemplateNodeValueSetter();
+						.getTemplateNodeValueSetter();
 						setStagingFS(getExternalSetValue());
 						break;
 					}
@@ -168,7 +197,7 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 				}
 			} catch (Exception e) {
 				myLogger
-						.warn("Couldn't retrieve executionFileSystemPanel yet...");
+				.warn("Couldn't retrieve executionFileSystemPanel yet...");
 				executionFileSystemPanel = null;
 				return null;
 			}
@@ -203,6 +232,9 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 		return label_1;
 	}
 
+	// event stuff
+	// ========================================================
+
 	/**
 	 * @return
 	 */
@@ -214,7 +246,7 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 
 					if (e.getStateChange() == ItemEvent.SELECTED) {
 						String temp = ((String) queueModel.getSelectedItem());
-						if (temp != null && !"".equals(temp)
+						if ((temp != null) && !"".equals(temp)
 								&& !temp.startsWith("Not available.")) {
 							if (e.getStateChange() == ItemEvent.SELECTED) {
 								fireSubmissionLocationChanged(temp);
@@ -222,9 +254,9 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 							setStagingFS(temp);
 							registry.getHistoryManager().addHistoryEntry(
 									TemplateTagConstants
-											.getGlobalLastQueueKey(infoObject
-													.getApplicationName()),
-									(String) queueModel.getSelectedItem());
+									.getGlobalLastQueueKey(infoObject
+											.getApplicationName()),
+											(String) queueModel.getSelectedItem());
 						}
 					}
 				}
@@ -234,9 +266,6 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 		}
 		return queueComboBox;
 	}
-
-	// event stuff
-	// ========================================================
 
 	/**
 	 * @return
@@ -269,7 +298,7 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 						.getTemplateNodes().values()) {
 					if (node.getTemplateNodeValueSetter() instanceof Version) {
 						versionPanel = (Version) node
-								.getTemplateNodeValueSetter();
+						.getTemplateNodeValueSetter();
 						break;
 					}
 
@@ -303,7 +332,7 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 		queueModel.removeAllElements();
 
 		String newSite = (String) siteModel.getSelectedItem();
-		if (newSite != null && !"".equals(newSite)) {
+		if ((newSite != null) && !"".equals(newSite)) {
 			for (String queue : registry.getResourceInformation()
 					.filterSubmissionLocationsForSite(newSite, allQueues)) {
 				queueModel.addElement(queue);
@@ -326,8 +355,8 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 	private void setStagingFS(String submissionLocation) {
 
 		MountPoint fs = registry.getUserEnvironmentManager()
-				.getRecommendedMountPoint(submissionLocation,
-						registry.getUserEnvironmentManager().getCurrentFqan());
+		.getRecommendedMountPoint(submissionLocation,
+				registry.getUserEnvironmentManager().getCurrentFqan());
 		if (getExecutionFileSystemPanel() != null) {
 			getExecutionFileSystemPanel().setExternalSetValue(fs.getRootUrl());
 		}
@@ -338,7 +367,7 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 	}
 
 	public void setTemplateNode(TemplateNode node)
-			throws TemplateNodePanelException {
+	throws TemplateNodePanelException {
 
 		this.templateNode = node;
 		this.templateNode.setTemplateNodeValueSetter(this);
@@ -349,9 +378,9 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 		registry.getUserEnvironmentManager().addFqanListener(this);
 
 		this.applicationName = this.templateNode.getTemplate()
-				.getApplicationName();
+		.getApplicationName();
 		this.infoObject = registry
-				.getUserApplicationInformation(applicationName);
+		.getUserApplicationInformation(applicationName);
 
 		try {
 			registry.getHistoryManager().setMaxNumberOfEntries(
@@ -366,8 +395,8 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 
 		// this might be slightly dodgy. But it should always work if a Version
 		// template tag is present.
-		if (getVersionPanel() != null
-				&& getVersionPanel().getCurrentValue() != null) {
+		if ((getVersionPanel() != null)
+				&& (getVersionPanel().getCurrentValue() != null)) {
 			valueChanged(getVersionPanel(), getVersionPanel().getCurrentValue());
 		}
 
@@ -400,37 +429,37 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 
 			String oldQueue = (String) queueModel.getSelectedItem();
 
-			if (getVersionPanel() != null
-					&& getVersionPanel().getMode() == Version.DEFAULT_VERSION_MODE) {
+			if ((getVersionPanel() != null)
+					&& (getVersionPanel().getMode() == Version.DEFAULT_VERSION_MODE)) {
 				allQueues = infoObject
-						.getAvailableSubmissionLocationsForVersionAndFqan(
-								newValue, registry.getUserEnvironmentManager()
-										.getCurrentFqan());
+				.getAvailableSubmissionLocationsForVersionAndFqan(
+						newValue, registry.getUserEnvironmentManager()
+						.getCurrentFqan());
 				if (allQueues.size() == 0) {
 					siteModel.setSelectedItem("Not available.");
 					queueModel.setSelectedItem("Not available.");
 					return;
 				}
-			} else if (getVersionPanel() != null
-					&& getVersionPanel().getMode() == Version.ANY_VERSION_MODE) {
+			} else if ((getVersionPanel() != null)
+					&& (getVersionPanel().getMode() == Version.ANY_VERSION_MODE)) {
 				allQueues = infoObject
-						.getAvailableSubmissionLocationsForFqan(registry
-								.getUserEnvironmentManager().getCurrentFqan());
+				.getAvailableSubmissionLocationsForFqan(registry
+						.getUserEnvironmentManager().getCurrentFqan());
 			} else {
 				allQueues = infoObject
-						.getAvailableSubmissionLocationsForVersionAndFqan(
-								newValue, registry.getUserEnvironmentManager()
-										.getCurrentFqan());
+				.getAvailableSubmissionLocationsForVersionAndFqan(
+						newValue, registry.getUserEnvironmentManager()
+						.getCurrentFqan());
 			}
 
 			allSites = registry.getResourceInformation()
-					.distillSitesFromSubmissionLocations(allQueues);
+			.distillSitesFromSubmissionLocations(allQueues);
 
 			for (String tempsite : allSites) {
 				siteModel.addElement(tempsite);
 			}
 
-			if (oldSite != null && siteModel.getIndexOf(oldSite) >= 0) {
+			if ((oldSite != null) && (siteModel.getIndexOf(oldSite) >= 0)) {
 				changeToSite(oldSite);
 			}
 
@@ -440,5 +469,4 @@ public class SubmissionLocation extends JPanel implements TemplateNodePanel,
 		}
 
 	}
-
 }

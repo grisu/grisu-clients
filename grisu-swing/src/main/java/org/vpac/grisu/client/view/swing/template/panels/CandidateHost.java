@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.SortedSet;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,7 +35,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
 public class CandidateHost extends JPanel implements TemplateNodePanel,
-		ValueListener, FqanListener {
+ValueListener, FqanListener {
 
 	static final Logger myLogger = Logger.getLogger(CandidateHost.class
 			.getName());
@@ -61,28 +62,39 @@ public class CandidateHost extends JPanel implements TemplateNodePanel,
 	private RankedSite currentRankedSite;
 	private boolean lockQueueCombo = false;
 
-	private DefaultComboBoxModel siteModel = new DefaultComboBoxModel();
+	private final DefaultComboBoxModel siteModel = new DefaultComboBoxModel();
 
-	private DefaultComboBoxModel queueModel = new DefaultComboBoxModel();
+	private final DefaultComboBoxModel queueModel = new DefaultComboBoxModel();
 	private GridResourceInfoPanel gridResourceInfoPanel;
+	private JCheckBox checkBox;
 	public CandidateHost() {
 		setBorder(new TitledBorder(null, "Submission location",
 				TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		setLayout(new FormLayout(new ColumnSpec[] {
-				FormFactory.RELATED_GAP_COLSPEC, ColumnSpec.decode("200dlu"),
 				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("max(129dlu;default):grow"),
-				FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
-				FormFactory.DEFAULT_ROWSPEC, FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC, FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC, FormFactory.RELATED_GAP_ROWSPEC,
+				ColumnSpec.decode("134dlu:grow"),
+				FormFactory.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(95dlu;default):grow"),
+				FormFactory.RELATED_GAP_COLSPEC,},
+				new RowSpec[] {
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_ROWSPEC, }));
-		add(getLblSite(), "2, 1");
-		add(getGridResourceInfoPanel(), "4, 1, 1, 7, fill, fill");
-		add(getSiteComboBox(), "2, 3, fill, default");
-		add(getLblQueue(), "2, 5");
-		add(getQueueComboBox(), "2, 7, fill, top");
+				FormFactory.RELATED_GAP_ROWSPEC,}));
+		add(getCheckBox(), "2, 1");
+		add(getLblSite(), "2, 3");
+		add(getGridResourceInfoPanel(), "4, 1, 1, 9, fill, fill");
+		add(getSiteComboBox(), "2, 5, fill, default");
+		add(getLblQueue(), "2, 7");
+		add(getQueueComboBox(), "2, 9, fill, top");
+		
+		enableManualSelect(false);
 	}
 
 	public void addValueListener(ValueListener v) {
@@ -106,15 +118,22 @@ public class CandidateHost extends JPanel implements TemplateNodePanel,
 				+ jobProperties.toString());
 
 		SortedSet<GridResource> resources = registry
-				.getUserApplicationInformation(applicationName)
-				.getAllSubmissionLocationsAsGridResources(jobProperties,
-						currentFqan);
+		.getUserApplicationInformation(applicationName)
+		.getAllSubmissionLocationsAsGridResources(jobProperties,
+				currentFqan);
 
 		currentRankedSites = GridResourceHelpers.asSetOfRankedSites(resources);
 
 		for (RankedSite site : currentRankedSites) {
 			siteModel.addElement(site);
 		}
+
+	}
+
+	private void enableManualSelect(boolean enable) {
+
+		getSiteComboBox().setEnabled(enable);
+		getQueueComboBox().setEnabled(enable);
 
 	}
 
@@ -143,9 +162,24 @@ public class CandidateHost extends JPanel implements TemplateNodePanel,
 
 	}
 
+
 	public void fqansChanged(FqanEvent event) {
 		this.currentFqan = event.getFqan();
 		calculateAvailableGridResources();
+	}
+
+	private JCheckBox getCheckBox() {
+		if (checkBox == null) {
+			checkBox = new JCheckBox("Manually select submission location");
+			checkBox.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent arg0) {
+
+					enableManualSelect(checkBox.isSelected());
+
+				}
+			});
+		}
+		return checkBox;
 	}
 
 	public String getExternalSetValue() {
@@ -239,7 +273,7 @@ public class CandidateHost extends JPanel implements TemplateNodePanel,
 
 	private void setCurrentSubmissionLocation(GridResource r) {
 		currentSubmissionLocation = SubmissionLocationHelpers
-				.createSubmissionLocationString(r);
+		.createSubmissionLocationString(r);
 		getGridResourceInfoPanel().setGridResource(r);
 	}
 
@@ -249,27 +283,26 @@ public class CandidateHost extends JPanel implements TemplateNodePanel,
 	}
 
 	public void setTemplateNode(TemplateNode node)
-			throws TemplateNodePanelException {
+	throws TemplateNodePanelException {
 
 		this.templateNode = node;
 		this.templateNode.setTemplateNodeValueSetter(this);
 
 		this.applicationName = this.templateNode.getTemplate()
-				.getApplicationName();
+		.getApplicationName();
 
 		serviceInterface = node.getTemplate().getEnvironmentManager()
-				.getServiceInterface();
+		.getServiceInterface();
 		registry = GrisuRegistryManager.getDefault(serviceInterface);
 
 		registry.getUserEnvironmentManager().addFqanListener(this);
 
 		this.currentFqan = registry.getUserEnvironmentManager()
-				.getCurrentFqan();
+		.getCurrentFqan();
 	}
 
 	public void templateNodeUpdated(TemplateNodeEvent event) {
 	}
-
 	public void valueChanged(TemplateNodePanel panel, String newValue) {
 
 		myLogger.debug("New value from " + panel.getClass().toString() + ": "
@@ -283,7 +316,7 @@ public class CandidateHost extends JPanel implements TemplateNodePanel,
 			this.currentMemory = newValue;
 		} else if (panel instanceof WallTime) {
 			this.currentWalltime = new Integer(Integer.parseInt(newValue) / 60)
-					.toString();
+			.toString();
 		}
 
 		calculateAvailableGridResources();
