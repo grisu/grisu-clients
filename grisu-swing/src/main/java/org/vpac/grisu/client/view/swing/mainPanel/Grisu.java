@@ -44,6 +44,8 @@ import org.vpac.grisu.client.view.swing.login.LoginDialog;
 import org.vpac.grisu.client.view.swing.login.LoginSplashScreen;
 import org.vpac.grisu.client.view.swing.mountpoints.MountPointsManagementDialog;
 import org.vpac.grisu.client.view.swing.template.SubmissionPanel;
+import org.vpac.grisu.client.view.swing.template.SubmissionPanelInterface;
+import org.vpac.grisu.client.view.swing.template.SubmissionPanelSingle;
 import org.vpac.grisu.client.view.swing.utils.Utils;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.model.GrisuRegistry;
@@ -263,7 +265,7 @@ public class Grisu implements WindowListener {
 
 	private EnvironmentManager em = null;
 
-	private SubmissionPanel submissionPanel = null;
+	private SubmissionPanelInterface submissionPanel = null;
 
 	private GlazedJobMonitorPanel jobMonitorPanel = null;
 
@@ -416,7 +418,13 @@ public class Grisu implements WindowListener {
 		if (fileMenu == null) {
 			fileMenu = new JMenu();
 			fileMenu.setText("File");
-			fileMenu.add(getAddLocalMenuItem());
+
+			String application = System.getProperty("grisu.defaultApplication");
+
+			if ( StringUtils.isBlank(application) ) {
+				fileMenu.add(getAddLocalMenuItem());
+			}
+
 			fileMenu.add(getExitMenuItem());
 		}
 		return fileMenu;
@@ -527,7 +535,7 @@ public class Grisu implements WindowListener {
 	private JTabbedPane getJTabbedPane() {
 		if (jTabbedPane == null) {
 			jTabbedPane = new JTabbedPane();
-			jTabbedPane.addTab("Job submission", getSubmissionPanel());
+			jTabbedPane.addTab("Job submission", getSubmissionPanel().getPanel());
 			jTabbedPane.addTab("Monitoring", getJobMonitorPanel());
 			// jTabbedPane.addTab("File Management", new
 			// GrisuFileCommanderPanel());
@@ -723,14 +731,18 @@ public class Grisu implements WindowListener {
 		return requestHelpMenuItem;
 	}
 
-	private SubmissionPanel getSubmissionPanel() {
+	private SubmissionPanelInterface getSubmissionPanel() {
 		if (submissionPanel == null) {
-			submissionPanel = new SubmissionPanel(em);
-			submissionPanel.setTemplateManager(em.getTemplateManager());
 
 			String application = System.getProperty("grisu.defaultApplication");
+
 			if ( StringUtils.isNotBlank(application) ) {
+				submissionPanel = new SubmissionPanelSingle(em);
+				submissionPanel.setTemplateManager(em.getTemplateManager());
 				submissionPanel.setRemoteApplication(application);
+			} else {
+				submissionPanel = new SubmissionPanel(em);
+				submissionPanel.setTemplateManager(em.getTemplateManager());
 			}
 
 		}

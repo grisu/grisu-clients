@@ -62,7 +62,7 @@ import com.jgoodies.forms.layout.RowSpec;
  * 
  */
 public class SubmissionPanel extends JPanel implements JobCreationInterface,
-FqanListener {
+FqanListener, SubmissionPanelInterface {
 
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
@@ -585,6 +585,10 @@ FqanListener {
 			localPopupMenu.add(getEditLocalTemplateItem());
 		}
 		return localPopupMenu;
+	}
+
+	public JPanel getPanel() {
+		return this;
 	}
 
 	/**

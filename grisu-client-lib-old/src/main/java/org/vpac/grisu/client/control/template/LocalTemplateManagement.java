@@ -74,15 +74,18 @@ public class LocalTemplateManagement {
 
 		File tempDir = new File(TEMPLATE_DIRECTORY);
 
+
+
 		if (!tempDir.exists()) {
 			if (!tempDir.mkdirs()) {
 				System.out
 				.println("Could not create directory $HOME/.grisu/templates. Please create it manually and make it writable by the current user.");
-				System.exit(1);
+				//				System.exit(1);
 			}
 		}
 
-		File[] templates = tempDir.listFiles();
+		File[] templates;
+		templates = tempDir.listFiles();
 
 		for (File file : templates) {
 			try {
