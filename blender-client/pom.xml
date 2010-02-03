@@ -131,7 +131,7 @@
 
 								<index>true</index>
 								<manifest>
-									<mainClass>org.vpac.grisu.clients.blender.GrisuBlender
+									<mainClass>org.vpac.grisu.clients.blender.swing.GrisuBlenderApp
 									</mainClass>
 								</manifest>
 								<manifestEntries>
