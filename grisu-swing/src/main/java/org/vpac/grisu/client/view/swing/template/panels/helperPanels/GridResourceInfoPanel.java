@@ -57,7 +57,8 @@ public class GridResourceInfoPanel extends JPanel {
 		}
 
 		StringBuffer text = new StringBuffer();
-		text.append("Free job slots: " + resource.getFreeJobSlots() + "\n");
+		//		text.append("Free/total job slots: " + resource.getFreeJobSlots()+"/"+resource.get + "\n");
+		text.append("Free job slots: " + resource.getFreeJobSlots()+"/" + "\n");
 		text.append("Waiting jobs: " + resource.getWaitingJobs() + "\n");
 		text.append("Total jobs: " + resource.getTotalJobs() + "\n");
 		text.append("Running jobs: " + resource.getRunningJobs() + "\n");
