@@ -71,7 +71,7 @@ public class GrisuBlenderApp {
 		frame.getContentPane().setLayout(new BorderLayout());
 
 		BlenderMainPanel mainPanel = new BlenderMainPanel();
-		LoginPanel lp = new LoginPanel(mainPanel, false);
+		LoginPanel lp = new LoginPanel(mainPanel);
 		frame.getContentPane().add(lp, BorderLayout.CENTER);
 	}
 
