@@ -214,6 +214,11 @@ EventTopicSubscriber, JobCreationPanel {
 		return this;
 	}
 
+	@Override
+	public String getPanelName() {
+		return "Blender";
+	}
+
 	private JScrollPane getScrollPane() {
 		if (scrollPane == null) {
 			scrollPane = new JScrollPane();
