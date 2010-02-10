@@ -477,6 +477,10 @@ UserEnvironmentManager {
 		return getFqans();
 	}
 
+	public Set<String> getAllAvailableFqansForApplication(String application) {
+		throw new RuntimeException("Not supported.");
+	}
+
 	public SortedSet<String> getAllAvailableSites() {
 
 		return getAllOfTheUsersSites();
@@ -931,10 +935,6 @@ UserEnvironmentManager {
 		throw new RuntimeException("Not implemented for this class.");
 	}
 
-	public Map<String, String> getBookmarks() {
-		throw new RuntimeException("Not implemented for this class.");
-	}
-
 	// /**
 	// * Returns only these fqans that are usable (because the user has got
 	// * mountpoints that use them)
@@ -980,6 +980,10 @@ UserEnvironmentManager {
 	//
 	// return result;
 	// }
+
+	public Map<String, String> getBookmarks() {
+		throw new RuntimeException("Not implemented for this class.");
+	}
 
 	public List<FileSystemItem> getBookmarksFilesystems() {
 		throw new RuntimeException("Not implemented for this class.");
@@ -1076,12 +1080,20 @@ UserEnvironmentManager {
 		throw new RuntimeException("Not implemented for this class.");
 	}
 
+	// public JobManagementInterface getJobManagement() {
+	// return jobManagement;
+	// }
+
 	public FileTransferManager getFileTransferManager() {
 		return fileTransferManager;
 	}
 
-	// public JobManagementInterface getJobManagement() {
-	// return jobManagement;
+	// public void setJobManagement(JobManagementInterface jobManagement) {
+	// this.jobManagement = jobManagement;
+	// }
+
+	// public static void setDefaultManager(EnvironmentManager defaultManager) {
+	// EnvironmentManager.defaultManager = defaultManager;
 	// }
 
 	/**
@@ -1096,14 +1108,6 @@ UserEnvironmentManager {
 		}
 		return fqans;
 	}
-
-	// public void setJobManagement(JobManagementInterface jobManagement) {
-	// this.jobManagement = jobManagement;
-	// }
-
-	// public static void setDefaultManager(EnvironmentManager defaultManager) {
-	// EnvironmentManager.defaultManager = defaultManager;
-	// }
 
 	public HistoryManager getHistoryManager() {
 		return historyManager;
@@ -1295,6 +1299,8 @@ UserEnvironmentManager {
 
 	}
 
+	// these are not really important
+
 	public Set<String> getPossibleFqansForSubmissionLocation(
 			SubmissionLocation location) {
 		if (location == null) {
@@ -1325,8 +1331,6 @@ UserEnvironmentManager {
 
 		return fqans;
 	}
-
-	// these are not really important
 
 	public String getProperty(String key) {
 		throw new RuntimeException("Not implemented for this class.");
