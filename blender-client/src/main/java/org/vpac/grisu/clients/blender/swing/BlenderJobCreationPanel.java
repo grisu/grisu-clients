@@ -4,6 +4,7 @@ import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.JButton;
@@ -24,8 +25,8 @@ import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.BatchJobException;
 import org.vpac.grisu.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.frontend.control.clientexceptions.JobCreationException;
-import org.vpac.grisu.frontend.control.jobMonitoring.RunningJobManager;
 import org.vpac.grisu.frontend.model.events.BatchJobEvent;
+import org.vpac.grisu.frontend.view.swing.jobcreation.JobCreationPanel;
 import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.model.UserEnvironmentManager;
 import org.vpac.grisu.model.info.ApplicationInformation;
@@ -38,7 +39,7 @@ import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.layout.Sizes;
 
 public class BlenderJobCreationPanel extends JPanel implements
-EventTopicSubscriber {
+EventTopicSubscriber, JobCreationPanel {
 
 	public static final String LAST_BLENDER_FILE_DIR = "lastBlenderFileDir";
 
@@ -65,9 +66,9 @@ EventTopicSubscriber {
 	private JButton btnSubmit;
 	private JTextArea statusTextArea;
 
-	private final ServiceInterface si;
-	private final UserEnvironmentManager em;
-	private final ApplicationInformation ai;
+	private ServiceInterface si;
+	private UserEnvironmentManager em;
+	private ApplicationInformation ai;
 
 	private GrisuBlenderJob job = null;
 	private JScrollPane scrollPane;
@@ -80,13 +81,7 @@ EventTopicSubscriber {
 
 	private Thread submissionThread;
 
-	public BlenderJobCreationPanel(ServiceInterface si) {
-
-		this.si = si;
-		this.em = GrisuRegistryManager.getDefault(si)
-		.getUserEnvironmentManager();
-		this.ai = GrisuRegistryManager.getDefault(si)
-		.getApplicationInformation("blender");
+	public BlenderJobCreationPanel() {
 
 		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
@@ -150,13 +145,26 @@ EventTopicSubscriber {
 
 	}
 
-	public String[] getAllFqans() {
+	@Override
+	public boolean createsBatchJob() {
+		return true;
+	}
 
-		return em.getAllAvailableFqans();
+	public Set<String> getAllFqans() {
+
+		if ( em != null ) {
+			return em.getAllAvailableFqansForApplication("blender");
+		} else {
+			return new HashSet<String>();
+		}
 
 	}
 
 	public Set<String> getAllPossibleSubmissionLocations() {
+
+		if ( ai == null ) {
+			return new HashSet<String>();
+		}
 
 		return ai.getAvailableSubmissionLocationsForVersionAndFqan(
 				GrisuBlenderJob.BLENDER_DEFAULT_VERSION, currentFqan);
@@ -201,6 +209,11 @@ EventTopicSubscriber {
 		return btnSubmit;
 	}
 
+	@Override
+	public JPanel getPanel() {
+		return this;
+	}
+
 	private JScrollPane getScrollPane() {
 		if (scrollPane == null) {
 			scrollPane = new JScrollPane();
@@ -215,6 +228,11 @@ EventTopicSubscriber {
 			statusTextArea.setEditable(false);
 		}
 		return statusTextArea;
+	}
+
+	@Override
+	public String getSupportedApplication() {
+		return "Blender";
 	}
 
 	private JTabbedPane getTabbedPane() {
@@ -265,6 +283,11 @@ EventTopicSubscriber {
 	}
 
 	public String setBlendFile(BlendFile file) {
+
+		if ( si == null ) {
+			return null;
+		}
+
 		this.blendFileObject = file;
 
 		String name = file.getFile().getName();
@@ -305,6 +328,19 @@ EventTopicSubscriber {
 		}
 		this.currentJobname = jobname;
 		EventBus.subscribe(this.currentJobname, this);
+	}
+
+	@Override
+	public void setServiceInterface(ServiceInterface si) {
+
+		this.si = si;
+		this.em = GrisuRegistryManager.getDefault(si)
+		.getUserEnvironmentManager();
+		this.ai = GrisuRegistryManager.getDefault(si)
+		.getApplicationInformation("blender");
+
+		getBlenderBasicJobPropertiesPanel().setAvailableVos(getAllFqans());
+
 	}
 
 	private void submitJob() {

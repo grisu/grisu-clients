@@ -7,37 +7,28 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 
 import org.jdesktop.swingx.JXFrame;
-import org.vpac.grisu.frontend.control.login.LoginException;
+import org.vpac.grisu.control.ServiceInterface;
+import org.vpac.grisu.frontend.control.login.LoginManager;
 import org.vpac.grisu.frontend.model.events.ApplicationEventListener;
-import org.vpac.grisu.frontend.view.swing.UncaughtExceptionHandler;
+import org.vpac.grisu.frontend.view.swing.GrisuMainPanel;
 import org.vpac.grisu.frontend.view.swing.login.LoginPanel;
-
-import au.org.arcs.auth.shibboleth.Shibboleth;
 
 public class GrisuBlenderApp {
 
 	/**
 	 * Launch the application.
-	 * 
-	 * @throws LoginException
 	 */
-	public static void main(String[] args) throws LoginException {
+	public static void main(String[] args) {
 
-		Shibboleth.initDefaultSecurityProvider();
+		LoginManager.initEnvironment();
 
 		new ApplicationEventListener();
-
-		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
 
 		}
-
-		// final ServiceInterface si = LoginManager.myProxyLogin("Local",
-		// args[0],
-		// args[1].toCharArray());
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -50,6 +41,10 @@ public class GrisuBlenderApp {
 			}
 		});
 	}
+
+	private GrisuMainPanel mainPanel;
+
+	private LoginPanel lp;
 
 	private JXFrame frame;
 
@@ -64,15 +59,30 @@ public class GrisuBlenderApp {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-
 		frame = new JXFrame();
-		frame.setBounds(100, 100, 800, 600);
+		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 		frame.getContentPane().setLayout(new BorderLayout());
 
-		BlenderMainPanel mainPanel = new BlenderMainPanel();
+		mainPanel = new GrisuMainPanel();
+		mainPanel.addJobCreationPanel(new BlenderJobCreationPanel());
+		//		LoginPanel lp = new LoginPanel(mainPanel, true);
 		LoginPanel lp = new LoginPanel(mainPanel);
 		frame.getContentPane().add(lp, BorderLayout.CENTER);
+	}
+
+	public void setServiceInterface(ServiceInterface si) {
+
+		if ( lp == null ) {
+			throw new IllegalStateException("LoginPanel not initialized.");
+		}
+
+		if ( si == null ) {
+			throw new NullPointerException("ServiceInterface can't be null");
+		}
+
+		lp.setServiceInterface(si);
 	}
 
 }

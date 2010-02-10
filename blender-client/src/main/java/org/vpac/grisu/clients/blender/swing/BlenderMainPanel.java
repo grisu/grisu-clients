@@ -37,7 +37,8 @@ public class BlenderMainPanel extends JPanel implements GrisuSwingClient {
 
 	private BlenderJobCreationPanel getBlenderJobCreationPanel() {
 		if (blenderJobCreationPanel == null) {
-			blenderJobCreationPanel = new BlenderJobCreationPanel(si);
+			blenderJobCreationPanel = new BlenderJobCreationPanel();
+			blenderJobCreationPanel.setServiceInterface(si);
 		}
 		return blenderJobCreationPanel;
 	}
