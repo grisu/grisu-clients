@@ -2,6 +2,8 @@ package org.vpac.grisu.clients.blender.swing;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.JFrame;
 import javax.swing.UIManager;
@@ -64,8 +66,9 @@ public class GrisuBlenderApp {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		frame.getContentPane().setLayout(new BorderLayout());
-
-		mainPanel = new GrisuMainPanel();
+		Set<String> apps = new HashSet<String>();
+		apps.add("blender");
+		mainPanel = new GrisuMainPanel(false, apps);
 		mainPanel.addJobCreationPanel(new BlenderJobCreationPanel());
 		//		LoginPanel lp = new LoginPanel(mainPanel, true);
 		LoginPanel lp = new LoginPanel(mainPanel);

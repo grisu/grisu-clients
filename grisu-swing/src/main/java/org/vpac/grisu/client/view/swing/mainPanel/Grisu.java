@@ -490,7 +490,12 @@ public class Grisu implements WindowListener {
 			jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			jFrame.setJMenuBar(getJJMenuBar());
 			jFrame.setContentPane(getJContentPane());
-			jFrame.setTitle("Grisu client");
+
+			String application = System.getProperty("grisu.defaultApplication");
+			if ( StringUtils.isBlank(application) ) {
+				application = "";
+			}
+			jFrame.setTitle("Grisu "+application+" client");
 			jFrame.setLocationByPlatform(true);
 			jFrame.addWindowListener(this);
 		}
