@@ -391,6 +391,10 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 		return fluidsfolderTextField;
 	}
 
+	public String getFormat() {
+		return (String)getFormatCombobox().getSelectedItem();
+	}
+
 	private JComboBox getFormatCombobox() {
 		if (comboBox == null) {
 			comboBox = new JComboBox();

@@ -384,7 +384,9 @@ EventTopicSubscriber, JobCreationPanel {
 					if (StringUtils.isBlank(outfilename)) {
 						outfilename = currentJobname;
 					}
-					job.setOutputFileName(currentJobname);
+					job.setOutputFileName(outfilename);
+
+					job.setFormat(getBlenderBasicJobPropertiesPanel().getFormat());
 
 					if (getBlenderAdvancedJobPropertiesPanel()
 							.getSubLocsToInclude() != null) {

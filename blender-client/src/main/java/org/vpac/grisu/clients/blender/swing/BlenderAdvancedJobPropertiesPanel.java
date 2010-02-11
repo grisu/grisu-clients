@@ -17,8 +17,6 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
@@ -70,7 +68,7 @@ public class BlenderAdvancedJobPropertiesPanel extends JPanel {
 		add(getOutputNameTextField(), "4, 2, fill, top");
 
 		selectSubLocsCheckBox = new JCheckBox(
-				"Manually select submission locations");
+		"Manually select submission locations");
 		selectSubLocsCheckBox.addItemListener(new ItemListener() {
 
 			@Override
@@ -147,12 +145,8 @@ public class BlenderAdvancedJobPropertiesPanel extends JPanel {
 
 	public String getOutputFilename() {
 
-		if (StringUtils.isNotBlank(getOutputNameTextField().getText())) {
-			return getOutputNameTextField().getText();
-		} else {
-			return null;
-		}
-
+		String result = getOutputNameTextField().getText();
+		return result;
 	}
 
 	private JTextField getOutputNameTextField() {
