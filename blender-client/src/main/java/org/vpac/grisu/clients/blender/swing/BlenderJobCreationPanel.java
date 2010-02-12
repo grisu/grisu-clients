@@ -150,6 +150,11 @@ EventTopicSubscriber, JobCreationPanel {
 		return true;
 	}
 
+	@Override
+	public boolean createsSingleJob() {
+		return false;
+	}
+
 	public Set<String> getAllFqans() {
 
 		if ( em != null ) {

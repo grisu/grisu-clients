@@ -48,6 +48,7 @@ import org.vpac.grisu.client.view.swing.template.SubmissionPanelInterface;
 import org.vpac.grisu.client.view.swing.template.SubmissionPanelSingle;
 import org.vpac.grisu.client.view.swing.utils.Utils;
 import org.vpac.grisu.control.ServiceInterface;
+import org.vpac.grisu.frontend.view.swing.WindowSaver;
 import org.vpac.grisu.model.GrisuRegistry;
 import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.settings.ClientPropertiesManager;
