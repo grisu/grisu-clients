@@ -14,6 +14,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
@@ -93,6 +94,8 @@ FqanListener, SubmissionPanelInterface {
 
 	// Create a file chooser
 	final JFileChooser fc = new JFileChooser();
+	private JPopupMenu popupMenu;
+	private JMenuItem menuItem;
 
 	/**
 	 * Create the panel
@@ -205,6 +208,7 @@ FqanListener, SubmissionPanelInterface {
 			currentVOField = new JTextField();
 			currentVOField.setEditable(false);
 			currentVOField.setHorizontalAlignment(SwingConstants.CENTER);
+			addPopup(currentVOField, getPopupMenu());
 		}
 		return currentVOField;
 	}
@@ -220,8 +224,36 @@ FqanListener, SubmissionPanelInterface {
 		return jsdlTemplatePanel;
 	}
 
+	private JMenuItem getMenuItem() {
+		if (menuItem == null) {
+			menuItem = new JMenuItem("Select a group with which to submit the job");
+			menuItem.setEnabled(false);
+		}
+		return menuItem;
+	}
+
 	public JPanel getPanel() {
 		return this;
+	}
+
+	private JPopupMenu getPopupMenu() {
+		if (popupMenu == null) {
+			popupMenu = new JPopupMenu();
+			popupMenu.add(getMenuItem());
+
+			for ( final String vo : em.getAllAvailableFqans() ) {
+				JMenuItem temp = new JMenuItem(vo);
+				temp.addActionListener(new ActionListener() {
+
+					public void actionPerformed(ActionEvent e) {
+						em.setCurrentFqan(vo);
+					}
+				});
+				popupMenu.add(temp);
+			}
+
+		}
+		return popupMenu;
 	}
 
 	public JsdlTemplate getTemplate() {
@@ -264,6 +296,8 @@ FqanListener, SubmissionPanelInterface {
 		getCurrentVOField().setToolTipText(fqan);
 	}
 
+
+
 	public void setRemoteApplication(String application) {
 
 		SubmissionPanelSingle.this.setCursor(Cursor
@@ -289,12 +323,12 @@ FqanListener, SubmissionPanelInterface {
 
 	}
 
+
+
 	public void setSubmissionFQAN(String fqan) {
 		// TODO Auto-generated method stub
 
 	}
-
-
 
 	public void setTemplateManager(TemplateManager manager) {
 		this.templateManager = manager;
@@ -309,9 +343,6 @@ FqanListener, SubmissionPanelInterface {
 		}
 
 	}
-
-
-
 	private void showJobTemplatePanel(final int templateLocation,
 			final String templateName) throws NoSuchTemplateException,
 			TemplateException {
@@ -392,5 +423,4 @@ FqanListener, SubmissionPanelInterface {
 
 		// currentTemplate = templateLocation+"_"+templateName;
 	}
-
 }
