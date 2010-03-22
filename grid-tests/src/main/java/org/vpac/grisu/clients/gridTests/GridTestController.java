@@ -1,7 +1,7 @@
 package org.vpac.grisu.clients.gridTests;
 
 import java.io.File;
-import java.lang.reflect.Method;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -17,6 +17,10 @@ import java.util.concurrent.TimeUnit;
 import jline.ConsoleReader;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 import org.vpac.grisu.clients.gridTests.testElements.GridTestElement;
 import org.vpac.grisu.control.JobConstants;
 import org.vpac.grisu.control.ServiceInterface;
@@ -60,7 +64,7 @@ public class GridTestController {
 		}
 
 		System.out.println("Using directory: " + baseDir);
-
+		
 		GridTestController gtc = new GridTestController(args, baseDir);
 
 		gtc.start();
@@ -105,6 +109,23 @@ public class GridTestController {
 		} else {
 			this.grisu_base_directory = grisu_base_directory_param;
 		}
+		
+		// logging stuff
+		SimpleLayout layout = new SimpleLayout();
+		try {
+			FileAppender fa = new FileAppender(layout, this.grisu_base_directory+File.separator+"grisu-tests.debug", false);
+			Logger logger = Logger.getRootLogger();
+			logger.addAppender(fa);
+			logger.setLevel((Level) Level.INFO);
+
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+
+		
+
 
 		Environment.setGrisuDirectory(this.grisu_base_directory);
 
@@ -118,24 +139,24 @@ public class GridTestController {
 		ClasspathHacker.initFolder(Environment.getGrisuPluginDirectory(),
 				new GrisuPluginFilenameFilter());
 
-		// try to setup hibernate for local tests if a local Backend is used
-		try {
-
-			// HibernateSessionFactory
-			// .setCustomHibernateConfigFile(this.grisu_base_directory
-			// + File.separator + "grid-tests-hibernate-file.cfg.xml");
-
-			Class hsfc = Class
-					.forName("org.vpac.grisu.backend.hibernate.HibernateSessionFactory");
-			Method method = hsfc.getMethod("setCustomHibernateConfigFile",
-					String.class);
-
-			method.invoke(null, this.grisu_base_directory + File.separator
-					+ "grid-tests-hibernate-file.cfg.xml");
-
-		} catch (Exception e) {
-			// doesn't really matter
-		}
+//		// try to setup hibernate for local tests if a local Backend is used
+//		try {
+//
+//			// HibernateSessionFactory
+//			// .setCustomHibernateConfigFile(this.grisu_base_directory
+//			// + File.separator + "grid-tests-hibernate-file.cfg.xml");
+//
+//			Class hsfc = Class
+//					.forName("org.vpac.grisu.backend.hibernate.HibernateSessionFactory");
+//			Method method = hsfc.getMethod("setCustomHibernateConfigFile",
+//					String.class);
+//
+//			method.invoke(null, this.grisu_base_directory + File.separator
+//					+ "grid-tests-hibernate-file.cfg.xml");
+//
+//		} catch (Exception e) {
+//			// doesn't really matter
+//		}
 
 		grid_tests_directory = new File(this.grisu_base_directory, "tests");
 
