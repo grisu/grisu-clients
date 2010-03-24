@@ -26,6 +26,7 @@ import org.vpac.grisu.control.JobConstants;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.ServiceInterfaceException;
 import org.vpac.grisu.frontend.control.clientexceptions.MdsInformationException;
+import org.vpac.grisu.frontend.control.login.LoginException;
 import org.vpac.grisu.frontend.control.login.LoginManager;
 import org.vpac.grisu.frontend.control.login.LoginParams;
 import org.vpac.grisu.model.GrisuRegistry;
@@ -141,25 +142,6 @@ public class GridTestController {
 		ClasspathHacker.initFolder(Environment.getGrisuPluginDirectory(),
 				new GrisuPluginFilenameFilter());
 
-//		// try to setup hibernate for local tests if a local Backend is used
-//		try {
-//
-//			// HibernateSessionFactory
-//			// .setCustomHibernateConfigFile(this.grisu_base_directory
-//			// + File.separator + "grid-tests-hibernate-file.cfg.xml");
-//
-//			Class hsfc = Class
-//					.forName("org.vpac.grisu.backend.hibernate.HibernateSessionFactory");
-//			Method method = hsfc.getMethod("setCustomHibernateConfigFile",
-//					String.class);
-//
-//			method.invoke(null, this.grisu_base_directory + File.separator
-//					+ "grid-tests-hibernate-file.cfg.xml");
-//
-//		} catch (Exception e) {
-//			// doesn't really matter
-//		}
-
 		grid_tests_directory = new File(this.grisu_base_directory, "tests");
 
 		output = this.grisu_base_directory + File.separator + "results" + File.separator + "testResults_"
@@ -172,40 +154,11 @@ public class GridTestController {
 		submitJobExecutor = Executors.newFixedThreadPool(threads);
 		processJobExecutor = Executors.newFixedThreadPool(threads);
 
-		if (options.getMyproxyUsername() != null
-				&& options.getMyproxyUsername().length() != 0) {
-			try {
-				ConsoleReader consoleReader = new ConsoleReader();
-				char[] password = consoleReader.readLine(
-						"Please enter your myproxy password: ",
-						new Character('*')).toCharArray();
-
-				LoginParams loginParams = new LoginParams(
-				// "http://localhost:8080/grisu-ws/services/grisu",
-						// "https://ngportaldev.vpac.org/grisu-ws/services/grisu",
-						"Local", options.getMyproxyUsername(), password);
-
-//				serviceInterface = LoginManager.login(null, null, null, null,
-//						loginParams);
-				serviceInterface = LoginManager.loginCommandline("Local");
-			} catch (Exception e) {
-				System.out.println("Could not login: "
-						+ e.getLocalizedMessage());
-				System.exit(1);
-			}
-		} else {
-			// trying to get local proxy
-
-			LoginParams loginParams = new LoginParams("Local", null, null,
-					"myproxy2.arcs.org.au", "443");
-			try {
-				serviceInterface = LoginManager.login(LocalProxy
-						.loadGlobusCredential(), null, null, null, loginParams);
-			} catch (Exception e) {
-				System.out.println("Could not login: "
-						+ e.getLocalizedMessage());
-				System.exit(1);
-			}
+		try {
+			serviceInterface = LoginManager.loginCommandline("Local");
+		} catch (LoginException e1) {
+			System.out.println("Could not login: "+e1.getLocalizedMessage());
+			System.exit(1);
 		}
 
 		registry = GrisuRegistryManager.getDefault(this.serviceInterface);
