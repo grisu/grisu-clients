@@ -199,6 +199,10 @@ public abstract class GridTestElement implements Comparable<GridTestElement> {
 
 	@Override
 	public boolean equals(Object o) {
+		
+		if ( o == null ) {
+			return false;
+		}
 
 		GridTestElement other = null;
 		try {

@@ -143,6 +143,7 @@ public class GridInternalTestInfoImpl implements GridTestInfo {
 			System.err.println("Could not create internal test " + testname
 					+ ": " + e.getLocalizedMessage());
 			System.err.println("Exiting...");
+			e.printStackTrace();
 			System.exit(1);
 		}
 
