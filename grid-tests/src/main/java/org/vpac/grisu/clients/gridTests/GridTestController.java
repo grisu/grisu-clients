@@ -162,7 +162,7 @@ public class GridTestController {
 
 		grid_tests_directory = new File(this.grisu_base_directory, "tests");
 
-		output = grid_tests_directory + File.separator + "testResults_"
+		output = this.grisu_base_directory + File.separator + "results" + File.separator + "testResults_"
 				+ new Date().getTime() + ".log";
 
 		GridTestCommandlineOptions options = new GridTestCommandlineOptions(
@@ -185,8 +185,9 @@ public class GridTestController {
 						// "https://ngportaldev.vpac.org/grisu-ws/services/grisu",
 						"Local", options.getMyproxyUsername(), password);
 
-				serviceInterface = LoginManager.login(null, null, null, null,
-						loginParams);
+//				serviceInterface = LoginManager.login(null, null, null, null,
+//						loginParams);
+				serviceInterface = LoginManager.loginCommandline("Local");
 			} catch (Exception e) {
 				System.out.println("Could not login: "
 						+ e.getLocalizedMessage());
