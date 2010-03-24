@@ -35,10 +35,10 @@
 			<source>target/grid-tests.jar</source>
 			<outputDirectory>/grid-tests</outputDirectory>
 		</file>
-		<file>
-			<source>grid-tests-hibernate-file.cfg.xml</source>
-			<outputDirectory>/grid-tests</outputDirectory>
-		</file>
+<!--		<file>-->
+<!--			<source>grid-tests-hibernate-file.cfg.xml</source>-->
+<!--			<outputDirectory>/grid-tests</outputDirectory>-->
+<!--		</file>-->
 		<file>
 			<source>grisu-server.config</source>
 			<outputDirectory>/grid-tests</outputDirectory>

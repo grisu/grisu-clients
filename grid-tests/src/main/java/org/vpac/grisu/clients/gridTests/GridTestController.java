@@ -68,6 +68,8 @@ public class GridTestController {
 		GridTestController gtc = new GridTestController(args, baseDir);
 
 		gtc.start();
+		
+		System.exit(0);
 
 	}
 
@@ -265,7 +267,7 @@ public class GridTestController {
 		includes = options.getIncludes();
 
 		outputModules.add(new LogFileOutputModule(output));
-		outputModules.add(new XmlRpcOutputModule());
+//		outputModules.add(new XmlRpcOutputModule());
 
 	}
 
