@@ -12,6 +12,7 @@ import org.vpac.grisu.frontend.control.clientexceptions.MdsInformationException;
 import org.vpac.grisu.frontend.control.login.LoginParams;
 import org.vpac.grisu.frontend.control.login.ServiceInterfaceFactory;
 import org.vpac.grisu.frontend.model.job.JobObject;
+import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.utils.SeveralXMLHelpers;
 import org.w3c.dom.Document;
 
@@ -80,15 +81,12 @@ public class ExternalGridTestElement extends GridTestElement {
 			String jobDir = jobObject.getJobDirectoryUrl();
 			addMessage("Downloading output files from jobdirectory: " + jobDir);
 
-			File localCacheDir = null;
-
+			File localCacheDir = GrisuRegistryManager.getDefault(serviceInterface).getFileManager().getLocalCacheFile(jobObject.getJobDirectoryUrl());
+			
 			for (String filename : ((GridExternalTestInfoImpl) getTestInfo())
 					.getOutputFiles()) {
 				addMessage("Downloading: " + filename + "...");
 				File file = jobObject.downloadAndCacheOutputFile(filename);
-				if (localCacheDir == null) {
-					localCacheDir = file.getParentFile();
-				}
 			}
 			StringBuffer output = new StringBuffer();
 
