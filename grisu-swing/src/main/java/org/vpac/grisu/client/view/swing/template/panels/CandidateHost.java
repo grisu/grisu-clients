@@ -150,7 +150,7 @@ ValueListener, FqanListener {
 			queueModel.removeAllElements();
 
 			for (GridResource resource : currentRankedSite.getResources()) {
-				queueModel.addElement(resource);
+			    queueModel.addElement(resource);
 			}
 
 		} else {
