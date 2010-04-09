@@ -14,8 +14,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import jline.ConsoleReader;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
@@ -28,12 +26,10 @@ import org.vpac.grisu.control.exceptions.ServiceInterfaceException;
 import org.vpac.grisu.frontend.control.clientexceptions.MdsInformationException;
 import org.vpac.grisu.frontend.control.login.LoginException;
 import org.vpac.grisu.frontend.control.login.LoginManager;
-import org.vpac.grisu.frontend.control.login.LoginParams;
 import org.vpac.grisu.model.GrisuRegistry;
 import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.settings.Environment;
 import org.vpac.grisu.utils.GrisuPluginFilenameFilter;
-import org.vpac.security.light.plainProxy.LocalProxy;
 
 import au.org.arcs.jcommons.constants.ArcsEnvironment;
 import au.org.arcs.jcommons.dependencies.ClasspathHacker;
@@ -48,7 +44,7 @@ public class GridTestController {
 	 * @throws MdsInformationException
 	 */
 	public static void main(String[] args) throws ServiceInterfaceException,
-			MdsInformationException {
+	MdsInformationException {
 
 		String name = GridTestController.class.getName();
 		name = name.replace('.', '/') + ".class";
@@ -65,11 +61,11 @@ public class GridTestController {
 		}
 
 		System.out.println("Using directory: " + baseDir);
-		
+
 		GridTestController gtc = new GridTestController(args, baseDir);
 
 		gtc.start();
-		
+
 		System.exit(0);
 
 	}
@@ -80,54 +76,54 @@ public class GridTestController {
 	private final ExecutorService submitJobExecutor;
 
 	private final ExecutorService processJobExecutor;
-	private LinkedList<Thread> createAndSubmitJobThreads = new LinkedList<Thread>();
+	private final LinkedList<Thread> createAndSubmitJobThreads = new LinkedList<Thread>();
 
-	private Map<String, Thread> checkAndKillJobThreads = new HashMap<String, Thread>();
-	private Map<String, GridTestElement> gridTestElements = new HashMap<String, GridTestElement>();
+	private final Map<String, Thread> checkAndKillJobThreads = new HashMap<String, Thread>();
+	private final Map<String, GridTestElement> gridTestElements = new HashMap<String, GridTestElement>();
 
-	private List<GridTestElement> finishedElements = new LinkedList<GridTestElement>();
+	private final List<GridTestElement> finishedElements = new LinkedList<GridTestElement>();
 
 	private ServiceInterface serviceInterface;
 
 	private final GrisuRegistry registry;
 
-	private String[] gridtestNames;
+	private final String[] gridtestNames;
 	private final String[] fqans;
 	private String output = null;
-	private String[] excludes;
-	private String[] includes;
+	private final String[] excludes;
+	private final String[] includes;
 
 	private Date timeoutDate;
 	private final int timeout;
 
 	private int sameSubloc = 1;
 
-	private List<OutputModule> outputModules = new LinkedList<OutputModule>();
+	private final List<OutputModule> outputModules = new LinkedList<OutputModule>();
 
 	public GridTestController(String[] args, String grisu_base_directory_param) {
 
 		if (StringUtils.isBlank(grisu_base_directory_param)) {
 			this.grisu_base_directory = System.getProperty("user.home")
-					+ File.separator + "grisu-grid-tests";
+			+ File.separator + "grisu-grid-tests";
 		} else {
 			this.grisu_base_directory = grisu_base_directory_param;
 		}
-		
+
 		// logging stuff
 		SimpleLayout layout = new SimpleLayout();
 		try {
 			FileAppender fa = new FileAppender(layout, this.grisu_base_directory+File.separator+"grisu-tests.debug", false);
 			Logger logger = Logger.getRootLogger();
 			logger.addAppender(fa);
-			logger.setLevel((Level) Level.INFO);
+			logger.setLevel(Level.INFO);
 
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
 
-		
+
 
 
 		Environment.setGrisuDirectory(this.grisu_base_directory);
@@ -145,7 +141,7 @@ public class GridTestController {
 		grid_tests_directory = new File(this.grisu_base_directory, "tests");
 
 		output = this.grisu_base_directory + File.separator + "results" + File.separator + "testResults_"
-				+ new Date().getTime() + ".log";
+		+ new Date().getTime() + ".log";
 
 		GridTestCommandlineOptions options = new GridTestCommandlineOptions(
 				args);
@@ -154,8 +150,13 @@ public class GridTestController {
 		submitJobExecutor = Executors.newFixedThreadPool(threads);
 		processJobExecutor = Executors.newFixedThreadPool(threads);
 
+		String url = options.getServiceInterfaceUrl();
+		if ( StringUtils.isBlank(url) ) {
+			url = "Local";
+		}
+
 		try {
-			serviceInterface = LoginManager.loginCommandline("Local");
+			serviceInterface = LoginManager.loginCommandline(url);
 		} catch (LoginException e1) {
 			System.out.println("Could not login: "+e1.getLocalizedMessage());
 			System.exit(1);
@@ -169,7 +170,7 @@ public class GridTestController {
 			fqans = options.getFqans();
 		}
 
-		if (options.getOutput() != null && options.getOutput().length() > 0) {
+		if ((options.getOutput() != null) && (options.getOutput().length() > 0)) {
 			output = options.getOutput();
 		}
 
@@ -182,9 +183,9 @@ public class GridTestController {
 			List<GridTestInfo> infos = new LinkedList<GridTestInfo>();
 
 			List<GridTestInfo> externalinfos = GridExternalTestInfoImpl
-					.generateGridTestInfos(this, new String[] {}, fqans);
+			.generateGridTestInfos(this, new String[] {}, fqans);
 			List<GridTestInfo> internalinfos = GridInternalTestInfoImpl
-					.generateGridTestInfos(this, new String[] {}, fqans);
+			.generateGridTestInfos(this, new String[] {}, fqans);
 
 			infos.addAll(externalinfos);
 			infos.addAll(internalinfos);
@@ -221,7 +222,7 @@ public class GridTestController {
 		includes = options.getIncludes();
 
 		outputModules.add(new LogFileOutputModule(output));
-//		outputModules.add(new XmlRpcOutputModule());
+		//		outputModules.add(new XmlRpcOutputModule());
 
 	}
 
@@ -252,10 +253,11 @@ public class GridTestController {
 	private Thread createCheckAndKillJobThread(final GridTestElement gte) {
 
 		Thread thread = new Thread() {
+			@Override
 			public void run() {
 				System.out
-						.println("Checking job success for job submitted to: "
-								+ gte.getSubmissionLocation());
+				.println("Checking job success for job submitted to: "
+						+ gte.getSubmissionLocation());
 				gte.checkWhetherJobDidWhatItWasSupposedToDo();
 				if (!gte.failed()) {
 					System.out.println("Job submitted to "
@@ -267,9 +269,9 @@ public class GridTestController {
 				gte.killAndClean();
 				if (!gte.failed()) {
 					System.out
-							.println("Killing and cleaning of job submitted to "
-									+ gte.getSubmissionLocation()
-									+ " was successful.");
+					.println("Killing and cleaning of job submitted to "
+							+ gte.getSubmissionLocation()
+							+ " was successful.");
 				}
 
 				gte.finishTest();
@@ -289,6 +291,7 @@ public class GridTestController {
 	private Thread createCreateAndSubmitJobThread(final GridTestElement gte) {
 
 		Thread thread = new Thread() {
+			@Override
 			public void run() {
 				System.out.println("Creating job for subLoc: "
 						+ gte.getSubmissionLocation());
@@ -298,9 +301,9 @@ public class GridTestController {
 				gte.submitJob();
 				if (gte.failed()) {
 					System.out
-							.println("Submission to "
-									+ gte.getSubmissionLocation()
-									+ " finished: Failed");
+					.println("Submission to "
+							+ gte.getSubmissionLocation()
+							+ " finished: Failed");
 				} else {
 					System.out.println("Submission to "
 							+ gte.getSubmissionLocation()
@@ -316,9 +319,9 @@ public class GridTestController {
 	public void createJobsJobThreads() throws MdsInformationException {
 
 		List<GridTestInfo> externalinfos = GridExternalTestInfoImpl
-				.generateGridTestInfos(this, gridtestNames, fqans);
+		.generateGridTestInfos(this, gridtestNames, fqans);
 		List<GridTestInfo> internalinfos = GridInternalTestInfoImpl
-				.generateGridTestInfos(this, gridtestNames, fqans);
+		.generateGridTestInfos(this, gridtestNames, fqans);
 
 		List<GridTestInfo> infos = new LinkedList<GridTestInfo>();
 		infos.addAll(externalinfos);
@@ -348,7 +351,7 @@ public class GridTestController {
 				}
 
 				System.out
-						.println("Adding grid test element: " + el.toString());
+				.println("Adding grid test element: " + el.toString());
 
 				gridTestElements.put(el.getTestId(), el);
 
@@ -386,7 +389,7 @@ public class GridTestController {
 		}
 
 		StringBuffer setup = OutputModuleHelpers
-				.createTestSetupString(gridTestElements.values());
+		.createTestSetupString(gridTestElements.values());
 
 		for (OutputModule module : outputModules) {
 			module.writeTestsSetup(setup.toString());
@@ -433,7 +436,7 @@ public class GridTestController {
 					System.out.println("Interrupting not finished job: "
 							+ gte.toString());
 					if (!gte.failed()
-							&& gte.getJobStatus(true) < JobConstants.FINISHED_EITHER_WAY) {
+							&& (gte.getJobStatus(true) < JobConstants.FINISHED_EITHER_WAY)) {
 						gte.interruptRunningJob();
 					}
 				}
@@ -443,8 +446,8 @@ public class GridTestController {
 
 			for (GridTestElement gte : gridTestElements.values()) {
 
-				if (gte.getJobStatus(true) >= JobConstants.FINISHED_EITHER_WAY
-						|| gte.getJobStatus(false) <= JobConstants.READY_TO_SUBMIT
+				if ((gte.getJobStatus(true) >= JobConstants.FINISHED_EITHER_WAY)
+						|| (gte.getJobStatus(false) <= JobConstants.READY_TO_SUBMIT)
 						|| gte.failed()) {
 					batchOfRecentlyFinishedJobs.add(gte);
 				}
@@ -507,7 +510,7 @@ public class GridTestController {
 	public void writeStatistics() {
 
 		StringBuffer statistics = OutputModuleHelpers
-				.createStatisticsString(finishedElements);
+		.createStatisticsString(finishedElements);
 
 		for (OutputModule module : outputModules) {
 			module.writeTestsStatistic(statistics.toString());

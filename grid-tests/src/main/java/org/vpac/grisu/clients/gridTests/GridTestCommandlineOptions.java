@@ -14,13 +14,13 @@ public class GridTestCommandlineOptions {
 	// option with long name, no arguments
 	private static Option createOption(String longName, String description) {
 		return OptionBuilder.withLongOpt(longName).withDescription(description)
-				.create();
+		.create();
 	}
 	// option with long name, short name, no arguments
 	private static Option createOption(String longName, String shortName,
 			String description) {
 		return OptionBuilder.withLongOpt(longName).withDescription(description)
-				.create(shortName);
+		.create(shortName);
 	}
 	// option with long name, has arguments
 	private static Option createOptionWithArg(String longName,
@@ -43,35 +43,34 @@ public class GridTestCommandlineOptions {
 		Option apps = createOptionWithArg(
 				"tests",
 				"t",
-				"the names of the tests to run (seperated with a comma). If not specified, all tests will run.");
-		Option myProxyUsername = createOptionWithArg("username", "u",
-				"the myproxy username to use");
+		"the names of the tests to run (seperated with a comma). If not specified, all tests will run.");
 		Option fqan = createOptionWithArg("vos", "v",
-				"the vos to use, seperated with a comma");
+		"the vos to use, seperated with a comma");
 		Option outputFile = createOptionWithArg("output", "o",
-				"the output file");
+		"the output file");
 		Option exclude = createOptionWithArg(
 				"exclude",
 				"e",
-				"(comma-seperated) filters to exclude certain hostnames/queues. Only used if the \"include\" option wasn't specified");
+		"(comma-seperated) filters to exclude certain hostnames/queues. Only used if the \"include\" option wasn't specified");
 		Option include = createOptionWithArg("include", "i",
-				"(comma-seperated) filters to only include certain hostnames");
+		"(comma-seperated) filters to only include certain hostnames");
 		Option timeoutInMinutes = createOptionWithArg(
 				"cancel",
 				"c",
-				"timeout in minutes after which all jobs that aren't finished are getting killed (default: 240)");
+		"timeout in minutes after which all jobs that aren't finished are getting killed (default: 240)");
 		Option list = createOption("list", "l", "list all available tests");
 		Option threads = createOptionWithArg("simultaneousThreads", "s",
-				"how many jobs to submit at once. Default is 5 (which is recommended)");
+		"how many jobs to submit at once. Default is 5 (which is recommended)");
 		Option sameSubLoc = createOptionWithArg(
 				"sameSubmissionLocation",
 				"d",
-				"duplicate the test job and submit it to the same submissionlocation x times (default: 1)");
+		"duplicate the test job and submit it to the same submissionlocation x times (default: 1)");
 		Option help = createOption("help", "h", "this help text");
+		Option siUrl = createOptionWithArg("url", "u", "the serviceInterface url to connect to. default: Local");
 
 		options = new Options();
 		options.addOption(apps);
-		options.addOption(myProxyUsername);
+		options.addOption(siUrl);
 		options.addOption(fqan);
 		options.addOption(outputFile);
 		options.addOption(include);
@@ -84,13 +83,12 @@ public class GridTestCommandlineOptions {
 		return options;
 	}
 	private CommandLine line = null;
-	private HelpFormatter formatter = new HelpFormatter();
+	private final HelpFormatter formatter = new HelpFormatter();
 	private Options options = null;
 	private String[] fqans;
 	private String[] gridTestNames = new String[] {};
 	private String[] excludes = new String[] {};
 	private String[] includes = new String[] {};
-	private String myproxyUsername;
 	private String url;
 
 	private String output;
@@ -124,10 +122,6 @@ public class GridTestCommandlineOptions {
 
 	public String[] getIncludes() {
 		return includes;
-	}
-
-	public String getMyproxyUsername() {
-		return myproxyUsername;
 	}
 
 	public String getOutput() {
@@ -205,8 +199,8 @@ public class GridTestCommandlineOptions {
 			fqans = line.getOptionValue("vos").split(",");
 		}
 
-		if (line.hasOption("username")) {
-			myproxyUsername = line.getOptionValue("username");
+		if (line.hasOption("url")) {
+			url = line.getOptionValue("url");
 		}
 
 		if (line.hasOption("output")) {
@@ -235,7 +229,7 @@ public class GridTestCommandlineOptions {
 						.getOptionValue("simultaneousThreads"));
 			} catch (Exception e) {
 				System.err
-						.println("SimultaneousThreads value is not an integer.");
+				.println("SimultaneousThreads value is not an integer.");
 				formatter.printHelp("grisu-grid-test", this.options);
 				System.exit(1);
 			}
@@ -246,7 +240,7 @@ public class GridTestCommandlineOptions {
 						.getOptionValue("sameSubmissionLocation"));
 			} catch (Exception e) {
 				System.err
-						.println("sameSubmissionLocation value is not an integer.");
+				.println("sameSubmissionLocation value is not an integer.");
 				formatter.printHelp("grisu-grid-test", this.options);
 				System.exit(1);
 			}
