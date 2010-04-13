@@ -20,7 +20,7 @@ public class ConvertToBytes extends ElementPostprocessor {
 					"Could not process specified memory.", e);
 		}
 
-		Long bytes = new Long(mb * 1024);
+		Long bytes = new Long(mb * 1024 * 1024);
 
 		element.setTextContent(bytes.toString());
 
