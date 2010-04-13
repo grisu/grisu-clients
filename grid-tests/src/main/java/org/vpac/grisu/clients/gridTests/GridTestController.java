@@ -222,7 +222,11 @@ public class GridTestController {
 		includes = options.getIncludes();
 
 		outputModules.add(new LogFileOutputModule(output));
-		//		outputModules.add(new XmlRpcOutputModule());
+		for ( String module : options.getOutputModules() ) {
+			if ( "rpc".equals(module) ) {
+				outputModules.add(new XmlRpcOutputModule());
+			}
+		}
 
 	}
 

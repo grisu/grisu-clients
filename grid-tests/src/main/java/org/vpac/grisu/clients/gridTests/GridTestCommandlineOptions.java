@@ -58,6 +58,10 @@ public class GridTestCommandlineOptions {
 				"cancel",
 				"c",
 		"timeout in minutes after which all jobs that aren't finished are getting killed (default: 240)");
+		Option outputModulesToUse = createOptionWithArg(
+				"modules",
+				"m",
+		"(comma-seperated) additional output modules to use. Currently supported: rpc");
 		Option list = createOption("list", "l", "list all available tests");
 		Option threads = createOptionWithArg("simultaneousThreads", "s",
 		"how many jobs to submit at once. Default is 5 (which is recommended)");
@@ -79,6 +83,7 @@ public class GridTestCommandlineOptions {
 		options.addOption(list);
 		options.addOption(threads);
 		options.addOption(sameSubLoc);
+		options.addOption(outputModulesToUse);
 		options.addOption(help);
 		return options;
 	}
@@ -89,6 +94,7 @@ public class GridTestCommandlineOptions {
 	private String[] gridTestNames = new String[] {};
 	private String[] excludes = new String[] {};
 	private String[] includes = new String[] {};
+	private String[] outputModules = new String[] {};
 	private String url;
 
 	private String output;
@@ -126,6 +132,10 @@ public class GridTestCommandlineOptions {
 
 	public String getOutput() {
 		return output;
+	}
+
+	public String[] getOutputModules() {
+		return outputModules;
 	}
 
 	public int getSameSubmissionLocation() {
@@ -212,6 +222,10 @@ public class GridTestCommandlineOptions {
 		}
 		if (line.hasOption("include")) {
 			includes = line.getOptionValue("include").split(",");
+		}
+
+		if (line.hasOption("modules")) {
+			outputModules = line.getOptionValue("modules").split(",");
 		}
 
 		if (line.hasOption("cancel")) {

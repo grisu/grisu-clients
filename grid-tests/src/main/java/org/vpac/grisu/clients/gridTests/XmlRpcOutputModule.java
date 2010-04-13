@@ -9,17 +9,15 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.vpac.grisu.clients.gridTests.testElements.GridTestElement;
 
-import au.org.arcs.jcommons.utils.SubmissionLocationHelpers;
-
 public class XmlRpcOutputModule implements OutputModule {
 
-	private XmlRpcClient client;
+	private final XmlRpcClient client;
 
 	public XmlRpcOutputModule() {
 
 		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 		try {
-			config.setServerURL(new URL("http://shib-mp.arcs.org.au/xmlrpc/"));
+			config.setServerURL(new URL("http://sys10.in.vpac.org:8000/xmlrpc/"));
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -32,8 +30,8 @@ public class XmlRpcOutputModule implements OutputModule {
 
 	public void writeTestElement(GridTestElement element) {
 
-		String username = "grisu_test_client";
-		String password = "kaiJaej9ieSh";
+		String username = "software_tests";
+		String password = "Eiyuzeash5re";
 
 		String uuid = element.getTestId();
 		String testname = element.getTestInfo().getTestname();
@@ -43,17 +41,22 @@ public class XmlRpcOutputModule implements OutputModule {
 		Date startDate = element.getStartDate();
 		Date endDate = element.getEndDate();
 		String submissionLocation = element.getSubmissionLocation();
-		String submissionHost = SubmissionLocationHelpers
-				.extractHost(submissionLocation);
-		String queue = SubmissionLocationHelpers
-				.extractQueue(submissionLocation);
-		boolean success = !element.failed();
+		//		String submissionHost = SubmissionLocationHelpers
+		//				.extractHost(submissionLocation);
+		//		String queue = SubmissionLocationHelpers
+		//				.extractQueue(submissionLocation);
+		int success = 0;
+		if ( element.wasInterrupted() ) {
+			success = -1;
+		} else if ( element.failed() ) {
+			success = 1;
+		}
 		String output = OutputModuleHelpers.createStringReport(element)
-				.toString();
+		.toString();
 
 		Object[] params = new Object[] { username, password, uuid, testname,
 				description, application, version, startDate, endDate,
-				submissionHost, queue, success, output };
+				submissionLocation, success, output };
 
 		Integer result;
 		try {
