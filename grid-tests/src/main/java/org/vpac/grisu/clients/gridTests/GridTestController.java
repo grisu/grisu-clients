@@ -223,8 +223,15 @@ public class GridTestController {
 
 		outputModules.add(new LogFileOutputModule(output));
 		for ( String module : options.getOutputModules() ) {
-			if ( "rpc".equals(module) ) {
-				outputModules.add(new XmlRpcOutputModule());
+			if ( module.startsWith("rpc") ) {
+				try {
+					String username = module.substring(module.indexOf("[")+1, module.indexOf(":"));
+					String password = module.substring(module.indexOf(":")+1, module.indexOf("]"));
+					outputModules.add(new XmlRpcOutputModule(username, password));
+				} catch (Exception e) {
+					System.err.println("Can't parse rpc config option. You need to specify it like: rpc[username:password]");
+					System.exit(1);
+				}
 			}
 		}
 

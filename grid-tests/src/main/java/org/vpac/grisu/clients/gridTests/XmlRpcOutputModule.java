@@ -7,13 +7,18 @@ import java.util.Date;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
+import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
 import org.vpac.grisu.clients.gridTests.testElements.GridTestElement;
 
 public class XmlRpcOutputModule implements OutputModule {
 
 	private final XmlRpcClient client;
+	private final String username;
+	private final String password;
 
-	public XmlRpcOutputModule() {
+	public XmlRpcOutputModule(String username, String password) {
+		this.username = username;
+		this.password = password;
 
 		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 		try {
@@ -24,14 +29,13 @@ public class XmlRpcOutputModule implements OutputModule {
 		}
 
 		client = new XmlRpcClient();
+		XmlRpcCommonsTransportFactory factory = new XmlRpcCommonsTransportFactory(client);
+		client.setTransportFactory(factory);
 		client.setConfig(config);
 
 	}
 
 	public void writeTestElement(GridTestElement element) {
-
-		String username = "software_tests";
-		String password = "Eiyuzeash5re";
 
 		String uuid = element.getTestId();
 		String testname = element.getTestInfo().getTestname();
