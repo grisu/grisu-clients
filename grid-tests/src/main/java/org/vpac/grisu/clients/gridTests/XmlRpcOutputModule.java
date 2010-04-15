@@ -1,6 +1,5 @@
 package org.vpac.grisu.clients.gridTests;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 
@@ -15,37 +14,33 @@ import org.vpac.grisu.clients.gridTests.testElements.GridTestElement;
 
 public class XmlRpcOutputModule implements OutputModule {
 
-	private final XmlRpcClient client;
+	private XmlRpcClient client;
 	private final String username;
 	private final String password;
 
 	public XmlRpcOutputModule(String username, String password) {
 
+		this.username = username;
+		this.password = password;
+
 		ProtocolSocketFactory easy = null;
 		try {
 			easy = new EasySSLProtocolSocketFactory();
+
+			Protocol protocol = new Protocol("https", easy, 443);
+			Protocol.registerProtocol("https", protocol);
+
+			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
+			config.setServerURL(new URL("https://acc.arcs.org.au/xmlrpc/"));
+			client = new XmlRpcClient();
+			XmlRpcCommonsTransportFactory factory = new XmlRpcCommonsTransportFactory(client);
+			client.setTransportFactory(factory);
+			client.setConfig(config);
 		} catch (Exception e1) {
 			System.err.println("Couldn't configure ssl: "+e1.getLocalizedMessage());
 			System.exit(1);
 		}
-		Protocol protocol = new Protocol("https", easy, 443);
-		Protocol.registerProtocol("https", protocol);
 
-		this.username = username;
-		this.password = password;
-
-		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-		try {
-			config.setServerURL(new URL("http://sys10.in.vpac.org:8000/xmlrpc/"));
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-
-		client = new XmlRpcClient();
-		XmlRpcCommonsTransportFactory factory = new XmlRpcCommonsTransportFactory(client);
-		client.setTransportFactory(factory);
-		client.setConfig(config);
 
 	}
 
