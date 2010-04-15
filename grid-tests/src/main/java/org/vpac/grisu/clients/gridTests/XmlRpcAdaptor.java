@@ -4,7 +4,6 @@ import java.net.URL;
 import java.util.Date;
 import java.util.UUID;
 
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.contrib.ssl.AuthSSLProtocolSocketFactory;
 import org.apache.commons.httpclient.contrib.ssl.EasySSLProtocolSocketFactory;
 import org.apache.commons.httpclient.protocol.Protocol;
@@ -18,7 +17,7 @@ public class XmlRpcAdaptor {
 	public static void main(String[] args) throws Exception {
 
 		ProtocolSocketFactory easy = new EasySSLProtocolSocketFactory();
-		Protocol protocol = new Protocol("https", easy, 8443);
+		Protocol protocol = new Protocol("https", easy, 443);
 		Protocol.registerProtocol("https", protocol);
 
 		//		Protocol authhttps = new Protocol("https",
@@ -43,16 +42,16 @@ public class XmlRpcAdaptor {
 
 		XmlRpcClient client = new XmlRpcClient();
 		XmlRpcCommonsTransportFactory factory = new XmlRpcCommonsTransportFactory(client);
-		HttpClient httpclient = new HttpClient();
-		//		httpclient.getHostConfiguration().setHost("acc.arcs.org.au", 443, authhttps);
-		factory.setHttpClient(httpclient);
+		//		HttpClient httpclient = new HttpClient();
+		//		//		httpclient.getHostConfiguration().setHost("acc.arcs.org.au", 443, authhttps);
+		//		factory.setHttpClient(httpclient);
 		client.setTransportFactory(factory);
 		client.setConfig(config);
 
 
 		Object[] params = new Object[] {
-				//				new String("software_tests"),
-				//				new String("Eiyuzeash5re"),
+				new String("software_tests"),
+				new String("Is1eedaixeed2noa"),
 				UUID.randomUUID().toString(), new String("MarkusTest"), new String("Description of the test"), new String("Application name"),
 				new String("MarkusVersion"), new Date(), new Date(),
 				new String("SubmissionLocation:sdfsdfsd"), 0,

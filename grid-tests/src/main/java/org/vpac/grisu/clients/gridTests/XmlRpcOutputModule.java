@@ -4,6 +4,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 
+import org.apache.commons.httpclient.contrib.ssl.EasySSLProtocolSocketFactory;
+import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
@@ -17,6 +20,17 @@ public class XmlRpcOutputModule implements OutputModule {
 	private final String password;
 
 	public XmlRpcOutputModule(String username, String password) {
+
+		ProtocolSocketFactory easy = null;
+		try {
+			easy = new EasySSLProtocolSocketFactory();
+		} catch (Exception e1) {
+			System.err.println("Couldn't configure ssl: "+e1.getLocalizedMessage());
+			System.exit(1);
+		}
+		Protocol protocol = new Protocol("https", easy, 443);
+		Protocol.registerProtocol("https", protocol);
+
 		this.username = username;
 		this.password = password;
 
