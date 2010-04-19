@@ -58,7 +58,7 @@ public class FileTransfer {
 	private GrisuFileObject targetDirectory = null;
 
 	private int status = UNINITIALIZED_STATUS;
-	private Map<Date, String> status_messages = new TreeMap<Date, String>();
+	private final Map<Date, String> status_messages = new TreeMap<Date, String>();
 
 	private Exception possibleException = null;
 
@@ -116,17 +116,19 @@ public class FileTransfer {
 		this.isDownload = false;
 		this.overwriteMode = overwrite_mode;
 		this.em = targetDirectory.getFileSystemBackend()
-				.getEnvironmentManager();
+		.getEnvironmentManager();
 		this.sources = sources;
 		this.targetDirectory = targetDirectory;
 		status = INITIALIZED_STATUS;
 		addStatusMessage("File transfer initialized.");
 	}
 
+
 	// register a listener
 	synchronized public void addListener(FileTransferListener l) {
-		if (fileTransferListeners == null)
+		if (fileTransferListeners == null) {
 			fileTransferListeners = new Vector<FileTransferListener>();
+		}
 		fileTransferListeners.addElement(l);
 	}
 
@@ -136,7 +138,7 @@ public class FileTransfer {
 
 	private File calculateParentFolderAndCreateItIfNotExistsAlready(
 			String remoteFile, String source_folder, File target_folder)
-			throws IOException {
+	throws IOException {
 
 		File target_parent_folder = target_folder;
 
@@ -257,7 +259,7 @@ public class FileTransfer {
 	 */
 	private void download(File target_folder, String source_folder,
 			String remoteFile, int overwrite_mode)
-			throws FailedDownloadsException {
+	throws FailedDownloadsException {
 
 		Map<String, Exception> failed_downloads = new HashMap<String, Exception>();
 
@@ -368,7 +370,7 @@ public class FileTransfer {
 				myLogger.error("DataHandler is null.");
 				throw new RuntimeException(
 						"Datahandler is null. Can't download file:"
-								+ remoteFile);
+						+ remoteFile);
 			}
 			source = handler.getDataSource();
 		} catch (Exception e) {
@@ -411,18 +413,18 @@ public class FileTransfer {
 			myLogger.debug("remote file timestamp:\t" + lastModified);
 			if (local_last_modified >= lastModified) {
 				myLogger
-						.debug("Local cache file is not older than remote file. Doing nothing...");
+				.debug("Local cache file is not older than remote file. Doing nothing...");
 				return;
 			}
 		}
 
 		myLogger
-				.debug("Remote file newer than local cache file or not cached yet, downloading new copy.");
+		.debug("Remote file newer than local cache file or not cached yet, downloading new copy.");
 		DataSource source = null;
 		try {
 
 			source = em.getServiceInterface().download(remoteFile)
-					.getDataSource();
+			.getDataSource();
 		} catch (Exception e) {
 			e.printStackTrace();
 			myLogger.error("Could not download file: " + remoteFile);
@@ -457,7 +459,7 @@ public class FileTransfer {
 				long lastModified = em.getServiceInterface().lastModified(
 						remoteFile);
 				source = em.getServiceInterface().download(remoteFile)
-						.getDataSource();
+				.getDataSource();
 				FileHelpers.saveToDisk(source, newFile);
 				newFile.setLastModified(lastModified);
 			} catch (IOException e) {
@@ -471,20 +473,20 @@ public class FileTransfer {
 
 	private void fireFileTransferEvent(FileTransferEvent event) {
 		// if we have no mountPointsListeners, do nothing...
-		if (fileTransferListeners != null && !fileTransferListeners.isEmpty()) {
+		if ((fileTransferListeners != null) && !fileTransferListeners.isEmpty()) {
 
 			// make a copy of the listener list in case
 			// anyone adds/removes mountPointsListeners
 			Vector<FileTransferListener> targets;
 			synchronized (this) {
 				targets = (Vector<FileTransferListener>) fileTransferListeners
-						.clone();
+				.clone();
 			}
 
 			// walk through the listener list
 			Enumeration<FileTransferListener> e = targets.elements();
 			while (e.hasMoreElements()) {
-				FileTransferListener l = (FileTransferListener) e.nextElement();
+				FileTransferListener l = e.nextElement();
 				try {
 					l.fileTransferEventOccured(event);
 				} catch (Exception e1) {
@@ -497,7 +499,7 @@ public class FileTransfer {
 
 	public String getLatestTransferMessage() {
 		return status_messages.values().toArray(new String[] {})[status_messages
-				.size() - 1];
+		                                                         .size() - 1];
 	}
 
 	public Exception getPossibleException() {
@@ -541,36 +543,36 @@ public class FileTransfer {
 	// file transfer helper methods
 	// -------------------------------------------------------------------
 
-public String getTransferStatusString() {
+	public String getTransferStatusString() {
 
-	int tempStatus = getStatus();
-	switch (tempStatus) {
-	case UNINITIALIZED_STATUS:
-		return UNINITIALIZED_STATUS_STRING;
-	case INITIALIZED_STATUS:
-		return INITIALIZED_STATUS_STRING;
-	case TRANSFERRING_STATUS:
-		return TRANSFERRING_STATUS_STRING;
-	case FINISHED_EITHER_WAY_STATUS:
-		return FINISHED_EITHER_WAY_STATUS_STRING;
-	case FINISHED_STATUS:
-		return FINISHED_STATUS_STRING;
-	case FAILED_STATUS:
-		return FAILED_STATUS_STRING;
-	case CANCELLED_STATUS:
-		return CANCELLED_STATUS_STRING;
-	default:
-		return translateStatus(tempStatus);
+		int tempStatus = getStatus();
+		switch (tempStatus) {
+		case UNINITIALIZED_STATUS:
+			return UNINITIALIZED_STATUS_STRING;
+		case INITIALIZED_STATUS:
+			return INITIALIZED_STATUS_STRING;
+		case TRANSFERRING_STATUS:
+			return TRANSFERRING_STATUS_STRING;
+		case FINISHED_EITHER_WAY_STATUS:
+			return FINISHED_EITHER_WAY_STATUS_STRING;
+		case FINISHED_STATUS:
+			return FINISHED_STATUS_STRING;
+		case FAILED_STATUS:
+			return FAILED_STATUS_STRING;
+		case CANCELLED_STATUS:
+			return CANCELLED_STATUS_STRING;
+		default:
+			return translateStatus(tempStatus);
 
+		}
 	}
-}
 
 	public Thread getTransferThread() {
 		return transferThread;
 	}
 
 	public void join() {
-		if (transferThread != null && transferThread.isAlive()) {
+		if ((transferThread != null) && transferThread.isAlive()) {
 			try {
 				transferThread.join();
 			} catch (InterruptedException e) {
@@ -583,7 +585,7 @@ public String getTransferStatusString() {
 	public void killTransfer() {
 		// I know I know. I shouldn't use stop(). But vfs doesn't implement the
 		// interrupt method... :-(
-		if (transferThread != null && transferThread.isAlive()) {
+		if ((transferThread != null) && transferThread.isAlive()) {
 			transferThread.stop();
 			status = CANCELLED_STATUS;
 			addStatusMessage("File transfer cancelled by user.");
@@ -604,10 +606,11 @@ public String getTransferStatusString() {
 
 		if (transferThread != null) {
 			throw new FileTransferException(
-					"Could not execute method. FileTransfer in progress.");
+			"Could not execute method. FileTransfer in progress.");
 		}
 
 		transferThread = new Thread() {
+			@Override
 			public void run() {
 				try {
 					myLogger.debug("File transfer started for target: "
@@ -684,7 +687,7 @@ public String getTransferStatusString() {
 		if (sourceFile.getType() == FileConstants.TYPE_FOLDER) {
 
 			GrisuFileObject[] children = sourceFile.getFileSystemBackend()
-					.getChildren(sourceFile, false);
+			.getChildren(sourceFile, false);
 			for (GrisuFileObject child : children) {
 				URI newFolder = null;
 				try {
@@ -736,7 +739,7 @@ public String getTransferStatusString() {
 			em.getServiceInterface().cp(
 					DtoStringList.fromSingleString(sourceFile.getURI()
 							.toString()),
-					targetDirectory.getURI().toString() + "/"
+							targetDirectory.getURI().toString() + "/"
 							+ sourceFile.getName(), false, true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -748,73 +751,73 @@ public String getTransferStatusString() {
 	}
 
 	/**
-		 * A convenience method that determines whether the source files and the target
-		 * directory are local or remote and then calls the appropriate copy methods.
-		 * 
-		 * For now I wouldn't really recommend to set "displayProgress" to true since it
-		 * isn't tested very well. If you do, you have to initialize the progressDisplay first
-		 * with something like this:
-		 * 
-		 * <code>FileManagerTransferHelpers.progressDisplay = new SwingProgressDisplay(application.getJFrame());</code>
-		 * Otherwise you won't see anything. You can implement your own progress viewer with implementing
-		 * {@link ProgressDisplay
-		 * 
-		 * @param serviceInterface the serviceInterface
-		 * @param sourceFiles an array of source files
-		 * @param targetDirectory the target directory
-		 * @param displayProgress whether to display a jdialog that shows the progress or not. 
-		 * @throws InformationError if the filesystem of one of the files can't be looked up
-		 * @throws FileSystemException 
-		 */
-		public void transferFiles() throws FileSystemException, InformationError {
-	
-			// progressDisplay.start(sourceFiles.length + 1, "Transfering "
-			// + sourceFiles.length + " files...");
-	
-			Double percentage = 0.0;
-			int progress = 0;
-			// TODO improve that so all files are transfered at once
-			for (GrisuFileObject sourceFile : sources) {
-	
-				percentage = (progress / (double) sources.length) * (double) 100;
-				progress = progress + 1;
-				status = percentage.intValue();
-				addStatusMessage("Starting file transfer: " + sourceFile.getName());
-				fireFileTransferEvent(new FileTransferEvent(this,
-						FileTransferEvent.TRANSFER_PROGRESS_CHANGED));
-				myLogger.debug("Copying: " + sourceFile.getURI().toString()
-						+ " to: " + targetDirectory.getURI().toString());
-	
-				if (FileConstants.LOCAL_NAME.equals(sourceFile
-						.getFileSystemBackend().getSite())
-						&& FileConstants.LOCAL_NAME.equals(targetDirectory
-								.getFileSystemBackend().getSite())) {
-					transferFileFromLocalToLocal(sourceFile, targetDirectory);
-				} else if (FileConstants.LOCAL_NAME.equals(sourceFile
-						.getFileSystemBackend().getSite())
-						&& !FileConstants.LOCAL_NAME.equals(targetDirectory
-								.getFileSystemBackend().getSite())) {
-					transferFileFromLocalToRemote(sourceFile, targetDirectory);
-				} else if (!FileConstants.LOCAL_NAME.equals(sourceFile
-						.getFileSystemBackend().getSite())
-						&& !FileConstants.LOCAL_NAME.equals(targetDirectory
-								.getFileSystemBackend().getSite())) {
-					transferFileFromRemoteToRemote(sourceFile, targetDirectory);
-				} else if (!FileConstants.LOCAL_NAME.equals(sourceFile
-						.getFileSystemBackend().getSite())
-						&& FileConstants.LOCAL_NAME.equals(targetDirectory
-								.getFileSystemBackend().getSite())) {
-					transferFileFromRemoteToLocal(sourceFile, targetDirectory);
-				}
+	 * A convenience method that determines whether the source files and the target
+	 * directory are local or remote and then calls the appropriate copy methods.
+	 * 
+	 * For now I wouldn't really recommend to set "displayProgress" to true since it
+	 * isn't tested very well. If you do, you have to initialize the progressDisplay first
+	 * with something like this:
+	 * 
+	 * <code>FileManagerTransferHelpers.progressDisplay = new SwingProgressDisplay(application.getJFrame());</code>
+	 * Otherwise you won't see anything. You can implement your own progress viewer with implementing
+	 * {@link ProgressDisplay
+	 * 
+	 * @param serviceInterface the serviceInterface
+	 * @param sourceFiles an array of source files
+	 * @param targetDirectory the target directory
+	 * @param displayProgress whether to display a jdialog that shows the progress or not.
+	 * @throws InformationError if the filesystem of one of the files can't be looked up
+	 * @throws FileSystemException
+	 */
+	public void transferFiles() throws FileSystemException, InformationError {
+
+		// progressDisplay.start(sourceFiles.length + 1, "Transfering "
+		// + sourceFiles.length + " files...");
+
+		Double percentage = 0.0;
+		int progress = 0;
+		// TODO improve that so all files are transfered at once
+		for (GrisuFileObject sourceFile : sources) {
+
+			percentage = (progress / (double) sources.length) * 100;
+			progress = progress + 1;
+			status = percentage.intValue();
+			addStatusMessage("Starting file transfer: " + sourceFile.getName());
+			fireFileTransferEvent(new FileTransferEvent(this,
+					FileTransferEvent.TRANSFER_PROGRESS_CHANGED));
+			myLogger.debug("Copying: " + sourceFile.getURI().toString()
+					+ " to: " + targetDirectory.getURI().toString());
+
+			if (FileConstants.LOCAL_NAME.equals(sourceFile
+					.getFileSystemBackend().getSite())
+					&& FileConstants.LOCAL_NAME.equals(targetDirectory
+							.getFileSystemBackend().getSite())) {
+				transferFileFromLocalToLocal(sourceFile, targetDirectory);
+			} else if (FileConstants.LOCAL_NAME.equals(sourceFile
+					.getFileSystemBackend().getSite())
+					&& !FileConstants.LOCAL_NAME.equals(targetDirectory
+							.getFileSystemBackend().getSite())) {
+				transferFileFromLocalToRemote(sourceFile, targetDirectory);
+			} else if (!FileConstants.LOCAL_NAME.equals(sourceFile
+					.getFileSystemBackend().getSite())
+					&& !FileConstants.LOCAL_NAME.equals(targetDirectory
+							.getFileSystemBackend().getSite())) {
+				transferFileFromRemoteToRemote(sourceFile, targetDirectory);
+			} else if (!FileConstants.LOCAL_NAME.equals(sourceFile
+					.getFileSystemBackend().getSite())
+					&& FileConstants.LOCAL_NAME.equals(targetDirectory
+							.getFileSystemBackend().getSite())) {
+				transferFileFromRemoteToLocal(sourceFile, targetDirectory);
 			}
-	
-			targetDirectory.refresh();
-	
 		}
+
+		targetDirectory.refresh();
+
+	}
 
 	private String translateStatus(int status) {
 
-		if (status < UNINITIALIZED_STATUS || status > CANCELLED_STATUS) {
+		if ((status < UNINITIALIZED_STATUS) || (status > CANCELLED_STATUS)) {
 			return UNIDENTIEFIED_STATUS_STRING;
 		}
 
