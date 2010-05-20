@@ -1,5 +1,7 @@
 package org.vpac.grisu.client.control.template;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,6 +37,8 @@ import au.org.arcs.jcommons.utils.JsdlHelpers;
  */
 public class TemplateManager {
 
+	protected final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
 	static final Logger myLogger = Logger.getLogger(TemplateManager.class
 			.getName());
 
@@ -51,7 +55,7 @@ public class TemplateManager {
 				new Integer(MyProxyServerParams.getMyProxyPort()).toString());
 
 		ServiceInterface serviceInterface = ServiceInterfaceFactoryOld
-		.createInterface(params);
+				.createInterface(params);
 
 		EnvironmentManager em = new EnvironmentManager(serviceInterface);
 		// EnvironmentManager.setDefaultServiceInterface(serviceInterface);
@@ -90,7 +94,7 @@ public class TemplateManager {
 		this.em = em;
 
 		String[] serverTemplateNames = ClientPropertiesManager
-		.getServerTemplates();
+				.getServerTemplates();
 		ArrayList<String> failedTemplates = new ArrayList<String>();
 
 		for (String serverTemplateName : serverTemplateNames) {
@@ -104,8 +108,9 @@ public class TemplateManager {
 		}
 
 		// check whether to autoload a template based on environment variable
-		String defaultApplication = System.getProperty("grisu.defaultApplication");
-		if ( StringUtils.isNotBlank(defaultApplication) ) {
+		String defaultApplication = System
+				.getProperty("grisu.defaultApplication");
+		if (StringUtils.isNotBlank(defaultApplication)) {
 			addServerTemplate(defaultApplication);
 		}
 
@@ -124,13 +129,13 @@ public class TemplateManager {
 	 *             if the file can't be copied for some reason
 	 */
 	public String addLocalTemplate(File templateFile, boolean overwrite)
-	throws IOException {
+			throws IOException {
 		File newFile = new File(LocalTemplateManagement.TEMPLATE_DIRECTORY,
 				templateFile.getName());
 
 		if (!newFile.toString().endsWith(".xml")) {
 			throw new IOException(
-			"File doesn't end with \".xml\". Won't copy it into local template store...");
+					"File doesn't end with \".xml\". Won't copy it into local template store...");
 		}
 
 		if (newFile.exists() && !overwrite) {
@@ -182,10 +187,14 @@ public class TemplateManager {
 				putIntoServerTemplatesMap(templateName);
 			} catch (NoSuchTemplateException e) {
 				myLogger
-				.error("Could not add server template: " + templateName);
+						.error("Could not add server template: " + templateName);
 			}
 		}
 
+	}
+
+	public void addTemplateManagerListener(PropertyChangeListener l) {
+		pcs.addPropertyChangeListener(l);
 	}
 
 	public EnvironmentManager getEnvironmentManager() {
@@ -195,7 +204,7 @@ public class TemplateManager {
 	public Map<String, JsdlTemplate> getLocalTemplates() {
 		if (localTemplates == null) {
 			localTemplates = LocalTemplateManagement
-			.getAllTemplatesWithFilenames(em);
+					.getAllTemplatesWithFilenames(em);
 		}
 		return localTemplates;
 	}
@@ -226,7 +235,7 @@ public class TemplateManager {
 	}
 
 	private void putIntoServerTemplatesMap(String templateName)
-	throws NoSuchTemplateException {
+			throws NoSuchTemplateException {
 		Document jsdlDoc = SeveralXMLHelpers.fromString(em
 				.getServiceInterface().getTemplate(templateName));
 		serverTemplates.put(templateName, new JsdlTemplate(em, jsdlDoc));
@@ -238,7 +247,7 @@ public class TemplateManager {
 	}
 
 	public void refreshServerTemplate(String templateName)
-	throws NoSuchTemplateException {
+			throws NoSuchTemplateException {
 		Document jsdlDoc = SeveralXMLHelpers.fromString(em
 				.getServiceInterface().getTemplate(templateName));
 		serverTemplates.put(templateName, new JsdlTemplate(em, jsdlDoc));
@@ -248,7 +257,7 @@ public class TemplateManager {
 
 		File tempToRemove = new File(
 				LocalTemplateManagement.TEMPLATE_DIRECTORY, templateName
-				+ ".xml");
+						+ ".xml");
 
 		tempToRemove.delete();
 
@@ -258,6 +267,10 @@ public class TemplateManager {
 
 		ClientPropertiesManager.removeServerTemplate(templateName);
 
+	}
+
+	public void removeTemplateManagerListener(PropertyChangeListener l) {
+		pcs.removePropertyChangeListener(l);
 	}
 
 }

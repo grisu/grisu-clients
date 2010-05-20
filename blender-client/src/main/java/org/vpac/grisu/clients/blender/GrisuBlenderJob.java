@@ -29,6 +29,8 @@ import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.model.status.ActionStatusEvent;
 import org.vpac.grisu.settings.Environment;
 
+import au.org.arcs.jcommons.constants.Constants;
+
 public class GrisuBlenderJob implements EventTopicSubscriber {
 
 	public enum RenderFormat {
@@ -82,7 +84,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 		}
 
 		InputStream in = GrisuBlenderJob.class
-		.getResourceAsStream("/ListResources.py");
+				.getResourceAsStream("/ListResources.py");
 
 		try {
 			IOUtils.copy(in, new FileOutputStream(
@@ -120,19 +122,21 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 		EventBus.subscribe(this.multiJobName, this);
 	}
 
-	public GrisuBlenderJob(ServiceInterface si,
-			String jobname, String fqan) throws BatchJobException {
+	public GrisuBlenderJob(ServiceInterface si, String jobname, String fqan)
+			throws BatchJobException {
 		this(si, jobname, fqan, false);
 	}
 
 	public GrisuBlenderJob(ServiceInterface serviceInterface,
-			String multiPartJobId, String fqan, boolean useRunningJobManager) throws BatchJobException {
+			String multiPartJobId, String fqan, boolean useRunningJobManager)
+			throws BatchJobException {
 		this.serviceInterface = serviceInterface;
 		this.registry = GrisuRegistryManager.getDefault(serviceInterface);
 		this.multiJobName = multiPartJobId;
-		if ( useRunningJobManager ) {
-			this.multiPartJob = RunningJobManager.getDefault(serviceInterface).createBatchJob(this.multiJobName,
-					fqan, BLENDER_APP_NAME, BLENDER_DEFAULT_VERSION);
+		if (useRunningJobManager) {
+			this.multiPartJob = RunningJobManager.getDefault(serviceInterface)
+					.createBatchJob(this.multiJobName, fqan, BLENDER_APP_NAME,
+							BLENDER_DEFAULT_VERSION);
 		} else {
 			this.multiPartJob = new BatchJobObject(serviceInterface,
 					this.multiJobName, fqan, BLENDER_APP_NAME,
@@ -191,7 +195,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 	}
 
 	private void createAndSubmitBlenderJob(boolean waitToFinish)
-	throws JobSubmissionException, InterruptedException {
+			throws JobSubmissionException, InterruptedException {
 
 		multiPartJob.addInputFile(blendFile.getFile().toString(), blendFile
 				.getRelativeBlendFilePath());
@@ -224,7 +228,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 			e.printStackTrace();
 			throw new JobSubmissionException(
 					"Couldn't preapare or create job(s): "
-					+ e.getLocalizedMessage());
+							+ e.getLocalizedMessage());
 		}
 
 		try {
@@ -236,11 +240,14 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 					+ e.getLocalizedMessage());
 		}
 
+		multiPartJob.addJobProperty(Constants.JOB_RESULT_FILENAME_PATTERNS,
+				outputFileName);
+
 	}
 
 	public void createAndSubmitJobs(boolean waitToFinish)
-	throws JobCreationException, JobSubmissionException,
-	InterruptedException {
+			throws JobCreationException, JobSubmissionException,
+			InterruptedException {
 
 		if (lastFrame < firstFrame) {
 			throw new JobCreationException("Last frame before first frame.");
@@ -267,12 +274,12 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 			framesToCalculatePart = " -f " + startFrame;
 		} else {
 			framesToCalculatePart = " -s " + startFrame + " -e " + endFrame
-			+ " -a";
+					+ " -a";
 		}
 		String result = "blender " + "-b " + multiPartJob.pathToInputFiles()
-		+ blendFile.getRelativeBlendFilePath() + " -F "
-		+ format.toString() + " -o " + outputFileName
-		+ framesToCalculatePart;
+				+ blendFile.getRelativeBlendFilePath() + " -F "
+				+ format.toString() + " -o " + outputFileName
+				+ framesToCalculatePart;
 
 		myLogger.debug("Created commandline: " + result);
 
@@ -392,7 +399,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 	}
 
 	public void setBlenderFile(String blenderFile, String fluidFolder)
-	throws FileNotFoundException {
+			throws FileNotFoundException {
 
 		if (StringUtils.isBlank(blenderFile)) {
 			throw new IllegalArgumentException("No blender file specified.");
@@ -405,7 +412,7 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 			} catch (RemoteFileSystemException e) {
 				throw new IllegalArgumentException(
 						"Could not check whether blender input file: "
-						+ blenderFile + " exists.", e);
+								+ blenderFile + " exists.", e);
 			}
 		}
 
@@ -422,7 +429,8 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 			setBlenderFile(file);
 		} catch (Exception e) {
 
-			throw new RuntimeException("Could not parse blend file: "+e.getLocalizedMessage());
+			throw new RuntimeException("Could not parse blend file: "
+					+ e.getLocalizedMessage());
 
 		}
 

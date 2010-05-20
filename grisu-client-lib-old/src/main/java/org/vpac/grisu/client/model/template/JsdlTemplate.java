@@ -70,7 +70,7 @@ public class JsdlTemplate implements TemplateNodeListener {
 				"xxx".toCharArray(), "myproxy.arcs.org.au", "443");
 
 		ServiceInterface serviceInterface = ServiceInterfaceFactoryOld
-				.createInterface(params);
+		.createInterface(params);
 
 		EnvironmentManager em = new EnvironmentManager(serviceInterface);
 
@@ -81,9 +81,9 @@ public class JsdlTemplate implements TemplateNodeListener {
 		Map<String, TemplateModule> modules = template.getModules();
 
 		System.out
-				.println("---------------------------------------------------");
+		.println("---------------------------------------------------");
 		System.out
-				.println("---------------------------------------------------");
+		.println("---------------------------------------------------");
 
 		for (String moduleName : modules.keySet()) {
 			System.out.println("Module: " + moduleName);
@@ -105,9 +105,9 @@ public class JsdlTemplate implements TemplateNodeListener {
 				}
 			}
 			System.out
-					.println("---------------------------------------------------");
+			.println("---------------------------------------------------");
 			System.out
-					.println("---------------------------------------------------");
+			.println("---------------------------------------------------");
 
 		}
 		// for ( TemplateNode node : template.getTemplateNodes().values() ) {
@@ -218,8 +218,9 @@ public class JsdlTemplate implements TemplateNodeListener {
 
 	// register a listener
 	synchronized public void addJsdlTemplateListener(JsdlTemplateListener l) {
-		if (templateEventListeners == null)
+		if (templateEventListeners == null) {
 			templateEventListeners = new Vector<JsdlTemplateListener>();
+		}
 		templateEventListeners.addElement(l);
 	}
 
@@ -232,7 +233,7 @@ public class JsdlTemplate implements TemplateNodeListener {
 			return;
 		}
 
-		if (submissionThread != null && submissionThread.isAlive()) {
+		if ((submissionThread != null) && submissionThread.isAlive()) {
 			submissionThread.interrupt();
 
 		}
@@ -265,7 +266,7 @@ public class JsdlTemplate implements TemplateNodeListener {
 	 */
 	public void fireJsdlEvent(String message, JobSubmissionException exception) {
 		// if we have no templateEventListeners, do nothing...
-		if (templateEventListeners != null && !templateEventListeners.isEmpty()) {
+		if ((templateEventListeners != null) && !templateEventListeners.isEmpty()) {
 			// create the event object to send
 			JsdlTemplateEvent event = new JsdlTemplateEvent(this, message);
 
@@ -274,19 +275,20 @@ public class JsdlTemplate implements TemplateNodeListener {
 			Vector<JsdlTemplateListener> targets;
 			synchronized (this) {
 				targets = (Vector<JsdlTemplateListener>) templateEventListeners
-						.clone();
+				.clone();
 			}
 
 			// walk through the listener list and
 			// call the gridproxychanged method in each
 			Enumeration<JsdlTemplateListener> e = targets.elements();
 			while (e.hasMoreElements()) {
-				JsdlTemplateListener l = (JsdlTemplateListener) e.nextElement();
+				JsdlTemplateListener l = e.nextElement();
 				try {
-					if (exception == null)
+					if (exception == null) {
 						l.templateStatusChanged(event);
-					else
+					} else {
 						l.submissionExceptionOccured(event, exception);
+					}
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -354,7 +356,7 @@ public class JsdlTemplate implements TemplateNodeListener {
 	// public void preprocess(String fqan) {
 	// NodeList elements_to_preprocess =
 	// Preprocessor.getPreprocessorElements(template);
-	//		
+	//
 	// for ( int i=0; i<elements_to_preprocess.getLength(); i++ ) {
 	// try {
 	// Preprocessor.preprocessElement(elements_to_preprocess.item(i), fqan,
@@ -363,7 +365,7 @@ public class JsdlTemplate implements TemplateNodeListener {
 	// // TODO Auto-generated catch block
 	// e.printStackTrace();
 	// }
-	//			
+	//
 	// }
 	// }
 
@@ -435,7 +437,7 @@ public class JsdlTemplate implements TemplateNodeListener {
 	 * @throws JobSubmissionException
 	 */
 	private List<ElementPostprocessor> getPostprocessors()
-			throws JobSubmissionException {
+	throws JobSubmissionException {
 
 		// we only allow postprocessors to be created when they are needed
 		// if (status < STATUS_JOB_CREATED ) {
@@ -465,9 +467,10 @@ public class JsdlTemplate implements TemplateNodeListener {
 
 				Element element = node.getOwnerElement();
 				ArrayList<ElementPostprocessor> tempPostprocessors = PostprocessorFactory
-						.createPostprocessors(this, element);
-				if (tempPostprocessors != null)
+				.createPostprocessors(this, element);
+				if (tempPostprocessors != null) {
 					elementPostprocessors.addAll(tempPostprocessors);
+				}
 			}
 		}
 
@@ -486,9 +489,9 @@ public class JsdlTemplate implements TemplateNodeListener {
 	}
 
 	// public Options getOptions() {
-	//		
+	//
 	// Options options = new Options();
-	//		
+	//
 	// for ( TemplateNode node : getTemplateNodes().values() ) {
 	// myLogger.debug("Adding option: "+node.getName());
 	// Option option =
@@ -500,9 +503,9 @@ public class JsdlTemplate implements TemplateNodeListener {
 
 	// public void setOption(String keyPart, String valuePart) throws
 	// TemplateValidateException {
-	//		
+	//
 	// getTemplateNodes().get(keyPart).setValue(valuePart);
-	//		
+	//
 	// }
 
 	public Document getTemplateDocument() {
@@ -535,9 +538,9 @@ public class JsdlTemplate implements TemplateNodeListener {
 				}
 			}
 			info
-					.append("---------------------------------------------------\n");
+			.append("---------------------------------------------------\n");
 			info
-					.append("---------------------------------------------------\n");
+			.append("---------------------------------------------------\n");
 
 		}
 		return info.toString();
@@ -611,11 +614,11 @@ public class JsdlTemplate implements TemplateNodeListener {
 	 *             if the templatePreprocessor couldn't clean up
 	 */
 	public void reset(boolean deletePossiblyCreatedJob)
-			throws TemplatePreProcessorException {
+	throws TemplatePreProcessorException {
 
 		if (deletePossiblyCreatedJob) {
-			if (this.status >= STATUS_JOB_CREATED
-					|| this.status == STATUS_SUBMISSION_FAILED) {
+			if ((this.status >= STATUS_JOB_CREATED)
+					|| (this.status == STATUS_SUBMISSION_FAILED)) {
 
 				try {
 					myLogger.debug("Deleting directory: "
@@ -625,8 +628,8 @@ public class JsdlTemplate implements TemplateNodeListener {
 								currentRemoteJobDirectory);
 					} catch (Exception e) {
 						myLogger
-								.warn("Couldn't delete jobdirectory of half-submitted job: "
-										+ this.currentJobname);
+						.warn("Couldn't delete jobdirectory of half-submitted job: "
+								+ this.currentJobname);
 					}
 					myLogger.debug("Clearing newly created job: "
 							+ this.currentJobname);
@@ -699,7 +702,7 @@ public class JsdlTemplate implements TemplateNodeListener {
 	public void setDefaultTemplateNodeValueSetters() {
 		for (TemplateNode node : getTemplateNodes().values()) {
 			node
-					.setTemplateNodeValueSetter(new DefaultTemplateNodeValueSetter());
+			.setTemplateNodeValueSetter(new DefaultTemplateNodeValueSetter());
 		}
 	}
 
@@ -719,9 +722,10 @@ public class JsdlTemplate implements TemplateNodeListener {
 	 * @param jobCreationMethod
 	 */
 	public void setJobCreationMethod(int jobCreationMethod) {
-		if (jobCreationMethod >= JobConstants.DONT_ACCEPT_NEW_JOB_WITH_EXISTING_JOBNAME
-				&& jobCreationMethod <= JobConstants.OVERWRITE_EXISTING_JOB)
+		if ((jobCreationMethod >= JobConstants.DONT_ACCEPT_NEW_JOB_WITH_EXISTING_JOBNAME)
+				&& (jobCreationMethod <= JobConstants.OVERWRITE_EXISTING_JOB)) {
 			this.jobCreationMethod = jobCreationMethod;
+		}
 	}
 
 	private void setStatus(int status) {
@@ -753,9 +757,9 @@ public class JsdlTemplate implements TemplateNodeListener {
 		case STATUS_MODULES_PROCESSED:
 			statusMessage = "Modules processed.";
 			break;
-		// from now on changes to the xml docment don't affect any template
-		// nodes or
-		// template modules anymore, only the raw xml document is changed
+			// from now on changes to the xml docment don't affect any template
+			// nodes or
+			// template modules anymore, only the raw xml document is changed
 		case STATUS_POSTPROCESSORS_EXECUTED:
 			statusMessage = "PostProcessors executed successfully.";
 			break;
@@ -798,19 +802,19 @@ public class JsdlTemplate implements TemplateNodeListener {
 	 * @throws JobSubmissionException
 	 */
 	private void setSubmissionLocation(String fqan)
-			throws JobSubmissionException {
+	throws JobSubmissionException {
 
 		if (this.status < STATUS_JOB_CREATED) {
 			myLogger
-					.error("SetSubmissionLocation called when job is not yet created on the server. Resetting everything.");
+			.error("SetSubmissionLocation called when job is not yet created on the server. Resetting everything.");
 			throw new JobSubmissionException(
 					"SetSubmissionLocation called when job is not yet created on the server. Resetting everything.",
 					null);
 		}
 
 		myLogger
-				.debug("Setting submissionsite, submissionfqan and jobdirectory for template "
-						+ getApplicationName() + "...");
+		.debug("Setting submissionsite, submissionfqan and jobdirectory for template "
+				+ getApplicationName() + "...");
 
 		// currentExecutionHostFileSystem = JsdlHelpers
 		// .getUserExecutionHostFs(getTemplateDocument());
@@ -819,14 +823,15 @@ public class JsdlTemplate implements TemplateNodeListener {
 		// currentExecutionHostFileSystem);
 
 		currentSubmissionLocation = JsdlHelpers
-				.getCandidateHosts(getTemplateDocument())[0];
+		.getCandidateHosts(getTemplateDocument())[0];
 		// because the backend doesn't know about NON_VO_FQAN, it uses null for
 		// non-vo
 		String tempFqan = null;
-		if (Constants.NON_VO_FQAN.equals(fqan))
+		if (Constants.NON_VO_FQAN.equals(fqan)) {
 			tempFqan = null;
-		else
+		} else {
 			tempFqan = fqan;
+		}
 
 		// currentRemoteJobDirectory = em.getServiceInterface()
 		// .calculateAbsoluteJobDirectory(
@@ -835,9 +840,9 @@ public class JsdlTemplate implements TemplateNodeListener {
 
 		try {
 			currentRemoteJobDirectory = em.getServiceInterface()
-					.getJobProperty(
-							JsdlHelpers.getJobname(getTemplateDocument()),
-							Constants.JOBDIRECTORY_KEY);
+			.getJobProperty(
+					JsdlHelpers.getJobname(getTemplateDocument()),
+					Constants.JOBDIRECTORY_KEY);
 		} catch (NoSuchJobException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -845,10 +850,11 @@ public class JsdlTemplate implements TemplateNodeListener {
 					"Could not get jobdirectory for job.", e);
 		}
 
-		if (currentRemoteJobDirectory == null)
+		if (currentRemoteJobDirectory == null) {
 			throw new JobSubmissionException(
 					"Could not calculate remote job directory. Cancelling Job submission.",
 					null);
+		}
 
 		// int i = 1;
 		// if (currentExecutionHostFileSystem.endsWith("/"))
@@ -885,21 +891,24 @@ public class JsdlTemplate implements TemplateNodeListener {
 	 */
 	public void startSubmission(String fqan) throws JobSubmissionException {
 
-		if (this.status >= STATUS_SUBMISSION_STARTED)
+		if (this.status >= STATUS_SUBMISSION_STARTED) {
 			throw new JobSubmissionException("Submission already in progress.",
 					null);
+		}
 
 		setStatus(STATUS_SUBMISSION_STARTED);
 
-		if (NO_VALID_FQAN.equals(fqan))
+		if (NO_VALID_FQAN.equals(fqan)) {
 			throw new JobSubmissionException(
 					"Could not set a valid submission fqan.", null);
+		}
 
 		this.currentFqan = fqan;
 
 		// if ( newThread ) {
 		if (submissionThread == null) {
 			submissionThread = new Thread() {
+				@Override
 				public void run() {
 					try {
 
@@ -942,9 +951,10 @@ public class JsdlTemplate implements TemplateNodeListener {
 
 		try {
 
-			if (NO_VALID_FQAN.equals(this.currentFqan))
+			if (NO_VALID_FQAN.equals(this.currentFqan)) {
 				throw new JobSubmissionException(
 						"Could not find a valid submission fqan.", null);
+			}
 
 			ArrayList<TemplateNode> notReadyNodes = new ArrayList<TemplateNode>();
 
@@ -966,7 +976,7 @@ public class JsdlTemplate implements TemplateNodeListener {
 
 			setStatus(STATUS_TEMPLATE_NODES_FILLED);
 			myLogger
-					.info("All template nodes filled. preprocessing them now...");
+			.info("All template nodes filled. preprocessing them now...");
 			// preprocess all nodes
 
 			ArrayList<TemplateNode> failedNodes = new ArrayList<TemplateNode>();
@@ -993,7 +1003,7 @@ public class JsdlTemplate implements TemplateNodeListener {
 			setStatus(STATUS_TEMPLATENODES_PROCESSED);
 
 			myLogger
-					.info("Preprocessing successfully finished. Substituting variables now...");
+			.info("Preprocessing successfully finished. Substituting variables now...");
 
 			if (Thread.interrupted()) {
 				throw new JobSubmissionException("Job cancelled.", null);
@@ -1031,7 +1041,7 @@ public class JsdlTemplate implements TemplateNodeListener {
 			} catch (JobPropertiesException e) {
 				throw new JobSubmissionException(
 						"Could not create job on backend: "
-								+ e.getLocalizedMessage(), e);
+						+ e.getLocalizedMessage(), e);
 			}
 
 			try {
@@ -1040,7 +1050,7 @@ public class JsdlTemplate implements TemplateNodeListener {
 				try {
 
 					myLogger
-							.error("Could not set new Jobname which is odd. Clearing newly created job from remote service.");
+					.error("Could not set new Jobname which is odd. Clearing newly created job from remote service.");
 					em.getServiceInterface().kill(currentJobname, true);
 				} catch (Exception e) {
 					// not that important
@@ -1055,7 +1065,7 @@ public class JsdlTemplate implements TemplateNodeListener {
 				} catch (TemplateModuleProcessingException e) {
 					throw new JobSubmissionException(
 							"Could not process module " + mod.getModuleName()
-									+ ".", e);
+							+ ".", e);
 				}
 			}
 			setStatus(STATUS_MODULES_PROCESSED);
@@ -1100,8 +1110,9 @@ public class JsdlTemplate implements TemplateNodeListener {
 
 			try {
 				String tempFqan = this.currentFqan;
-				if (Constants.NON_VO_FQAN.equals(tempFqan))
+				if (Constants.NON_VO_FQAN.equals(tempFqan)) {
 					tempFqan = null;
+				}
 
 				em.getServiceInterface().submitJob(currentJobname);
 			} catch (Exception e) {
@@ -1118,10 +1129,10 @@ public class JsdlTemplate implements TemplateNodeListener {
 
 			try {
 				em.getServiceInterface()
-						.addJobProperties(
-								currentJobname,
-								DtoJob.createJob(getStatus(),
-										getJobProperties(), null));
+				.addJobProperties(
+						currentJobname,
+						DtoJob.createJob(getStatus(),
+								getJobProperties(), null, null));
 			} catch (NoSuchJobException e) {
 
 				// throwing an exception. The job will still run.
@@ -1164,7 +1175,7 @@ public class JsdlTemplate implements TemplateNodeListener {
 		// return;
 		// }
 
-		if (submissionThread != null && submissionThread.isAlive()) {
+		if ((submissionThread != null) && submissionThread.isAlive()) {
 			try {
 				submissionThread.join();
 			} catch (InterruptedException e) {
