@@ -1129,10 +1129,12 @@ public class JsdlTemplate implements TemplateNodeListener {
 
 			try {
 				em.getServiceInterface()
-				.addJobProperties(
-						currentJobname,
-						DtoJob.createJob(getStatus(),
-								getJobProperties(), null, null));
+
+						.addJobProperties(
+								currentJobname,
+								DtoJob.createJob(getStatus(),
+										getJobProperties(),null, null));
+
 			} catch (NoSuchJobException e) {
 
 				// throwing an exception. The job will still run.
