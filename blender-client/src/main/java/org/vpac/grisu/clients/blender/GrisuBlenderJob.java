@@ -277,9 +277,9 @@ public class GrisuBlenderJob implements EventTopicSubscriber {
 					+ " -a";
 		}
 		String result = "blender " + "-b " + multiPartJob.pathToInputFiles()
-				+ blendFile.getRelativeBlendFilePath() + " -F "
+				+ blendFile.getRelativeBlendFilePath() + " -t 1" + " -F "
 				+ format.toString() + " -o " + outputFileName
-				+ framesToCalculatePart + " -t 1";
+				+ framesToCalculatePart;
 
 		myLogger.debug("Created commandline: " + result);
 
