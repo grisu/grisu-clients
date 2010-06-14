@@ -112,6 +112,7 @@ public class GrisuBlenderApp implements WindowListener {
 		}
 
 		lp.setServiceInterface(si);
+
 	}
 
 	@Override

@@ -63,6 +63,7 @@
 		<module>blender-client</module>
 		<module>grid-tests</module>
 		<module>gridftp-tests</module>
+		<module>gricli</module>
 	</modules>
 
 	<build>
