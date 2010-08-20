@@ -1,0 +1,102 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<artifactId>grisu-clients</artifactId>
+		<groupId>org.vpac.grisu</groupId>
+		<version>0.3-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>grisu-archetypes</artifactId>
+	<packaging>pom</packaging>
+	<name>grisu-archetypes</name>
+	<url>http://grisu.arcs.org.au</url>
+
+	<repositories>
+		<repository>
+			<id>ARCS</id>
+			<url>http://code.arcs.org.au/nexus/content/groups/public</url>
+		</repository>
+		<repository>
+			<id>ARCS Snapshots</id>
+			<url>http://code.arcs.org.au/nexus/content/groups/public-snapshots
+			</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>ARCS plugin</id>
+			<url>http://code.arcs.org.au/nexus/content/groups/public</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>ARCS plugin Snapshots</id>
+			<url>http://code.arcs.org.au/nexus/content/groups/public-snapshots
+			</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<distributionManagement>
+		<repository>
+			<id>arcs.release</id>
+			<name>ARCS Release Repository</name>
+			<url>http://code.arcs.org.au/nexus/content/repositories/releases
+			</url>
+			<uniqueVersion>false</uniqueVersion>
+		</repository>
+		<snapshotRepository>
+			<id>arcs.snapshot</id>
+			<name>ARCS SNAPSHOT Repository</name>
+			<url>http://code.arcs.org.au/nexus/content/repositories/snapshots
+			</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<issueManagement>
+		<system>Trac</system>
+		<url>http://projects.arcs.org.au/trac/grisu/</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Hudson</system>
+		<url>https://code.arcs.org.au/hudson</url>
+	</ciManagement>
+	<developers>
+		<developer>
+			<id>markus</id>
+			<name>Markus Binsteiner</name>
+			<email>markus.binsteiner@arcs.org.au</email>
+			<organization>ARCS</organization>
+			<organizationUrl>http://www.arcs.org.au</organizationUrl>
+			<timezone>Australia/Melbourne</timezone>
+			<roles>
+			</roles>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:svn:http://projects.arcs.org.au/svn/grisu</connection>
+		<developerConnection>scm:svn:https://projects.arcs.org.au/svn/grisu
+		</developerConnection>
+		<url>http://projects.arcs.org.au/trac/grisu/browser</url>
+	</scm>
+	<organization>
+		<name>ARCS</name>
+		<url>http://www.arcs.org.au</url>
+	</organization>
+	<modules>
+		<module>grisu-simple-client-archetype</module>
+		<module>grisu-swing-client-archetype</module>
+	</modules>
+
+
+</project>

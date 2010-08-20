@@ -57,13 +57,14 @@
 
 
 	<modules>
-		<module>grisu-client-lib-old</module>
-		<module>grisu-swing</module>
-		<module>grisu-swing-plugins</module>
+		<module>grisu-archetypes</module>
+		<module>grisu-template-client</module>
 		<module>blender-client</module>
 		<module>grid-tests</module>
 		<module>gridftp-tests</module>
 		<module>gricli</module>
+		<module>grisu-client-jython</module>
+		<module>client-examples</module>
 	</modules>
 
 	<build>

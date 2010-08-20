@@ -1,0 +1,10 @@
+<archetype>
+  <id>grisu-client-archetype</id>
+  <sources>
+    <source>src/main/java/Client.java</source>
+  </sources>
+  <resources>
+  	<resource>src/main/resources/log4j.properties</resource>
+  	<resource>client.assembly.xml</resource>
+  </resources>
+</archetype>
