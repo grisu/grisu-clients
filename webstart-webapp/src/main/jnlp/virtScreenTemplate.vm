@@ -7,7 +7,7 @@
   href="$$name"
   >
   <information>
-    <title>${informationTitle}</title>
+    <title>Virtual Screening grid client</title>
     <vendor>${informationVendor}</vendor>
     <homepage href="${informationHomepage}"/>
     <description>${informationDescription}</description>

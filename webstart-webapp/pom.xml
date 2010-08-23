@@ -48,7 +48,7 @@
 						<jnlpFile>
 							<templateFilename>grisuTemplateTemplate.vm</templateFilename>
 							<outputFilename>grisu-template-client.jnlp</outputFilename>
-							
+
 							<jarResources>
 								<jarResource>
 									<groupId>org.vpac.grisu</groupId>
@@ -70,6 +70,18 @@
 								</jarResource>
 							</jarResources>
 						</jnlpFile>
+						<jnlpFile>
+							<templateFilename>virtScreenTemplate.vm</templateFilename>
+							<outputFilename>grisu-virtscreen.jnlp</outputFilename>
+							<jarResources>
+								<jarResource>
+									<groupId>org.bestgrid.virtscreen</groupId>
+									<artifactId>grisu-virtscreen</artifactId>
+									<version>1.0-SNAPSHOT</version>
+									<mainClass>org.bestgrid.virtscreen.view.GrisuVirtScreen</mainClass>
+								</jarResource>
+							</jarResources>
+						</jnlpFile>					
 					</jnlpFiles>
 
 					<sign>
@@ -90,8 +102,8 @@
 					<verifyjar>false</verifyjar>
 				</configuration>
 			</plugin>
-			
-						<plugin>
+
+			<plugin>
 				<artifactId>jdeb</artifactId>
 				<groupId>org.vafer</groupId>
 				<version>0.9-SNAPSHOT</version>
@@ -116,7 +128,7 @@
 										<group>tomcat6</group>
 									</mapper>
 								</data>
-								
+
 								<data>
 									<src>${project.basedir}/src/deb/data/grisu-downloads-ajp.conf</src>
 									<type>file</type>
@@ -138,14 +150,14 @@
 										<group>tomcat6</group>
 									</mapper>
 								</data>
-	</dataSet>
+							</dataSet>
 
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-			
-			
+
+
 		</plugins>
 
 
