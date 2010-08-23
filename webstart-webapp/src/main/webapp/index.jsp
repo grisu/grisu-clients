@@ -10,6 +10,10 @@
       <a href="webstart/grisu-template-client.jnlp">here</a>
     </li>
     <li>
+      Download and start Virtual screening client:
+      <a href="webstart/grisu-virtscreen.jnlp">here</a>
+    </li>
+    <li>
       Download and start Blender client:
       <a href="webstart/grid-blender.jnlp">here</a>
     </li>
