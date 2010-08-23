@@ -22,10 +22,10 @@
     <all-permissions/>
   </security>
   <resources>
-    <j2se version="1.6+" /> <!-- define required Java runtime version -->
+    <j2se version="1.6+" initial-heap-size="128m" max-heap-size="512m" /> <!-- define required Java runtime version -->
     $dependencies
-      <extension 
-href="http://code.arcs.org.au/downloads/webstart/bcprov-jdk15.jnlp" />
+      <extension href="http://grisu.ceres.auckland.ac.nz/bcprov-jdk16.jnlp" />
+        	<property name="java.security.policy" value="http://grisu.ceres.auckland.ac.nz/bcprov.policy"/>
     
   </resources>
   <application-desc main-class="$mainClass"/>

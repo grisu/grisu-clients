@@ -46,7 +46,7 @@
 				<configuration>
 					<jnlpFiles>
 						<jnlpFile>
-							<templateFilename>jnlpTemplate.vm</templateFilename>
+							<templateFilename>grisuTemplateTemplate.vm</templateFilename>
 							<outputFilename>grisu-template-client.jnlp</outputFilename>
 							
 							<jarResources>
@@ -59,7 +59,7 @@
 							</jarResources>
 						</jnlpFile>
 						<jnlpFile>
-							<templateFilename>jnlpTemplate.vm</templateFilename>
+							<templateFilename>blenderTemplate.vm</templateFilename>
 							<outputFilename>grid-blender.jnlp</outputFilename>
 							<jarResources>
 								<jarResource>
