@@ -7,7 +7,7 @@
   href="$$name"
   >
   <information>
-    <title>${informationTitle}</title>
+    <title>Grisu template client</title>
     <vendor>${informationVendor}</vendor>
     <homepage href="${informationHomepage}"/>
     <description>Grid template client</description>
