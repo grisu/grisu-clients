@@ -97,6 +97,9 @@
 
 						<verify>false</verify>
 					</sign>
+					<pack200>true</pack200>
+					<gzip>true</gzip>
+					<verbose>true</verbose>
 					<unsign>true</unsign>
 
 					<verifyjar>false</verifyjar>
