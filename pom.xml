@@ -64,7 +64,6 @@
 <!--		<module>client-examples</module>-->
 		<module>grisu-template-client</module>
 		<module>blender-client</module>
-    	<module>webstart-webapp</module>
   </modules>
 
 	<build>
