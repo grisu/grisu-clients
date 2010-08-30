@@ -31,8 +31,8 @@
     
       <extension href="http://grisu.ceres.auckland.ac.nz/bcprov-jdk16.jnlp" />
         	<property name="java.security.policy" value="http://grisu.ceres.auckland.ac.nz/bcprov.policy"/>
-        	<property name=”jnlp.packEnabled” value=”true”/>
-    	<property name=”jnlp.versionEnabled” value=”true”/>
+        	<property name="jnlp.packEnabled" value="true"/>
+    	<property name="jnlp.versionEnabled" value="true"/>
   </resources>
   <application-desc main-class="$mainClass"/>
 </jnlp>
