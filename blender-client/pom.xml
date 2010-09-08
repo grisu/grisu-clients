@@ -67,14 +67,11 @@
 					<artifactId>java-getopt</artifactId>
 					<groupId>urbanophile</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>bcprov-jdk15</artifactId>
+					<groupId>bouncycastle</groupId>
+				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>bouncycastle</groupId>
-			<artifactId>bcprov-jdk15</artifactId>
-			<version>140</version>
-			<type>jar</type>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>au.org.arcs.auth</groupId>
@@ -83,6 +80,13 @@
 			<scope>compile</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15</artifactId>
+			<version>1.45</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<name>Grid blender client</name>
