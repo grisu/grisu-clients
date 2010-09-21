@@ -27,19 +27,19 @@ public class GridExternalTestInfoImpl implements GridTestInfo {
 	public static final List<GridTestInfo> generateGridTestInfos(
 			GridTestController controller, String[] testnames, String[] fqans) {
 
-		List<GridTestInfo> result = new LinkedList<GridTestInfo>();
-		File baseDir = controller.getGridTestDirectory();
+		final List<GridTestInfo> result = new LinkedList<GridTestInfo>();
+		final File baseDir = controller.getGridTestDirectory();
 
-		File[] children = baseDir.listFiles();
+		final File[] children = baseDir.listFiles();
 
 		if (children == null) {
 			return result;
 		}
-		for (File child : children) {
+		for (final File child : children) {
 
 			if (child.exists() && child.isDirectory()
 					&& !child.getName().startsWith(".")) {
-				GridExternalTestInfoImpl info = new GridExternalTestInfoImpl(
+				final GridExternalTestInfoImpl info = new GridExternalTestInfoImpl(
 						child, controller, fqans);
 				if (testnames.length == 0
 						|| Arrays.binarySearch(testnames, info.getTestname()) >= 0) {
@@ -51,6 +51,7 @@ public class GridExternalTestInfoImpl implements GridTestInfo {
 
 		return result;
 	}
+
 	private final String testname;
 	private final String description;
 	private final boolean useMds;
@@ -79,7 +80,7 @@ public class GridExternalTestInfoImpl implements GridTestInfo {
 		this.fqans = fqans;
 
 		this.testDir = rootfolder;
-		File propertiesFile = new File(testDir, TESTPROPERTIES_FILENAME);
+		final File propertiesFile = new File(testDir, TESTPROPERTIES_FILENAME);
 		if (!propertiesFile.exists()) {
 			System.err.println("Can't create test for folder "
 					+ testDir.getPath() + ". No valid "
@@ -87,10 +88,10 @@ public class GridExternalTestInfoImpl implements GridTestInfo {
 			System.err.println("Exiting...");
 			System.exit(1);
 		}
-		Properties testProperties = new Properties();
+		final Properties testProperties = new Properties();
 		try {
 			testProperties.load(new FileInputStream(propertiesFile));
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			System.err.println("Can't create test for folder "
 					+ testDir.getPath() + ". No valid "
 					+ TESTPROPERTIES_FILENAME + " file found.");
@@ -104,14 +105,14 @@ public class GridExternalTestInfoImpl implements GridTestInfo {
 			System.err.println("No jsdl file specified. Exiting...");
 			System.exit(1);
 		} else {
-			String jsdlFilename = testProperties.getProperty("jsdlfile");
+			final String jsdlFilename = testProperties.getProperty("jsdlfile");
 			jsdlFile = new File(testDir, jsdlFilename);
 			if (!jsdlFile.exists()) {
 				System.err.println("Specified jsdl file doesn't exist.");
 			} else {
 				try {
 					SeveralXMLHelpers.loadXMLFile(jsdlFile);
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					System.err.println("Could not parse jsdl file: "
 							+ e.getLocalizedMessage());
 					System.err.println("Exiting...");
@@ -120,7 +121,7 @@ public class GridExternalTestInfoImpl implements GridTestInfo {
 			}
 		}
 
-		String temp = testProperties.getProperty("usemds", "true");
+		final String temp = testProperties.getProperty("usemds", "true");
 		if ("true".equals(temp.toLowerCase())) {
 			useMds = true;
 		} else {
@@ -151,16 +152,18 @@ public class GridExternalTestInfoImpl implements GridTestInfo {
 		}
 
 		inputFiles = new LinkedList<String>();
-		String inputFilesString = testProperties.getProperty("inputfiles");
+		final String inputFilesString = testProperties
+				.getProperty("inputfiles");
 		if (StringUtils.isNotBlank(inputFilesString)) {
-			for (String inputFile : inputFilesString.split(",")) {
+			for (final String inputFile : inputFilesString.split(",")) {
 				inputFiles.add(inputFile);
 			}
 		}
-		String outputFilesString = testProperties.getProperty("outputfiles");
+		final String outputFilesString = testProperties
+				.getProperty("outputfiles");
 		outputFiles = new LinkedList<String>();
 		if (StringUtils.isNotBlank(outputFilesString)) {
-			for (String outputFileName : outputFilesString.split(",")) {
+			for (final String outputFileName : outputFilesString.split(",")) {
 				outputFiles.add(outputFileName);
 			}
 		}
@@ -181,10 +184,11 @@ public class GridExternalTestInfoImpl implements GridTestInfo {
 			String submissionLocation, String fqan)
 			throws MdsInformationException {
 
-		GridTestElement el = new ExternalGridTestElement(this, version,
+		final GridTestElement el = new ExternalGridTestElement(this, version,
 				submissionLocation, fqan);
 		return el;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -195,23 +199,23 @@ public class GridExternalTestInfoImpl implements GridTestInfo {
 	public final List<GridTestElement> generateAllGridTestElements()
 			throws MdsInformationException {
 
-		List<GridTestElement> results = new LinkedList<GridTestElement>();
+		final List<GridTestElement> results = new LinkedList<GridTestElement>();
 
-		ApplicationInformation appInfo = GrisuRegistryManager.getDefault(
+		final ApplicationInformation appInfo = GrisuRegistryManager.getDefault(
 				controller.getServiceInterface()).getApplicationInformation(
 				applicationName);
 
-		for (String fqan : fqans) {
+		for (final String fqan : fqans) {
 
 			if (useMds) {
 				if (StringUtils.isNotBlank(versionName)
 						&& !Constants.NO_VERSION_INDICATOR_STRING
 								.equals(versionName)) {
 					// means only one version
-					Set<String> subLocs = appInfo
+					final Set<String> subLocs = appInfo
 							.getAvailableSubmissionLocationsForVersionAndFqan(
 									versionName, fqan);
-					for (String subLoc : subLocs) {
+					for (final String subLoc : subLocs) {
 						for (int i = 0; i < controller
 								.getSameSubmissionLocation(); i++) {
 							results.add(createGridTestElement(versionName,
@@ -220,13 +224,13 @@ public class GridExternalTestInfoImpl implements GridTestInfo {
 					}
 				} else {
 					// means all versions
-					Set<String> versions = appInfo
+					final Set<String> versions = appInfo
 							.getAllAvailableVersionsForFqan(fqan);
-					for (String version : versions) {
-						Set<String> subLocs = appInfo
+					for (final String version : versions) {
+						final Set<String> subLocs = appInfo
 								.getAvailableSubmissionLocationsForVersionAndFqan(
 										version, fqan);
-						for (String subLoc : subLocs) {
+						for (final String subLoc : subLocs) {
 							for (int i = 0; i < controller
 									.getSameSubmissionLocation(); i++) {
 								results.add(createGridTestElement(version,
@@ -236,11 +240,11 @@ public class GridExternalTestInfoImpl implements GridTestInfo {
 					}
 				}
 			} else {
-				String[] subLocs = GrisuRegistryManager.getDefault(
-						controller.getServiceInterface())
+				final String[] subLocs = GrisuRegistryManager
+						.getDefault(controller.getServiceInterface())
 						.getResourceInformation()
 						.getAllAvailableSubmissionLocations(fqan);
-				for (String subLoc : subLocs) {
+				for (final String subLoc : subLocs) {
 					for (int i = 0; i < controller.getSameSubmissionLocation(); i++) {
 						results.add(createGridTestElement(
 								Constants.NO_VERSION_INDICATOR_STRING, subLoc,
@@ -253,6 +257,7 @@ public class GridExternalTestInfoImpl implements GridTestInfo {
 
 		return results;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

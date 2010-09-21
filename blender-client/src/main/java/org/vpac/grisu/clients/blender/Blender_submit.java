@@ -12,15 +12,15 @@ public class Blender_submit {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		String username = args[0];
-		char[] password = args[1].toCharArray();
+		final String username = args[0];
+		final char[] password = args[1].toCharArray();
 
-		LoginParams loginParams = new LoginParams(
+		final LoginParams loginParams = new LoginParams(
 		// "http://localhost:8080/xfire-backend/services/grisu",
-				// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
-				// "https://ngportal.vpac.org/grisu-ws/services/grisu",
-				// "https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
-				// "http://localhost:8080/enunciate-backend/soap/GrisuService",
+		// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
+		// "https://ngportal.vpac.org/grisu-ws/services/grisu",
+		// "https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
+		// "http://localhost:8080/enunciate-backend/soap/GrisuService",
 				"Local",
 				// "Dummy",
 				username, password);
@@ -28,7 +28,7 @@ public class Blender_submit {
 		ServiceInterface si = null;
 		try {
 			si = ServiceInterfaceFactory.createInterface(loginParams);
-		} catch (ServiceInterfaceException e) {
+		} catch (final ServiceInterfaceException e) {
 			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		}
@@ -39,16 +39,16 @@ public class Blender_submit {
 		GrisuBlenderJob blenderJob;
 		try {
 			blenderJob = new GrisuBlenderJob(si, "blenderJob1", "/ARCS/NGAdmin");
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			si.kill("blenderJob1", true);
 			blenderJob = new GrisuBlenderJob(si, "blenderJob1", "/ARCS/NGAdmin");
 		}
 
 		// int walltime = 3600;
-		//		
+		//
 		// for ( int i=1; i<=10; i++ ) {
 		// int w = walltime;
-		//			
+		//
 		// if ( i > 70 ) {
 		// w = walltime * 2;
 		// }

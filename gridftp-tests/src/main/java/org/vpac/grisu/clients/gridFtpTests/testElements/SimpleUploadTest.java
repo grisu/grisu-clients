@@ -64,16 +64,17 @@ public class SimpleUploadTest extends GridFtpTestElement {
 		return "SimpleUploadTest";
 	}
 
+	@Override
 	protected LinkedList<List<GridFtpActionItem>> setupGridFtpActionItems() {
 
-		LinkedList<List<GridFtpActionItem>> actionItems = new LinkedList<List<GridFtpActionItem>>();
+		final LinkedList<List<GridFtpActionItem>> actionItems = new LinkedList<List<GridFtpActionItem>>();
 
 		GridFtpAction action = new GridFtpAction(GridFtpAction.Action.upload,
 				"uploadStage", controller);
 		List<GridFtpActionItem> list = new LinkedList<GridFtpActionItem>();
 		// upload file
-		for (MountPoint mp : mountpoints) {
-			GridFtpActionItem item = new GridFtpActionItem(mp.getAlias(),
+		for (final MountPoint mp : mountpoints) {
+			final GridFtpActionItem item = new GridFtpActionItem(mp.getAlias(),
 					action, sourceFile, mp.getRootUrl() + "/" + targetFileName);
 			list.add(item);
 		}
@@ -83,8 +84,8 @@ public class SimpleUploadTest extends GridFtpTestElement {
 				"downloadStage", controller);
 		list = new LinkedList<GridFtpActionItem>();
 		// upload file
-		for (MountPoint mp : mountpoints) {
-			GridFtpActionItem item = new GridFtpActionItem(mp.getAlias(),
+		for (final MountPoint mp : mountpoints) {
+			final GridFtpActionItem item = new GridFtpActionItem(mp.getAlias(),
 					action, mp.getRootUrl() + "/" + targetFileName,
 					targetDownloadFolder + File.separator
 							+ UUID.randomUUID().toString());
@@ -96,8 +97,8 @@ public class SimpleUploadTest extends GridFtpTestElement {
 				controller);
 		list = new LinkedList<GridFtpActionItem>();
 		// upload file
-		for (MountPoint mp : mountpoints) {
-			GridFtpActionItem item = new GridFtpActionItem(mp.getAlias(),
+		for (final MountPoint mp : mountpoints) {
+			final GridFtpActionItem item = new GridFtpActionItem(mp.getAlias(),
 					action, mp.getRootUrl() + "/" + targetFileName, null);
 			list.add(item);
 		}

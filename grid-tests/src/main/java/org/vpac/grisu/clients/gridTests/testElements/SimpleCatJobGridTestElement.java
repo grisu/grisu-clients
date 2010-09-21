@@ -43,7 +43,7 @@ public class SimpleCatJobGridTestElement extends GridTestElement {
 		try {
 			jobDir = serviceInterface.getJobProperty(jobObject.getJobname(),
 					Constants.JOBDIRECTORY_KEY);
-		} catch (NoSuchJobException e) {
+		} catch (final NoSuchJobException e) {
 			addMessage("Could not find job. This is most likely a globus/grisu problem...");
 			setPossibleExceptionForCurrentStage(e);
 			return false;
@@ -55,9 +55,10 @@ public class SimpleCatJobGridTestElement extends GridTestElement {
 					JobSubmissionProperty.STDOUT.toString());
 			addMessage("url of stdout is: " + jobDir + "/" + stdout);
 
-			FileManager fileHelper = GrisuRegistryManager.getDefault(
+			final FileManager fileHelper = GrisuRegistryManager.getDefault(
 					serviceInterface).getFileManager();
-			File stdoutFile = fileHelper.downloadFile(jobDir + "/" + stdout);
+			final File stdoutFile = fileHelper.downloadFile(jobDir + "/"
+					+ stdout);
 
 			if (stdoutFile.length() > 0) {
 				addMessage("Downloaded stdout file. Filesize "
@@ -70,7 +71,7 @@ public class SimpleCatJobGridTestElement extends GridTestElement {
 				return false;
 			}
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			addMessage("Could not get children of output directory.");
 			setPossibleExceptionForCurrentStage(e);
 			return false;
@@ -81,7 +82,7 @@ public class SimpleCatJobGridTestElement extends GridTestElement {
 	@Override
 	protected JobObject createJobObject() throws MdsInformationException {
 
-		JobObject jo = new JobObject(serviceInterface);
+		final JobObject jo = new JobObject(serviceInterface);
 
 		jo.setApplication(Constants.GENERIC_APPLICATION_NAME);
 

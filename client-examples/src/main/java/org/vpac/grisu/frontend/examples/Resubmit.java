@@ -14,15 +14,15 @@ public class Resubmit {
 
 	public static void main(final String[] args) throws Exception {
 
-		ExecutorService executor = Executors.newFixedThreadPool(1);
+		final ExecutorService executor = Executors.newFixedThreadPool(1);
 
-		String username = args[0];
-		char[] password = args[1].toCharArray();
+		final String username = args[0];
+		final char[] password = args[1].toCharArray();
 
-		LoginParams loginParams = new LoginParams(
+		final LoginParams loginParams = new LoginParams(
 		// "http://localhost:8080/xfire-backend/services/grisu",
-				// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
-				// "https://ngportaldev.vpac.org/grisu-ws/services/grisu",
+		// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
+		// "https://ngportaldev.vpac.org/grisu-ws/services/grisu",
 				"Local", username, password);
 
 		final ServiceInterface si = ServiceInterfaceFactory
@@ -30,11 +30,12 @@ public class Resubmit {
 
 		final GrisuRegistry registry = GrisuRegistryManager.getDefault(si);
 
-		String[] subLocs = registry.getApplicationInformation("UnixCommands")
+		final String[] subLocs = registry
+				.getApplicationInformation("UnixCommands")
 				.getAvailableSubmissionLocationsForFqan("/ARCS/NGAdmin")
 				.toArray(new String[] {});
 
-		JobObject createJobObject = new JobObject(si);
+		final JobObject createJobObject = new JobObject(si);
 
 		createJobObject.setJobname("Test5");
 

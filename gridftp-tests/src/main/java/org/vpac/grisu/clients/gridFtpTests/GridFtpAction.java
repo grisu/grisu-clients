@@ -58,7 +58,7 @@ public class GridFtpAction {
 	private void copy(GridFtpActionItem actionItem, String source, String target) {
 		try {
 			si.cp(DtoStringList.fromSingleString(source), target, true, false);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			actionItem.setException(e);
 			return;
 		}
@@ -68,7 +68,7 @@ public class GridFtpAction {
 
 		try {
 			si.deleteFile(source);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			actionItem.setException(e);
 			return;
 		}
@@ -77,9 +77,9 @@ public class GridFtpAction {
 	private void download(GridFtpActionItem actionItem, String source,
 			String target) {
 		try {
-			DataHandler dh = si.download(source);
+			final DataHandler dh = si.download(source);
 			FileHelpers.saveToDisk(dh.getDataSource(), new File(target));
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			actionItem.setException(e);
 			return;
 		}
@@ -133,7 +133,7 @@ public class GridFtpAction {
 
 		try {
 			si.fileExists(source);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			actionItem.setException(e);
 			return;
 		}
@@ -147,7 +147,7 @@ public class GridFtpAction {
 
 		try {
 			si.getChildrenFileNames(source, false);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			actionItem.setException(e);
 			return;
 		}
@@ -160,7 +160,7 @@ public class GridFtpAction {
 	private void getFileSize(GridFtpActionItem actionItem, String source) {
 		try {
 			si.getFileSize(source);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			actionItem.setException(e);
 			return;
 		}
@@ -169,7 +169,7 @@ public class GridFtpAction {
 	private void getFileType(GridFtpActionItem actionItem, String source) {
 		try {
 			si.isFolder(source);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			actionItem.setException(e);
 			return;
 		}
@@ -178,7 +178,7 @@ public class GridFtpAction {
 	private void getLastModifiedTime(GridFtpActionItem actionItem, String source) {
 		try {
 			si.lastModified(source);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			actionItem.setException(e);
 			return;
 		}
@@ -191,7 +191,7 @@ public class GridFtpAction {
 	private void ls(GridFtpActionItem actionItem, String source) {
 		try {
 			si.ls(source, 1);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			actionItem.setException(e);
 			return;
 		}
@@ -208,7 +208,7 @@ public class GridFtpAction {
 	private void recursiveLs(GridFtpActionItem actionItem, String source) {
 		try {
 			si.ls(source, 0);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			actionItem.setException(e);
 			return;
 		}
@@ -226,7 +226,7 @@ public class GridFtpAction {
 			// GrisuRegistryManager.getDefault(si).getFileManager().uploadFile(source,
 			// target);
 			si.upload(new DataHandler(new FileDataSource(source)), target);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			actionItem.setException(e);
 			return;
 		}

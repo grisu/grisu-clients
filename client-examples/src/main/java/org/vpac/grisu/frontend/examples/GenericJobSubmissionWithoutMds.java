@@ -16,10 +16,10 @@ public final class GenericJobSubmissionWithoutMds {
 	 */
 	public static void main(final String[] args) throws Exception {
 
-		String username = args[0];
-		char[] password = args[1].toCharArray();
+		final String username = args[0];
+		final char[] password = args[1].toCharArray();
 
-		LoginParams loginParams = new LoginParams(
+		final LoginParams loginParams = new LoginParams(
 		// "http://localhost:8080/grisu-cxf/services/grisu",
 				"http://localhost:8080/grisu-ws/services/grisu",
 				// "https://ngportaldev.vpac.org/grisu-ws/services/grisu",
@@ -31,7 +31,7 @@ public final class GenericJobSubmissionWithoutMds {
 
 		final GrisuRegistry registry = GrisuRegistryManager.getDefault(si);
 
-		JobObject job = new JobObject(si);
+		final JobObject job = new JobObject(si);
 		// job.setApplication(ServiceInterface.GENERIC_APPLICATION_NAME);
 		// job.setApplication("java");
 		job.setJobname("generic" + UUID.randomUUID());

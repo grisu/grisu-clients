@@ -43,8 +43,6 @@ public class BlenderMainPanel extends JPanel implements GrisuSwingClient {
 		return blenderJobCreationPanel;
 	}
 
-
-
 	@Override
 	public JPanel getRootPanel() {
 		return this;
@@ -64,6 +62,7 @@ public class BlenderMainPanel extends JPanel implements GrisuSwingClient {
 	public void setLoginPanel(LoginPanel lp) {
 		this.lp = lp;
 	}
+
 	@Override
 	public void setServiceInterface(ServiceInterface si) {
 

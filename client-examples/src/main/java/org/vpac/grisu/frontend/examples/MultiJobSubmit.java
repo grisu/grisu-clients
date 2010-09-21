@@ -21,7 +21,7 @@ public class MultiJobSubmit {
 
 	public static void main(final String[] args) throws Exception {
 
-		ExecutorService executor = Executors.newFixedThreadPool(10);
+		final ExecutorService executor = Executors.newFixedThreadPool(10);
 
 		final ServiceInterface si = LoginManager.loginCommandline();
 
@@ -31,7 +31,7 @@ public class MultiJobSubmit {
 
 		final int numberOfJobs = 20;
 
-		Date start = new Date();
+		final Date start = new Date();
 		final String multiJobName = "jobTest20_7";
 		try {
 			System.out.println("Killing job: " + multiJobName);
@@ -40,22 +40,23 @@ public class MultiJobSubmit {
 			registry.getUserEnvironmentManager().waitForActionToFinish(
 					multiJobName);
 			System.out.println("Killed job.");
-		} catch (Exception e) {
+		} catch (final Exception e) {
 		}
 
-		BatchJobObject multiPartJob = new BatchJobObject(si, multiJobName,
-				"/ARCS/NGAdmin", "Java", Constants.NO_VERSION_INDICATOR_STRING);
+		final BatchJobObject multiPartJob = new BatchJobObject(si,
+				multiJobName, "/ARCS/NGAdmin", "Java",
+				Constants.NO_VERSION_INDICATOR_STRING);
 
 		// multiPartJob.addJobProperty(Constants.DISTRIBUTION_METHOD,
 		// Constants.DISTRIBUTION_METHOD_EQUAL);
 
-		String pathToInputFiles = multiPartJob.pathToInputFiles();
+		final String pathToInputFiles = multiPartJob.pathToInputFiles();
 
 		for (int i = 0; i < numberOfJobs; i++) {
 
 			final int frameNumber = i;
 
-			JobObject jo = new JobObject(si);
+			final JobObject jo = new JobObject(si);
 			jo.setJobname(multiJobName + "_" + frameNumber);
 			jo.setApplication("java");
 			jo.setCommandline("java -version");
@@ -79,8 +80,8 @@ public class MultiJobSubmit {
 
 		try {
 			multiPartJob.prepareAndCreateJobs(true);
-		} catch (JobsException e) {
-			for (JobObject job : e.getFailures().keySet()) {
+		} catch (final JobsException e) {
+			for (final JobObject job : e.getFailures().keySet()) {
 				System.out.println("Creation " + job.getJobname() + " failed: "
 						+ e.getFailures().get(job).getLocalizedMessage());
 			}
@@ -92,14 +93,14 @@ public class MultiJobSubmit {
 
 		try {
 			multiPartJob.submit();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
 
 		System.out.println("Submission finished: " + new Date());
 		int i = 0;
-		boolean resubmitted = false;
+		final boolean resubmitted = false;
 
 		while (!multiPartJob.isFinished(true)) {
 			i = i + 1;
@@ -115,7 +116,7 @@ public class MultiJobSubmit {
 			System.out.println("Failed jobs.");
 		}
 
-		for (JobObject job : multiPartJob.getJobs()) {
+		for (final JobObject job : multiPartJob.getJobs()) {
 			System.out.println("-------------------------------");
 			System.out.println(job.getJobname() + ": "
 					+ job.getStatusString(false));

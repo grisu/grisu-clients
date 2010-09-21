@@ -39,7 +39,7 @@ import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.layout.Sizes;
 
 public class BlenderJobCreationPanel extends JPanel implements
-EventTopicSubscriber, JobCreationPanel {
+		EventTopicSubscriber, JobCreationPanel {
 
 	public static final String LAST_BLENDER_FILE_DIR = "lastBlenderFileDir";
 
@@ -88,24 +88,25 @@ EventTopicSubscriber, JobCreationPanel {
 				ColumnSpec.decode("max(50dlu;default):grow"),
 				FormFactory.RELATED_GAP_COLSPEC,
 				new ColumnSpec(ColumnSpec.FILL, Sizes.bounded(Sizes.PREFERRED,
-						Sizes.constant("50dlu", true), Sizes.constant("50dlu",
-								true)), 1),
-								FormFactory.RELATED_GAP_COLSPEC,
-								ColumnSpec.decode("max(30dlu;default)"),
-								FormFactory.RELATED_GAP_COLSPEC,
-								ColumnSpec.decode("max(59dlu;default):grow"),
-								FormFactory.RELATED_GAP_COLSPEC,
-								ColumnSpec.decode("max(50dlu;default)"),
-								FormFactory.RELATED_GAP_COLSPEC,
-								new ColumnSpec(ColumnSpec.FILL, Sizes.bounded(Sizes.PREFERRED,
-										Sizes.constant("23dlu", true), Sizes.constant("50dlu",
-												true)), 0),
-												FormFactory.RELATED_GAP_COLSPEC,
-												new ColumnSpec(ColumnSpec.FILL, Sizes.bounded(Sizes.PREFERRED,
-														Sizes.constant("23dlu", true), Sizes.constant("50dlu",
-																true)), 0), FormFactory.RELATED_GAP_COLSPEC,
-																ColumnSpec.decode("max(50dlu;default)"),
-																FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
+						Sizes.constant("50dlu", true),
+						Sizes.constant("50dlu", true)), 1),
+				FormFactory.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(30dlu;default)"),
+				FormFactory.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(59dlu;default):grow"),
+				FormFactory.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(50dlu;default)"),
+				FormFactory.RELATED_GAP_COLSPEC,
+				new ColumnSpec(ColumnSpec.FILL, Sizes.bounded(Sizes.PREFERRED,
+						Sizes.constant("23dlu", true),
+						Sizes.constant("50dlu", true)), 0),
+				FormFactory.RELATED_GAP_COLSPEC,
+				new ColumnSpec(ColumnSpec.FILL, Sizes.bounded(Sizes.PREFERRED,
+						Sizes.constant("23dlu", true),
+						Sizes.constant("50dlu", true)), 0),
+				FormFactory.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(50dlu;default)"),
+				FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("max(173dlu;default)"),
 				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
@@ -157,7 +158,7 @@ EventTopicSubscriber, JobCreationPanel {
 
 	public Set<String> getAllFqans() {
 
-		if ( em != null ) {
+		if (em != null) {
 			return em.getAllAvailableFqansForApplication("blender");
 		} else {
 			return new HashSet<String>();
@@ -167,7 +168,7 @@ EventTopicSubscriber, JobCreationPanel {
 
 	public Set<String> getAllPossibleSubmissionLocations() {
 
-		if ( ai == null ) {
+		if (ai == null) {
 			return new HashSet<String>();
 		}
 
@@ -263,14 +264,14 @@ EventTopicSubscriber, JobCreationPanel {
 			@Override
 			public void run() {
 				if (lock) {
-					Cursor waitCursor = Cursor
-					.getPredefinedCursor(Cursor.WAIT_CURSOR);
+					final Cursor waitCursor = Cursor
+							.getPredefinedCursor(Cursor.WAIT_CURSOR);
 					BlenderJobCreationPanel.this.getTopLevelAncestor()
-					.setCursor(waitCursor);
+							.setCursor(waitCursor);
 				} else {
-					Cursor defaultCursor = Cursor.getDefaultCursor();
+					final Cursor defaultCursor = Cursor.getDefaultCursor();
 					BlenderJobCreationPanel.this.getTopLevelAncestor()
-					.setCursor(defaultCursor);
+							.setCursor(defaultCursor);
 				}
 				getBtnSubmit().setEnabled(!lock);
 				getBlenderBasicJobPropertiesPanel().lockUI(lock);
@@ -286,7 +287,7 @@ EventTopicSubscriber, JobCreationPanel {
 		if (data instanceof BatchJobEvent) {
 			addMessage(((BatchJobEvent) data).getMessage() + "\n");
 		} else if (data instanceof ActionStatusEvent) {
-			ActionStatusEvent d = ((ActionStatusEvent) data);
+			final ActionStatusEvent d = ((ActionStatusEvent) data);
 			addMessage(d.getPrefix() + d.getPercentFinished() + "% finished.\n");
 		}
 
@@ -294,14 +295,14 @@ EventTopicSubscriber, JobCreationPanel {
 
 	public String setBlendFile(BlendFile file) {
 
-		if ( si == null ) {
+		if (si == null) {
 			return null;
 		}
 
 		this.blendFileObject = file;
 
 		String name = file.getFile().getName();
-		int i = name.lastIndexOf(".");
+		final int i = name.lastIndexOf(".");
 		if (i > 0) {
 			name = name.substring(0, i);
 		}
@@ -345,9 +346,9 @@ EventTopicSubscriber, JobCreationPanel {
 
 		this.si = si;
 		this.em = GrisuRegistryManager.getDefault(si)
-		.getUserEnvironmentManager();
+				.getUserEnvironmentManager();
 		this.ai = GrisuRegistryManager.getDefault(si)
-		.getApplicationInformation("blender");
+				.getApplicationInformation("blender");
 
 		getBlenderBasicJobPropertiesPanel().setAvailableVos(getAllFqans());
 
@@ -367,8 +368,8 @@ EventTopicSubscriber, JobCreationPanel {
 					try {
 						job = new GrisuBlenderJob(si, currentJobname,
 								blenderBasicJobPropertiesPanel
-								.getSelectedFqan(), true);
-					} catch (BatchJobException e) {
+										.getSelectedFqan(), true);
+					} catch (final BatchJobException e) {
 						EventBus.unsubscribe(currentJobname, this);
 						addMessage(e.getLocalizedMessage() + "\n");
 						return;
@@ -381,49 +382,45 @@ EventTopicSubscriber, JobCreationPanel {
 					job.setLastFrame(blenderBasicJobPropertiesPanel
 							.getLastFrame());
 
-					job
-					.setDefaultWalltimeInSeconds(blenderBasicJobPropertiesPanel
+					job.setDefaultWalltimeInSeconds(blenderBasicJobPropertiesPanel
 							.getCurrentWalltimeInSeconds());
 					String outfilename = getBlenderAdvancedJobPropertiesPanel()
-					.getOutputFilename();
+							.getOutputFilename();
 					if (StringUtils.isBlank(outfilename)) {
 						outfilename = currentJobname;
 					}
 					job.setOutputFileName(outfilename);
 
-					job.setFormat(getBlenderBasicJobPropertiesPanel().getFormat());
+					job.setFormat(getBlenderBasicJobPropertiesPanel()
+							.getFormat());
 
 					if (getBlenderAdvancedJobPropertiesPanel()
 							.getSubLocsToInclude() != null) {
-						job
-						.setLocationsToInclude(getBlenderAdvancedJobPropertiesPanel()
-								.getSubLocsToInclude().toArray(
-										new String[] {}));
+						job.setLocationsToInclude(getBlenderAdvancedJobPropertiesPanel()
+								.getSubLocsToInclude().toArray(new String[] {}));
 					}
 					if (getBlenderAdvancedJobPropertiesPanel()
 							.getSubLocsToExclude() != null) {
-						job
-						.setLocationsToExclude(getBlenderAdvancedJobPropertiesPanel()
-								.getSubLocsToExclude().toArray(
-										new String[] {}));
+						job.setLocationsToExclude(getBlenderAdvancedJobPropertiesPanel()
+								.getSubLocsToExclude().toArray(new String[] {}));
 					}
 
 					try {
 						job.createAndSubmitJobs(true);
-					} catch (JobCreationException e) {
+					} catch (final JobCreationException e) {
 						EventBus.unsubscribe(currentJobname, this);
 						addMessage(e.getLocalizedMessage() + "\n");
 						return;
-					} catch (JobSubmissionException e) {
+					} catch (final JobSubmissionException e) {
 						EventBus.unsubscribe(currentJobname, this);
 						addMessage(e.getLocalizedMessage() + "\n");
 						return;
-					} catch (InterruptedException e) {
+					} catch (final InterruptedException e) {
 						e.printStackTrace();
 						EventBus.unsubscribe(currentJobname, this);
 						addMessage(e.getLocalizedMessage() + "\n");
 						return;
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						e.printStackTrace();
 						EventBus.unsubscribe(currentJobname, this);
 						addMessage(e.getLocalizedMessage() + "\n");

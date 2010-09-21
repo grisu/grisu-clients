@@ -44,12 +44,13 @@ public class GridTestController {
 	 * @throws MdsInformationException
 	 */
 	public static void main(String[] args) throws ServiceInterfaceException,
-	MdsInformationException {
+			MdsInformationException {
 
 		String name = GridTestController.class.getName();
 		name = name.replace('.', '/') + ".class";
-		URL url = GridTestController.class.getClassLoader().getResource(name);
-		String path = url.getPath();
+		final URL url = GridTestController.class.getClassLoader().getResource(
+				name);
+		final String path = url.getPath();
 		// System.out.println("Executable path: "+path);
 		String baseDir = null;
 		if (url.toString().startsWith("jar:")) {
@@ -62,7 +63,7 @@ public class GridTestController {
 
 		System.out.println("Using directory: " + baseDir);
 
-		GridTestController gtc = new GridTestController(args, baseDir);
+		final GridTestController gtc = new GridTestController(args, baseDir);
 
 		gtc.start();
 
@@ -104,61 +105,60 @@ public class GridTestController {
 
 		if (StringUtils.isBlank(grisu_base_directory_param)) {
 			this.grisu_base_directory = System.getProperty("user.home")
-			+ File.separator + "grisu-grid-tests";
+					+ File.separator + "grisu-grid-tests";
 		} else {
 			this.grisu_base_directory = grisu_base_directory_param;
 		}
 
 		// logging stuff
-		SimpleLayout layout = new SimpleLayout();
+		final SimpleLayout layout = new SimpleLayout();
 		try {
-			FileAppender fa = new FileAppender(layout, this.grisu_base_directory+File.separator+"grisu-tests.debug", false);
-			Logger logger = Logger.getRootLogger();
+			final FileAppender fa = new FileAppender(layout,
+					this.grisu_base_directory + File.separator
+							+ "grisu-tests.debug", false);
+			final Logger logger = Logger.getRootLogger();
 			logger.addAppender(fa);
 			logger.setLevel(Level.INFO);
 
-
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
 
-
-
-
 		Environment.setGrisuDirectory(this.grisu_base_directory);
 
-		Map<Dependency, String> dependencies = new HashMap<Dependency, String>();
+		final Map<Dependency, String> dependencies = new HashMap<Dependency, String>();
 
 		dependencies.put(Dependency.BOUNCYCASTLE, "jdk15-143");
 
-		DependencyManager.addDependencies(dependencies, ArcsEnvironment
-				.getArcsCommonJavaLibDirectory());
+		DependencyManager.addDependencies(dependencies,
+				ArcsEnvironment.getArcsCommonJavaLibDirectory());
 
 		ClasspathHacker.initFolder(Environment.getGrisuPluginDirectory(),
 				new GrisuPluginFilenameFilter());
 
 		grid_tests_directory = new File(this.grisu_base_directory, "tests");
 
-		output = this.grisu_base_directory + File.separator + "results" + File.separator + "testResults_"
-		+ new Date().getTime() + ".log";
+		output = this.grisu_base_directory + File.separator + "results"
+				+ File.separator + "testResults_" + new Date().getTime()
+				+ ".log";
 
-		GridTestCommandlineOptions options = new GridTestCommandlineOptions(
+		final GridTestCommandlineOptions options = new GridTestCommandlineOptions(
 				args);
 
-		int threads = options.getSimultaneousThreads();
+		final int threads = options.getSimultaneousThreads();
 		submitJobExecutor = Executors.newFixedThreadPool(threads);
 		processJobExecutor = Executors.newFixedThreadPool(threads);
 
 		String url = options.getServiceInterfaceUrl();
-		if ( StringUtils.isBlank(url) ) {
+		if (StringUtils.isBlank(url)) {
 			url = "Local";
 		}
 
 		try {
 			serviceInterface = LoginManager.loginCommandline(url);
-		} catch (LoginException e1) {
-			System.out.println("Could not login: "+e1.getLocalizedMessage());
+		} catch (final LoginException e1) {
+			System.out.println("Could not login: " + e1.getLocalizedMessage());
 			System.exit(1);
 		}
 
@@ -180,29 +180,29 @@ public class GridTestController {
 
 		if (options.listTests()) {
 
-			List<GridTestInfo> infos = new LinkedList<GridTestInfo>();
+			final List<GridTestInfo> infos = new LinkedList<GridTestInfo>();
 
-			List<GridTestInfo> externalinfos = GridExternalTestInfoImpl
-			.generateGridTestInfos(this, new String[] {}, fqans);
-			List<GridTestInfo> internalinfos = GridInternalTestInfoImpl
-			.generateGridTestInfos(this, new String[] {}, fqans);
+			final List<GridTestInfo> externalinfos = GridExternalTestInfoImpl
+					.generateGridTestInfos(this, new String[] {}, fqans);
+			final List<GridTestInfo> internalinfos = GridInternalTestInfoImpl
+					.generateGridTestInfos(this, new String[] {}, fqans);
 
 			infos.addAll(externalinfos);
 			infos.addAll(internalinfos);
 
 			System.out.println("Available tests: ");
-			for (GridTestInfo info : infos) {
+			for (final GridTestInfo info : infos) {
 				System.out.println("Testname: " + info.getTestname());
 				System.out.println("\tApplication: "
 						+ info.getApplicationName());
 				System.out.println("\tDescription: " + info.getDescription());
 				System.out.println("\tTest elements:");
 				try {
-					for (GridTestElement el : info
+					for (final GridTestElement el : info
 							.generateAllGridTestElements()) {
 						System.out.println("\t\t" + el.toString());
 					}
-				} catch (MdsInformationException e) {
+				} catch (final MdsInformationException e) {
 					System.err.println("Error while listing test elements: "
 							+ e.getLocalizedMessage());
 					System.err.println("Exiting...");
@@ -222,14 +222,18 @@ public class GridTestController {
 		includes = options.getIncludes();
 
 		outputModules.add(new LogFileOutputModule(output));
-		for ( String module : options.getOutputModules() ) {
-			if ( module.startsWith("rpc") ) {
+		for (final String module : options.getOutputModules()) {
+			if (module.startsWith("rpc")) {
 				try {
-					String username = module.substring(module.indexOf("[")+1, module.indexOf(":"));
-					String password = module.substring(module.indexOf(":")+1, module.indexOf("]"));
-					outputModules.add(new XmlRpcOutputModule(username, password));
-				} catch (Exception e) {
-					System.err.println("Can't parse rpc config option. You need to specify it like: rpc[username:password]");
+					final String username = module.substring(
+							module.indexOf("[") + 1, module.indexOf(":"));
+					final String password = module.substring(
+							module.indexOf(":") + 1, module.indexOf("]"));
+					outputModules
+							.add(new XmlRpcOutputModule(username, password));
+				} catch (final Exception e) {
+					System.err
+							.println("Can't parse rpc config option. You need to specify it like: rpc[username:password]");
 					System.exit(1);
 				}
 			}
@@ -246,7 +250,7 @@ public class GridTestController {
 
 	public void createAndSubmitAllJobs() {
 
-		for (Thread thread : createAndSubmitJobThreads) {
+		for (final Thread thread : createAndSubmitJobThreads) {
 			submitJobExecutor.execute(thread);
 		}
 
@@ -254,7 +258,7 @@ public class GridTestController {
 
 		try {
 			submitJobExecutor.awaitTermination(3600, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -263,12 +267,12 @@ public class GridTestController {
 
 	private Thread createCheckAndKillJobThread(final GridTestElement gte) {
 
-		Thread thread = new Thread() {
+		final Thread thread = new Thread() {
 			@Override
 			public void run() {
 				System.out
-				.println("Checking job success for job submitted to: "
-						+ gte.getSubmissionLocation());
+						.println("Checking job success for job submitted to: "
+								+ gte.getSubmissionLocation());
 				gte.checkWhetherJobDidWhatItWasSupposedToDo();
 				if (!gte.failed()) {
 					System.out.println("Job submitted to "
@@ -280,9 +284,9 @@ public class GridTestController {
 				gte.killAndClean();
 				if (!gte.failed()) {
 					System.out
-					.println("Killing and cleaning of job submitted to "
-							+ gte.getSubmissionLocation()
-							+ " was successful.");
+							.println("Killing and cleaning of job submitted to "
+									+ gte.getSubmissionLocation()
+									+ " was successful.");
 				}
 
 				gte.finishTest();
@@ -301,7 +305,7 @@ public class GridTestController {
 
 	private Thread createCreateAndSubmitJobThread(final GridTestElement gte) {
 
-		Thread thread = new Thread() {
+		final Thread thread = new Thread() {
 			@Override
 			public void run() {
 				System.out.println("Creating job for subLoc: "
@@ -312,9 +316,9 @@ public class GridTestController {
 				gte.submitJob();
 				if (gte.failed()) {
 					System.out
-					.println("Submission to "
-							+ gte.getSubmissionLocation()
-							+ " finished: Failed");
+							.println("Submission to "
+									+ gte.getSubmissionLocation()
+									+ " finished: Failed");
 				} else {
 					System.out.println("Submission to "
 							+ gte.getSubmissionLocation()
@@ -329,28 +333,28 @@ public class GridTestController {
 
 	public void createJobsJobThreads() throws MdsInformationException {
 
-		List<GridTestInfo> externalinfos = GridExternalTestInfoImpl
-		.generateGridTestInfos(this, gridtestNames, fqans);
-		List<GridTestInfo> internalinfos = GridInternalTestInfoImpl
-		.generateGridTestInfos(this, gridtestNames, fqans);
+		final List<GridTestInfo> externalinfos = GridExternalTestInfoImpl
+				.generateGridTestInfos(this, gridtestNames, fqans);
+		final List<GridTestInfo> internalinfos = GridInternalTestInfoImpl
+				.generateGridTestInfos(this, gridtestNames, fqans);
 
-		List<GridTestInfo> infos = new LinkedList<GridTestInfo>();
+		final List<GridTestInfo> infos = new LinkedList<GridTestInfo>();
 		infos.addAll(externalinfos);
 		infos.addAll(internalinfos);
 
-		for (GridTestInfo info : infos) {
+		for (final GridTestInfo info : infos) {
 
-			for (GridTestElement el : info.generateAllGridTestElements()) {
+			for (final GridTestElement el : info.generateAllGridTestElements()) {
 
 				boolean ignoreThisElement = false;
 				if (includes.length == 0) {
-					for (String filter : excludes) {
+					for (final String filter : excludes) {
 						if (el.getSubmissionLocation().indexOf(filter) >= 0) {
 							ignoreThisElement = true;
 						}
 					}
 				} else {
-					for (String filter : includes) {
+					for (final String filter : includes) {
 						if (el.getSubmissionLocation().indexOf(filter) < 0) {
 							ignoreThisElement = true;
 						}
@@ -362,11 +366,11 @@ public class GridTestController {
 				}
 
 				System.out
-				.println("Adding grid test element: " + el.toString());
+						.println("Adding grid test element: " + el.toString());
 
 				gridTestElements.put(el.getTestId(), el);
 
-				Thread createJobThread = createCreateAndSubmitJobThread(el);
+				final Thread createJobThread = createCreateAndSubmitJobThread(el);
 				createAndSubmitJobThreads.add(createJobThread);
 
 			}
@@ -391,7 +395,7 @@ public class GridTestController {
 
 		try {
 			createJobsJobThreads();
-		} catch (MdsInformationException e) {
+		} catch (final MdsInformationException e) {
 
 			System.out.println("Could not create all necessary jobs: "
 					+ e.getLocalizedMessage() + ". Exiting...");
@@ -399,24 +403,24 @@ public class GridTestController {
 
 		}
 
-		StringBuffer setup = OutputModuleHelpers
-		.createTestSetupString(gridTestElements.values());
+		final StringBuffer setup = OutputModuleHelpers
+				.createTestSetupString(gridTestElements.values());
 
-		for (OutputModule module : outputModules) {
+		for (final OutputModule module : outputModules) {
 			module.writeTestsSetup(setup.toString());
 		}
 		System.out.println(setup.toString());
 
 		createAndSubmitAllJobs();
 
-		Calendar cal = Calendar.getInstance();
+		final Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MINUTE, timeout);
 		timeoutDate = cal.getTime();
 
 		System.out.println("All unfinished jobs will be killed: "
 				+ timeoutDate.toString());
 
-		for (GridTestElement gte : gridTestElements.values()) {
+		for (final GridTestElement gte : gridTestElements.values()) {
 			//
 			// if (gte.failed()) {
 			// finishedElements.add(gte);
@@ -443,7 +447,7 @@ public class GridTestController {
 
 			if (new Date().after(timeoutDate)) {
 
-				for (GridTestElement gte : gridTestElements.values()) {
+				for (final GridTestElement gte : gridTestElements.values()) {
 					System.out.println("Interrupting not finished job: "
 							+ gte.toString());
 					if (!gte.failed()
@@ -453,9 +457,9 @@ public class GridTestController {
 				}
 			}
 
-			List<GridTestElement> batchOfRecentlyFinishedJobs = new LinkedList<GridTestElement>();
+			final List<GridTestElement> batchOfRecentlyFinishedJobs = new LinkedList<GridTestElement>();
 
-			for (GridTestElement gte : gridTestElements.values()) {
+			for (final GridTestElement gte : gridTestElements.values()) {
 
 				if ((gte.getJobStatus(true) >= JobConstants.FINISHED_EITHER_WAY)
 						|| (gte.getJobStatus(false) <= JobConstants.READY_TO_SUBMIT)
@@ -464,7 +468,7 @@ public class GridTestController {
 				}
 			}
 
-			for (GridTestElement gte : batchOfRecentlyFinishedJobs) {
+			for (final GridTestElement gte : batchOfRecentlyFinishedJobs) {
 				gridTestElements.remove(gte.getTestId());
 				// gte.finishTest();
 				finishedElements.add(gte);
@@ -476,8 +480,8 @@ public class GridTestController {
 				break;
 			}
 
-			StringBuffer remainingSubLocs = new StringBuffer();
-			for (GridTestElement gte : gridTestElements.values()) {
+			final StringBuffer remainingSubLocs = new StringBuffer();
+			for (final GridTestElement gte : gridTestElements.values()) {
 				remainingSubLocs.append("\t" + gte.toString() + "\n");
 			}
 			System.out.println("\nStill " + gridTestElements.size()
@@ -490,7 +494,7 @@ public class GridTestController {
 
 			try {
 				Thread.sleep(30000);
-			} catch (InterruptedException e) {
+			} catch (final InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -501,7 +505,7 @@ public class GridTestController {
 
 		try {
 			processJobExecutor.awaitTermination(6000, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -510,7 +514,7 @@ public class GridTestController {
 
 	public synchronized void writeGridTestElementLog(GridTestElement gte) {
 
-		for (OutputModule module : outputModules) {
+		for (final OutputModule module : outputModules) {
 			System.out.println("Writing output using: "
 					+ module.getClass().getName());
 			module.writeTestElement(gte);
@@ -520,10 +524,10 @@ public class GridTestController {
 
 	public void writeStatistics() {
 
-		StringBuffer statistics = OutputModuleHelpers
-		.createStatisticsString(finishedElements);
+		final StringBuffer statistics = OutputModuleHelpers
+				.createStatisticsString(finishedElements);
 
-		for (OutputModule module : outputModules) {
+		for (final OutputModule module : outputModules) {
 			module.writeTestsStatistic(statistics.toString());
 		}
 

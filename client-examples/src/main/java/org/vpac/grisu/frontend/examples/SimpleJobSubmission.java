@@ -11,19 +11,19 @@ public class SimpleJobSubmission {
 	public static void main(String[] args) throws Exception {
 
 		// ServiceInterface si = LoginManager.loginCommandline();
-		ServiceInterface si = LoginManager
+		final ServiceInterface si = LoginManager
 				.loginCommandline(LoginManager.SERVICEALIASES.get("LOCAL"));
 
-		GrisuRegistry registry = GrisuRegistryManager.getDefault(si);
+		final GrisuRegistry registry = GrisuRegistryManager.getDefault(si);
 
-		for (String subLoc : registry.getResourceInformation()
+		for (final String subLoc : registry.getResourceInformation()
 				.getAllSubmissionLocations()) {
 			System.out.println(subLoc);
 		}
 
 		// JobListDialog.open(si, null);
 
-		JobObject job = new JobObject(si);
+		final JobObject job = new JobObject(si);
 		job.setApplication("java");
 		job.setApplicationVersion("1.6.0-06");
 		job.setUniqueJobname("java_job2_sfasfsafsadfsadffawefawefwfsdfsdfsdafsdfsdafsdfsd");

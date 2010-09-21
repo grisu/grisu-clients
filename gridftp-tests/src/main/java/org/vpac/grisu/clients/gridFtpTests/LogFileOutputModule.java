@@ -6,7 +6,7 @@ import java.io.FileWriter;
 
 public class LogFileOutputModule implements OutputModule {
 
-	private String output;
+	private final String output;
 
 	public LogFileOutputModule(String output) {
 		this.output = output;
@@ -14,7 +14,7 @@ public class LogFileOutputModule implements OutputModule {
 
 	public void writeTestElement(GridFtpTestElement element) {
 
-		File parent = new File(output);
+		final File parent = new File(output);
 		parent.mkdir();
 
 		StringBuffer outputString = new StringBuffer();
@@ -23,15 +23,15 @@ public class LogFileOutputModule implements OutputModule {
 
 		try {
 
-			String uFileName = output + File.separator + element.getTestName()
-					+ "_allResults.log";
-			FileWriter fileWriter = new FileWriter(uFileName, true);
-			BufferedWriter buffWriter = new BufferedWriter(fileWriter);
+			final String uFileName = output + File.separator
+					+ element.getTestName() + "_allResults.log";
+			final FileWriter fileWriter = new FileWriter(uFileName, true);
+			final BufferedWriter buffWriter = new BufferedWriter(fileWriter);
 			buffWriter.write(outputString.toString());
 
 			buffWriter.close();
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 
@@ -41,15 +41,15 @@ public class LogFileOutputModule implements OutputModule {
 
 		try {
 
-			String uFileName = output + File.separator + element.getTestName()
-					+ "_onlyFailed.log";
-			FileWriter fileWriter = new FileWriter(uFileName, true);
-			BufferedWriter buffWriter = new BufferedWriter(fileWriter);
+			final String uFileName = output + File.separator
+					+ element.getTestName() + "_onlyFailed.log";
+			final FileWriter fileWriter = new FileWriter(uFileName, true);
+			final BufferedWriter buffWriter = new BufferedWriter(fileWriter);
 			buffWriter.write(outputString.toString());
 
 			buffWriter.close();
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 
@@ -58,15 +58,15 @@ public class LogFileOutputModule implements OutputModule {
 
 		try {
 
-			String uFileName = output + File.separator + element.getTestName()
-					+ "_shortFailed.log";
-			FileWriter fileWriter = new FileWriter(uFileName, true);
-			BufferedWriter buffWriter = new BufferedWriter(fileWriter);
+			final String uFileName = output + File.separator
+					+ element.getTestName() + "_shortFailed.log";
+			final FileWriter fileWriter = new FileWriter(uFileName, true);
+			final BufferedWriter buffWriter = new BufferedWriter(fileWriter);
 			buffWriter.write(outputString.toString());
 
 			buffWriter.close();
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -74,32 +74,33 @@ public class LogFileOutputModule implements OutputModule {
 	public void writeTestsSetup(String setup) {
 		try {
 
-			File parent = new File(output);
+			final File parent = new File(output);
 			parent.mkdir();
-			String uFileName = output + File.separator + "testSetup.log";
-			FileWriter fileWriter = new FileWriter(uFileName, true);
-			BufferedWriter buffWriter = new BufferedWriter(fileWriter);
+			final String uFileName = output + File.separator + "testSetup.log";
+			final FileWriter fileWriter = new FileWriter(uFileName, true);
+			final BufferedWriter buffWriter = new BufferedWriter(fileWriter);
 			buffWriter.write(setup);
 
 			buffWriter.close();
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void writeTestsStatistic(String statistic) {
 		try {
-			File parent = new File(output);
+			final File parent = new File(output);
 			parent.mkdir();
-			String uFileName = output + File.separator + "testStatistics.log";
-			FileWriter fileWriter = new FileWriter(uFileName, true);
-			BufferedWriter buffWriter = new BufferedWriter(fileWriter);
+			final String uFileName = output + File.separator
+					+ "testStatistics.log";
+			final FileWriter fileWriter = new FileWriter(uFileName, true);
+			final BufferedWriter buffWriter = new BufferedWriter(fileWriter);
 			buffWriter.write(statistic);
 
 			buffWriter.close();
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}

@@ -14,7 +14,7 @@ import uk.co.flamingpenguin.jewel.cli.Cli;
 import uk.co.flamingpenguin.jewel.cli.CliFactory;
 
 public class GridBlenderCheck implements BlenderMode,
-EventTopicSubscriber<BatchJobEvent> {
+		EventTopicSubscriber<BatchJobEvent> {
 
 	private BlenderCheckCommandLineArgs commandlineArgs = null;
 	private final ServiceInterface si;
@@ -24,7 +24,7 @@ EventTopicSubscriber<BatchJobEvent> {
 	public GridBlenderCheck(String[] args, boolean help) {
 
 		final Cli<BlenderCheckCommandLineArgs> cli = CliFactory
-		.createCli(BlenderCheckCommandLineArgs.class);
+				.createCli(BlenderCheckCommandLineArgs.class);
 
 		if (help) {
 			System.out.println(cli.getHelpMessage());
@@ -37,7 +37,7 @@ EventTopicSubscriber<BatchJobEvent> {
 				System.out.println(cli.getHelpMessage());
 				System.exit(1);
 			}
-		} catch (ArgumentValidationException e) {
+		} catch (final ArgumentValidationException e) {
 			System.err.println("Could not start blender-job-monitor:\n"
 					+ e.getLocalizedMessage() + "\n");
 			System.out.println(cli.getHelpMessage());
@@ -56,18 +56,18 @@ EventTopicSubscriber<BatchJobEvent> {
 
 		if (commandlineArgs.isDownloadResults()) {
 			try {
-				File downloadDir = commandlineArgs.getDownloadResults();
+				final File downloadDir = commandlineArgs.getDownloadResults();
 				if (downloadDir.exists()) {
 					if (!downloadDir.canWrite()) {
 						System.out
-						.println("Can't write to specified output directory "
-								+ downloadDir.toString() + ".");
+								.println("Can't write to specified output directory "
+										+ downloadDir.toString() + ".");
 						System.exit(1);
 					}
 				}
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				System.out
-				.println("Could not access specified download directory.");
+						.println("Could not access specified download directory.");
 			}
 		}
 
@@ -77,29 +77,30 @@ EventTopicSubscriber<BatchJobEvent> {
 
 	private void downloadCurrentlyFinishedFiles(
 			BatchJobObject blenderMultiPartJobObject) {
-		File downloadDirectory = commandlineArgs.getDownloadResults();
+		final File downloadDirectory = commandlineArgs.getDownloadResults();
 
-		String pattern = blenderMultiPartJobObject
-		.getProperty(GrisuBlenderJob.BLENDER_OUTPUTFILENAME_KEY);
+		final String pattern = blenderMultiPartJobObject
+				.getProperty(GrisuBlenderJob.BLENDER_OUTPUTFILENAME_KEY);
 		if (StringUtils.isBlank(pattern)) {
 			System.out
-			.println("Could not determine output filename. Exiting...");
+					.println("Could not determine output filename. Exiting...");
 			System.exit(1);
 		}
-		String[] patterns = new String[] { pattern };
+		final String[] patterns = new String[] { pattern };
 		try {
 			System.out.println("Downloading output files that match \""
 					+ pattern + "\".\n");
 			blenderMultiPartJobObject.downloadResults(true, downloadDirectory,
 					patterns, false, false);
 			System.out.println("Downloads finished.");
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			System.out.println("Could not download results: "
 					+ e.getLocalizedMessage());
 			System.exit(1);
 		}
 	}
 
+	@Override
 	public void execute() {
 
 		System.out.println("Retrieving job " + commandlineArgs.getJobname()
@@ -108,13 +109,13 @@ EventTopicSubscriber<BatchJobEvent> {
 		GrisuBlenderJob blenderJob = null;
 		try {
 			blenderJob = new GrisuBlenderJob(si, commandlineArgs.getJobname());
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		}
 
-		BatchJobObject blenderMultiPartJobObject = blenderJob
-		.getMultiPartJobObject();
+		final BatchJobObject blenderMultiPartJobObject = blenderJob
+				.getMultiPartJobObject();
 
 		boolean firstTime = true;
 
@@ -123,7 +124,7 @@ EventTopicSubscriber<BatchJobEvent> {
 			int sleepTime = 60 * 1000;
 			try {
 				sleepTime = commandlineArgs.getLoopUntilFinished() * 60 * 1000;
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				// e.printStackTrace();
 				// doesn't matter
 			}
@@ -141,7 +142,7 @@ EventTopicSubscriber<BatchJobEvent> {
 
 					try {
 						Thread.sleep(sleepTime);
-					} catch (InterruptedException e) {
+					} catch (final InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
@@ -156,12 +157,12 @@ EventTopicSubscriber<BatchJobEvent> {
 				}
 
 				if (commandlineArgs.isStatus()) {
-					System.out.println(blenderMultiPartJobObject
-							.getProgress());
+					System.out.println(blenderMultiPartJobObject.getProgress());
 				}
 
-				boolean finished = blenderMultiPartJobObject.isFinished(false);
-				boolean cmdln = commandlineArgs.isLoopUntilFinished();
+				final boolean finished = blenderMultiPartJobObject
+						.isFinished(false);
+				final boolean cmdln = commandlineArgs.isLoopUntilFinished();
 
 				if (finished || !cmdln) {
 					break;
@@ -169,9 +170,9 @@ EventTopicSubscriber<BatchJobEvent> {
 
 				if (commandlineArgs.isDownloadResults()) {
 					System.out
-					.println("Downloading already finished frames to: "
-							+ commandlineArgs.getDownloadResults()
-							.toString());
+							.println("Downloading already finished frames to: "
+									+ commandlineArgs.getDownloadResults()
+											.toString());
 					downloadCurrentlyFinishedFiles(blenderMultiPartJobObject);
 				}
 
@@ -190,6 +191,7 @@ EventTopicSubscriber<BatchJobEvent> {
 
 	}
 
+	@Override
 	public void onEvent(String arg0, BatchJobEvent arg1) {
 		System.out.println(arg1.getMessage());
 	}

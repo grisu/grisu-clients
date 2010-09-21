@@ -23,25 +23,25 @@ public abstract class GridFtpTestElement {
 			GridFtpTestController controller, String[] testnames,
 			Set<MountPoint> mps) {
 
-		List<GridFtpTestElement> result = new LinkedList<GridFtpTestElement>();
+		final List<GridFtpTestElement> result = new LinkedList<GridFtpTestElement>();
 		if (testnames == null || testnames.length == 0) {
 			testnames = IMPLEMENTED_TESTS;
 		}
 
-		for (String testname : testnames) {
+		for (final String testname : testnames) {
 
 			try {
-				Class testElementClass = Class
+				final Class testElementClass = Class
 						.forName("org.vpac.grisu.clients.gridFtpTests.testElements."
 								+ testname);
 
-				Constructor testElementConstructor = testElementClass
+				final Constructor testElementConstructor = testElementClass
 						.getConstructor(GridFtpTestController.class, Set.class);
 
-				GridFtpTestElement el = (GridFtpTestElement) testElementConstructor
+				final GridFtpTestElement el = (GridFtpTestElement) testElementConstructor
 						.newInstance(controller, mps);
 				result.add(el);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				if (e instanceof InvocationTargetException) {
 					System.err
 							.println("Couldn't setup test "
@@ -89,7 +89,7 @@ public abstract class GridFtpTestElement {
 	public String getResultsForThisTest(boolean onlyFailed,
 			boolean showStackTrace, boolean shortVersion) {
 
-		StringBuffer result = new StringBuffer();
+		final StringBuffer result = new StringBuffer();
 
 		result.append("Testname:\t" + getTestName() + "\n");
 		result.append("Description:\t" + getDescription() + "\n\n");
@@ -100,8 +100,8 @@ public abstract class GridFtpTestElement {
 		int success = 0;
 		int notExecuted = 0;
 
-		for (List<GridFtpActionItem> list : getActionItems()) {
-			for (GridFtpActionItem item : list) {
+		for (final List<GridFtpActionItem> list : getActionItems()) {
+			for (final GridFtpActionItem item : list) {
 				total = total + 1;
 
 				if (item.isExecuted()) {
@@ -116,13 +116,13 @@ public abstract class GridFtpTestElement {
 			}
 		}
 
-		for (MountPoint mp : mountpoints) {
+		for (final MountPoint mp : mountpoints) {
 
-			StringBuffer sourceResults = new StringBuffer();
-			StringBuffer targetResults = new StringBuffer();
+			final StringBuffer sourceResults = new StringBuffer();
+			final StringBuffer targetResults = new StringBuffer();
 
-			for (List<GridFtpActionItem> list : getActionItems()) {
-				for (GridFtpActionItem item : list) {
+			for (final List<GridFtpActionItem> list : getActionItems()) {
+				for (final GridFtpActionItem item : list) {
 
 					if (onlyFailed && item.isSuccess()) {
 						continue;

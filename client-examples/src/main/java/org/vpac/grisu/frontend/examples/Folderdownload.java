@@ -13,16 +13,16 @@ public class Folderdownload {
 
 	public static void main(String[] args) throws Exception {
 
-		File target = new File("/home/markus/Desktop/temp");
+		final File target = new File("/home/markus/Desktop/temp");
 		FileUtils.deleteDirectory(target);
 
 		// ServiceInterface si = LoginManager.loginCommandline();
-		ServiceInterface si = LoginManager
+		final ServiceInterface si = LoginManager
 				.loginCommandline(LoginManager.SERVICEALIASES.get("LOCAL"));
 
-		GrisuRegistry registry = GrisuRegistryManager.getDefault(si);
+		final GrisuRegistry registry = GrisuRegistryManager.getDefault(si);
 
-		FileManager fm = registry.getFileManager();
+		final FileManager fm = registry.getFileManager();
 
 		fm.downloadUrl("gsiftp://ng2.vpac.org/home/acc004/us", target.toURI()
 				.toString(), true);

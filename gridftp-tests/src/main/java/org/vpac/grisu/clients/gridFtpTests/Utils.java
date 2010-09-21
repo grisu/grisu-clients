@@ -8,14 +8,14 @@ public class Utils {
 
 	public static ArrayList<String> fromException(Throwable e) {
 
-		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw, true);
+		final StringWriter sw = new StringWriter();
+		final PrintWriter pw = new PrintWriter(sw, true);
 		e.printStackTrace(pw);
 		pw.flush();
 		sw.flush();
-		ArrayList<String> result = new ArrayList<String>();
-		String[] stacktrace = sw.toString().split("\n");
-		for (String st : stacktrace) {
+		final ArrayList<String> result = new ArrayList<String>();
+		final String[] stacktrace = sw.toString().split("\n");
+		for (final String st : stacktrace) {
 			result.add(st + "\n");
 		}
 		return result;
@@ -23,14 +23,14 @@ public class Utils {
 
 	public static String stringFromException(Throwable e) {
 
-		StringBuffer result = new StringBuffer();
-		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw, true);
+		final StringBuffer result = new StringBuffer();
+		final StringWriter sw = new StringWriter();
+		final PrintWriter pw = new PrintWriter(sw, true);
 		e.printStackTrace(pw);
 		pw.flush();
 		sw.flush();
-		String[] stacktrace = sw.toString().split("\n");
-		for (String st : stacktrace) {
+		final String[] stacktrace = sw.toString().split("\n");
+		for (final String st : stacktrace) {
 			result.append(st + "\n");
 		}
 		return result.toString();

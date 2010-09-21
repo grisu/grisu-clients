@@ -39,7 +39,7 @@ public abstract class GridTestElement implements Comparable<GridTestElement> {
 	private boolean failed = false;
 	private boolean interrupted = false;
 
-	private List<Exception> exceptions = new LinkedList<Exception>();
+	private final List<Exception> exceptions = new LinkedList<Exception>();
 
 	private final static String END_STAGE = "endStage";
 
@@ -91,6 +91,7 @@ public abstract class GridTestElement implements Comparable<GridTestElement> {
 			currentStage.addMessage(message);
 		}
 	}
+
 	private boolean beginNewStage(String stageName) {
 
 		boolean lastStageSuccess = true;
@@ -126,7 +127,7 @@ public abstract class GridTestElement implements Comparable<GridTestElement> {
 				boolean success = true;
 				try {
 					success = checkJobSuccess();
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					System.out.println("Error checking job " + toString()
 							+ ": " + e.getLocalizedMessage());
 					this.setPossibleExceptionForCurrentStage(e);
@@ -149,31 +150,31 @@ public abstract class GridTestElement implements Comparable<GridTestElement> {
 	}
 
 	public int compareTo(GridTestElement o) {
-		int testname = this.info.getTestname().compareTo(
+		final int testname = this.info.getTestname().compareTo(
 				o.getTestInfo().getTestname());
 		if (testname != 0) {
 			return testname;
 		}
-		int application = this.info.getApplicationName().compareTo(
+		final int application = this.info.getApplicationName().compareTo(
 				o.getTestInfo().getApplicationName());
 		if (application != 0) {
 			return application;
 		}
-		int version = this.getVersion().compareTo(o.getVersion());
+		final int version = this.getVersion().compareTo(o.getVersion());
 		if (version != 0) {
 			return version;
 		}
-		int subLoc = this.getSubmissionLocation().compareTo(
+		final int subLoc = this.getSubmissionLocation().compareTo(
 				o.getSubmissionLocation());
 		if (subLoc != 0) {
 			return subLoc;
 		}
-		int fqan = this.getFqan().compareTo(o.getFqan());
+		final int fqan = this.getFqan().compareTo(o.getFqan());
 		if (fqan != 0) {
 			return fqan;
 		}
 
-		int id = this.getTestId().compareTo(o.getTestId());
+		final int id = this.getTestId().compareTo(o.getTestId());
 
 		return id;
 
@@ -186,7 +187,7 @@ public abstract class GridTestElement implements Comparable<GridTestElement> {
 		try {
 			jobObject.createJob(fqan);
 			currentStage.setStatus(GridTestStageStatus.FINISHED_SUCCESS);
-		} catch (JobPropertiesException e) {
+		} catch (final JobPropertiesException e) {
 			currentStage.setPossibleException(e);
 			currentStage.setStatus(GridTestStageStatus.FINISHED_ERROR);
 			failed = true;
@@ -199,24 +200,24 @@ public abstract class GridTestElement implements Comparable<GridTestElement> {
 
 	@Override
 	public boolean equals(Object o) {
-		
-		if ( o == null ) {
+
+		if (o == null) {
 			return false;
 		}
 
 		GridTestElement other = null;
 		try {
 			other = (GridTestElement) o;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return false;
 		}
 
-		if (!this.getTestInfo().getApplicationName().equals(
-				other.getTestInfo().getApplicationName())) {
+		if (!this.getTestInfo().getApplicationName()
+				.equals(other.getTestInfo().getApplicationName())) {
 			return false;
 		}
-		if (!this.getTestInfo().getTestname().equals(
-				other.getTestInfo().getTestname())) {
+		if (!this.getTestInfo().getTestname()
+				.equals(other.getTestInfo().getTestname())) {
 			return false;
 		}
 		if (!this.getVersion().equals(other.getVersion())) {
@@ -244,7 +245,7 @@ public abstract class GridTestElement implements Comparable<GridTestElement> {
 		// housekeeping
 		try {
 			jobObject.kill(true);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			// doesn't matter
 		}
 	}
@@ -266,8 +267,8 @@ public abstract class GridTestElement implements Comparable<GridTestElement> {
 	}
 
 	public String getResultString() {
-		StringBuffer result = new StringBuffer();
-		for (GridTestStage stage : getTestStages()) {
+		final StringBuffer result = new StringBuffer();
+		for (final GridTestStage stage : getTestStages()) {
 			result.append("Stage: " + stage.getName() + "\n");
 			result.append("Started: " + stage.getBeginDate() + "\n");
 			result.append(stage.getMessagesString() + "\n");
@@ -360,7 +361,7 @@ public abstract class GridTestElement implements Comparable<GridTestElement> {
 	public void interruptRunningJob() {
 		try {
 			jobObject.kill(false);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			// doesn't matter
 		}
 		this.interrupted = true;
@@ -376,7 +377,7 @@ public abstract class GridTestElement implements Comparable<GridTestElement> {
 
 			try {
 				jobObject.kill(true);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				currentStage.setPossibleException(e);
 				currentStage.setStatus(GridTestStageStatus.FINISHED_ERROR);
 				failed = true;
@@ -398,7 +399,7 @@ public abstract class GridTestElement implements Comparable<GridTestElement> {
 	}
 
 	public void printTestResults() {
-		for (GridTestStage stage : getTestStages()) {
+		for (final GridTestStage stage : getTestStages()) {
 			System.out.println("Stage: " + stage.getName());
 			System.out.println("Started: " + stage.getBeginDate());
 			stage.printMessages();
@@ -428,12 +429,12 @@ public abstract class GridTestElement implements Comparable<GridTestElement> {
 					jobObject.submitJob();
 					currentStage
 							.setStatus(GridTestStageStatus.FINISHED_SUCCESS);
-				} catch (JobSubmissionException e) {
+				} catch (final JobSubmissionException e) {
 					e.printStackTrace();
 					currentStage.setPossibleException(e);
 					currentStage.setStatus(GridTestStageStatus.FINISHED_ERROR);
 					failed = true;
-				} catch (InterruptedException e) {
+				} catch (final InterruptedException e) {
 					e.printStackTrace();
 					currentStage.setPossibleException(e);
 					currentStage.setStatus(GridTestStageStatus.FINISHED_ERROR);

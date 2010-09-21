@@ -33,7 +33,7 @@ public class RecursiveLs extends GridFtpTestElement {
 									+ targetFolder);
 				}
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new TestSetupException(
 					"Could not create temp target directory: "
 							+ e.getLocalizedMessage());
@@ -69,18 +69,19 @@ public class RecursiveLs extends GridFtpTestElement {
 		return "HundredTimesMultipleLs";
 	}
 
+	@Override
 	protected LinkedList<List<GridFtpActionItem>> setupGridFtpActionItems() {
 
-		LinkedList<List<GridFtpActionItem>> actionItems = new LinkedList<List<GridFtpActionItem>>();
+		final LinkedList<List<GridFtpActionItem>> actionItems = new LinkedList<List<GridFtpActionItem>>();
 
-		GridFtpAction action = new GridFtpAction(
+		final GridFtpAction action = new GridFtpAction(
 				GridFtpAction.Action.recursiveLs, "multiRecursiveLs",
 				controller);
-		List<GridFtpActionItem> list = new LinkedList<GridFtpActionItem>();
+		final List<GridFtpActionItem> list = new LinkedList<GridFtpActionItem>();
 		// upload file
-		for (MountPoint mp : mountpoints) {
+		for (final MountPoint mp : mountpoints) {
 
-			GridFtpActionItem item = new GridFtpActionItem(mp.getAlias(),
+			final GridFtpActionItem item = new GridFtpActionItem(mp.getAlias(),
 					action, mp.getRootUrl(), null);
 			list.add(item);
 
@@ -92,7 +93,7 @@ public class RecursiveLs extends GridFtpTestElement {
 		// list = new LinkedList<GridFtpActionItem>();
 		// // delete file
 		// for ( MountPoint mp : mountpoints ) {
-		//			
+		//
 		// for ( int i=0; i<controller.getConcurrentThreads(); i++ ) {
 		// GridFtpActionItem item = new GridFtpActionItem(mp.getAlias()+i,
 		// action, mp.getRootUrl()+"/"+targetFileName+i, null);

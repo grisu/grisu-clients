@@ -20,22 +20,22 @@ public final class CreateJobAndSubmitJobAndCheckJobInDifferentStages implements
 	 */
 	public static void main(final String[] args) throws Exception {
 
-		LoginParams loginParams = new LoginParams(
+		final LoginParams loginParams = new LoginParams(
 		// "http://localhost:8080/grisu-ws/services/grisu",
-				// "https://ngportaldev.vpac.org/grisu-ws/services/grisu",
-				// "http://localhost:8080/enunciate-backend/soap/GrisuService",
-				// "http://localhost:8080/soap/GrisuService",
+		// "https://ngportaldev.vpac.org/grisu-ws/services/grisu",
+		// "http://localhost:8080/enunciate-backend/soap/GrisuService",
+		// "http://localhost:8080/soap/GrisuService",
 				"LOCAL_WS",
 				// "ARCS_DEV",
 				// "Local",
 				args[0], args[1].toCharArray());
 
-		ServiceInterface si = LoginManager.login(null, null, null, null,
+		final ServiceInterface si = LoginManager.login(null, null, null, null,
 				loginParams);
 
-		CreateJobAndSubmitJobAndCheckJobInDifferentStages eventHolder = new CreateJobAndSubmitJobAndCheckJobInDifferentStages();
+		final CreateJobAndSubmitJobAndCheckJobInDifferentStages eventHolder = new CreateJobAndSubmitJobAndCheckJobInDifferentStages();
 
-		JobObject createJobObject = new JobObject(si);
+		final JobObject createJobObject = new JobObject(si);
 
 		createJobObject.setApplication("Java");
 		createJobObject.setCommandline("java -version");
@@ -52,12 +52,12 @@ public final class CreateJobAndSubmitJobAndCheckJobInDifferentStages implements
 				.toStringWithoutAnnoyingExceptions(createJobObject
 						.getJobDescriptionDocument()));
 
-		String newJobname = createJobObject.createJob("/ARCS/NGAdmin",
+		final String newJobname = createJobObject.createJob("/ARCS/NGAdmin",
 				Constants.TIMESTAMP_METHOD);
 
 		EventBus.subscribe(newJobname, eventHolder);
 
-		JobObject submitJobObject = new JobObject(si, newJobname);
+		final JobObject submitJobObject = new JobObject(si, newJobname);
 
 		System.out.println("Application: " + submitJobObject.getApplication());
 
@@ -65,13 +65,14 @@ public final class CreateJobAndSubmitJobAndCheckJobInDifferentStages implements
 
 		final JobObject checkJobObject = new JobObject(si, newJobname);
 
-		Thread waitThread = new Thread() {
+		final Thread waitThread = new Thread() {
+			@Override
 			public void run() {
 				try {
 					Thread.sleep(80000);
 					System.out.println("Sleeping over.");
 					checkJobObject.stopWaitingForJobToFinish();
-				} catch (InterruptedException e) {
+				} catch (final InterruptedException e) {
 					// TODO Auto-generated catch block
 					// e.printStackTrace();
 				}
@@ -80,7 +81,7 @@ public final class CreateJobAndSubmitJobAndCheckJobInDifferentStages implements
 
 		waitThread.start();
 
-		boolean finished = checkJobObject.waitForJobToFinish(3);
+		final boolean finished = checkJobObject.waitForJobToFinish(3);
 
 		if (!finished) {
 			System.out.println("not finished yet.");

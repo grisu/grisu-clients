@@ -20,19 +20,19 @@ public class GridInternalTestInfoImpl implements GridTestInfo {
 	public static final List<GridTestInfo> generateGridTestInfos(
 			GridTestController controller, String[] testnames, String[] fqans) {
 
-		List<GridTestInfo> result = new LinkedList<GridTestInfo>();
+		final List<GridTestInfo> result = new LinkedList<GridTestInfo>();
 
 		if (testnames.length == 0) {
 			testnames = new String[] { "Java", "SimpleCatJob", "Underworld",
 					"UnixCommands" };
 		}
 
-		for (String testname : testnames) {
+		for (final String testname : testnames) {
 			GridInternalTestInfoImpl info;
 			try {
 				info = new GridInternalTestInfoImpl(testname, controller, fqans);
 				result.add(info);
-			} catch (ClassNotFoundException e) {
+			} catch (final ClassNotFoundException e) {
 				System.out.println("No internal gridtest with the name: "
 						+ testname + ". Ignoring it...");
 				continue;
@@ -41,7 +41,8 @@ public class GridInternalTestInfoImpl implements GridTestInfo {
 
 		return result;
 	}
-	private Class testClass;
+
+	private final Class testClass;
 	private final String testname;
 	private boolean useMds;
 	private String applicationName;
@@ -65,10 +66,10 @@ public class GridInternalTestInfoImpl implements GridTestInfo {
 						+ testname + "GridTestElement");
 
 		try {
-			Method useMdsMethod = testClass.getMethod("useMDS");
+			final Method useMdsMethod = testClass.getMethod("useMDS");
 			useMds = (Boolean) (useMdsMethod.invoke(null));
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			System.err.println("Could not create internal test " + testname
 					+ " because the static useMDS method is not implemented: "
 					+ e.getLocalizedMessage());
@@ -77,10 +78,10 @@ public class GridInternalTestInfoImpl implements GridTestInfo {
 		}
 
 		try {
-			Method method = testClass.getMethod("getApplicationName");
+			final Method method = testClass.getMethod("getApplicationName");
 			applicationName = (String) (method.invoke(null));
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			System.err
 					.println("Could not create internal test "
 							+ testname
@@ -91,10 +92,10 @@ public class GridInternalTestInfoImpl implements GridTestInfo {
 		}
 
 		try {
-			Method method = testClass.getMethod("getTestDescription");
+			final Method method = testClass.getMethod("getTestDescription");
 			description = (String) (method.invoke(null));
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			System.err
 					.println("Could not create internal test "
 							+ testname
@@ -105,10 +106,10 @@ public class GridInternalTestInfoImpl implements GridTestInfo {
 		}
 
 		try {
-			Method method = testClass.getMethod("getFixedVersion");
+			final Method method = testClass.getMethod("getFixedVersion");
 			versionName = (String) (method.invoke(null));
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			System.err
 					.println("Could not create internal test "
 							+ testname
@@ -128,7 +129,7 @@ public class GridInternalTestInfoImpl implements GridTestInfo {
 		try {
 			testConstructor = testClass.getConstructor(GridTestInfo.class,
 					String.class, String.class, String.class);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			System.err.println("Could not create internal test " + testname
 					+ ": " + e.getLocalizedMessage());
 			System.err.println("Exiting...");
@@ -139,7 +140,7 @@ public class GridInternalTestInfoImpl implements GridTestInfo {
 		try {
 			gte = (GridTestElement) testConstructor.newInstance(this, version,
 					submissionLocation, fqan);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			System.err.println("Could not create internal test " + testname
 					+ ": " + e.getLocalizedMessage());
 			System.err.println("Exiting...");
@@ -153,23 +154,23 @@ public class GridInternalTestInfoImpl implements GridTestInfo {
 	public List<GridTestElement> generateAllGridTestElements()
 			throws MdsInformationException {
 
-		List<GridTestElement> results = new LinkedList<GridTestElement>();
+		final List<GridTestElement> results = new LinkedList<GridTestElement>();
 
-		ApplicationInformation appInfo = GrisuRegistryManager.getDefault(
+		final ApplicationInformation appInfo = GrisuRegistryManager.getDefault(
 				controller.getServiceInterface()).getApplicationInformation(
 				applicationName);
 
-		for (String fqan : fqans) {
+		for (final String fqan : fqans) {
 
 			if (useMds) {
 				if (StringUtils.isNotBlank(versionName)
 						&& !Constants.NO_VERSION_INDICATOR_STRING
 								.equals(versionName)) {
 					// means only one version
-					Set<String> subLocs = appInfo
+					final Set<String> subLocs = appInfo
 							.getAvailableSubmissionLocationsForVersionAndFqan(
 									versionName, fqan);
-					for (String subLoc : subLocs) {
+					for (final String subLoc : subLocs) {
 						for (int i = 0; i < controller
 								.getSameSubmissionLocation(); i++) {
 							results.add(createGridTestElement(versionName,
@@ -178,13 +179,13 @@ public class GridInternalTestInfoImpl implements GridTestInfo {
 					}
 				} else {
 					// means all versions
-					Set<String> versions = appInfo
+					final Set<String> versions = appInfo
 							.getAllAvailableVersionsForFqan(fqan);
-					for (String version : versions) {
-						Set<String> subLocs = appInfo
+					for (final String version : versions) {
+						final Set<String> subLocs = appInfo
 								.getAvailableSubmissionLocationsForVersionAndFqan(
 										version, fqan);
-						for (String subLoc : subLocs) {
+						for (final String subLoc : subLocs) {
 							for (int i = 0; i < controller
 									.getSameSubmissionLocation(); i++) {
 								results.add(createGridTestElement(version,
@@ -194,11 +195,11 @@ public class GridInternalTestInfoImpl implements GridTestInfo {
 					}
 				}
 			} else {
-				String[] subLocs = GrisuRegistryManager.getDefault(
-						controller.getServiceInterface())
+				final String[] subLocs = GrisuRegistryManager
+						.getDefault(controller.getServiceInterface())
 						.getResourceInformation()
 						.getAllAvailableSubmissionLocations(fqan);
-				for (String subLoc : subLocs) {
+				for (final String subLoc : subLocs) {
 					for (int i = 0; i < controller.getSameSubmissionLocation(); i++) {
 						results.add(createGridTestElement(
 								Constants.NO_VERSION_INDICATOR_STRING, subLoc,

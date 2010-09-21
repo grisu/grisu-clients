@@ -13,64 +13,75 @@ public class GridTestCommandlineOptions {
 
 	// option with long name, no arguments
 	private static Option createOption(String longName, String description) {
-		return OptionBuilder.withLongOpt(longName).withDescription(description)
-		.create();
+		OptionBuilder.withLongOpt(longName);
+		OptionBuilder.withDescription(description);
+		return OptionBuilder.create();
 	}
+
 	// option with long name, short name, no arguments
 	private static Option createOption(String longName, String shortName,
 			String description) {
-		return OptionBuilder.withLongOpt(longName).withDescription(description)
-		.create(shortName);
+		OptionBuilder.withLongOpt(longName);
+		OptionBuilder.withDescription(description);
+		return OptionBuilder.create(shortName);
 	}
+
 	// option with long name, has arguments
 	private static Option createOptionWithArg(String longName,
 			String description) {
-		return OptionBuilder.withArgName(longName).hasArg().withLongOpt(
-				longName).withDescription(description).create();
+		OptionBuilder.withArgName(longName);
+		OptionBuilder.hasArg();
+		OptionBuilder.withLongOpt(longName);
+		OptionBuilder.withDescription(description);
+		return OptionBuilder.create();
 	}
 
 	// option with long name,short name and argument
 	private static Option createOptionWithArg(String longName,
 			String shortName, String description) {
-		return OptionBuilder.withArgName(longName).hasArg().withLongOpt(
-				longName).withDescription(description).create(shortName);
+		OptionBuilder.withArgName(longName);
+		OptionBuilder.hasArg();
+		OptionBuilder.withLongOpt(longName);
+		OptionBuilder.withDescription(description);
+		return OptionBuilder.create(shortName);
 	}
+
 	private static Options getOptions() {
 
 		Options options = null;
 
 		// common options
-		Option apps = createOptionWithArg(
+		final Option apps = createOptionWithArg(
 				"tests",
 				"t",
-		"the names of the tests to run (seperated with a comma). If not specified, all tests will run.");
-		Option fqan = createOptionWithArg("vos", "v",
-		"the vos to use, seperated with a comma");
-		Option outputFile = createOptionWithArg("output", "o",
-		"the output file");
-		Option exclude = createOptionWithArg(
+				"the names of the tests to run (seperated with a comma). If not specified, all tests will run.");
+		final Option fqan = createOptionWithArg("vos", "v",
+				"the vos to use, seperated with a comma");
+		final Option outputFile = createOptionWithArg("output", "o",
+				"the output file");
+		final Option exclude = createOptionWithArg(
 				"exclude",
 				"e",
-		"(comma-seperated) filters to exclude certain hostnames/queues. Only used if the \"include\" option wasn't specified");
-		Option include = createOptionWithArg("include", "i",
-		"(comma-seperated) filters to only include certain hostnames");
-		Option timeoutInMinutes = createOptionWithArg(
+				"(comma-seperated) filters to exclude certain hostnames/queues. Only used if the \"include\" option wasn't specified");
+		final Option include = createOptionWithArg("include", "i",
+				"(comma-seperated) filters to only include certain hostnames");
+		final Option timeoutInMinutes = createOptionWithArg(
 				"cancel",
 				"c",
-		"timeout in minutes after which all jobs that aren't finished are getting killed (default: 240)");
-		Option outputModulesToUse = createOptionWithArg(
-				"modules",
-				"m",
-		"(comma-seperated) additional output modules to use. Currently supported: rpc");
-		Option list = createOption("list", "l", "list all available tests");
-		Option threads = createOptionWithArg("simultaneousThreads", "s",
-		"how many jobs to submit at once. Default is 5 (which is recommended)");
-		Option sameSubLoc = createOptionWithArg(
+				"timeout in minutes after which all jobs that aren't finished are getting killed (default: 240)");
+		final Option outputModulesToUse = createOptionWithArg("modules", "m",
+				"(comma-seperated) additional output modules to use. Currently supported: rpc");
+		final Option list = createOption("list", "l",
+				"list all available tests");
+		final Option threads = createOptionWithArg("simultaneousThreads", "s",
+				"how many jobs to submit at once. Default is 5 (which is recommended)");
+		final Option sameSubLoc = createOptionWithArg(
 				"sameSubmissionLocation",
 				"d",
-		"duplicate the test job and submit it to the same submissionlocation x times (default: 1)");
-		Option help = createOption("help", "h", "this help text");
-		Option siUrl = createOptionWithArg("url", "u", "the serviceInterface url to connect to. default: Local");
+				"duplicate the test job and submit it to the same submissionlocation x times (default: 1)");
+		final Option help = createOption("help", "h", "this help text");
+		final Option siUrl = createOptionWithArg("url", "u",
+				"the serviceInterface url to connect to. default: Local");
 
 		options = new Options();
 		options.addOption(apps);
@@ -87,6 +98,7 @@ public class GridTestCommandlineOptions {
 		options.addOption(help);
 		return options;
 	}
+
 	private CommandLine line = null;
 	private final HelpFormatter formatter = new HelpFormatter();
 	private Options options = null;
@@ -163,25 +175,25 @@ public class GridTestCommandlineOptions {
 	private void parseCLIargs(String[] args) {
 
 		// create the parser
-		CommandLineParser parser = new PosixParser();
+		final CommandLineParser parser = new PosixParser();
 		try {
 			// parse the command line arguments
 			line = parser.parse(this.options, args);
-		} catch (ParseException exp) {
+		} catch (final ParseException exp) {
 			// oops, something went wrong
 			System.err.println("Parsing failed.  Reason: " + exp.getMessage());
 			formatter.printHelp("grisu-client", this.options);
 			System.exit(1);
 		}
 
-		String[] arguments = line.getArgs();
+		final String[] arguments = line.getArgs();
 
 		if (arguments.length > 0) {
 			if (arguments.length == 1) {
 				System.err.println("Unknown argument: " + arguments[0]);
 			} else {
-				StringBuffer buf = new StringBuffer();
-				for (String arg : arguments) {
+				final StringBuffer buf = new StringBuffer();
+				for (final String arg : arguments) {
 					buf.append(arg + " ");
 				}
 				System.err.println("Unknown argument: " + buf.toString());
@@ -231,7 +243,7 @@ public class GridTestCommandlineOptions {
 		if (line.hasOption("cancel")) {
 			try {
 				timeout = Integer.parseInt(line.getOptionValue("cancel"));
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				System.err.println("Cancel value not an integer.");
 				formatter.printHelp("grisu-grid-test", this.options);
 				System.exit(1);
@@ -241,9 +253,9 @@ public class GridTestCommandlineOptions {
 			try {
 				threads = Integer.parseInt(line
 						.getOptionValue("simultaneousThreads"));
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				System.err
-				.println("SimultaneousThreads value is not an integer.");
+						.println("SimultaneousThreads value is not an integer.");
 				formatter.printHelp("grisu-grid-test", this.options);
 				System.exit(1);
 			}
@@ -252,9 +264,9 @@ public class GridTestCommandlineOptions {
 			try {
 				jobsToSameSubmissionLocation = Integer.parseInt(line
 						.getOptionValue("sameSubmissionLocation"));
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				System.err
-				.println("sameSubmissionLocation value is not an integer.");
+						.println("sameSubmissionLocation value is not an integer.");
 				formatter.printHelp("grisu-grid-test", this.options);
 				System.exit(1);
 			}

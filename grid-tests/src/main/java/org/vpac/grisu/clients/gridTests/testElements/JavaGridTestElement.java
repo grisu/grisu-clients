@@ -39,6 +39,7 @@ public class JavaGridTestElement extends GridTestElement {
 		super(info, version, submissionLocation, fqan);
 	}
 
+	@Override
 	protected boolean checkJobSuccess() {
 
 		if (JobConstants.DONE == this.jobObject.getStatus(true)) {
@@ -54,7 +55,7 @@ public class JavaGridTestElement extends GridTestElement {
 
 	@Override
 	protected JobObject createJobObject() {
-		JobObject jo = new JobObject(serviceInterface);
+		final JobObject jo = new JobObject(serviceInterface);
 
 		jo.setApplication(this.getTestInfo().getApplicationName());
 		jo.setApplicationVersion(this.version);

@@ -29,19 +29,19 @@ public class BlenderTest {
 
 	public static void main(final String[] args) throws Exception {
 
-		BlenderTest test = new BlenderTest();
+		final BlenderTest test = new BlenderTest();
 
-		ExecutorService executor = Executors.newFixedThreadPool(10);
+		final ExecutorService executor = Executors.newFixedThreadPool(10);
 
-		String username = args[0];
-		char[] password = args[1].toCharArray();
+		final String username = args[0];
+		final char[] password = args[1].toCharArray();
 
-		LoginParams loginParams = new LoginParams(
+		final LoginParams loginParams = new LoginParams(
 		// "http://localhost:8080/xfire-backend/services/grisu",
-				// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
-				// "https://ngportal.vpac.org/grisu-ws/services/grisu",
-				// "https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
-				// "http://localhost:8080/enunciate-backend/soap/GrisuService",
+		// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
+		// "https://ngportal.vpac.org/grisu-ws/services/grisu",
+		// "https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
+		// "http://localhost:8080/enunciate-backend/soap/GrisuService",
 				"Local",
 				// "Dummy",
 				username, password);
@@ -51,24 +51,25 @@ public class BlenderTest {
 
 		final GrisuRegistry registry = GrisuRegistryManager.getDefault(si);
 
-		ApplicationInformation blenderInfo = registry
+		final ApplicationInformation blenderInfo = registry
 				.getApplicationInformation("blender");
-		Set<String> versions = blenderInfo
+		final Set<String> versions = blenderInfo
 				.getAllAvailableVersionsForFqan("/ARCS/NGAdmin");
 
-		Map<JobSubmissionProperty, String> jobProperties = new HashMap<JobSubmissionProperty, String>();
+		final Map<JobSubmissionProperty, String> jobProperties = new HashMap<JobSubmissionProperty, String>();
 		jobProperties.put(JobSubmissionProperty.WALLTIME_IN_MINUTES, "21");
 		jobProperties.put(JobSubmissionProperty.APPLICATIONVERSION, "2.49a");
-		GridResource[] resources = blenderInfo.getBestSubmissionLocations(
-				jobProperties, "/ARCS/NGAdmin").toArray(new GridResource[] {});
+		final GridResource[] resources = blenderInfo
+				.getBestSubmissionLocations(jobProperties, "/ARCS/NGAdmin")
+				.toArray(new GridResource[] {});
 
 		final int numberOfJobs = 40;
 
-		String[] subLocs = new String[numberOfJobs];
+		final String[] subLocs = new String[numberOfJobs];
 
 		// int numberResources = resources.length;
-		int numberResources = 4;
-		int jobsPerResource = numberOfJobs / numberOfJobs;
+		final int numberResources = 4;
+		final int jobsPerResource = numberOfJobs / numberOfJobs;
 
 		for (int i = 0; i < numberResources; i++) {
 
@@ -91,11 +92,11 @@ public class BlenderTest {
 			subLocs[i] = subLoc;
 		}
 
-		Date start = new Date();
+		final Date start = new Date();
 		final String multiJobName = "PerformanceTest8";
 		try {
 			si.kill(multiJobName, true);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			// doesn't matter
 			e.printStackTrace();
 		}
@@ -104,8 +105,8 @@ public class BlenderTest {
 		System.out.println("End: " + new Date().toString());
 
 		// System.exit(1);
-		BatchJobObject multiPartJob = new BatchJobObject(si, multiJobName,
-				"/ARCS/NGAdmin", "blender", "2.49a");
+		final BatchJobObject multiPartJob = new BatchJobObject(si,
+				multiJobName, "/ARCS/NGAdmin", "blender", "2.49a");
 
 		// multiPartJob.setConcurrentJobCreationThreads(3);
 
@@ -113,7 +114,7 @@ public class BlenderTest {
 
 			final int frameNumber = i;
 
-			JobObject jo = new JobObject(si);
+			final JobObject jo = new JobObject(si);
 			jo.setJobname(multiJobName + "_" + frameNumber);
 			jo.setApplication("blender");
 			jo.setCommandline("blender -b " + multiPartJob.pathToInputFiles()
@@ -134,8 +135,8 @@ public class BlenderTest {
 
 		try {
 			multiPartJob.prepareAndCreateJobs(true);
-		} catch (JobsException e) {
-			for (JobObject job : e.getFailures().keySet()) {
+		} catch (final JobsException e) {
+			for (final JobObject job : e.getFailures().keySet()) {
 				System.out.println("Creation " + job.getJobname() + " failed: "
 						+ e.getFailures().get(job).getLocalizedMessage());
 			}
@@ -155,9 +156,9 @@ public class BlenderTest {
 
 		// MultiPartJobObject newObject = new MultiPartJobObject(si,
 		// multiJobName);
-		//		
+		//
 		// newObject.monitorProgress();
-		//		
+		//
 		// newObject.downloadResults("logo");
 
 	}

@@ -17,38 +17,38 @@ public class JobSubmissionNew {
 
 	public static void main(final String[] args) throws Exception {
 
-		ExecutorService executor = Executors.newFixedThreadPool(1);
+		final ExecutorService executor = Executors.newFixedThreadPool(1);
 
-		String username = args[0];
-		char[] password = args[1].toCharArray();
+		final String username = args[0];
+		final char[] password = args[1].toCharArray();
 
-		LoginParams loginParams = new LoginParams(
-				// "http://localhost:8080/xfire-backend/services/grisu",
-				// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
-				// "https://ngportaldev.vpac.org/grisu-ws/services/grisu",
+		final LoginParams loginParams = new LoginParams(
+		// "http://localhost:8080/xfire-backend/services/grisu",
+		// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
+		// "https://ngportaldev.vpac.org/grisu-ws/services/grisu",
 				"Local", username, password);
 
 		final ServiceInterface si = ServiceInterfaceFactory
-		.createInterface(loginParams);
+				.createInterface(loginParams);
 
 		final GrisuRegistry registry = GrisuRegistryManager.getDefault(si);
 
-		ApplicationInformation javaInfo = registry
-		.getApplicationInformation("java");
+		final ApplicationInformation javaInfo = registry
+				.getApplicationInformation("java");
 
-		Set<String> submissionLocations = javaInfo
-		.getAvailableSubmissionLocationsForFqan("/ARCS/NGAdmin");
+		final Set<String> submissionLocations = javaInfo
+				.getAvailableSubmissionLocationsForFqan("/ARCS/NGAdmin");
 
 		// final JobStatusChangeListener jsl = new JobSubmissionNew();
 		int i = 0;
 		for (final String subLoc : submissionLocations) {
 			i = i + 1;
 			final int jobnumber = i;
-			Thread subThread = new Thread() {
+			final Thread subThread = new Thread() {
 				@Override
 				public void run() {
 
-					JobObject jo = new JobObject(si);
+					final JobObject jo = new JobObject(si);
 					jo.setJobname("sleep_" + jobnumber + "_"
 							+ UUID.randomUUID());
 					jo.setApplication("generic");
@@ -60,8 +60,8 @@ public class JobSubmissionNew {
 					// jo.addInputFileUrl("gsiftp://ng2.vpac.org/home/grid-admin/C_AU_O_APACGrid_OU_VPAC_CN_Markus_Binsteiner/grisu-local-job-dir/java_job_new/test.jsdl");
 					// jo.addJobStatusChangeListener(jsl);
 
-					String site = registry.getResourceInformation().getSite(
-							subLoc);
+					final String site = registry.getResourceInformation()
+							.getSite(subLoc);
 					System.out.println("Site is: " + site);
 					// if ("tpac".equals(site.toLowerCase())
 					// || "ac3".equals(site.toLowerCase())
@@ -71,7 +71,7 @@ public class JobSubmissionNew {
 					try {
 						jo.createJob("/ARCS/NGAdmin");
 						jo.submitJob();
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						e.printStackTrace();
 						System.err.println("Job to "
 								+ jo.getSubmissionLocation() + ": "

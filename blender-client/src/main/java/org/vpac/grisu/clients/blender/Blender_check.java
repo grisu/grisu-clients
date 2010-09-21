@@ -12,15 +12,15 @@ public class Blender_check {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		String username = args[0];
-		char[] password = args[1].toCharArray();
+		final String username = args[0];
+		final char[] password = args[1].toCharArray();
 
-		LoginParams loginParams = new LoginParams(
-				// "http://localhost:8080/xfire-backend/services/grisu",
-				// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
-				// "https://ngportal.vpac.org/grisu-ws/services/grisu",
-				// "https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
-				// "http://localhost:8080/enunciate-backend/soap/GrisuService",
+		final LoginParams loginParams = new LoginParams(
+		// "http://localhost:8080/xfire-backend/services/grisu",
+		// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
+		// "https://ngportal.vpac.org/grisu-ws/services/grisu",
+		// "https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
+		// "http://localhost:8080/enunciate-backend/soap/GrisuService",
 				"Local",
 				// "Dummy",
 				username, password);
@@ -28,7 +28,7 @@ public class Blender_check {
 		ServiceInterface si = null;
 		try {
 			si = ServiceInterfaceFactory.createInterface(loginParams);
-		} catch (ServiceInterfaceException e) {
+		} catch (final ServiceInterfaceException e) {
 			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		}
@@ -36,13 +36,12 @@ public class Blender_check {
 		GrisuBlenderJob blenderJob = null;
 		try {
 			blenderJob = new GrisuBlenderJob(si, "blenderJob1");
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		}
 
-		System.out
-		.println(blenderJob.getMultiPartJobObject().getProgress());
+		System.out.println(blenderJob.getMultiPartJobObject().getProgress());
 
 		// blenderJob.downloadResult();
 

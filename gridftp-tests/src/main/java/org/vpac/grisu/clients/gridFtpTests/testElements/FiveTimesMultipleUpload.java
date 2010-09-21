@@ -53,20 +53,21 @@ public class FiveTimesMultipleUpload extends GridFtpTestElement {
 		return "FiveTimesMultipleUpload";
 	}
 
+	@Override
 	protected LinkedList<List<GridFtpActionItem>> setupGridFtpActionItems() {
 
-		LinkedList<List<GridFtpActionItem>> actionItems = new LinkedList<List<GridFtpActionItem>>();
+		final LinkedList<List<GridFtpActionItem>> actionItems = new LinkedList<List<GridFtpActionItem>>();
 
 		GridFtpAction action = new GridFtpAction(GridFtpAction.Action.upload,
 				"multiUpload", controller);
 		List<GridFtpActionItem> list = new LinkedList<GridFtpActionItem>();
 		// upload file
-		for (MountPoint mp : mountpoints) {
+		for (final MountPoint mp : mountpoints) {
 
 			for (int i = 0; i < 5; i++) {
-				GridFtpActionItem item = new GridFtpActionItem(mp.getAlias()
-						+ i, action, sourceFile, mp.getRootUrl() + "/"
-						+ targetFileName + i);
+				final GridFtpActionItem item = new GridFtpActionItem(
+						mp.getAlias() + i, action, sourceFile, mp.getRootUrl()
+								+ "/" + targetFileName + i);
 				list.add(item);
 			}
 
@@ -77,12 +78,12 @@ public class FiveTimesMultipleUpload extends GridFtpTestElement {
 				controller);
 		list = new LinkedList<GridFtpActionItem>();
 		// delete file
-		for (MountPoint mp : mountpoints) {
+		for (final MountPoint mp : mountpoints) {
 
 			for (int i = 0; i < 5; i++) {
-				GridFtpActionItem item = new GridFtpActionItem(mp.getAlias()
-						+ i, action,
-						mp.getRootUrl() + "/" + targetFileName + i, null);
+				final GridFtpActionItem item = new GridFtpActionItem(
+						mp.getAlias() + i, action, mp.getRootUrl() + "/"
+								+ targetFileName + i, null);
 				list.add(item);
 			}
 		}

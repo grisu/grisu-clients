@@ -13,20 +13,20 @@ public class OutputModuleHelpers {
 	public static StringBuffer createStatisticsString(
 			Collection<GridTestElement> elements) {
 
-		StringBuffer statistics = new StringBuffer();
+		final StringBuffer statistics = new StringBuffer();
 		statistics.append("\nSummary:\n-------------\n");
 		int countFailed = 0;
 		int countSuccess = 0;
 		int countInterrupted = 0;
-		StringBuffer failedSubLocs = new StringBuffer();
-		for (GridTestElement gte : elements) {
+		final StringBuffer failedSubLocs = new StringBuffer();
+		for (final GridTestElement gte : elements) {
 			if (gte.wasInterrupted()) {
 				countInterrupted = countInterrupted + 1;
 			} else if (gte.failed()) {
 				countFailed = countFailed + 1;
 				failedSubLocs
 						.append("\t" + gte.getSubmissionLocation() + ":\n");
-				for (Exception e : gte.getExceptions()) {
+				for (final Exception e : gte.getExceptions()) {
 					failedSubLocs.append(e.getLocalizedMessage() + "\n");
 				}
 			} else {
@@ -44,14 +44,14 @@ public class OutputModuleHelpers {
 
 		statistics.append("Results per test:\n");
 
-		Map<String, Set<GridTestElement>> testMap = getTestElementMap(elements);
+		final Map<String, Set<GridTestElement>> testMap = getTestElementMap(elements);
 
-		for (String test : testMap.keySet()) {
+		for (final String test : testMap.keySet()) {
 			statistics.append("Testname: " + test + "\n");
 			int failed = 0;
 			int success = 0;
 			int interrupted = 0;
-			for (GridTestElement gte : testMap.get(test)) {
+			for (final GridTestElement gte : testMap.get(test)) {
 				if (gte.wasInterrupted()) {
 					interrupted = interrupted + 1;
 				} else if (gte.failed()) {
@@ -73,7 +73,7 @@ public class OutputModuleHelpers {
 
 	public static StringBuffer createStringReport(GridTestElement gte) {
 
-		StringBuffer outputString = new StringBuffer();
+		final StringBuffer outputString = new StringBuffer();
 
 		outputString.append("Test for "
 				+ gte.getTestInfo().getApplicationName() + ", version: "
@@ -111,19 +111,19 @@ public class OutputModuleHelpers {
 	public static StringBuffer createTestSetupString(
 			Collection<GridTestElement> elements) {
 
-		StringBuffer setup = new StringBuffer();
+		final StringBuffer setup = new StringBuffer();
 		setup.append("Initialized jobs:\n");
 		// setup.append(StringUtils.join(gridTestElements.values(), "\n")+"\n");
 
-		Map<String, Set<GridTestElement>> testMap = getTestElementMap(elements);
+		final Map<String, Set<GridTestElement>> testMap = getTestElementMap(elements);
 
-		for (String testname : testMap.keySet()) {
+		for (final String testname : testMap.keySet()) {
 			setup.append("Testname: " + testname + "\n\n");
 			setup.append("Description: "
 					+ testMap.get(testname).iterator().next().getTestInfo()
 							.getDescription() + "\n\n");
 			setup.append("Jobs to run for this test category:\n");
-			for (GridTestElement el : testMap.get(testname)) {
+			for (final GridTestElement el : testMap.get(testname)) {
 				setup.append("\t" + el.toString() + "\n");
 				setup.append("\tid: " + el.getTestId() + "\n");
 			}
@@ -136,12 +136,12 @@ public class OutputModuleHelpers {
 	private static Map<String, Set<GridTestElement>> getTestElementMap(
 			Collection<GridTestElement> elements) {
 
-		Map<String, Set<GridTestElement>> testMap = new TreeMap<String, Set<GridTestElement>>();
+		final Map<String, Set<GridTestElement>> testMap = new TreeMap<String, Set<GridTestElement>>();
 
-		for (GridTestElement element : elements) {
+		for (final GridTestElement element : elements) {
 
 			if (testMap.get(element.getTestInfo().getTestname()) == null) {
-				Set<GridTestElement> elementList = new TreeSet<GridTestElement>();
+				final Set<GridTestElement> elementList = new TreeSet<GridTestElement>();
 				testMap.put(element.getTestInfo().getTestname(), elementList);
 			}
 

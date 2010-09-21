@@ -20,13 +20,13 @@ public class TestSubmit {
 		final GrisuRegistry registry = GrisuRegistryManager.getDefault(si);
 
 		String subLoc = null;
-		Set<String> subLocs = registry.getApplicationInformation(
+		final Set<String> subLocs = registry.getApplicationInformation(
 				"ESyS-Particle")
 				.getAvailableSubmissionLocationsForVersionAndFqan("2.0",
 						"/ARCS/AuScope");
-		Iterator<String> it = subLocs.iterator();
+		final Iterator<String> it = subLocs.iterator();
 		while (it.hasNext()) {
-			String sl = it.next();
+			final String sl = it.next();
 			if ("ESSCC".equals(registry.getResourceInformation().getSite(sl))
 					&& "workq".equals(SubmissionLocationHelpers
 							.extractQueue(sl))) {
@@ -38,7 +38,7 @@ public class TestSubmit {
 			throw new Exception("Could not get submission location");
 		}
 
-		JobObject jo = new JobObject(si);
+		final JobObject jo = new JobObject(si);
 		jo.setCpus(2);
 		jo.setMemory(1048576L);
 		jo.setWalltimeInSeconds(60);
@@ -56,7 +56,7 @@ public class TestSubmit {
 			System.out.println("Job submitted to " + jo.getSubmissionLocation()
 					+ ", Dir: " + jo.getJobDirectoryUrl());
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			System.err.println("Job to " + jo.getSubmissionLocation() + ": "
 					+ e.getLocalizedMessage());

@@ -36,7 +36,7 @@ public class HundredTimesLs extends GridFtpTestElement {
 									+ targetFolder);
 				}
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new TestSetupException(
 					"Could not create temp target directory: "
 							+ e.getLocalizedMessage());
@@ -55,14 +55,14 @@ public class HundredTimesLs extends GridFtpTestElement {
 		}
 
 		// uploading a sourcefile
-		DataHandler dh = new DataHandler(new FileDataSource(
-				new File(sourceFile)));
+		final DataHandler dh = new DataHandler(new FileDataSource(new File(
+				sourceFile)));
 		try {
-			for (MountPoint mp : mps) {
+			for (final MountPoint mp : mps) {
 				controller.getServiceInterface().upload(dh,
 						mp.getRootUrl() + "/simpleTestFile.txt");
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new TestSetupException("Could not upload source file: "
 					+ e.getLocalizedMessage());
 		}
@@ -85,19 +85,20 @@ public class HundredTimesLs extends GridFtpTestElement {
 		return "HundredTimesMultipleLs";
 	}
 
+	@Override
 	protected LinkedList<List<GridFtpActionItem>> setupGridFtpActionItems() {
 
-		LinkedList<List<GridFtpActionItem>> actionItems = new LinkedList<List<GridFtpActionItem>>();
+		final LinkedList<List<GridFtpActionItem>> actionItems = new LinkedList<List<GridFtpActionItem>>();
 
-		GridFtpAction action = new GridFtpAction(GridFtpAction.Action.ls,
+		final GridFtpAction action = new GridFtpAction(GridFtpAction.Action.ls,
 				"multiLs", controller);
-		List<GridFtpActionItem> list = new LinkedList<GridFtpActionItem>();
+		final List<GridFtpActionItem> list = new LinkedList<GridFtpActionItem>();
 		// upload file
-		for (MountPoint mp : mountpoints) {
+		for (final MountPoint mp : mountpoints) {
 
 			for (int i = 0; i < 100; i++) {
-				GridFtpActionItem item = new GridFtpActionItem(mp.getAlias()
-						+ i, action, mp.getRootUrl(), null);
+				final GridFtpActionItem item = new GridFtpActionItem(
+						mp.getAlias() + i, action, mp.getRootUrl(), null);
 				list.add(item);
 			}
 
@@ -109,7 +110,7 @@ public class HundredTimesLs extends GridFtpTestElement {
 		// list = new LinkedList<GridFtpActionItem>();
 		// // delete file
 		// for ( MountPoint mp : mountpoints ) {
-		//			
+		//
 		// for ( int i=0; i<controller.getConcurrentThreads(); i++ ) {
 		// GridFtpActionItem item = new GridFtpActionItem(mp.getAlias()+i,
 		// action, mp.getRootUrl()+"/"+targetFileName+i, null);

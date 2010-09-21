@@ -17,21 +17,21 @@ public class UploadLocalFolder {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		ServiceInterface si = LoginManager
+		final ServiceInterface si = LoginManager
 				.loginCommandline(LoginManager.SERVICEALIASES.get("LOCAL"));
 
-		GrisuRegistry registry = GrisuRegistryManager.getDefault(si);
+		final GrisuRegistry registry = GrisuRegistryManager.getDefault(si);
 
-		FileManager fm = registry.getFileManager();
+		final FileManager fm = registry.getFileManager();
 
 		fm.deleteFile("gsiftp://ng2.vpac.org/home/acc004/test/");
 
-		Date start = new Date();
+		final Date start = new Date();
 
 		fm.cp(new File("/home/markus/Workspaces/Wicket"),
 				"gsiftp://ng2.vpac.org/home/acc004/test/", true);
 
-		Date end = new Date();
+		final Date end = new Date();
 
 		System.out.println("Time: " + (end.getTime() - start.getTime()));
 	}

@@ -31,7 +31,7 @@ public class GridBlenderSubmit implements BlenderMode {
 
 		try {
 			commandlineArgs = cli.parseArguments(args);
-		} catch (ArgumentValidationException e) {
+		} catch (final ArgumentValidationException e) {
 			System.err.println("Could not start grid-blender:\n"
 					+ e.getLocalizedMessage() + "\n");
 			System.out.println(cli.getHelpMessage());
@@ -46,12 +46,13 @@ public class GridBlenderSubmit implements BlenderMode {
 		si = GridBlenderUtils.login(commandlineArgs);
 	}
 
+	@Override
 	public void execute() {
 
-		Date start = new Date();
+		final Date start = new Date();
 
-		String fqan = commandlineArgs.getVo();
-		String jobname = commandlineArgs.getJobname();
+		final String fqan = commandlineArgs.getVo();
+		final String jobname = commandlineArgs.getJobname();
 
 		GrisuBlenderJob job = null;
 
@@ -73,13 +74,15 @@ public class GridBlenderSubmit implements BlenderMode {
 						DtoActionStatus status;
 						while (!(status = si.getActionStatus(jobname))
 								.isFinished()) {
-							double percentage = status.getCurrentElements()
-									* 100 / status.getTotalElements();
+							final double percentage = status
+									.getCurrentElements()
+									* 100
+									/ status.getTotalElements();
 							System.out.println("Deletion " + percentage
 									+ "% finished.");
 							Thread.sleep(3000);
 						}
-					} catch (NoSuchJobException ne) {
+					} catch (final NoSuchJobException ne) {
 						// good
 					}
 
@@ -89,7 +92,7 @@ public class GridBlenderSubmit implements BlenderMode {
 										+ jobname + " finished.");
 					}
 
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					System.out.println("Could not delete existing job "
 							+ jobname + ": " + e.getLocalizedMessage());
 					System.out
@@ -105,13 +108,13 @@ public class GridBlenderSubmit implements BlenderMode {
 				System.exit(1);
 			}
 
-		} catch (Exception e1) {
+		} catch (final Exception e1) {
 			// doesn't really matter in that case
 		}
 
 		try {
 			job = new GrisuBlenderJob(si, jobname, fqan);
-		} catch (BatchJobException e) {
+		} catch (final BatchJobException e) {
 			System.err.println("Could not create blender job: "
 					+ e.getLocalizedMessage());
 		}
@@ -132,7 +135,7 @@ public class GridBlenderSubmit implements BlenderMode {
 		}
 		try {
 			job.setBlenderFile(commandlineArgs.getBlendFile(), fluidsFolder);
-		} catch (FileNotFoundException e1) {
+		} catch (final FileNotFoundException e1) {
 			System.err.println("Could not create job: "
 					+ e1.getLocalizedMessage());
 			System.exit(1);
@@ -157,15 +160,15 @@ public class GridBlenderSubmit implements BlenderMode {
 
 		try {
 			job.createAndSubmitJobs(true);
-		} catch (JobCreationException e) {
+		} catch (final JobCreationException e) {
 			System.err.println("Could not create blender jobs: "
 					+ e.getLocalizedMessage());
 			System.exit(1);
-		} catch (JobSubmissionException e) {
+		} catch (final JobSubmissionException e) {
 			System.err.println("Could not submt blender jobs: "
 					+ e.getLocalizedMessage());
 			System.exit(1);
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			System.err.println("Job submission interrupted: "
 					+ e.getLocalizedMessage());
 			System.exit(1);

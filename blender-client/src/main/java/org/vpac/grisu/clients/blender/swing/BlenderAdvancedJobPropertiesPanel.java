@@ -62,13 +62,13 @@ public class BlenderAdvancedJobPropertiesPanel extends JPanel {
 
 		buttonGroup = new ButtonGroup();
 
-		JLabel lblNameOfOutput = new JLabel("Name of output frames");
+		final JLabel lblNameOfOutput = new JLabel("Name of output frames");
 		add(lblNameOfOutput, "2, 2, right, center");
 
 		add(getOutputNameTextField(), "4, 2, fill, top");
 
 		selectSubLocsCheckBox = new JCheckBox(
-		"Manually select submission locations");
+				"Manually select submission locations");
 		selectSubLocsCheckBox.addItemListener(new ItemListener() {
 
 			@Override
@@ -145,7 +145,7 @@ public class BlenderAdvancedJobPropertiesPanel extends JPanel {
 
 	public String getOutputFilename() {
 
-		String result = getOutputNameTextField().getText();
+		final String result = getOutputNameTextField().getText();
 		return result;
 	}
 
@@ -165,8 +165,8 @@ public class BlenderAdvancedJobPropertiesPanel extends JPanel {
 		if (!excludeRadioButton.isSelected()) {
 			return null;
 		}
-		Set<String> result = new TreeSet<String>();
-		for (Object o : excludeList.getCheckBoxListSelectedValues()) {
+		final Set<String> result = new TreeSet<String>();
+		for (final Object o : excludeList.getCheckBoxListSelectedValues()) {
 			result.add((String) o);
 		}
 		return result;
@@ -181,8 +181,8 @@ public class BlenderAdvancedJobPropertiesPanel extends JPanel {
 		if (!includeRadioButton.isSelected()) {
 			return null;
 		}
-		Set<String> result = new TreeSet<String>();
-		for (Object o : includeList.getCheckBoxListSelectedValues()) {
+		final Set<String> result = new TreeSet<String>();
+		for (final Object o : includeList.getCheckBoxListSelectedValues()) {
 			result.add((String) o);
 		}
 		return result;
@@ -218,7 +218,7 @@ public class BlenderAdvancedJobPropertiesPanel extends JPanel {
 		includeModel.removeAllElements();
 		excludeModel.removeAllElements();
 
-		for (String subLoc : parent.getAllPossibleSubmissionLocations()) {
+		for (final String subLoc : parent.getAllPossibleSubmissionLocations()) {
 			includeModel.addElement(subLoc);
 			excludeModel.addElement(subLoc);
 		}

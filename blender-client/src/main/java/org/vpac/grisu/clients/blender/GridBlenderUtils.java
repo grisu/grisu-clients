@@ -23,10 +23,10 @@ public class GridBlenderUtils {
 
 		char[] password = null;
 		try {
-			ConsoleReader consoleReader = new ConsoleReader();
+			final ConsoleReader consoleReader = new ConsoleReader();
 			password = consoleReader.readLine(question, new Character('*'))
 					.toCharArray();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			System.err.println("Couldn't read password input: "
 					+ e.getLocalizedMessage());
 			System.exit(1);
@@ -51,14 +51,14 @@ public class GridBlenderUtils {
 			// means myproxy or shib login
 			if (!args.isIdp()) {
 				// means myproxy login
-				char[] password = askForPassword("Please enter your myproxy password: ");
+				final char[] password = askForPassword("Please enter your myproxy password: ");
 
 				loginParams = new LoginParams(
 				// "http://localhost:8080/xfire-backend/services/grisu",
-						// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
-						// "https://ngportal.vpac.org/grisu-ws/services/grisu",
-						// "https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
-						// "http://localhost:8080/enunciate-backend/soap/GrisuService",
+				// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
+				// "https://ngportal.vpac.org/grisu-ws/services/grisu",
+				// "https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
+				// "http://localhost:8080/enunciate-backend/soap/GrisuService",
 						"Local",
 						// "Dummy",
 						username, password);
@@ -67,10 +67,10 @@ public class GridBlenderUtils {
 					si = LoginManager
 							.login(null, null, null, null, loginParams);
 					return si;
-				} catch (RuntimeException e) {
+				} catch (final RuntimeException e) {
 					System.err.println(e.getLocalizedMessage());
 					System.exit(1);
-				} catch (LoginException e) {
+				} catch (final LoginException e) {
 					System.err.println(e.getLocalizedMessage());
 					System.exit(1);
 				}
@@ -80,7 +80,7 @@ public class GridBlenderUtils {
 					try {
 						LocalMyProxy.getDelegationAndWriteToDisk(username,
 								password, 3600 * 24);
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						System.err
 								.println("Couldn't write myproxy credential to disk.");
 					}
@@ -90,15 +90,15 @@ public class GridBlenderUtils {
 				// means shib login
 				loginParams = new LoginParams(
 				// "http://localhost:8080/xfire-backend/services/grisu",
-						// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
-						// "https://ngportal.vpac.org/grisu-ws/services/grisu",
-						// "https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
-						// "http://localhost:8080/enunciate-backend/soap/GrisuService",
+				// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
+				// "https://ngportal.vpac.org/grisu-ws/services/grisu",
+				// "https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
+				// "http://localhost:8080/enunciate-backend/soap/GrisuService",
 						"Local",
 						// "Dummy",
 						null, null);
 
-				char[] password = askForPassword("Please enter the password for IDP '"
+				final char[] password = askForPassword("Please enter the password for IDP '"
 						+ args.getIdp() + "': ");
 
 				try {
@@ -111,10 +111,10 @@ public class GridBlenderUtils {
 					}
 
 					return si;
-				} catch (RuntimeException e) {
+				} catch (final RuntimeException e) {
 					System.err.println(e.getLocalizedMessage());
 					System.exit(1);
-				} catch (LoginException e) {
+				} catch (final LoginException e) {
 					System.err.println(e.getLocalizedMessage());
 					System.exit(1);
 				}
@@ -125,10 +125,10 @@ public class GridBlenderUtils {
 
 			loginParams = new LoginParams(
 			// "http://localhost:8080/xfire-backend/services/grisu",
-					// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
-					// "https://ngportal.vpac.org/grisu-ws/services/grisu",
-					// "https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
-					// "http://localhost:8080/enunciate-backend/soap/GrisuService",
+			// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
+			// "https://ngportal.vpac.org/grisu-ws/services/grisu",
+			// "https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
+			// "http://localhost:8080/enunciate-backend/soap/GrisuService",
 					"Local",
 					// "Dummy",
 					null, null);
@@ -137,17 +137,17 @@ public class GridBlenderUtils {
 			if (LocalProxy.validGridProxyExists()) {
 				try {
 					cred = LocalProxy.loadGlobusCredential();
-				} catch (GlobusCredentialException e) {
+				} catch (final GlobusCredentialException e) {
 					System.err.println(e.getLocalizedMessage());
 					System.exit(1);
 				}
 			} else {
-				char[] password = askForPassword("Please enter you private key passphrase: ");
+				final char[] password = askForPassword("Please enter you private key passphrase: ");
 
 				try {
 					cred = CredentialHelpers.unwrapGlobusCredential(PlainProxy
 							.init(password, 24));
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					System.err.println(e.getLocalizedMessage());
 					System.exit(1);
 				}
@@ -156,7 +156,7 @@ public class GridBlenderUtils {
 					try {
 						CredentialHelpers.writeToDisk(cred, new File(
 								LocalProxy.PROXY_FILE));
-					} catch (IOException e) {
+					} catch (final IOException e) {
 						System.err
 								.println("Could not write proxy credential to disk: "
 										+ e.getLocalizedMessage());
@@ -168,10 +168,10 @@ public class GridBlenderUtils {
 				// means using existing proxy
 				si = LoginManager.login(cred, null, null, null, loginParams);
 				return si;
-			} catch (RuntimeException e) {
+			} catch (final RuntimeException e) {
 				System.err.println(e.getLocalizedMessage());
 				System.exit(1);
-			} catch (LoginException e) {
+			} catch (final LoginException e) {
 				System.err.println(e.getLocalizedMessage());
 				System.exit(1);
 			}

@@ -17,6 +17,7 @@ public class GridFtpActionItem {
 	private Exception possibleException;
 
 	private boolean success = true;
+
 	public GridFtpActionItem(String runId, GridFtpAction action, String source,
 			String target) {
 		this.runId = runId;
@@ -26,7 +27,8 @@ public class GridFtpActionItem {
 	}
 
 	public Thread createActionThread() {
-		Thread thread = new Thread() {
+		final Thread thread = new Thread() {
+			@Override
 			public void run() {
 				executed = true;
 				System.out.println("Starting: "
@@ -59,7 +61,7 @@ public class GridFtpActionItem {
 	}
 
 	public String getResult(boolean showFullException, boolean shortVersion) {
-		StringBuilder result = new StringBuilder();
+		final StringBuilder result = new StringBuilder();
 		if (!shortVersion) {
 			result.append("---------------------------------\n");
 			result.append("Testaction:\t" + getAction().getName() + "\n");

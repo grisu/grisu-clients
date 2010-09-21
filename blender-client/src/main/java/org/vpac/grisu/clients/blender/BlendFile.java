@@ -25,10 +25,10 @@ public class BlendFile {
 	private int startFrame = 0;
 	private int endFrame = -1;
 
-	private Map<File, String> referrencedFiles = new HashMap<File, String>();
+	private final Map<File, String> referrencedFiles = new HashMap<File, String>();
 	private int dirLevelsToInclude = 0;
 
-	private File fluidsFolder;
+	private final File fluidsFolder;
 
 	private StringBuffer parseMessage = null;
 
@@ -57,75 +57,73 @@ public class BlendFile {
 
 	private void getAllReferencedResources() throws Exception {
 
-			parseMessage = new StringBuffer();
+		parseMessage = new StringBuffer();
 
-			String command = "blender -b " + file.getPath() + " -P "
-					+ GrisuBlenderJob.BLENDER_RESOURCE_PYTHYON_SCRIPT.getPath();
-			parseMessage.append("Executing: " + command + "\n");
-			Process p = Runtime.getRuntime().exec(command);
+		final String command = "blender -b " + file.getPath() + " -P "
+				+ GrisuBlenderJob.BLENDER_RESOURCE_PYTHYON_SCRIPT.getPath();
+		parseMessage.append("Executing: " + command + "\n");
+		final Process p = Runtime.getRuntime().exec(command);
 
-			BufferedReader stdInput = new BufferedReader(new InputStreamReader(
-					p.getInputStream()));
+		final BufferedReader stdInput = new BufferedReader(
+				new InputStreamReader(p.getInputStream()));
 
-			BufferedReader stdError = new BufferedReader(new InputStreamReader(
-					p.getErrorStream()));
+		final BufferedReader stdError = new BufferedReader(
+				new InputStreamReader(p.getErrorStream()));
 
-			// read the output from the command
-			String s;
-			while ((s = stdInput.readLine()) != null) {
+		// read the output from the command
+		String s;
+		while ((s = stdInput.readLine()) != null) {
 
-				if (s.startsWith(STARTFRAME_KEY)) {
-					startFrame = Integer.parseInt(s.split(" ")[1]);
-					parseMessage.append("Found first frame: " + startFrame
-							+ "\n");
-				} else if (s.startsWith(ENDFRAME_KEY)) {
-					endFrame = Integer.parseInt(s.split(" ")[1]);
-					parseMessage.append("Found last frame: " + endFrame + "\n");
-				} else if (s.startsWith(RESOURCE_KEY)) {
+			if (s.startsWith(STARTFRAME_KEY)) {
+				startFrame = Integer.parseInt(s.split(" ")[1]);
+				parseMessage.append("Found first frame: " + startFrame + "\n");
+			} else if (s.startsWith(ENDFRAME_KEY)) {
+				endFrame = Integer.parseInt(s.split(" ")[1]);
+				parseMessage.append("Found last frame: " + endFrame + "\n");
+			} else if (s.startsWith(RESOURCE_KEY)) {
 
-					File reference = new File(s.split(" ")[1]);
+				final File reference = new File(s.split(" ")[1]);
 
-					String relPath = getRelativePathToBLendFile(reference);
-					referrencedFiles.put(reference, relPath);
-					parseMessage.append("Found referenced file: " + relPath
-							+ "\n");
-				}
+				final String relPath = getRelativePathToBLendFile(reference);
+				referrencedFiles.put(reference, relPath);
+				parseMessage.append("Found referenced file: " + relPath + "\n");
 			}
-			
-			while ((s = stdError.readLine()) != null) {
+		}
 
-				System.err.println(s);
-				
-			}
+		while ((s = stdError.readLine()) != null) {
 
-			if (fluidsFolder != null) {
-				fluidsFolderPath = getRelativePathToBLendFile(fluidsFolder);
-			}
+			System.err.println(s);
 
-			blendFilePath = file.getName();
-			blendCacheFolderPath = getBlendCacheFolderName();
+		}
 
-			File parent = file.getParentFile();
-			// now calculate the folder structure on the resources...
-			for (int i = 0; i < dirLevelsToInclude; i++) {
-				parent = parent.getParentFile();
-				blendFilePath = parent.getName() + "/" + blendFilePath;
-				blendCacheFolderPath = parent.getName() + "/"
-						+ blendCacheFolderPath;
-			}
+		if (fluidsFolder != null) {
+			fluidsFolderPath = getRelativePathToBLendFile(fluidsFolder);
+		}
 
-			for (File f : referrencedFiles.keySet()) {
-				referrencedFiles.put(f, referrencedFiles.get(f).replace(
-						".." + File.separator, ""));
-			}
+		blendFilePath = file.getName();
+		blendCacheFolderPath = getBlendCacheFolderName();
 
-			// read any errors from the attempted command
-			while ((s = stdError.readLine()) != null) {
-				parseMessage.append("Error: " + s + "\n");
-			}
+		File parent = file.getParentFile();
+		// now calculate the folder structure on the resources...
+		for (int i = 0; i < dirLevelsToInclude; i++) {
+			parent = parent.getParentFile();
+			blendFilePath = parent.getName() + "/" + blendFilePath;
+			blendCacheFolderPath = parent.getName() + "/"
+					+ blendCacheFolderPath;
+		}
 
-			stdInput.close();
-			stdError.close();
+		for (final File f : referrencedFiles.keySet()) {
+			referrencedFiles.put(f,
+					referrencedFiles.get(f).replace(".." + File.separator, ""));
+		}
+
+		// read any errors from the attempted command
+		while ((s = stdError.readLine()) != null) {
+			parseMessage.append("Error: " + s + "\n");
+		}
+
+		stdInput.close();
+		stdError.close();
 
 	}
 
@@ -142,11 +140,11 @@ public class BlendFile {
 			return new File[] {};
 		}
 
-		Set<File> files = new HashSet<File>();
+		final Set<File> files = new HashSet<File>();
 		for (int i = userStartFrame - 2; i <= userEndFrame + 1; i++) {
 
-			String formatted = String.format("%06d", i);
-			for (File file : getBlendCacheFolder().listFiles()) {
+			final String formatted = String.format("%06d", i);
+			for (final File file : getBlendCacheFolder().listFiles()) {
 				if (file.getName().indexOf(formatted) >= 0) {
 					files.add(file);
 				}
@@ -159,7 +157,8 @@ public class BlendFile {
 
 	public File getBlendCacheFolder() {
 
-		File result = new File(file.getParent(), getBlendCacheFolderName());
+		final File result = new File(file.getParent(),
+				getBlendCacheFolderName());
 
 		if (!result.exists()) {
 			return null;
@@ -195,11 +194,11 @@ public class BlendFile {
 			return new File[] {};
 		}
 
-		Set<File> files = new HashSet<File>();
+		final Set<File> files = new HashSet<File>();
 		for (int i = userStartFrame - 2; i <= userEndFrame + 1; i++) {
 
-			String formatted = String.format("%04d", i);
-			for (File file : fluidsFolder.listFiles()) {
+			final String formatted = String.format("%04d", i);
+			for (final File file : fluidsFolder.listFiles()) {
 				if (file.getName().indexOf(formatted) >= 0) {
 					files.add(file);
 				}
@@ -247,19 +246,20 @@ public class BlendFile {
 	 *             if an error occurs while resolving the files' canonical names
 	 */
 	public String getRelativePathToBLendFile(File target) throws IOException {
-		String[] baseComponents = file.getParentFile().getCanonicalPath()
+		final String[] baseComponents = file.getParentFile().getCanonicalPath()
 				.split(Pattern.quote(File.separator));
-		String[] targetComponents = target.getCanonicalPath().split(
+		final String[] targetComponents = target.getCanonicalPath().split(
 				Pattern.quote(File.separator));
 
 		// skip common components
 		int index = 0;
 		for (; index < targetComponents.length && index < baseComponents.length; ++index) {
-			if (!targetComponents[index].equals(baseComponents[index]))
+			if (!targetComponents[index].equals(baseComponents[index])) {
 				break;
+			}
 		}
 		int tempLevel = 0;
-		StringBuilder result = new StringBuilder();
+		final StringBuilder result = new StringBuilder();
 		if (index != baseComponents.length) {
 			// backtrack to base directory
 			for (int i = index; i < baseComponents.length; ++i) {
@@ -270,8 +270,9 @@ public class BlendFile {
 				dirLevelsToInclude = tempLevel;
 			}
 		}
-		for (; index < targetComponents.length; ++index)
+		for (; index < targetComponents.length; ++index) {
 			result.append(targetComponents[index] + File.separator);
+		}
 		if (!target.getPath().endsWith("/") && !target.getPath().endsWith("\\")) {
 			// remove final path separator
 			result.delete(result.length() - "/".length(), result.length());

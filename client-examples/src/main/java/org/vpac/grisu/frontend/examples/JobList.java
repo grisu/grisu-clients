@@ -14,22 +14,22 @@ public final class JobList {
 			throws ServiceInterfaceException, LoginException,
 			NoSuchJobException {
 
-		ServiceInterface si = LoginManager.loginCommandline("ARCS");
+		final ServiceInterface si = LoginManager.loginCommandline("ARCS");
 
-		DtoJobs test = si.ps(null, true);
+		final DtoJobs test = si.ps(null, true);
 
 		System.out.println("ps");
-		for (DtoJob job : test.getAllJobs()) {
+		for (final DtoJob job : test.getAllJobs()) {
 			System.out.println(job.jobname());
 		}
 
 		System.out.println("alljobnames");
-		for (String name : si.getAllJobnames(null).asArray()) {
+		for (final String name : si.getAllJobnames(null).asArray()) {
 			System.out.println(name);
 		}
 
 		System.out.println("all multipartjobnames");
-		for (String name : si.getAllBatchJobnames(null).asArray()) {
+		for (final String name : si.getAllBatchJobnames(null).asArray()) {
 			System.out.println(name);
 		}
 
@@ -37,7 +37,7 @@ public final class JobList {
 			System.out.println("Rechecking...");
 			try {
 				Thread.sleep(2000);
-			} catch (InterruptedException e) {
+			} catch (final InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

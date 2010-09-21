@@ -14,19 +14,18 @@ public class FileListingTest {
 
 	public static void main(final String[] args) throws Exception {
 
-		Date start = new Date();
+		final Date start = new Date();
 
 		final ServiceInterface si = LoginManager.loginCommandline();
 
 		final GrisuRegistry registry = GrisuRegistryManager.getDefault(si);
 		final FileManager fileManager = registry.getFileManager();
 
-		DtoFolder folder = fileManager
-				.ls(
-						"gsiftp://ng2.vpac.org/home/grid-admin/DC_au_DC_org_DC_arcs_DC_slcs_O_VPAC_CN_Markus_Binsteiner_qTrDzHY7L1aKo3WSy8623-7bjgM/grid-test-jobs/blast_2.2.21_d4fd6c4c-25e6-4cf0-8898-93cef219e996",
+		final DtoFolder folder = fileManager
+				.ls("gsiftp://ng2.vpac.org/home/grid-admin/DC_au_DC_org_DC_arcs_DC_slcs_O_VPAC_CN_Markus_Binsteiner_qTrDzHY7L1aKo3WSy8623-7bjgM/grid-test-jobs/blast_2.2.21_d4fd6c4c-25e6-4cf0-8898-93cef219e996",
 						1);
 
-		for (DtoFile file : folder.getChildrenFiles()) {
+		for (final DtoFile file : folder.getChildrenFiles()) {
 			System.out.println("Name: " + file.getName() + ", size: "
 					+ file.getSize());
 		}

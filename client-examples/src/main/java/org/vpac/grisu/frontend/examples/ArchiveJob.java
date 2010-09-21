@@ -14,42 +14,43 @@ import au.org.arcs.jcommons.constants.Constants;
 public final class ArchiveJob {
 
 	public static void main(final String[] args)
-	throws ServiceInterfaceException, LoginException,
-	NoSuchJobException {
-
+			throws ServiceInterfaceException, LoginException,
+			NoSuchJobException {
 
 		ServiceInterface si = null;
 
 		si = LoginManager.loginCommandline();
 
-		si.setUserProperty(Constants.DEFAULT_ARCHIVE_LOCATION, "gsiftp://ng2.vpac.org/home/grid-startup/DC_au_DC_org_DC_arcs_DC_slcs_O_VPAC_CN_Markus_Binsteiner_qTrDzHY7L1aKo3WSy8623-7bjgM/archive");
+		si.setUserProperty(
+				Constants.DEFAULT_ARCHIVE_LOCATION,
+				"gsiftp://ng2.vpac.org/home/grid-startup/DC_au_DC_org_DC_arcs_DC_slcs_O_VPAC_CN_Markus_Binsteiner_qTrDzHY7L1aKo3WSy8623-7bjgM/archive");
 
-		DtoJobs test = si.ps(null, true);
+		final DtoJobs test = si.ps(null, true);
 
-		//		System.out.println("ps");
-		//		for (DtoJob job : test.getAllJobs()) {
-		//			System.out.println(job.jobname());
-		//		}
+		// System.out.println("ps");
+		// for (DtoJob job : test.getAllJobs()) {
+		// System.out.println(job.jobname());
+		// }
 
 		System.out.println("alljobnames");
-		for (String name : si.getAllJobnames(null).asArray()) {
+		for (final String name : si.getAllJobnames(null).asArray()) {
 			System.out.println(name);
 		}
 
 		System.out.println("all multipartjobnames");
-		for (String name : si.getAllBatchJobnames(null).asArray()) {
+		for (final String name : si.getAllBatchJobnames(null).asArray()) {
 			System.out.println(name);
 		}
 
-		for ( String jobToArchive : si.getAllJobnames(null).asArray() ) {
+		for (final String jobToArchive : si.getAllJobnames(null).asArray()) {
 
-			System.out.println("Job to archive: "+jobToArchive);
+			System.out.println("Job to archive: " + jobToArchive);
 
 			try {
 				si.archiveJob(jobToArchive, null);
-			} catch (JobPropertiesException e) {
+			} catch (final JobPropertiesException e) {
 				e.printStackTrace();
-			} catch (RemoteFileSystemException e) {
+			} catch (final RemoteFileSystemException e) {
 				e.printStackTrace();
 			}
 		}

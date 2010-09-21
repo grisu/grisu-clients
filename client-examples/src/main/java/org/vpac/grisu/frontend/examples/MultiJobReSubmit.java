@@ -19,17 +19,17 @@ public class MultiJobReSubmit {
 
 	public static void main(final String[] args) throws Exception {
 
-		ExecutorService executor = Executors.newFixedThreadPool(10);
+		final ExecutorService executor = Executors.newFixedThreadPool(10);
 
-		String username = args[0];
-		char[] password = args[1].toCharArray();
+		final String username = args[0];
+		final char[] password = args[1].toCharArray();
 
-		LoginParams loginParams = new LoginParams(
+		final LoginParams loginParams = new LoginParams(
 		// "http://localhost:8080/xfire-backend/services/grisu",
-				// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
-				// "https://ngportal.vpac.org/grisu-ws/services/grisu",
-				// "https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
-				// "http://localhost:8080/enunciate-backend/soap/GrisuService",
+		// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
+		// "https://ngportal.vpac.org/grisu-ws/services/grisu",
+		// "https://ngportal.vpac.org/grisu-ws/soap/GrisuService",
+		// "http://localhost:8080/enunciate-backend/soap/GrisuService",
 				"Local",
 				// "ARCS_DEV",
 				// "Dummy",
@@ -40,12 +40,13 @@ public class MultiJobReSubmit {
 
 		final GrisuRegistry registry = GrisuRegistryManager.getDefault(si);
 
-		Date start = new Date();
+		final Date start = new Date();
 		final String multiJobName = "sleep100";
 
 		si.restartBatchJob(multiJobName, null, null);
 
-		BatchJobObject multiPartJob = new BatchJobObject(si, multiJobName, true);
+		final BatchJobObject multiPartJob = new BatchJobObject(si,
+				multiJobName, true);
 
 		while (!multiPartJob.isFinished(true)) {
 			System.out.println("Not finished yet...");
@@ -54,7 +55,7 @@ public class MultiJobReSubmit {
 			Thread.sleep(2000);
 		}
 
-		for (JobObject job : multiPartJob.getJobs()) {
+		for (final JobObject job : multiPartJob.getJobs()) {
 			System.out.println("-------------------------------");
 			System.out.println(job.getJobname() + ": "
 					+ job.getStatusString(false));

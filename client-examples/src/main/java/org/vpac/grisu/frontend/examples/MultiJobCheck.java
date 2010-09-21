@@ -12,38 +12,39 @@ public class MultiJobCheck {
 
 	public static void main(final String[] args) throws Exception {
 
-		String username = args[0];
-		char[] password = args[1].toCharArray();
+		final String username = args[0];
+		final char[] password = args[1].toCharArray();
 
-		Date startDate = new Date();
+		final Date startDate = new Date();
 
-		LoginParams loginParams = new LoginParams(
-				// "http://localhost:8080/xfire-backend/services/grisu",
-				// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
-				// "https://ngportal.vpac.org/grisu-ws/services/grisu",
+		final LoginParams loginParams = new LoginParams(
+		// "http://localhost:8080/xfire-backend/services/grisu",
+		// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
+		// "https://ngportal.vpac.org/grisu-ws/services/grisu",
 				"Local",
 				// "ARCS_DEV",
 				username, password);
 
 		final ServiceInterface si = ServiceInterfaceFactory
-		.createInterface(loginParams);
+				.createInterface(loginParams);
 
 		final String multiJobName = "200jobs";
 
-		BatchJobObject newObject = new BatchJobObject(si, multiJobName, false);
+		final BatchJobObject newObject = new BatchJobObject(si, multiJobName,
+				false);
 
 		newObject.monitorProgress(15, null, true);
 
 		newObject.downloadResults(true, new File(
-		"/home/markus/Desktop/multiTest"), new String[] { "stdout",
-		"stderr" }, false, true);
+				"/home/markus/Desktop/multiTest"), new String[] { "stdout",
+				"stderr" }, false, true);
 
-		Date endDate = new Date();
+		final Date endDate = new Date();
 
 		System.out.println("Started: " + startDate.toString());
 		System.out.println("Ended: " + endDate.toString() + "\n");
 
-		for (Date date : newObject.getLogMessages(false).keySet()) {
+		for (final Date date : newObject.getLogMessages(false).keySet()) {
 			System.out.println(date.toString() + ": "
 					+ newObject.getLogMessages(false).get(date));
 		}

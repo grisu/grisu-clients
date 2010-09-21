@@ -17,13 +17,13 @@ public class SimpleJobSubmissionWithExternalInputFileUrl {
 		ServiceInterface si = null;
 		try {
 			si = LoginManager.loginCommandline();
-		} catch (LoginException e) {
+		} catch (final LoginException e) {
 			System.err.println("Could not login: " + e.getLocalizedMessage());
 			System.exit(1);
 		}
 
 		System.out.println("Creating job...");
-		JobObject job = new JobObject(si);
+		final JobObject job = new JobObject(si);
 		job.setApplication("UnixCommands");
 		job.setTimestampJobname("externalInput");
 		System.out.println("Set jobname to be: " + job.getJobname());
@@ -36,7 +36,7 @@ public class SimpleJobSubmissionWithExternalInputFileUrl {
 		try {
 			System.out.println("Creating job on backend...");
 			job.createJob("/ACC");
-		} catch (JobPropertiesException e) {
+		} catch (final JobPropertiesException e) {
 			System.err.println("Could not create job: "
 					+ e.getLocalizedMessage());
 			System.exit(1);
@@ -45,11 +45,11 @@ public class SimpleJobSubmissionWithExternalInputFileUrl {
 		try {
 			System.out.println("Submitting job to the grid...");
 			job.submitJob();
-		} catch (JobSubmissionException e) {
+		} catch (final JobSubmissionException e) {
 			System.err.println("Could not submit job: "
 					+ e.getLocalizedMessage());
 			System.exit(1);
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			System.err.println("Jobsubmission interrupted: "
 					+ e.getLocalizedMessage());
 			System.exit(1);

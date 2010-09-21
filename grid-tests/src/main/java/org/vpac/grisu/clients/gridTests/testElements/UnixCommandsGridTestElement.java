@@ -32,6 +32,7 @@ public class UnixCommandsGridTestElement extends GridTestElement {
 		super(info, version, submissionLocation, fqan);
 	}
 
+	@Override
 	protected boolean checkJobSuccess() {
 
 		if (JobConstants.DONE == this.jobObject.getStatus(true)) {
@@ -47,7 +48,7 @@ public class UnixCommandsGridTestElement extends GridTestElement {
 
 	@Override
 	protected JobObject createJobObject() {
-		JobObject jo = new JobObject(serviceInterface);
+		final JobObject jo = new JobObject(serviceInterface);
 
 		jo.setApplication(getTestInfo().getApplicationName());
 		jo.setApplicationVersion(this.version);

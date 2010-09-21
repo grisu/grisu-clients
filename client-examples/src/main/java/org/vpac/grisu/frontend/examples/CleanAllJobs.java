@@ -13,9 +13,9 @@ public final class CleanAllJobs {
 			throws ServiceInterfaceException, LoginException,
 			NoSuchJobException {
 
-		ServiceInterface si = LoginManager.loginCommandline("Local");
+		final ServiceInterface si = LoginManager.loginCommandline("Local");
 
-		DtoStringList allJobnames = si.getAllJobnames(null);
+		final DtoStringList allJobnames = si.getAllJobnames(null);
 
 		si.killJobs(allJobnames, true);
 

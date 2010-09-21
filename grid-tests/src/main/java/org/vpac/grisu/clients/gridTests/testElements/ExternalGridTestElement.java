@@ -20,28 +20,28 @@ public class ExternalGridTestElement extends GridTestElement {
 
 	public static void main(String[] args) throws Exception {
 
-		String username = args[0];
-		char[] password = args[1].toCharArray();
+		final String username = args[0];
+		final char[] password = args[1].toCharArray();
 
-		LoginParams loginParams = new LoginParams(
+		final LoginParams loginParams = new LoginParams(
 		// "http://localhost:8080/grisu-cxf/services/grisu",
-				// "https://ngportaldev.vpac.org/grisu-ws/services/grisu",
+		// "https://ngportaldev.vpac.org/grisu-ws/services/grisu",
 				"Local", username, password);
 
 		final ServiceInterface si = ServiceInterfaceFactory
 				.createInterface(loginParams);
 
-		Document jsdl = SeveralXMLHelpers
+		final Document jsdl = SeveralXMLHelpers
 				.loadXMLFile(new File(
 						"/home/markus/Workspaces/Grisu-SNAPSHOT/grisu/frontend/grisu-grid-tests/tests/pbstest/pbsTest.jsdl"));
 
 		try {
 			si.kill("pbsTest", true);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			//
 		}
 
-		JobObject job = new JobObject(si, jsdl);
+		final JobObject job = new JobObject(si, jsdl);
 
 		job.setSubmissionLocation("sque@edda-m:ng2.vpac.org");
 		job.createJob("/ARCS/NGAdmin");
@@ -50,10 +50,10 @@ public class ExternalGridTestElement extends GridTestElement {
 
 		job.waitForJobToFinish(5);
 
-		File stdout = job.getStdOutFile();
-		StringBuffer output = new StringBuffer();
+		final File stdout = job.getStdOutFile();
+		final StringBuffer output = new StringBuffer();
 
-		Properties testProperties = new Properties();
+		final Properties testProperties = new Properties();
 		testProperties
 				.load(new FileInputStream(
 						"/home/markus/Workspaces/Grisu-SNAPSHOT/grisu/frontend/grisu-grid-tests/tests/pbstest/grisu-test.properties"));
@@ -78,19 +78,22 @@ public class ExternalGridTestElement extends GridTestElement {
 	protected boolean checkJobSuccess() {
 
 		try {
-			String jobDir = jobObject.getJobDirectoryUrl();
+			final String jobDir = jobObject.getJobDirectoryUrl();
 			addMessage("Downloading output files from jobdirectory: " + jobDir);
 
-			File localCacheDir = GrisuRegistryManager.getDefault(serviceInterface).getFileManager().getLocalCacheFile(jobObject.getJobDirectoryUrl());
-			
-			for (String filename : ((GridExternalTestInfoImpl) getTestInfo())
+			final File localCacheDir = GrisuRegistryManager
+					.getDefault(serviceInterface).getFileManager()
+					.getLocalCacheFile(jobObject.getJobDirectoryUrl());
+
+			for (final String filename : ((GridExternalTestInfoImpl) getTestInfo())
 					.getOutputFiles()) {
 				addMessage("Downloading: " + filename + "...");
-				File file = jobObject.downloadAndCacheOutputFile(filename);
+				final File file = jobObject
+						.downloadAndCacheOutputFile(filename);
 			}
-			StringBuffer output = new StringBuffer();
+			final StringBuffer output = new StringBuffer();
 
-			int out = executeScript(localCacheDir, output);
+			final int out = executeScript(localCacheDir, output);
 
 			addMessage(output.toString());
 
@@ -99,7 +102,7 @@ public class ExternalGridTestElement extends GridTestElement {
 			} else {
 				return false;
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			addMessage("Could not check job success: "
 					+ e.getLocalizedMessage());
 			setPossibleExceptionForCurrentStage(e);
@@ -130,17 +133,16 @@ public class ExternalGridTestElement extends GridTestElement {
 	@Override
 	protected JobObject createJobObject() throws MdsInformationException {
 
-		Document jsdlDoc = ((GridExternalTestInfoImpl) getTestInfo())
+		final Document jsdlDoc = ((GridExternalTestInfoImpl) getTestInfo())
 				.getJsdlDoc();
 
 		// System.out.println(SeveralXMLHelpers.toStringWithoutAnnoyingExceptions(jsdlDoc));
 
-		JobObject job = new JobObject(serviceInterface, jsdlDoc);
-		for (String input : ((GridExternalTestInfoImpl) getTestInfo())
+		final JobObject job = new JobObject(serviceInterface, jsdlDoc);
+		for (final String input : ((GridExternalTestInfoImpl) getTestInfo())
 				.getInputFiles()) {
 			job.addInputFileUrl(((GridExternalTestInfoImpl) getTestInfo())
-					.getTestBaseDir()
-					+ File.separator + input);
+					.getTestBaseDir() + File.separator + input);
 		}
 
 		return job;
@@ -161,23 +163,23 @@ public class ExternalGridTestElement extends GridTestElement {
 
 			System.out.println("Running script using: " + externalCommand);
 
-			Process p = Runtime.getRuntime().exec(externalCommand);
+			final Process p = Runtime.getRuntime().exec(externalCommand);
 			p.waitFor();
 
-			BufferedReader stdOut = new BufferedReader(new InputStreamReader(p
-					.getInputStream()));
+			final BufferedReader stdOut = new BufferedReader(
+					new InputStreamReader(p.getInputStream()));
 
-			BufferedReader stdError = new BufferedReader(new InputStreamReader(
-					p.getErrorStream()));
+			final BufferedReader stdError = new BufferedReader(
+					new InputStreamReader(p.getErrorStream()));
 
 			// read the output from the command
-			StringBuffer out = new StringBuffer("Stdout:\n");
+			final StringBuffer out = new StringBuffer("Stdout:\n");
 			while ((s = stdOut.readLine()) != null) {
 				out.append(s + "\n");
 			}
 			out.append("\n");
 			// read any errors from the attempted command
-			StringBuffer err = new StringBuffer("Stderr:\n");
+			final StringBuffer err = new StringBuffer("Stderr:\n");
 			while ((s = stdError.readLine()) != null) {
 				err.append(s + "\n");
 			}
@@ -186,11 +188,11 @@ public class ExternalGridTestElement extends GridTestElement {
 			output.append(out);
 			output.append(err);
 
-			int exitValue = p.exitValue();
+			final int exitValue = p.exitValue();
 			output.append("\nExitValue: " + exitValue);
 
 			return exitValue;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			output.append("Execution of external command failed:\n"
 					+ e.getLocalizedMessage());

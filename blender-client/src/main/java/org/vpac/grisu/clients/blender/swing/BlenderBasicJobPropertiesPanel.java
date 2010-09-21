@@ -109,24 +109,25 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 				ColumnSpec.decode("max(50dlu;default)"),
 				FormFactory.RELATED_GAP_COLSPEC,
 				new ColumnSpec(ColumnSpec.FILL, Sizes.bounded(Sizes.PREFERRED,
-						Sizes.constant("50dlu", true), Sizes.constant("50dlu",
-								true)), 0),
-								FormFactory.RELATED_GAP_COLSPEC,
-								ColumnSpec.decode("max(30dlu;default)"),
-								FormFactory.RELATED_GAP_COLSPEC,
-								ColumnSpec.decode("max(15dlu;default):grow"),
-								FormFactory.RELATED_GAP_COLSPEC,
-								ColumnSpec.decode("max(50dlu;default)"),
-								FormFactory.RELATED_GAP_COLSPEC,
-								new ColumnSpec(ColumnSpec.FILL, Sizes.bounded(Sizes.PREFERRED,
-										Sizes.constant("23dlu", true), Sizes.constant("50dlu",
-												true)), 0),
-												FormFactory.RELATED_GAP_COLSPEC,
-												new ColumnSpec(ColumnSpec.FILL, Sizes.bounded(Sizes.PREFERRED,
-														Sizes.constant("23dlu", true), Sizes.constant("50dlu",
-																true)), 0), FormFactory.RELATED_GAP_COLSPEC,
-																ColumnSpec.decode("max(50dlu;default)"),
-																FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
+						Sizes.constant("50dlu", true),
+						Sizes.constant("50dlu", true)), 0),
+				FormFactory.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(30dlu;default)"),
+				FormFactory.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(15dlu;default):grow"),
+				FormFactory.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(50dlu;default)"),
+				FormFactory.RELATED_GAP_COLSPEC,
+				new ColumnSpec(ColumnSpec.FILL, Sizes.bounded(Sizes.PREFERRED,
+						Sizes.constant("23dlu", true),
+						Sizes.constant("50dlu", true)), 0),
+				FormFactory.RELATED_GAP_COLSPEC,
+				new ColumnSpec(ColumnSpec.FILL, Sizes.bounded(Sizes.PREFERRED,
+						Sizes.constant("23dlu", true),
+						Sizes.constant("50dlu", true)), 0),
+				FormFactory.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(50dlu;default)"),
+				FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
 				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
@@ -187,10 +188,10 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 			getStartLabel().setText("Min: " + blendFileObject.getStartFrame());
 			getEndLabel().setText("Max: " + blendFileObject.getEndFrame());
 
-		} catch (FileNotFoundException e) {
+		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 			return;
-		} catch (Exception ex) {
+		} catch (final Exception ex) {
 			ex.printStackTrace();
 
 			parent.addMessage("Could not parse blendfile: "
@@ -223,7 +224,7 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 				public void actionPerformed(ActionEvent arg0) {
 
 					String lastDir = ClientPropertiesManager
-					.getProperty(LAST_BLENDER_FILE_DIR);
+							.getProperty(LAST_BLENDER_FILE_DIR);
 					if (StringUtils.isBlank(lastDir)
 							|| !new File(lastDir).exists()) {
 						lastDir = System.getProperty("user.home");
@@ -238,8 +239,8 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 					// Set filter for Java source files.
 					fc.setFileFilter(BLEND_FILE_FILTER);
 
-					int result = fc
-					.showOpenDialog(BlenderBasicJobPropertiesPanel.this);
+					final int result = fc
+							.showOpenDialog(BlenderBasicJobPropertiesPanel.this);
 
 					if (result == JFileChooser.APPROVE_OPTION) {
 						new Thread() {
@@ -248,8 +249,8 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 								parent.lockUI(true);
 								ClientPropertiesManager.setProperty(
 										LAST_BLENDER_FILE_DIR, fc
-										.getCurrentDirectory()
-										.toString());
+												.getCurrentDirectory()
+												.toString());
 								parent.addMessage("Parsing blend file: "
 										+ fc.getSelectedFile().toString()
 										+ "\n");
@@ -262,7 +263,7 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 											.getParseMessage());
 									getBlendFileTextField().setText(
 											blendFileObject.getFile()
-											.toString());
+													.toString());
 								}
 								getChckbxSpecifyFrameRange().setEnabled(true);
 								parent.lockUI(false);
@@ -291,22 +292,22 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 			btnBrowse.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 
-					FolderChooser fc = new FolderChooser();
+					final FolderChooser fc = new FolderChooser();
 
 					String lastDir = ClientPropertiesManager
-					.getProperty(LAST_BLENDER_FILE_DIR);
+							.getProperty(LAST_BLENDER_FILE_DIR);
 					if (StringUtils.isBlank(lastDir)
 							|| !new File(lastDir).exists()) {
 						lastDir = System.getProperty("user.home");
 					}
 					fc.setCurrentDirectory(new File(lastDir));
 
-					int result = fc
-					.showOpenDialog(BlenderBasicJobPropertiesPanel.this
-							.getTopLevelAncestor());
+					final int result = fc
+							.showOpenDialog(BlenderBasicJobPropertiesPanel.this
+									.getTopLevelAncestor());
 					if (result == JFileChooser.APPROVE_OPTION) {
 
-						File temp = fc.getSelectedFolder();
+						final File temp = fc.getSelectedFolder();
 						if ((temp != null) && temp.exists()) {
 							getFluidsfolderTextField().setText(temp.toString());
 							setFluidsFolder(temp);
@@ -324,12 +325,13 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 	private JCheckBox getChckbxSpecifyFrameRange() {
 		if (chckbxSpecifyFrameRange == null) {
 			chckbxSpecifyFrameRange = new JCheckBox(
-			"Specify frame range to render");
+					"Specify frame range to render");
 			chckbxSpecifyFrameRange.setEnabled(false);
 			chckbxSpecifyFrameRange.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 
-					boolean checked = chckbxSpecifyFrameRange.isSelected();
+					final boolean checked = chckbxSpecifyFrameRange
+							.isSelected();
 					enableManualFrameSelection(checked);
 
 				}
@@ -340,9 +342,9 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 
 	public int getCurrentWalltimeInSeconds() {
 
-		int hours = Integer.parseInt((String) getHoursCombobox()
+		final int hours = Integer.parseInt((String) getHoursCombobox()
 				.getSelectedItem());
-		int minutes = Integer.parseInt((String) getMinutesCombobox()
+		final int minutes = Integer.parseInt((String) getMinutesCombobox()
 				.getSelectedItem());
 
 		return hours * 3600 + minutes * 60;
@@ -392,7 +394,7 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 	}
 
 	public String getFormat() {
-		return (String)getFormatCombobox().getSelectedItem();
+		return (String) getFormatCombobox().getSelectedItem();
 	}
 
 	private JComboBox getFormatCombobox() {
@@ -518,7 +520,7 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 	private JLabel getLblWalltimePerFrame() {
 		if (lblWalltimePerFrame == null) {
 			lblWalltimePerFrame = new JLabel(
-			"Walltime per frame (for most complex frame)");
+					"Walltime per frame (for most complex frame)");
 		}
 		return lblWalltimePerFrame;
 	}
@@ -654,7 +656,7 @@ public class BlenderBasicJobPropertiesPanel extends JPanel {
 
 		voModel.removeAllElements();
 
-		for ( String vo : vos ) {
+		for (final String vo : vos) {
 			voModel.addElement(vo);
 		}
 

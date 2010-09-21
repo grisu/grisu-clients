@@ -33,9 +33,9 @@ public final class SuperMonsterBatchJob {
 			totalNumberOfJobs = Integer.parseInt(args[3]);
 		}
 
-		ExecutorService submissionExecutor = Executors
+		final ExecutorService submissionExecutor = Executors
 				.newFixedThreadPool(simultaniousJobs);
-		ExecutorService killingExecutor = Executors
+		final ExecutorService killingExecutor = Executors
 				.newFixedThreadPool(simultaniousJobs);
 
 		final ServiceInterface si = LoginManager.loginCommandline("Local");
@@ -52,7 +52,7 @@ public final class SuperMonsterBatchJob {
 		for (int i = 0; i < totalNumberOfJobs; i++) {
 
 			final int index = new Integer(i);
-			Thread temp = new Thread() {
+			final Thread temp = new Thread() {
 
 				@Override
 				public void run() {
@@ -64,8 +64,7 @@ public final class SuperMonsterBatchJob {
 								+ startDate.getTime());
 						job.setCommandline("echo \"Hello Brecca!\"");
 						// job.addInputFileUrl("/home/markus/test.txt");
-						job
-								.setSubmissionLocation("dque@brecca-m:ng2.vpac.monash.edu.au");
+						job.setSubmissionLocation("dque@brecca-m:ng2.vpac.monash.edu.au");
 						// job.addModule("java");
 						job.createJob("/ARCS/VPAC");
 
@@ -73,11 +72,11 @@ public final class SuperMonsterBatchJob {
 
 						jobObjects.add(job);
 
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						if (job != null) {
 							try {
 								job.kill(true);
-							} catch (Exception e1) {
+							} catch (final Exception e1) {
 								System.err.println(e1.getLocalizedMessage());
 							}
 							failedJobObjects.add(job);
@@ -93,7 +92,7 @@ public final class SuperMonsterBatchJob {
 		submissionExecutor.awaitTermination(36000, TimeUnit.SECONDS);
 		final Date allSubmissionFinishedDate = new Date();
 
-		DtoJobs ps = si.ps(null, true);
+		final DtoJobs ps = si.ps(null, true);
 
 		final Date psDate = new Date();
 
@@ -109,13 +108,13 @@ public final class SuperMonsterBatchJob {
 		System.out.println("Starting to clean all jobs...");
 
 		for (final JobObject job : jobObjects) {
-			Thread temp = new Thread() {
+			final Thread temp = new Thread() {
 				@Override
 				public void run() {
 					try {
 						job.kill(true);
 						successfulJobObjects.add(job);
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						System.err.println(e.getLocalizedMessage());
 						killFailedOjbects.add(job);
 					}

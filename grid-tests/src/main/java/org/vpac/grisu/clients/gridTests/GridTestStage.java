@@ -12,7 +12,7 @@ public class GridTestStage {
 
 	protected SortedMap<Date, String> messages = new TreeMap<Date, String>();
 
-	private Date beginDate;
+	private final Date beginDate;
 
 	private Date endDate;
 
@@ -26,7 +26,7 @@ public class GridTestStage {
 		while (messages.get(now) != null) {
 			try {
 				Thread.sleep(1);
-			} catch (InterruptedException e) {
+			} catch (final InterruptedException e) {
 				e.printStackTrace();
 				throw new RuntimeException(e);
 			}
@@ -34,6 +34,7 @@ public class GridTestStage {
 		}
 		messages.put(new Date(), message);
 	}
+
 	public Date getBeginDate() {
 		return beginDate;
 	}
@@ -47,8 +48,8 @@ public class GridTestStage {
 	}
 
 	public String getMessagesString() {
-		StringBuffer result = new StringBuffer();
-		for (Date date : messages.keySet()) {
+		final StringBuffer result = new StringBuffer();
+		for (final Date date : messages.keySet()) {
 			result.append(date.toString() + ": " + messages.get(date) + "\n");
 		}
 		return result.toString();
@@ -75,7 +76,7 @@ public class GridTestStage {
 	}
 
 	public void printMessages() {
-		for (Date date : messages.keySet()) {
+		for (final Date date : messages.keySet()) {
 			System.out.println(date.toString() + ": " + messages.get(date));
 		}
 	}

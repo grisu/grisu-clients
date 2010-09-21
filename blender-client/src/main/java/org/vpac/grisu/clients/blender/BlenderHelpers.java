@@ -14,7 +14,7 @@ public class BlenderHelpers {
 					+ " -a";
 		}
 
-		String result = "blender " + "-b " + pathToInputFiles + "/"
+		final String result = "blender " + "-b " + pathToInputFiles + "/"
 				+ blenderFilename + " -F " + format.toString() + " -o "
 				+ outputFilename + framesToCalculatePart;
 

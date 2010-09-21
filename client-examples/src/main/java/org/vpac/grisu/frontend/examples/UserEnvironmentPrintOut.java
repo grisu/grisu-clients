@@ -14,7 +14,7 @@ public class UserEnvironmentPrintOut {
 
 	public static void main(final String[] args) throws Exception {
 
-		Date start = new Date();
+		final Date start = new Date();
 
 		final ServiceInterface si = LoginManager.loginCommandline();
 
@@ -22,21 +22,21 @@ public class UserEnvironmentPrintOut {
 		final UserEnvironmentManager uem = GrisuRegistryManager.getDefault(si)
 				.getUserEnvironmentManager();
 
-		for (FileSystemItem item : uem.getFileSystems()) {
+		for (final FileSystemItem item : uem.getFileSystems()) {
 			System.out.println(item.getAlias());
 			System.out.println(item.getRootFile().getUrl());
 			System.out.println(item.getType());
 		}
 
-		ApplicationInformation info = registry
+		final ApplicationInformation info = registry
 				.getApplicationInformation("gold");
 
-		for (String subLoc : info.getAvailableAllSubmissionLocations()) {
+		for (final String subLoc : info.getAvailableAllSubmissionLocations()) {
 			System.out.println(subLoc);
 		}
 
 		System.out.println("XXXXX");
-		for (String subLoc : info
+		for (final String subLoc : info
 				.getAvailableSubmissionLocationsForFqan("/ARCS/BeSTGRID/Drug_discovery/Local")) {
 			System.out.println(subLoc);
 		}

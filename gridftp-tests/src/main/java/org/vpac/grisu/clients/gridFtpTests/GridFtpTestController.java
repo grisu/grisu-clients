@@ -40,9 +40,9 @@ public class GridFtpTestController {
 
 		String name = GridFtpTestController.class.getName();
 		name = name.replace('.', '/') + ".class";
-		URL url = GridFtpTestController.class.getClassLoader()
+		final URL url = GridFtpTestController.class.getClassLoader()
 				.getResource(name);
-		String path = url.getPath();
+		final String path = url.getPath();
 		// System.out.println("Executable path: "+path);
 		String baseDir = null;
 		if (url.toString().startsWith("jar:")) {
@@ -55,13 +55,14 @@ public class GridFtpTestController {
 
 		System.out.println("Using directory: " + baseDir);
 
-		GridFtpTestController gftc = new GridFtpTestController(args, baseDir);
+		final GridFtpTestController gftc = new GridFtpTestController(args,
+				baseDir);
 
 		gftc.start();
 
 	}
 
-	private List<String> failedTestRunIds = Collections
+	private final List<String> failedTestRunIds = Collections
 			.synchronizedList(new LinkedList<String>());
 
 	private final String grisu_base_directory;
@@ -75,8 +76,8 @@ public class GridFtpTestController {
 	private String[] gridtestNames;
 	private final String[] fqans;
 	private String output = null;
-	private String[] excludes;
-	private String[] includes;
+	private final String[] excludes;
+	private final String[] includes;
 
 	private final int threads;
 
@@ -84,7 +85,7 @@ public class GridFtpTestController {
 	private final int timeout;
 	private final boolean displayOnlyFailed;
 
-	private List<OutputModule> outputModules = new LinkedList<OutputModule>();
+	private final List<OutputModule> outputModules = new LinkedList<OutputModule>();
 
 	public GridFtpTestController(String[] args,
 			String grisu_base_directory_param) {
@@ -98,12 +99,12 @@ public class GridFtpTestController {
 
 		Environment.setGrisuDirectory(this.grisu_base_directory);
 
-		Map<Dependency, String> dependencies = new HashMap<Dependency, String>();
+		final Map<Dependency, String> dependencies = new HashMap<Dependency, String>();
 
 		dependencies.put(Dependency.BOUNCYCASTLE, "jdk15-143");
 
-		DependencyManager.addDependencies(dependencies, ArcsEnvironment
-				.getArcsCommonJavaLibDirectory());
+		DependencyManager.addDependencies(dependencies,
+				ArcsEnvironment.getArcsCommonJavaLibDirectory());
 
 		ClasspathHacker.initFolder(Environment.getGrisuPluginDirectory(),
 				new GrisuPluginFilenameFilter());
@@ -114,15 +115,15 @@ public class GridFtpTestController {
 			// .setCustomHibernateConfigFile(this.grisu_base_directory
 			// + File.separator + "grid-tests-hibernate-file.cfg.xml");
 
-			Class hsfc = Class
+			final Class hsfc = Class
 					.forName("org.vpac.grisu.backend.hibernate.HibernateSessionFactory");
-			Method method = hsfc.getMethod("setCustomHibernateConfigFile",
-					String.class);
+			final Method method = hsfc.getMethod(
+					"setCustomHibernateConfigFile", String.class);
 
 			method.invoke(null, this.grisu_base_directory + File.separator
 					+ "grid-tests-hibernate-file.cfg.xml");
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			// doesn't really matter
 		}
 
@@ -135,7 +136,7 @@ public class GridFtpTestController {
 		output = grid_tests_directory + File.separator + "testResults_"
 				+ new Date().getTime() + ".log";
 
-		GridFtpTestCommandlineOptions options = new GridFtpTestCommandlineOptions(
+		final GridFtpTestCommandlineOptions options = new GridFtpTestCommandlineOptions(
 				args);
 
 		threads = options.getSimultaneousThreads();
@@ -145,19 +146,19 @@ public class GridFtpTestController {
 		if (options.getMyproxyUsername() != null
 				&& options.getMyproxyUsername().length() != 0) {
 			try {
-				ConsoleReader consoleReader = new ConsoleReader();
-				char[] password = consoleReader.readLine(
+				final ConsoleReader consoleReader = new ConsoleReader();
+				final char[] password = consoleReader.readLine(
 						"Please enter your myproxy password: ",
 						new Character('*')).toCharArray();
 
-				LoginParams loginParams = new LoginParams(
+				final LoginParams loginParams = new LoginParams(
 				// "http://localhost:8080/grisu-ws/services/grisu",
-						// "https://ngportaldev.vpac.org/grisu-ws/services/grisu",
+				// "https://ngportaldev.vpac.org/grisu-ws/services/grisu",
 						"Local", options.getMyproxyUsername(), password);
 
 				serviceInterface = LoginManager.login(null, null, null, null,
 						loginParams);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				System.out.println("Could not login: "
 						+ e.getLocalizedMessage());
 				System.exit(1);
@@ -165,13 +166,14 @@ public class GridFtpTestController {
 		} else {
 			// trying to get local proxy
 
-			LoginParams loginParams = new LoginParams("Local", null, null,
-					"myproxy2.arcs.org.au", "443");
+			final LoginParams loginParams = new LoginParams("Local", null,
+					null, "myproxy2.arcs.org.au", "443");
 			try {
-				serviceInterface = LoginManager.login(LocalProxy
-						.loadGlobusCredential(), null, null, null, loginParams);
+				serviceInterface = LoginManager.login(
+						LocalProxy.loadGlobusCredential(), null, null, null,
+						loginParams);
 
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				System.out.println("Could not login: "
 						+ e.getLocalizedMessage());
 				System.exit(1);
@@ -205,21 +207,22 @@ public class GridFtpTestController {
 
 			gridtestNames = null;
 
-			Set<MountPoint> mountPointsToUse = calculateMountPointsToUse();
-			List<GridFtpTestElement> elements = GridFtpTestElement
+			final Set<MountPoint> mountPointsToUse = calculateMountPointsToUse();
+			final List<GridFtpTestElement> elements = GridFtpTestElement
 					.generateGridTestInfos(this, gridtestNames,
 							mountPointsToUse);
 
 			System.out.println("Available tests: ");
-			for (GridFtpTestElement element : elements) {
+			for (final GridFtpTestElement element : elements) {
 				System.out.println("Testname: " + element.getTestName());
 				System.out.println();
 				System.out.println("Description: " + element.getDescription());
 				System.out.println();
 				System.out.println("Test elements:");
 				System.out.println();
-				for (List<GridFtpActionItem> list : element.getActionItems()) {
-					for (GridFtpActionItem item : list) {
+				for (final List<GridFtpActionItem> list : element
+						.getActionItems()) {
+					for (final GridFtpActionItem item : list) {
 						System.out.println("\tAction:\t"
 								+ item.getAction().getAction().toString()
 								+ " (Actionname: " + item.getAction().getName()
@@ -251,22 +254,22 @@ public class GridFtpTestController {
 
 	private Set<MountPoint> calculateMountPointsToUse() {
 
-		Set<MountPoint> mps = new HashSet<MountPoint>();
+		final Set<MountPoint> mps = new HashSet<MountPoint>();
 
-		for (String fqan : fqans) {
+		for (final String fqan : fqans) {
 
-			for (MountPoint mp : registry.getUserEnvironmentManager()
+			for (final MountPoint mp : registry.getUserEnvironmentManager()
 					.getMountPoints(fqan)) {
 
 				boolean ignoreThisMountPoint = false;
 				if (includes.length == 0) {
-					for (String filter : excludes) {
+					for (final String filter : excludes) {
 						if (mp.getRootUrl().indexOf(filter) >= 0) {
 							ignoreThisMountPoint = true;
 						}
 					}
 				} else {
-					for (String filter : includes) {
+					for (final String filter : includes) {
 						if (mp.getRootUrl().indexOf(filter) < 0) {
 							ignoreThisMountPoint = true;
 						}
@@ -297,23 +300,23 @@ public class GridFtpTestController {
 
 	public void start() {
 
-		Set<MountPoint> mountPointsToUse = calculateMountPointsToUse();
+		final Set<MountPoint> mountPointsToUse = calculateMountPointsToUse();
 
-		List<GridFtpTestElement> elements = GridFtpTestElement
+		final List<GridFtpTestElement> elements = GridFtpTestElement
 				.generateGridTestInfos(this, gridtestNames, mountPointsToUse);
 
-		for (GridFtpTestElement element : elements) {
+		for (final GridFtpTestElement element : elements) {
 
-			for (List<GridFtpActionItem> oneTestStage : element
+			for (final List<GridFtpActionItem> oneTestStage : element
 					.getActionItems()) {
 
 				System.out.println("Execute: "
 						+ oneTestStage.get(0).getAction().getName());
 
-				ExecutorService actionExecutor = Executors
+				final ExecutorService actionExecutor = Executors
 						.newFixedThreadPool(threads);
 
-				for (GridFtpActionItem item : oneTestStage) {
+				for (final GridFtpActionItem item : oneTestStage) {
 
 					if (!failedTestRunIds.contains(item.runId())) {
 						actionExecutor.execute(item.createActionThread());
@@ -326,7 +329,7 @@ public class GridFtpTestController {
 
 				try {
 					actionExecutor.awaitTermination(3600, TimeUnit.SECONDS);
-				} catch (InterruptedException e) {
+				} catch (final InterruptedException e) {
 					System.err.println("Executor interrupted...");
 					System.exit(1);
 				}
@@ -334,14 +337,14 @@ public class GridFtpTestController {
 			}
 		}
 
-		for (OutputModule module : outputModules) {
-			for (GridFtpTestElement element : elements) {
+		for (final OutputModule module : outputModules) {
+			for (final GridFtpTestElement element : elements) {
 				module.writeTestElement(element);
 			}
 		}
 
-		StringBuffer resultAll = new StringBuffer();
-		for (GridFtpTestElement element : elements) {
+		final StringBuffer resultAll = new StringBuffer();
+		for (final GridFtpTestElement element : elements) {
 
 			resultAll.append(element.getResultsForThisTest(displayOnlyFailed,
 					false, false));

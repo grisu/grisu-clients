@@ -14,24 +14,31 @@ public class ResourceInfo {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		ServiceInterface si = LoginManager.loginCommandline();
+		final ServiceInterface si = LoginManager.loginCommandline();
 
-		GrisuRegistry registry = GrisuRegistryManager.getDefault(si);
+		final GrisuRegistry registry = GrisuRegistryManager.getDefault(si);
 
-		for ( String app : args ) {
+		for (final String app : args) {
 
-			System.out.println("Application: "+app);
-			ApplicationInformation info = registry.getApplicationInformation(app);
+			System.out.println("Application: " + app);
+			final ApplicationInformation info = registry
+					.getApplicationInformation(app);
 
-			for ( String subLoc : info.getAvailableAllSubmissionLocations() ) {
+			for (final String subLoc : info
+					.getAvailableAllSubmissionLocations()) {
 
-				System.out.println("\tSubmission location: "+subLoc);
+				System.out.println("\tSubmission location: " + subLoc);
 				System.out.println("\t Versions:");
-				for ( String version : info.getAvailableVersions(subLoc) ) {
-					System.out.println("\t\t"+version);
+				for (final String version : info.getAvailableVersions(subLoc)) {
+					System.out.println("\t\t" + version);
 					System.out.println("\t\t\tDetails:");
-					for ( String key : info.getApplicationDetails(subLoc, version).keySet() ) {
-						System.out.println("\t\t\t\t"+key+":\t"+info.getApplicationDetails(subLoc, version).get(key));
+					for (final String key : info.getApplicationDetails(subLoc,
+							version).keySet()) {
+						System.out.println("\t\t\t\t"
+								+ key
+								+ ":\t"
+								+ info.getApplicationDetails(subLoc, version)
+										.get(key));
 					}
 
 				}
@@ -42,7 +49,6 @@ public class ResourceInfo {
 			System.out.println();
 
 		}
-
 
 	}
 

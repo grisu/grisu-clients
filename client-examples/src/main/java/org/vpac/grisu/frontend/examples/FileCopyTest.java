@@ -13,13 +13,13 @@ public class FileCopyTest {
 
 	public static void main(final String[] args) throws Exception {
 
-		String username = args[0];
-		char[] password = args[1].toCharArray();
+		final String username = args[0];
+		final char[] password = args[1].toCharArray();
 
-		LoginParams loginParams = new LoginParams(
+		final LoginParams loginParams = new LoginParams(
 		// "http://localhost:8080/xfire-backend/services/grisu",
-				// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
-				// "https://ngportaldev.vpac.org/grisu-ws/services/grisu",
+		// "https://ngportal.vpac.org/grisu-ws/soap/EnunciateServiceInterfaceService",
+		// "https://ngportaldev.vpac.org/grisu-ws/services/grisu",
 				"Local", username, password);
 
 		final ServiceInterface si = ServiceInterfaceFactory
@@ -28,20 +28,20 @@ public class FileCopyTest {
 		final GrisuRegistry registry = GrisuRegistryManager.getDefault(si);
 		final FileManager fileManager = registry.getFileManager();
 
-		String target = "gsiftp://ng2.vpac.org/home/grid-admin/C_AU_O_APACGrid_OU_VPAC_CN_Markus_Binsteiner";
+		final String target = "gsiftp://ng2.vpac.org/home/grid-admin/C_AU_O_APACGrid_OU_VPAC_CN_Markus_Binsteiner";
 		// DtoFolder folder =
 		// si.ls("gsiftp://ng2.vpac.org/home/grid-admin/C_AU_O_APACGrid_OU_VPAC_CN_Markus_Binsteiner",
 		// 0);
 
-		String[] sources = new String[] {
+		final String[] sources = new String[] {
 				// "gsiftp://ng2.canterbury.ac.nz/home/grid-cloud/C_AU_O_APACGrid_OU_VPAC_CN_Markus_Binsteiner/grisu-multijob-dir/longJob",
 				"gsiftp://ng2.canterbury.ac.nz/home/grid-admin/C_AU_O_APACGrid_OU_VPAC_CN_Markus_Binsteiner/simpleTestTarget.txt0",
 				"gsiftp://ng2.canterbury.ac.nz/home/grid-admin/C_AU_O_APACGrid_OU_VPAC_CN_Markus_Binsteiner/simpleTestTarget.txt1",
 				"gsiftp://ng2.canterbury.ac.nz/home/grid-admin/C_AU_O_APACGrid_OU_VPAC_CN_Markus_Binsteiner/simpleTestTarget.txt2",
 				"gsiftp://ng2.canterbury.ac.nz/home/grid-admin/C_AU_O_APACGrid_OU_VPAC_CN_Markus_Binsteiner/simpleTestTarget.txt3" };
 
-		String handle = si.cp(DtoStringList.fromStringArray(sources), target,
-				true, false);
+		final String handle = si.cp(DtoStringList.fromStringArray(sources),
+				target, true, false);
 		DtoActionStatus status;
 		do {
 			status = si.getActionStatus(handle);

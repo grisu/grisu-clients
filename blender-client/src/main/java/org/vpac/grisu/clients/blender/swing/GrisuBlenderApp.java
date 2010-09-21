@@ -29,7 +29,7 @@ public class GrisuBlenderApp implements WindowListener {
 
 		LoginManager.initEnvironment();
 
-		Toolkit tk = Toolkit.getDefaultToolkit();
+		final Toolkit tk = Toolkit.getDefaultToolkit();
 		tk.addAWTEventListener(WindowSaver.getInstance(),
 				AWTEvent.WINDOW_EVENT_MASK);
 
@@ -37,16 +37,17 @@ public class GrisuBlenderApp implements WindowListener {
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
+		} catch (final Exception e) {
 
 		}
 
 		EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				try {
-					GrisuBlenderApp window = new GrisuBlenderApp();
+					final GrisuBlenderApp window = new GrisuBlenderApp();
 					window.frame.setVisible(true);
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -92,12 +93,12 @@ public class GrisuBlenderApp implements WindowListener {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		frame.getContentPane().setLayout(new BorderLayout());
-		Set<String> apps = new HashSet<String>();
+		final Set<String> apps = new HashSet<String>();
 		apps.add("blender");
 		mainPanel = new GrisuMainPanel(false, apps);
 		mainPanel.addJobCreationPanel(new BlenderJobCreationPanel());
 		// LoginPanel lp = new LoginPanel(mainPanel, true);
-		LoginPanel lp = new LoginPanel(mainPanel);
+		final LoginPanel lp = new LoginPanel(mainPanel);
 		frame.getContentPane().add(lp, BorderLayout.CENTER);
 	}
 

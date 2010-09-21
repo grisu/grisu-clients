@@ -9,7 +9,7 @@ public class GridTestElementFactory {
 
 	public static List<GridTestElement> createGridTestElement(String testname) {
 
-		List<GridTestElement> result = new LinkedList<GridTestElement>();
+		final List<GridTestElement> result = new LinkedList<GridTestElement>();
 
 		return result;
 	}
