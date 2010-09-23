@@ -19,6 +19,7 @@ import org.jdesktop.swingx.JXFrame;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.frontend.control.login.LoginManager;
 import org.vpac.grisu.frontend.model.events.ApplicationEventListener;
+import org.vpac.grisu.frontend.view.swing.GrisuMenu;
 import org.vpac.grisu.frontend.view.swing.login.LoginPanel;
 import org.vpac.grisu.frontend.view.swing.GrisuMainPanel;
 import org.vpac.grisu.frontend.view.swing.GrisuApplicationWindow;
@@ -42,9 +43,14 @@ public class Client extends GrisuApplicationWindow {
 		});
 
 	}
+	
+	private final GrisuMenu menu;
+
 
 	public Client() {
 		super();
+		menu = new GrisuMenu(this.getFrame());
+		getFrame().setJMenuBar(menu);
 	}
 
 	@Override
