@@ -1,13 +1,46 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>grisu-archetypes</artifactId>
-    <groupId>org.vpac.grisu</groupId>
-    <version>0.3-SNAPSHOT</version>
-  </parent>
-  <artifactId>grisu-swing-client-archetype</artifactId>
-  <packaging>jar</packaging>
-  <name>Grisu client archetype (Swing)</name>
-  <description>An archetype to setup a project to write a Grisu client in Java Swing.</description>
-  
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>grisu-archetypes</artifactId>
+		<groupId>org.vpac.grisu</groupId>
+		<version>0.3-SNAPSHOT</version>
+	</parent>
+	<artifactId>grisu-swing-client-archetype</artifactId>
+	<packaging>jar</packaging>
+	<name>Grisu client archetype (Swing)</name>
+	<description>An archetype to setup a project to write a Grisu client in Java Swing.</description>
+
+	<build>
+		<plugins>
+			<!-- replace version in file -->
+			<plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>maven-replacer-plugin</artifactId>
+				<version>1.3.2</version>
+				<executions>
+					<execution>
+						<!-- the replace should happen before the app is packaged -->
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+					</execution>
+				</executions>
+
+				<configuration>
+					<includes>
+						<!-- replace the token in this file -->
+						<include>target/classes/this-client.version</include>
+					</includes>
+					<regex>false</regex>
+					<!-- the name of the token to replace -->
+					<token>VERSION_TOKEN</token>
+					<!-- replace it with the maven project version -->
+					<value>${project.version}</value>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>

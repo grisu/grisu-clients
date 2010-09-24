@@ -16,7 +16,7 @@ public class Client {
 		System.out.println("Logging in...");
 		ServiceInterface si = null;
 		try {
-			si = LoginManager.loginCommandline();
+			si = LoginManager.loginCommandline("BeSTGRID");
 		} catch (Exception e) {
 			System.err.println("Could not login: "+e.getLocalizedMessage());
 			e.printStackTrace();

@@ -6,6 +6,10 @@
 	<packaging>jar</packaging>
 	<version>${version}</version>
 	<name>a grisu client</name>
+	
+	<properties>
+		<grisu-version>GRISU_VERSION</grisu-version>
+	</properties>	
 
 	<repositories>
 		<repository>
@@ -35,7 +39,7 @@
 		<dependency>
 			<groupId>org.vpac.grisu</groupId>
 			<artifactId>grisu-client</artifactId>
-			<version>0.3-SNAPSHOT</version>
+			<version>${grisu-version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -53,19 +57,18 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- further grisu dependencies, incuded by default but can be disabled 
+		<!-- further grisu dependencies, incuded by default but can be enabled/disabled 
 			if not needed and you want a smaller assembly -->
 		<!-- the grisu-core dependency is needed when you want to connect to a 
 			local backend (which is the only supported backend for grisu 0.3 at the moment -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.vpac.grisu</groupId>
 			<artifactId>grisu-core</artifactId>
-			<version>0.3-SNAPSHOT</version>
+			<version>${grisu-version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
-		</dependency>
-		<!-- this is needed for shibboleth login don't disable it for now even 
-			if you don't want to use shibboleth, I reckon you'll get classpath errors -->
+		</dependency>-->
+		<!-- this is needed for shibboleth logins - recommended that you don't disable it -->
 		<dependency>
 			<groupId>au.org.arcs.auth</groupId>
 			<artifactId>arcs-gsi</artifactId>
@@ -157,6 +160,7 @@
 
 		</plugins>
 	</build>
+
 
 </project>
 
