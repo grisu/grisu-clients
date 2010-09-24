@@ -186,7 +186,7 @@ public class ExampleJobCreationPanel extends JPanel implements JobCreationPanel,
 					job.setWalltimeInSeconds(60);
 
 					// this will only work if you are in the StartUp VO.
-					job.createJob("/ACC");
+					job.createJob("/ARCS/BeSTGRID");
 					//					job.createJob(em.getCurrentFqan());
 
 					job.submitJob();
