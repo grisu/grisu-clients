@@ -8,5 +8,6 @@
   	<resource>src/main/resources/log4j.properties</resource>
   	<resource>client.assembly.xml</resource>
   	<resource>src/main/resources/this-client.version</resource>
+  	<resource>src/main/resources/splash.png</resource>
   </resources>
 </archetype>
