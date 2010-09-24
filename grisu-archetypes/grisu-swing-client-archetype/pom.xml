@@ -31,11 +31,11 @@
 				<configuration>
 					<includes>
 						<!-- replace the token in this file -->
-						<include>target/classes/this-client.version</include>
+						<include>target/classes/archetype-resources/pom.xml</include>
 					</includes>
 					<regex>false</regex>
 					<!-- the name of the token to replace -->
-					<token>VERSION_TOKEN</token>
+					<token>GRISU_VERSION</token>
 					<!-- replace it with the maven project version -->
 					<value>${project.version}</value>
 				</configuration>
