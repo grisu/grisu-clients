@@ -144,6 +144,7 @@
 								<manifestEntries>
 									<Class-Path>bcprov.jar bcprov-jdk15-143.jar local-backend.jar
 									</Class-Path>
+ 									<SplashScreen-Image>splash.png</SplashScreen-Image>
 								</manifestEntries>
 							</archive>
 
