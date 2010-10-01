@@ -1,26 +1,23 @@
 package org.bestgrid.grisu.client.gricli.command;
 
+import javax.activation.DataHandler;
 import org.bestgrid.grisu.client.gricli.GricliEnvironment;
 import org.bestgrid.grisu.client.gricli.GricliRuntimeException;
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.control.exceptions.RemoteFileSystemException;
-import org.vpac.grisu.model.dto.DtoFile;
-import org.vpac.grisu.model.dto.DtoFolder;
 
-public class GridLsCommand implements GricliCommand{
+public class GetCommand implements GricliCommand {
+    private final String file;
+
+    public GetCommand(String file){
+        this.file = file;
+    }
 
     public GricliEnvironment execute(GricliEnvironment env) throws GricliRuntimeException {
+        String url = "gsiftp://" + env.get("host")  + env.get("gdir") + "/" + file;
         ServiceInterface si = env.getServiceInterface();
         try {
-            String url = "gsiftp://" + env.get("host") + env.get("gdir");
-            DtoFolder folder = si.ls(url, 1);
-            for (DtoFile file: folder.getChildrenFiles()){
-                System.out.println(file.getName());
-            }
-
-            for (DtoFolder file: folder.getChildrenFolders()){
-                System.out.println(file.getName() + "/");
-            }
+            DataHandler result = si.download(url);
 
         } catch (RemoteFileSystemException ex) {
             throw new GricliRuntimeException(ex);

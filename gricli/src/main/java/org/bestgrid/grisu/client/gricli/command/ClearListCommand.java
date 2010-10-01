@@ -3,19 +3,16 @@ package org.bestgrid.grisu.client.gricli.command;
 import org.bestgrid.grisu.client.gricli.GricliEnvironment;
 import org.bestgrid.grisu.client.gricli.GricliRuntimeException;
 
-public class SetGlobalCommand implements GricliCommand{
-    private final String global;
-    private final String value;
+public class ClearListCommand implements GricliCommand{
+    private final String list;
 
-    public SetGlobalCommand(String global, String value){
-        this.global = global;
-        this.value = value;
+    public ClearListCommand(String list){
+        this.list = list;
     }
 
     public GricliEnvironment execute(GricliEnvironment env) throws GricliRuntimeException {
-        env.put(global, value);
+        env.clear(list);
         return env;
     }
-
 
 }
