@@ -12,7 +12,7 @@
 		<dependency>
 			<groupId>org.vpac.grisu</groupId>
 			<artifactId>grisu-client</artifactId>
-			<version>0.3-SNAPSHOT</version>
+			<version>${grisu.dependency.version}</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>

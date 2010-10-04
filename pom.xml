@@ -7,6 +7,10 @@
 	<version>0.3-SNAPSHOT</version>
 	<name>grisu-clients Multi Project</name>
 	<url>http://maven.apache.org</url>
+	
+	<properties>
+		<grisu.dependency.version>0.3-beta1</grisu.dependency.version>
+	</properties>	
 
 	<repositories>
 		<repository>

@@ -37,7 +37,7 @@
 					<!-- the name of the token to replace -->
 					<token>GRISU_VERSION</token>
 					<!-- replace it with the maven project version -->
-					<value>${project.version}</value>
+					<value>${grisu.dependency.version}</value>
 				</configuration>
 			</plugin>
 		</plugins>
