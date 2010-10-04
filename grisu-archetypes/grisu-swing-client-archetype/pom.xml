@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>grisu-archetypes</artifactId>
 		<groupId>org.vpac.grisu</groupId>
-		<version>0.3-beta1</version>
+		<version>0.3-beta2-SNAPSHOT</version>
 	</parent>
 	<artifactId>grisu-swing-client-archetype</artifactId>
 	<packaging>jar</packaging>
