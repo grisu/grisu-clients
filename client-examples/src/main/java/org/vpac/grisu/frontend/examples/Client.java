@@ -5,6 +5,7 @@ import org.vpac.grisu.control.exceptions.JobPropertiesException;
 import org.vpac.grisu.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.frontend.control.login.LoginManager;
 import org.vpac.grisu.frontend.model.job.JobObject;
+import org.vpac.grisu.model.FileManager;
 
 import au.org.arcs.jcommons.constants.Constants;
 
@@ -15,26 +16,28 @@ public class Client {
 		System.out.println("Logging in...");
 		ServiceInterface si = null;
 		try {
-			si = LoginManager.loginCommandline();
-		} catch (final Exception e) {
+			si = LoginManager.loginCommandline("BeSTGRID");
+		} catch (Exception e) {
 			System.err.println("Could not login: " + e.getLocalizedMessage());
-			e.printStackTrace();
 			System.exit(1);
 		}
 
 		System.out.println("Creating job...");
-		final JobObject job = new JobObject(si);
+		String filename = FileManager.getFilename(args[0]);
+		JobObject job = new JobObject(si);
 		job.setApplication("UnixCommands");
-		job.setTimestampJobname("MyFirstJob");
-		System.out.println("Set jobname to be: " + job.getJobname());
-		job.setCommandline("echo \"hello grid\"");
-
+		job.setCommandline("cat " + filename);
+		job.addInputFileUrl(args[0]);
 		job.setWalltimeInSeconds(60);
+
+		job.setTimestampJobname("cat_job");
+
+		System.out.println("Set jobname to be: " + job.getJobname());
 
 		try {
 			System.out.println("Creating job on backend...");
-			job.createJob("/ACC");
-		} catch (final JobPropertiesException e) {
+			job.createJob("/ARCS/BeSTGRID");
+		} catch (JobPropertiesException e) {
 			System.err.println("Could not create job: "
 					+ e.getLocalizedMessage());
 			System.exit(1);
@@ -43,11 +46,11 @@ public class Client {
 		try {
 			System.out.println("Submitting job to the grid...");
 			job.submitJob();
-		} catch (final JobSubmissionException e) {
+		} catch (JobSubmissionException e) {
 			System.err.println("Could not submit job: "
 					+ e.getLocalizedMessage());
 			System.exit(1);
-		} catch (final InterruptedException e) {
+		} catch (InterruptedException e) {
 			System.err.println("Jobsubmission interrupted: "
 					+ e.getLocalizedMessage());
 			System.exit(1);
@@ -69,8 +72,8 @@ public class Client {
 		System.out.println("Stdout: " + job.getStdOutContent());
 		System.out.println("Stderr: " + job.getStdErrContent());
 
-		// it's pretty important to shutdown the jvm properly. There might be
-		// some executors running in the background
+		// it's good practise to shutdown the jvm properly. There might be some
+		// executors running in the background
 		// and they need to know when to shutdown.
 		// Otherwise, your application might not exit.
 		System.exit(0);

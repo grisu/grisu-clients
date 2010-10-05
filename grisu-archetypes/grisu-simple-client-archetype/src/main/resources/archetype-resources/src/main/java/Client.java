@@ -19,22 +19,22 @@ public class Client {
 			si = LoginManager.loginCommandline("BeSTGRID");
 		} catch (Exception e) {
 			System.err.println("Could not login: "+e.getLocalizedMessage());
-			e.printStackTrace();
 			System.exit(1);
 		}
 
 		System.out.println("Creating job...");
 		JobObject job = new JobObject(si);
 		job.setApplication("UnixCommands");
-		job.setTimestampJobname("MyFirstJob");
-		System.out.println("Set jobname to be: "+job.getJobname());
 		job.setCommandline("echo \"hello grid\"");
-
 		job.setWalltimeInSeconds(60);
+
+		job.setTimestampJobname("MyFirstJob");
+
+		System.out.println("Set jobname to be: "+job.getJobname());
 
 		try {
 			System.out.println("Creating job on backend...");
-			job.createJob("/ACC");
+			job.createJob("/ARCS/BeSTGRID");
 		} catch (JobPropertiesException e) {
 			System.err.println("Could not create job: "+e.getLocalizedMessage());
 			System.exit(1);
@@ -64,7 +64,7 @@ public class Client {
 		System.out.println("Stdout: "+job.getStdOutContent());
 		System.out.println("Stderr: " +job.getStdErrContent());
 		
-		// it's pretty important to shutdown the jvm properly. There might be some executors running in the background
+		// it's good practise to shutdown the jvm properly. There might be some executors running in the background
 		// and they need to know when to shutdown.
 		// Otherwise, your application might not exit.
 		System.exit(0);
