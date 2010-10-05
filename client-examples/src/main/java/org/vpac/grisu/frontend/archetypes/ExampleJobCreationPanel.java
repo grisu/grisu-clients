@@ -1,4 +1,4 @@
-package ${groupId};
+package org.vpac.grisu.frontend.archetypes;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

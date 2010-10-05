@@ -1,4 +1,4 @@
-package ${groupId};
+package org.vpac.grisu.frontend.archetypes;
 
 import java.awt.EventQueue;
 
@@ -70,4 +70,5 @@ public class Client extends GrisuApplicationWindow {
 		// here you could initialize application-wide stuff which needs a
 		// serviceInterface object
 	}
+
 }
