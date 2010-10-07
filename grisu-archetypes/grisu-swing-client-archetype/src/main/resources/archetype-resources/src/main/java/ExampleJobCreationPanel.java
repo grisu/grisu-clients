@@ -1,9 +1,11 @@
 package ${groupId};
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.logging.Level;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -16,11 +18,6 @@ import org.vpac.grisu.frontend.control.jobMonitoring.RunningJobManager;
 import org.vpac.grisu.frontend.model.job.JobObject;
 import org.vpac.grisu.frontend.view.swing.jobcreation.JobCreationPanel;
 import org.vpac.grisu.frontend.view.swing.jobcreation.widgets.SubmissionLogPanel;
-
-import com.jgoodies.forms.factories.FormFactory;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
 
 public class ExampleJobCreationPanel extends JPanel implements JobCreationPanel {
 
@@ -40,21 +37,10 @@ public class ExampleJobCreationPanel extends JPanel implements JobCreationPanel 
 	 * Create the panel.
 	 */
 	public ExampleJobCreationPanel() {
-		// I'm using jgoodies form layout,
-		// of course you can use any other layout manager of your choice
-		setLayout(new FormLayout(new ColumnSpec[] {
-				FormFactory.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
-				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
-				RowSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_ROWSPEC, }));
-		add(getLblDummyJobSubmission(), "2, 2");
-		add(getBtnSubmit(), "2, 5, right, default");
-		add(getSubmissionLogPanel(), "2, 7, fill, fill");
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		add(getLblDummyJobSubmission());
+		add(getBtnSubmit());
+		add(getSubmissionLogPanel());
 
 	}
 
@@ -72,6 +58,7 @@ public class ExampleJobCreationPanel extends JPanel implements JobCreationPanel 
 	private JButton getBtnSubmit() {
 		if (btnSubmit == null) {
 			btnSubmit = new JButton("Submit");
+			btnSubmit.setAlignmentX(Component.RIGHT_ALIGNMENT);
 			btnSubmit.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					submitJob();
@@ -84,6 +71,7 @@ public class ExampleJobCreationPanel extends JPanel implements JobCreationPanel 
 	private JLabel getLblDummyJobSubmission() {
 		if (lblDummyJobSubmission == null) {
 			lblDummyJobSubmission = new JLabel("Dummy job submission");
+			lblDummyJobSubmission.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		}
 		return lblDummyJobSubmission;
 	}
@@ -103,6 +91,7 @@ public class ExampleJobCreationPanel extends JPanel implements JobCreationPanel 
 	private SubmissionLogPanel getSubmissionLogPanel() {
 		if (submissionLogPanel == null) {
 			submissionLogPanel = new SubmissionLogPanel();
+			submissionLogPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		}
 		return submissionLogPanel;
 	}
