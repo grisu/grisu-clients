@@ -5,6 +5,7 @@ import org.vpac.grisu.control.exceptions.JobPropertiesException;
 import org.vpac.grisu.control.exceptions.JobSubmissionException;
 import org.vpac.grisu.frontend.control.login.LoginManager;
 import org.vpac.grisu.frontend.model.job.JobObject;
+import org.vpac.grisu.model.FileManager;
 
 import au.org.arcs.jcommons.constants.Constants;
 
@@ -15,7 +16,7 @@ public class Client {
 		System.out.println("Logging in...");
 		ServiceInterface si = null;
 		try {
-			si = LoginManager.loginCommandline("BeSTGRID");
+			si = LoginManager.loginCommandline("Local");
 		} catch (Exception e) {
 			System.err.println("Could not login: " + e.getLocalizedMessage());
 			System.exit(1);
@@ -24,10 +25,12 @@ public class Client {
 		System.out.println("Creating job...");
 		JobObject job = new JobObject(si);
 		job.setApplication("UnixCommands");
-		job.setCommandline("echo \"hello grid\"");
+		String filename = FileManager.getFilename(args[0]);
+		job.setCommandline("cat " + filename);
+		job.addInputFileUrl(args[0]);
 		job.setWalltimeInSeconds(60);
 
-		job.setTimestampJobname("MyFirstJob");
+		job.setTimestampJobname("cat_job");
 
 		System.out.println("Set jobname to be: " + job.getJobname());
 
