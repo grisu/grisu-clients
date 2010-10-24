@@ -69,13 +69,6 @@
 			<scope>compile</scope>
 		</dependency>-->
 		<!-- this is needed for shibboleth logins - recommended that you don't disable it -->
-		<dependency>
-			<groupId>au.org.arcs.auth</groupId>
-			<artifactId>arcs-gsi</artifactId>
-			<version>1.2</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
 
 		<!-- test dependencies -->
 		<dependency>

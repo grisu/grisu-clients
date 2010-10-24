@@ -35,12 +35,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>au.org.arcs.auth</groupId>
-			<artifactId>arcs-gsi</artifactId>
-			<version>1.2</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.jidesoft</groupId>
 			<artifactId>jide-oss</artifactId>
 			<version>2.9.1</version>
@@ -71,12 +65,6 @@
 			<artifactId>bcprov-jdk15</artifactId>
 			<version>145</version>
 			<type>jar</type>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>au.org.arcs.auth</groupId>
-			<artifactId>arcs-shibboleth-client</artifactId>
-			<version>0.2</version>
 			<scope>provided</scope>
 		</dependency>
 		
