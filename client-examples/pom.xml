@@ -18,11 +18,11 @@
 		<!--			<artifactId>xfire-frontend</artifactId>-->
 		<!--			<version>0.3-SNAPSHOT</version>-->
 		<!--		</dependency>-->
-		<dependency>
+<!--		<dependency>
 			<groupId>org.vpac.grisu</groupId>
 			<artifactId>xfire-frontend</artifactId>
 			<version>${grisu.dependency.version}</version>
-		</dependency>
+		</dependency>-->
 
 		<dependency>
 			<groupId>org.vpac.grisu</groupId>
