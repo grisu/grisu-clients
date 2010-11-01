@@ -15,7 +15,9 @@ public class FileDownloadExample {
 		// getting a filemanager object, which encapsulates file related actions
 		FileManager fm = GrisuRegistryManager.getDefault(si).getFileManager();
 
+		// need to know the full url to the source file
 		String sourceUrl = "gsiftp://ng2.auckland.ac.nz/home/grid-admin/DC_nz_DC_org_DC_bestgrid_DC_slcs_O_The_University_of_Auckland_CN_Markus_Binsteiner__bK32o4Lh58A3vo9kKBcoKrJ7ZY/700mbFile.bin";
+		// target file can be specified as either path or url
 		File targetFile = new File("/home/markus/test/");
 		String targetFileUrl = targetFile.toURI().toString();
 
