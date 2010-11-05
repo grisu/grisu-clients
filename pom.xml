@@ -72,7 +72,7 @@
 
 	<scm>
 		<connection>scm:git:git://code.arcs.org.au/grisu/grisu-clients.git</connection>
-		<developerConnection>scm:git:git://code.arcs.org.au/grisu/grisu-clients.git</developerConnection>
+		<developerConnection>scm:git:git@code.arcs.org.au:grisu/grisu-clients.git</developerConnection>
 		<url>http://projects.arcs.org.au/trac/grisu/browser</url>
 	</scm>
 	<build>
