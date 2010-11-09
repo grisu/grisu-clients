@@ -7,8 +7,7 @@ import org.vpac.grisu.frontend.control.login.LoginManager;
 import org.vpac.grisu.model.FileManager;
 import org.vpac.grisu.model.GrisuRegistry;
 import org.vpac.grisu.model.GrisuRegistryManager;
-import org.vpac.grisu.model.dto.DtoFile;
-import org.vpac.grisu.model.dto.DtoFolder;
+import org.vpac.grisu.model.dto.DtoFileObject;
 
 public class FileListingTest {
 
@@ -21,11 +20,11 @@ public class FileListingTest {
 		final GrisuRegistry registry = GrisuRegistryManager.getDefault(si);
 		final FileManager fileManager = registry.getFileManager();
 
-		final DtoFolder folder = fileManager
+		final DtoFileObject folder = fileManager
 				.ls("gsiftp://ng2.vpac.org/home/grid-admin/DC_au_DC_org_DC_arcs_DC_slcs_O_VPAC_CN_Markus_Binsteiner_qTrDzHY7L1aKo3WSy8623-7bjgM/grid-test-jobs/blast_2.2.21_d4fd6c4c-25e6-4cf0-8898-93cef219e996",
 						1);
 
-		for (final DtoFile file : folder.getChildrenFiles()) {
+		for (final DtoFileObject file : folder.getChildren()) {
 			System.out.println("Name: " + file.getName() + ", size: "
 					+ file.getSize());
 		}
