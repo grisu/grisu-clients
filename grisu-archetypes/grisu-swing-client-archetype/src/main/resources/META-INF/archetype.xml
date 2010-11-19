@@ -9,5 +9,6 @@
   	<resource>client.assembly.xml</resource>
   	<resource>src/main/resources/this-client.version</resource>
   	<resource filtered="false" >src/main/resources/splash.png</resource>
+  	<resource>__init__.py</resource>
   </resources>
 </archetype>
