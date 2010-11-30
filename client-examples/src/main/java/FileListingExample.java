@@ -21,22 +21,23 @@ public class FileListingExample {
 		UserEnvironmentManager uem = GrisuRegistryManager.getDefault(si)
 				.getUserEnvironmentManager();
 
-		String input = null;
+		String input = "grid://";
 		while (!"exit".equals(input)) {
 
-			System.out.println("Available groups:");
-			for (String g : uem.getAllAvailableUniqueGroupnames(true)) {
-				System.out.println(g);
-			}
-			System.out.println();
+			// System.out.println("Available groups:");
+			// for (String g : uem.getAllAvailableUniqueGroupnames(true)) {
+			// System.out.println(g);
+			// }
+			// System.out.println();
 
 			BufferedReader br = new BufferedReader(new InputStreamReader(
 					System.in));
 
 			try {
+				String lastInput = input;
 				input = br.readLine();
 				if (StringUtils.isBlank(input)) {
-					input = "grid://groups/NGAdmin";
+					input = lastInput;
 				} else if ("exit".equals(input)) {
 					System.exit(0);
 				}
@@ -50,6 +51,7 @@ public class FileListingExample {
 				GridFile f = fm.ls(input);
 				for (GridFile c : f.getChildren()) {
 					X.p("Child: " + c.getName() + " (" + c.getPath() + ")");
+					X.p("\turl: " + c.getUrl());
 				}
 			} catch (Exception e) {
 				System.out.println(e.getLocalizedMessage());
