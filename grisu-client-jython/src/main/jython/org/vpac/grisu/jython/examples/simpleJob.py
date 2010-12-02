@@ -7,8 +7,11 @@ Created on 17/11/2009
 from org.vpac.grisu.frontend.control.login import LoginManager
 from org.vpac.grisu.frontend.model.job import JobObject
 import sys
+from au.org.arcs.jcommons.utils import HttpProxyManager
 
-si = LoginManager.loginCommandline("ARCS")
+HttpProxyManager.useSystemHttpProxy()
+
+si = LoginManager.loginCommandline("BeSTGRID-DEV")
     
     
 # create the job object
