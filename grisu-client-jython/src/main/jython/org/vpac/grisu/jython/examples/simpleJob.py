@@ -23,7 +23,7 @@ job.setUniqueJobname("echo_job1")
 job.setCommandline("echo \"Hello World\"")
 
 # create the job on the backend and specify the VO to use
-job.createJob("/ACC")
+job.createJob("/ARCS/BeSTGRID")
 # submit the job
 job.submitJob()
 
