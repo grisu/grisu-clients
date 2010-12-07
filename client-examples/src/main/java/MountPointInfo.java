@@ -5,6 +5,8 @@ import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.model.MountPoint;
 import org.vpac.grisu.model.UserEnvironmentManager;
 
+import au.org.arcs.jcommons.utils.HttpProxyManager;
+
 public class MountPointInfo {
 
 	/**
@@ -13,7 +15,14 @@ public class MountPointInfo {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		final ServiceInterface si = LoginManager.loginCommandline("BeSTGRID");
+		HttpProxyManager.setHttpProxy("127.0.0.1", 3128, "", "".toCharArray());
+
+		ServiceInterface si = LoginManager.loginCommandline("BeSTGRID-DEV");
+
+		// final ServiceInterface si = LoginManager.shiblogin("mbin029",
+		// "m2ell;;2".toCharArray(), "The University of Auckland",
+		// "BeSTGRID-DEV", false);
+		// .loginCommandline("BeSTGRID-DEV");
 
 		final GrisuRegistry registry = GrisuRegistryManager.getDefault(si);
 
@@ -27,5 +36,4 @@ public class MountPointInfo {
 		}
 
 	}
-
 }
