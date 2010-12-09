@@ -23,6 +23,7 @@
 					<exclude>**/LICENSE.txt</exclude>
 					<exclude>**/NOTICE.txt</exclude>
 					<exclude>**/log4j.properties</exclude>
+					<exclude>**/LICENSE</exclude>
 				</excludes>
 			</unpackOptions>
 		</dependencySet>
@@ -42,6 +43,7 @@
 				<excludes>
 					<exclude>**/INDEX.LIST</exclude>
 					<exclude>**/MANIFEST.MF</exclude>
+					<exclude>**/LICENSE</exclude>
 					<exclude>**/LICENSE.txt</exclude>
 					<exclude>**/NOTICE.txt</exclude>
 					<exclude>**/log4j.properties</exclude>
