@@ -22,8 +22,11 @@
 					<exclude>**/MANIFEST.MF</exclude>
 					<exclude>**/LICENSE.txt</exclude>
 					<exclude>**/NOTICE.txt</exclude>
+					<exclude>**/NOTICE</exclude>
 					<exclude>**/log4j.properties</exclude>
 					<exclude>**/LICENSE</exclude>
+					<exclude>**/rebel.xml</exclude>
+					<exclude>arcs/__init__.py</exclude>
 				</excludes>
 			</unpackOptions>
 		</dependencySet>
@@ -47,7 +50,10 @@
 					<exclude>**/LICENSE.txt</exclude>
 					<exclude>**/NOTICE.txt</exclude>
 					<exclude>**/log4j.properties</exclude>
+					<exclude>**/NOTICE</exclude>
 					<exclude>**/gluev12r2-ext-class-map.properties</exclude>
+					<exclude>**/rebel.xml</exclude>
+					<exclude>arcs/__init__.py</exclude>
 				</excludes>
 			</unpackOptions>
 		</dependencySet>
@@ -58,10 +64,9 @@
 			<source>src/main/resources/log4j.properties</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
-	
 		<file>
-			<source>src/main/resources/gluev12r2-ext-class-map.properties</source>
-			<outputDirectory>/</outputDirectory>
+			<source>__init__.py</source>
+			<outputDirectory>/arcs</outputDirectory>
 		</file>
 	</files>
 
