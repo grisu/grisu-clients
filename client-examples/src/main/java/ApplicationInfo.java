@@ -14,7 +14,7 @@ public class ApplicationInfo {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		final ServiceInterface si = LoginManager.loginCommandline("Local");
+		final ServiceInterface si = LoginManager.loginCommandline("BeSTGRID-DEV");
 
 		final GrisuRegistry registry = GrisuRegistryManager.getDefault(si);
 
