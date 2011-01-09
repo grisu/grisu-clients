@@ -16,7 +16,7 @@ public class SimpleBatchJobSubmit {
 		// final ServiceInterface si = LoginManager.loginCommandline("Local");
 
 		// how many jobs do we want?
-		final int numberOfJobs = 5;
+		final int numberOfJobs = 1000;
 
 		final Date start = new Date();
 		final String multiJobName = "batchExample_" + start.getTime();
@@ -37,8 +37,10 @@ public class SimpleBatchJobSubmit {
 			// jobnamespace
 			jo.setJobname(multiJobName + "_" + jobNumber);
 
-			jo.setCommandline("ls -lah " + batchJob.pathToInputFiles()
+			jo.setCommandline("ls -lah . " + batchJob.pathToInputFiles()
 					+ "/temp_exampleFolder");
+
+			jo.setSubmissionLocation("route@er171.ceres.auckland.ac.nz:ng2.auckland.ac.nz");
 
 			// now we need to attach the job to the batchjob
 			batchJob.addJob(jo);
@@ -46,12 +48,16 @@ public class SimpleBatchJobSubmit {
 		}
 
 		batchJob.setConcurrentInputFileUploadThreads(10);
+		batchJob.setConcurrentJobCreationThreads(30);
 
 		batchJob.addInputFile("/home/markus/tmp/tmpSmall", "temp_exampleFolder");
 
 		// we can include/exclude sites/gateways if we have a reason to do so
 		// (maybe we know that one site is down or so)
 		// batchJob.setLocationsToExclude(new String[] { "otago" });
+
+		// or, we set the sites we want to include
+		batchJob.setLocationsToInclude(new String[] { "auckland" });
 
 		// if all jobs have the same no of cpus, we can specify it here
 		batchJob.setDefaultNoCpus(1);
@@ -66,7 +72,7 @@ public class SimpleBatchJobSubmit {
 			// location
 			// for each sub-job seperately ("true" would overwrite that)
 			// this will also upload any possible input files
-			batchJob.prepareAndCreateJobs(true);
+			batchJob.prepareAndCreateJobs(false);
 		} catch (final JobsException e) {
 			for (final JobObject job : e.getFailures().keySet()) {
 				System.out.println("Creation " + job.getJobname() + " failed: "
