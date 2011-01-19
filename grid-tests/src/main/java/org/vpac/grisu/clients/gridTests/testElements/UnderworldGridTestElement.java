@@ -1,12 +1,14 @@
 package org.vpac.grisu.clients.gridTests.testElements;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.vpac.grisu.clients.gridTests.GridTestInfo;
 import org.vpac.grisu.control.exceptions.NoSuchJobException;
 import org.vpac.grisu.frontend.control.clientexceptions.MdsInformationException;
 import org.vpac.grisu.frontend.model.job.JobObject;
+import org.vpac.grisu.model.dto.GridFile;
 
 import au.org.arcs.jcommons.constants.Constants;
 
@@ -56,10 +58,15 @@ public class UnderworldGridTestElement extends GridTestElement {
 			return false;
 		}
 
-		String[] children = null;
+		Set<String> children = new HashSet<String>();
 		try {
-			children = serviceInterface.getChildrenFileNames(
-					jobDir + "/output", false).asArray();
+			GridFile f = serviceInterface.ls(jobDir + "/output", 1);
+
+			for (GridFile c : f.getChildren()) {
+				children.add(c.getName());
+			}
+			// children = serviceInterface.getChildrenFileNames(
+			// jobDir + "/output", false).asArray();
 			addMessage("Listing output directory: ");
 			// StringBuffer listing = new StringBuffer();
 			// for ( String child : children ) {
@@ -72,8 +79,8 @@ public class UnderworldGridTestElement extends GridTestElement {
 			return false;
 		}
 
-		if (Arrays
-				.binarySearch(children, jobDir + "/output/FrequentOutput.dat") >= 0) {
+		if (children.contains("FrequentOutput.dat")) {
+
 			addMessage("\"FrequentOutput.dat\" file found. Good. Means job ran successful.");
 			return true;
 		} else {

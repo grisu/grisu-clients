@@ -71,7 +71,7 @@ public class GrisuBlenderApp implements WindowListener {
 
 	private void exit() {
 		try {
-			System.out.println("Exiting...");
+			// System.out.println("Exiting...");
 
 			if (si != null) {
 				si.logout();

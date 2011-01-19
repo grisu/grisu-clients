@@ -11,12 +11,12 @@ public class SimpleBatchJobSubmit {
 	public static void main(final String[] args) throws Exception {
 
 		// logging in..
-		final ServiceInterface si = LoginManager
-				.loginCommandline("BeSTGRID-DEV");
-		// final ServiceInterface si = LoginManager.loginCommandline("Local");
+		// final ServiceInterface si = LoginManager
+		// .loginCommandline("BeSTGRID-DEV");
+		final ServiceInterface si = LoginManager.loginCommandline("Local");
 
 		// how many jobs do we want?
-		final int numberOfJobs = 1000;
+		final int numberOfJobs = 10;
 
 		final Date start = new Date();
 		final String multiJobName = "batchExample_" + start.getTime();

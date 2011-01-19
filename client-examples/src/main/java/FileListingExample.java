@@ -17,6 +17,7 @@ public class FileListingExample {
 
 		// login
 		// ServiceInterface si = LoginManager.loginCommandline("BeSTGRID-DEV");
+		// ServiceInterface si = LoginManager.loginCommandline("BeSTGRID");
 		ServiceInterface si = LoginManager.loginCommandline("Local");
 		FileManager fm = GrisuRegistryManager.getDefault(si).getFileManager();
 		UserEnvironmentManager uem = GrisuRegistryManager.getDefault(si)
