@@ -146,7 +146,8 @@ public class GridFtpAction {
 	private void getChildrenFile(GridFtpActionItem actionItem, String source) {
 
 		try {
-			si.getChildrenFileNames(source, false);
+			si.ls(source, 1);
+
 		} catch (final Exception e) {
 			actionItem.setException(e);
 			return;
