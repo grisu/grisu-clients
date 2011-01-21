@@ -16,7 +16,7 @@ public final class JobList {
 
 		final ServiceInterface si = LoginManager.loginCommandline("ARCS");
 
-		final DtoJobs test = si.ps(null, true);
+		final DtoJobs test = si.getCurrentJobs(null, true);
 
 		System.out.println("ps");
 		for (final DtoJob job : test.getAllJobs()) {
@@ -41,7 +41,7 @@ public final class JobList {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			si.ps(null, true);
+			si.getCurrentJobs(null, true);
 		}
 	}
 

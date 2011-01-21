@@ -22,10 +22,10 @@ public final class ArchiveJob {
 		si = LoginManager.loginCommandline();
 
 		si.setUserProperty(
-				Constants.DEFAULT_ARCHIVE_LOCATION,
+				Constants.DEFAULT_JOB_ARCHIVE_LOCATION,
 				"gsiftp://ng2.vpac.org/home/grid-startup/DC_au_DC_org_DC_arcs_DC_slcs_O_VPAC_CN_Markus_Binsteiner_qTrDzHY7L1aKo3WSy8623-7bjgM/archive");
 
-		final DtoJobs test = si.ps(null, true);
+		final DtoJobs test = si.getCurrentJobs(null, true);
 
 		// System.out.println("ps");
 		// for (DtoJob job : test.getAllJobs()) {

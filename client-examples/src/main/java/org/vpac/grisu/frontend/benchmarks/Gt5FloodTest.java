@@ -93,7 +93,7 @@ public class Gt5FloodTest {
 		submissionExecutor.awaitTermination(36000, TimeUnit.SECONDS);
 		final Date allSubmissionFinishedDate = new Date();
 
-		final DtoJobs ps = si.ps(null, true);
+		final DtoJobs ps = si.getCurrentJobs(null, true);
 
 		final Date psDate = new Date();
 
