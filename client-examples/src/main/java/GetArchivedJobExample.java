@@ -19,7 +19,10 @@ public class GetArchivedJobExample {
 			NoSuchJobException {
 		// TODO Auto-generated method stub
 
+		// ServiceInterface si = LoginManager.loginCommandline("BeSTGRID-DEV");
 		ServiceInterface si = LoginManager.loginCommandline("Local");
+
+		System.out.println("Logged in");
 
 		DtoJobs jobs = si.getArchivedJobs(null);
 
