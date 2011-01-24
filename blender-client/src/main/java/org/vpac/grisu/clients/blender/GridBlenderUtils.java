@@ -1,5 +1,10 @@
 package org.vpac.grisu.clients.blender;
 
+import grith.jgrith.CredentialHelpers;
+import grith.jgrith.myProxy.LocalMyProxy;
+import grith.jgrith.plainProxy.LocalProxy;
+import grith.jgrith.plainProxy.PlainProxy;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -12,10 +17,6 @@ import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.frontend.control.login.LoginException;
 import org.vpac.grisu.frontend.control.login.LoginManager;
 import org.vpac.grisu.frontend.control.login.LoginParams;
-import org.vpac.security.light.CredentialHelpers;
-import org.vpac.security.light.myProxy.LocalMyProxy;
-import org.vpac.security.light.plainProxy.LocalProxy;
-import org.vpac.security.light.plainProxy.PlainProxy;
 
 public class GridBlenderUtils {
 

@@ -1,5 +1,7 @@
 package org.vpac.grisu.clients.gridFtpTests;
 
+import grith.jgrith.plainProxy.LocalProxy;
+
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -27,7 +29,6 @@ import org.vpac.grisu.model.GrisuRegistryManager;
 import org.vpac.grisu.model.MountPoint;
 import org.vpac.grisu.settings.Environment;
 import org.vpac.grisu.utils.GrisuPluginFilenameFilter;
-import org.vpac.security.light.plainProxy.LocalProxy;
 
 import au.org.arcs.jcommons.constants.ArcsEnvironment;
 import au.org.arcs.jcommons.dependencies.ClasspathHacker;
