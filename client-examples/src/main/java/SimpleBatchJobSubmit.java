@@ -1,9 +1,11 @@
 import java.util.Date;
+
 import org.vpac.grisu.control.ServiceInterface;
 import org.vpac.grisu.frontend.control.login.LoginManager;
 import org.vpac.grisu.frontend.model.job.BatchJobObject;
 import org.vpac.grisu.frontend.model.job.JobObject;
 import org.vpac.grisu.frontend.model.job.JobsException;
+
 import au.org.arcs.jcommons.constants.Constants;
 
 public class SimpleBatchJobSubmit {
@@ -11,12 +13,12 @@ public class SimpleBatchJobSubmit {
 	public static void main(final String[] args) throws Exception {
 
 		// logging in..
-		// final ServiceInterface si = LoginManager
-		// .loginCommandline("BeSTGRID-DEV");
-		final ServiceInterface si = LoginManager.loginCommandline("Local");
+		final ServiceInterface si = LoginManager
+		.loginCommandline("BeSTGRID-DEV");
+		// final ServiceInterface si = LoginManager.loginCommandline("Local");
 
 		// how many jobs do we want?
-		final int numberOfJobs = 10;
+		final int numberOfJobs = 5;
 
 		final Date start = new Date();
 		final String multiJobName = "batchExample_" + start.getTime();
@@ -27,6 +29,8 @@ public class SimpleBatchJobSubmit {
 				"/ARCS/BeSTGRID", "UnixCommands",
 				Constants.NO_VERSION_INDICATOR_STRING);
 
+		// batchJob.setConcurrentInputFileUploadThreads(1);
+
 		// now we need to create all the jobs manually
 		for (int i = 0; i < numberOfJobs; i++) {
 
@@ -36,6 +40,8 @@ public class SimpleBatchJobSubmit {
 			// the jobname of the single job needs to be unique in your
 			// jobnamespace
 			jo.setJobname(multiJobName + "_" + jobNumber);
+
+			jo.addInputFileUrl("/home/markus/tmp/tmpSmall/text0.txt");
 
 			jo.setCommandline("ls -lah . " + batchJob.pathToInputFiles()
 					+ "/temp_exampleFolder");
@@ -122,6 +128,8 @@ public class SimpleBatchJobSubmit {
 			System.out.println("-------------------------------");
 			System.out.println();
 		}
+
+		System.exit(0);
 
 	}
 
