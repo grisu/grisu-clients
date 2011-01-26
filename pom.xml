@@ -64,9 +64,7 @@
 		<module>grisu-client-jython</module>
 		<module>grid-tests</module>
 		<module>gridftp-tests</module>
-		<module>gricli</module>
 		<module>client-examples</module>
-		<module>grisu-template-client</module>
 		<module>blender-client</module>
   </modules>
 
